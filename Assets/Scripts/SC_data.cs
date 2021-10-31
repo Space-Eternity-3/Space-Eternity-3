@@ -572,7 +572,11 @@ public class SC_data : MonoBehaviour
                     int lngt=line.Length;
                     for(j=0;j<lngt;j++) if(line[j]!="") World[i,j,asteroidCounter]=int.Parse(line[j])+"";
                 }
-                else AsteroidReset(asteroidCounter);
+                else
+                {
+                    UnityEngine.Debug.LogWarning("Asteroid file "+file+" has wrong a seed. Generating new...");
+                    AsteroidReset(asteroidCounter);
+                }
                 
                 }catch(Exception)
                 {

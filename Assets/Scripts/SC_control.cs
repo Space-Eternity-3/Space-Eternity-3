@@ -311,7 +311,7 @@ public class SC_control : MonoBehaviour {
 			for(y=0;y<21;y++)
 			{
 				SC_slots.BackpackX[y] = 0;
-				SC_slots.BackpackX[y] = 0;
+				SC_slots.BackpackY[y] = 0;
 			}
 			SC_slots.ResetYAB();
 			for(y=0;y<5;y++) SC_upgrades.MTP_levels[y]=0;
@@ -374,7 +374,7 @@ public class SC_control : MonoBehaviour {
 		}
 		SC_data.Save("player_data");
 
-		for(z=0;z<10;z++) SC_data.SaveAsteroid(z);
+		for(z=0;z<16;z++) SC_data.SaveAsteroid(z);
 	}
 	void OnApplicationQuit()
 	{

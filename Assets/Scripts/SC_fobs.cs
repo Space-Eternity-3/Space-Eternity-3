@@ -152,8 +152,7 @@ public class SC_fobs : MonoBehaviour
     }
     bool HasPhysicalVersion(int b)
     {
-        if(b>=4&&b<=14) return true; //15 -> full pumpkin
-        if(b>=16&&b<=19) return true; //20 -> item respawn
+        if(b>=3&&b<=19) return true; //20 -> item respawn
         if(b>=21&&b<=22) return true; //23 -> magnetic alien waited //24 -> copper bullet
         if(b>=25&&b<=38) return true; //39 -> red bullet
         if(b==40) return true;
