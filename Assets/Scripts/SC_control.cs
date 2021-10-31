@@ -123,7 +123,7 @@ public class SC_control : MonoBehaviour {
 	public float health_V=1f, turbo_V=0f;
 	public Text health_Text, turbo_Text;
 
-	string RPU="XXX";
+	string RPU = "XXX";
 	int MTPloadedCounter=5;
 
 	public string invCurrent()
@@ -134,7 +134,6 @@ public class SC_control : MonoBehaviour {
 	{
 		if(V==0f) return 0f;
 		V=Engines*V;
-		if(!(V<=150f&&V>=-150f)) V=150f*V/Mathf.Abs(V);
 		if(turboo) V=V*Mathf.Pow(1.08f,SC_upgrades.MTP_levels[1]);
 		if(V>=0f) return V*(V+15f)/1000f;
 		else
