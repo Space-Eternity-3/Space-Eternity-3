@@ -27,8 +27,8 @@ craftings
 	<Page>1
 	{
 		title_image: stone;
-		1: stone(4) + coal -> melted_stone;
-		2: melted_stone -> stone(4);
+		1: stone(5) -> melted_stone;
+		2: melted_stone -> stone(5);
 		3: stone(2) -> stone_drill;
 		4: stone_drill -> stone(2);
 		5: geyzer -> stone(3);
@@ -36,22 +36,22 @@ craftings
 	<Page>2
 	{
 		title_image: copper;
-		1: copper(4) + coal -> melted_copper;
-		2: melted_copper -> copper(4);
+		1: copper(5) -> melted_copper;
+		2: melted_copper -> copper(5);
 	}
 	<Page>3
 	{
 		title_image: gold;
-		1: gold(4) + coal -> melted_gold;
-		2: melted_gold -> gold(4);
+		1: gold(5) -> melted_gold;
+		2: melted_gold -> gold(5);
 		3: gold(2) -> golden_drill;
 		4: golden_drill -> gold(2);
 	}
 	<Page>4
 	{
 		title_image: magnetic_stone;
-		1: magnetic_stone(4) + coal -> melted_magnetic_stone;
-		2: melted_magnetic_stone -> magnetic_stone(4);
+		1: magnetic_stone(5) -> melted_magnetic_stone;
+		2: melted_magnetic_stone -> magnetic_stone(5);
 		3: magnetic_stone(3) -> magnetic_lamp;
 		4: magnetic_lamp -> magnetic_stone(3);
 	}
