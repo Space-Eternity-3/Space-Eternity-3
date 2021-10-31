@@ -147,13 +147,12 @@ public class SC_fobs : MonoBehaviour
         if(arg[0]=="/RetFobsPing")
         if(arg[1]==(SC_control.connectionID+";"+ID+";"+index))
         {
-            Debug.Log("Minused "+ID+";"+index+" "+ObjID);
             MTPblocker--;
         }
     }
     bool HasPhysicalVersion(int b)
     {
-        if(b>=3&&b<=19) return true; //20 -> item respawn
+        if(b>=2&&b<=19) return true; //20 -> item respawn
         if(b>=21&&b<=22) return true; //23 -> magnetic alien waited //24 -> copper bullet
         if(b>=25&&b<=38) return true; //39 -> red bullet
         if(b==40) return true;
@@ -194,7 +193,7 @@ public class SC_fobs : MonoBehaviour
 
         if((tid<8||tid>11)&&tid!=16&&tid!=30)
         {
-            if(tid==21) SC_asteroid.GenPlaceT[tid].name=potFob21Name;
+            if(tid==21||tid==2) SC_asteroid.GenPlaceT[tid].name=potFob21Name;
             gobT=Instantiate(SC_asteroid.GenPlaceT[tid],transform.position,transform.rotation);
         }
         else

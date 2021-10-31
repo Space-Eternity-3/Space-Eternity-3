@@ -585,13 +585,17 @@ function fobChange(ulam,place,end)
 function checkFobDataChange(ulam,place,item,deltaCount)
 {
   var det=asteroidIndex(ulam);
-  if(chunk_data[det[0]][det[1]][parseInt(place)+1] != 21) {return false;}
+  if(chunk_data[det[0]][det[1]][parseInt(place)+1] != 21 && chunk_data[det[0]][det[1]][parseInt(place)+1] != 2) {return false;}
+  
+  var max_count;
+  if(chunk_data[det[0]][det[1]][parseInt(place)+1] == 21) max_count = 35;
+  else max_count = 5;
   
   if(chunk_data[det[0]][det[1]][21+2*parseInt(place)] == "" || chunk_data[det[0]][det[1]][21+2*parseInt(place)] == item)
   {
 	  var countEnd = parseInt(chunk_data[det[0]][det[1]][22+2*parseInt(place)]);
 	  if(isNaN(countEnd)) countEnd = 0; countEnd += parseInt(deltaCount);
-	  if(countEnd >= 0 && countEnd <= 35) return true;
+	  if(countEnd >= 0 && countEnd <= max_count) return true;
 	  else {return false;}
   }
   else {return false;}

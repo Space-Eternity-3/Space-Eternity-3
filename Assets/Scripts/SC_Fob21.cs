@@ -20,6 +20,7 @@ public class SC_Fob21 : MonoBehaviour {
 	public SC_fun SC_fun;
 	public SC_data SC_data;
 	public SC_slots SC_slots;
+	public int max_count;
 	
 	int ID=0,uID=0,X,Y;
 	public int ASAC_cooldown;
@@ -42,8 +43,9 @@ public class SC_Fob21 : MonoBehaviour {
 	void CountTranslate()
 	{
 		Ention.material=SC_fun.M[item];
-		int i;
-		for(i=0;i<35;i++){
+		int i,lngt;
+
+		for(i=0;i<max_count;i++){
 			if(count>i) oSim[i].material=On;
 			else oSim[i].material=Off;
 		}
@@ -136,7 +138,7 @@ public class SC_Fob21 : MonoBehaviour {
 		{
 			int itemTym=SC_slots.SelectedItem();
 			if((itemTym==item||item==0)&&itemTym!=0)
-			if(count<35)
+			if(count<max_count)
 			return true;
 		}
 		return false;
