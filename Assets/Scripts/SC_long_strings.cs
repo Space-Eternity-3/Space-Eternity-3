@@ -16,7 +16,8 @@ public class SC_long_strings : MonoBehaviour
     4. Server data
     5. Unity settings
     6. Folder name (main, server)
-    7. DEV mode
+    7. GitHub (.gitignore ServerUniverse)
+    8. DEV mode
 
     */
 }
