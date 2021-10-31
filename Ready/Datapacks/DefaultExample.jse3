@@ -54,6 +54,7 @@ craftings
 		2: melted_magnetic_stone -> magnetic_stone(5);
 		3: magnetic_stone(3) -> magnetic_lamp;
 		4: magnetic_lamp -> magnetic_stone(3);
+		5: mega_geyzer -> magnetic_stone(3);
 	}
 	<Page>5
 	{
@@ -93,8 +94,10 @@ craftings
 	{
 		title_image: storage;
 		1: stone(4) + copper(2) -> storage;
-		2: stone(5) + death_alien -> stone_tomb;
-		3: stone_tomb -> death_alien;
+		2: storage + stone_drill -> driller;
+		3: geyzer + magnetic_stone(3) -> mega_geyzer;
+		4: stone(5) + death_alien -> stone_tomb;
+		5: stone_tomb -> death_alien;
 	}
 	<Page>11
 	{
@@ -231,6 +234,8 @@ game_translate <advenced settings>
 	}
 	Items_and_objects
 	{
+		2: driller;
+		3: mega_geyzer;
 		4: pumpkin;
 		5: small_amethyst;
 		6: medium_amethyst;

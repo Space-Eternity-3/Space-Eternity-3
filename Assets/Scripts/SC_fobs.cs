@@ -59,6 +59,7 @@ public class SC_fobs : MonoBehaviour
     public int MTPblocker = 0;
     Transform mainWind;
     bool dbr=false;
+    int destroyTime = -1;
 
     bool started = false;
 
@@ -213,7 +214,13 @@ public class SC_fobs : MonoBehaviour
         if(ObjID==23&&id==25) SC_sounds.PlaySound(transform.position,2,9);
         if((ObjID==13||ObjID==23||ObjID==25||ObjID==27)&&id==40) SC_sounds.PlaySound(transform.position,2,12);
 
-        Destroy(gameObject);
+        if(!WindObject) Destroy(gameObject);
+        else
+        {
+            mother = true;
+            destroyTime = 50;
+            transform.position = new Vector3(0f,0f,10000f);
+        }
         gobT.GetComponent<SC_fobs>().StartM();
     }
     public void StartM()
@@ -355,6 +362,9 @@ public class SC_fobs : MonoBehaviour
     }
     void FixedUpdate()
     {
+        if(destroyTime>0) destroyTime--;
+        if(destroyTime==0) Destroy(gameObject);
+
         if(inGeyzer>0&&GeyzerTurn&&!mother)
         {
             GeyzerTime++;
