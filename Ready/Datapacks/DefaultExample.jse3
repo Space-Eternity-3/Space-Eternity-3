@@ -38,6 +38,7 @@ craftings
 		title_image: copper;
 		1: copper(5) -> melted_copper;
 		2: melted_copper -> copper(5);
+		3: copper -> copper_bullet(5);
 	}
 	<Page>3
 	{
@@ -54,7 +55,7 @@ craftings
 		2: melted_magnetic_stone -> magnetic_stone(5);
 		3: magnetic_stone(3) -> magnetic_lamp;
 		4: magnetic_lamp -> magnetic_stone(3);
-		5: mega_geyzer -> magnetic_stone(3);
+		5: mega_geyzer -> magnetic_stone(4);
 	}
 	<Page>5
 	{
@@ -69,6 +70,7 @@ craftings
 		2: packed_red -> red(5);
 		3: red(2) -> red_spikes;
 		4: red_spikes -> red(2);
+		5: red -> red_bullet(3);
 	}
 	<Page>7
 	{
@@ -87,25 +89,24 @@ craftings
 	<Page>9
 	{
 		title_image: medium_diamond;
-		1: small_diamond(2) -> medium_diamond;
-		2: medium_diamond -> small_diamond(2);
+		1: stone(3) + small_diamond -> stone_with_crystals;
+		2: stone_with_crystals -> small_diamond;
+		3: small_diamond(2) -> medium_diamond;
+		4: medium_diamond -> small_diamond(2);
 	}
 	<Page>10
 	{
 		title_image: storage;
 		1: stone(4) + copper(2) -> storage;
-		2: storage + stone_drill -> driller;
-		3: geyzer + magnetic_stone(3) -> mega_geyzer;
-		4: stone(5) + death_alien -> stone_tomb;
-		5: stone_tomb -> death_alien;
+		2: stone_with_crystals(3) + stone_drill -> driller;
+		3: stone(5) + death_alien -> stone_tomb;
+		4: stone_tomb -> death_alien;
 	}
 	<Page>11
 	{
-		title_image: copper_bullet;
+		title_image: respawn;
 		1: gold(3) + copper(2) -> respawn;
 		2: respawn -> gold(3);
-		3: copper -> copper_bullet(5);
-		4: red -> red_bullet(3);
 	}
 	<Page>12
 	{
@@ -120,7 +121,8 @@ craftings
 drill_loot
 {
 	stone: stone(100%);
-	geyzer: stone(100%);
+	stone_geyzer: stone(100%);
+	magnetic_geyzer: magnetic_stone(100%);
 	copper: copper(100%);
 	gold: gold(30%);
 	grass: stone(100%);
@@ -135,7 +137,6 @@ modified_drops
 	medium_amethyst: small_amethyst(2);
 	large_amethyst: small_amethyst(3);
 	big_bush: bush(3);
-	old_pumpkin: pumpkin;
 	red_spikes: red(2);
 	medium_diamond: small_diamond(2);
 }
@@ -184,13 +185,13 @@ asteroid_type
 	}
 	<Biome>2
 	{
-		<Size>4: geyzer(100%);
-		<Size>5: geyzer(100%);
-		<Size>6: geyzer(70%) + magnetic(30%);
-		<Size>7: geyzer(70%) + magnetic(30%);
-		<Size>8: geyzer(100%);
-		<Size>9: geyzer(100%);
-		<Size>10: geyzer(100%);
+		<Size>4: stone_geyzer(100%);
+		<Size>5: stone_geyzer(70%) + magnetic_geyzer(30%);
+		<Size>6: stone_geyzer(70%) + magnetic_geyzer(30%);
+		<Size>7: stone_geyzer(70%) + magnetic_geyzer(30%);
+		<Size>8: stone_geyzer(100%);
+		<Size>9: stone_geyzer(100%);
+		<Size>10: stone_geyzer(100%);
 	}
 	<Biome>3
 	{
@@ -207,7 +208,8 @@ asteroid_type
 objects_generate
 {
 	stone: stone(35%);
-	geyzer: stone(30%) + geyzer(20%);
+	stone_geyzer: stone(30%) + geyzer(20%);
+	magnetic_geyzer: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
 	copper: copper(35%) + pumpkin(0,3%);
 	gold: gold(25%);
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%) + pumpkin(0,3%);
@@ -215,14 +217,15 @@ objects_generate
 	coal: coal(45%);
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	red: red(35%) + red_spikes(7,5%) + red_alien(15%);
-	diamond: medium_diamond(25%) + small_diamond(25%);
+	diamond: medium_diamond(15%) + small_diamond(25%);
 }
 game_translate <advenced settings>
 {
 	Asteroids
 	{
 		0: stone;
-		1: geyzer;
+		1: stone_geyzer;
+		2: magnetic_geyzer;
 		3: copper;
 		4: gold;
 		5: grass;
@@ -234,6 +237,7 @@ game_translate <advenced settings>
 	}
 	Items_and_objects
 	{
+		1: stone_with_crystals;
 		2: driller;
 		3: mega_geyzer;
 		4: pumpkin;
@@ -247,7 +251,7 @@ game_translate <advenced settings>
 		12: bush;
 		13: alien;
 		14: big_bush;
-		15: old_pumpkin;				<only object> <relict>
+		15: old_pumpkin;				<not used>
 		16: magnetic_stone;
 		17: melted_stone;
 		18: melted_copper;
@@ -269,8 +273,9 @@ game_translate <advenced settings>
 		34: stone_drill;
 		35: magnetic_lamp;
 		36: golden_drill;
+		37: treasure;					<not used>
 		38: geyzer;
-		39: red_bullet;				<only item>
+		39: red_bullet;					<only item>
 		40: death_alien;
 	}
 }

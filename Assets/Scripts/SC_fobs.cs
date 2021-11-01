@@ -29,7 +29,7 @@ public class SC_fobs : MonoBehaviour
     
     int GrowTimeLeft=100;
     public int GeyzerTime=0;
-    int inGeyzer=0;
+    public int inGeyzer=0;
 
     public Transform[] MTPplayers = new Transform[10];
 
@@ -152,7 +152,7 @@ public class SC_fobs : MonoBehaviour
     }
     bool HasPhysicalVersion(int b)
     {
-        if(b>=2&&b<=19) return true; //20 -> item respawn
+        if(b>=1&&b<=19) return true; //20 -> item respawn
         if(b>=21&&b<=22) return true; //23 -> magnetic alien waited //24 -> copper bullet
         if(b>=25&&b<=38) return true; //39 -> red bullet
         if(b==40) return true;
@@ -338,7 +338,6 @@ public class SC_fobs : MonoBehaviour
                 Replace(ShotID,multiplayer);
             }
         }
-        if(collision.gameObject.name=="cactus_kill_zone") inGeyzer++;
     }
     void OnTriggerExit(Collider collision)
     {
@@ -346,11 +345,6 @@ public class SC_fobs : MonoBehaviour
         {
             com1act=false;
             Communtron1.position-=new Vector3(1f,0f,0f);
-        }
-        if(collision.gameObject.name=="cactus_kill_zone")
-        {
-            inGeyzer--;
-            if(inGeyzer==0) GeyzerTime=0;
         }
     }
     void OnDestroy()
