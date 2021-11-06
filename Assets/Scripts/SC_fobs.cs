@@ -406,6 +406,12 @@ public class SC_fobs : MonoBehaviour
         }
         return true;
     }
+    float safeDistance(int id)
+    {
+        if(id==0) return 100000f; //ERROR
+        if(id==2||id==21||id==29) return 2f; //BIGGER OBJECT
+        return 2f; //DEFAULT
+    }
     void OnMouseOver()
     {
         int slot;
@@ -413,7 +419,7 @@ public class SC_fobs : MonoBehaviour
 		float pX=player.position.x, pY=player.position.y;
 		float distance=Mathf.Sqrt((oX-pX)*(oX-pX)+(oY-pY)*(oY-pY));
 
-        if(IsEmpty&&Communtron3.position.y==0f&&distance<15f&&topDistance(2f)&&!Input.GetMouseButton(0)&&Communtron2.position.x==0f&&
+        if(IsEmpty&&Communtron3.position.y==0f&&distance<15f&&topDistance(safeDistance(SC_slots.SelectedItem()))&&!Input.GetMouseButton(0)&&Communtron2.position.x==0f&&
         HasPhysicalVersion(SC_slots.SelectedItem())&&MTPblocker<=0)
         {
             if(!Input.GetMouseButton(1)&&emptyShow)
