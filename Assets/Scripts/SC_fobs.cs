@@ -46,7 +46,7 @@ public class SC_fobs : MonoBehaviour
 
     string worldDIR="";
 	int worldID=1;
-    int ID,index,X,Y;
+    public int ID,index,X,Y;
     int i, rand;
     bool ReplaceReserved=false;
     bool ReR=false;

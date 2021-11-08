@@ -20,6 +20,7 @@ public class SC_Fob21 : MonoBehaviour {
 	public SC_fun SC_fun;
 	public SC_data SC_data;
 	public SC_slots SC_slots;
+	public SC_fobs SC_fobs;
 	public int max_count;
 	
 	int ID=0,uID=0,X,Y;
@@ -94,7 +95,7 @@ public class SC_Fob21 : MonoBehaviour {
 				}
 			}
 		}
-		if(using_1>=ASAC_cooldown || using_1==1 || inst==1)
+		if((using_1>=ASAC_cooldown || using_1==1 || inst==1) && SC_fobs.ObjID!=2)
 		{
 			if(inst==1) using_1 = 1;
 
@@ -205,6 +206,16 @@ public class SC_Fob21 : MonoBehaviour {
 			count=int.Parse(gameObject.name.Split(';')[1]);
 		}
 		CountTranslate();
+	}
+	public void Fob2Drilled(int id)
+	{
+		if((int)Communtron4.position.y!=100)
+		if((count==0 || item==id) && count<5)
+		{
+			item=id;
+			count++;
+		}
+		SaveSGP();
 	}
 	void OnDestroy()
 	{

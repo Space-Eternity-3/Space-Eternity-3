@@ -2,3 +2,4 @@ Storage w multiplayer nie dzia³a³y poprawnie
 Iloœæ przedmiotów w plecaku nie resetowa³a siê po œmierci
 Chunki o indexach w pamiêci podrêcznej <10,15> nie zapisywa³y siê
 Kosmici zmieniali siê w marwych nawet, jeœli gejzer zosta³ usuniêty
+Grób nie usuwa³ siê po klikniêciu na krzy¿

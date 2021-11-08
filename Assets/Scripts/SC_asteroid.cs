@@ -56,14 +56,14 @@ public class SC_asteroid : MonoBehaviour {
 	int worldID=1;
 	string datapackDIR="./Datapacks/";
 
-	int SetLoot()
+	public int SetLoot(int typp, bool only_one)
 	{
 		int i,rand,lngt;
 		int[] idn = new int[2048];
 		int[] min = new int[2048];
 		int[] max = new int[2048];
 		
-		string[] dGet = SC_data.DrillLoot[type].Split(';');
+		string[] dGet = SC_data.DrillLoot[typp].Split(';');
 		lngt=dGet.Length/3;
 
 		for(i=0;i<lngt&&i<2048;i++)
@@ -76,7 +76,11 @@ public class SC_asteroid : MonoBehaviour {
 		rand=UnityEngine.Random.Range(0,1000);
 		for(i=0;i<lngt;i++)
 		{
-			if(rand>=min[i]&&rand<=max[i]) return idn[i];
+			if(rand>=min[i]&&rand<=max[i])
+			{
+				if(!only_one || i==0) return idn[i];
+				else return 0;
+			}
 		}
 		return 0;
 	}
@@ -400,7 +404,7 @@ public class SC_asteroid : MonoBehaviour {
 				CommuntronM1.position=new Vector3(1f,0f,0f);
 			}
 			mined=0;
-			if(counter==0) mined=SetLoot();			
+			if(counter==0) mined=SetLoot(type,false);			
 			if(mined>0 && SC_slots.InvHaveB(mined,1,true,true,true,0))
 			{
 				int slot = SC_slots.InvChange(mined,1,true,true,true);
