@@ -71,6 +71,7 @@ public class SC_driller : MonoBehaviour
             if(active && Drill.localPosition.y <= activePos) drilling = true;
             else drilling = false;
 
+            if((int)Communtron4.position.y==100) return;
             if(drilling && drillTime==999999) drillTime = GetTimeDrill();
             if(drilling && drillTime<=0)
             {

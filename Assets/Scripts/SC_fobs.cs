@@ -108,8 +108,9 @@ public class SC_fobs : MonoBehaviour
         {
             int itym=int.Parse(arg[3]);
             int coynt=int.Parse(arg[4]);
+            int id21=int.Parse(arg[7]);
 
-            if(ObjID==21)
+            if(ObjID==id21)
             {
                 SC_Fob21.item=itym;
                 SC_Fob21.count+=coynt;
@@ -118,7 +119,7 @@ public class SC_fobs : MonoBehaviour
             {
                 coynt = int.Parse(arg[6]);
                 potFob21Name=itym+";"+coynt+";";
-                Replace(21,true);
+                Replace(id21,true);
             }
         }
         if(arg[0]=="/RetFobsDataCorrection")
@@ -126,8 +127,9 @@ public class SC_fobs : MonoBehaviour
         {
             int itym = int.Parse(arg[3].Split(';')[0]);
             int deltaCoynt = int.Parse(arg[3].Split(';')[2]);
+            int id21=int.Parse(arg[5]);
 
-            if(ObjID==21)
+            if(ObjID==id21)
             {
                 SC_Fob21.count -= deltaCoynt;
                 if(SC_Fob21.count == 0) SC_Fob21.item = 0;
@@ -212,6 +214,7 @@ public class SC_fobs : MonoBehaviour
         if(ObjID==25&&id==23) SC_sounds.PlaySound(transform.position,2,8);
         if(ObjID==23&&id==25) SC_sounds.PlaySound(transform.position,2,9);
         if((ObjID==13||ObjID==23||ObjID==25||ObjID==27)&&id==40) SC_sounds.PlaySound(transform.position,2,12);
+        gobT.transform.parent = gameObject.transform.parent;
 
         if(!WindObject) Destroy(gameObject);
         else
@@ -296,22 +299,6 @@ public class SC_fobs : MonoBehaviour
         if(onu>0) onu--;
         if(!mother)
         {
-            //Optimalize
-			int ssX=(int)Mathf.Round(transform.position.x/10f);
-			int ssY=(int)Mathf.Round(transform.position.y/10f);
-			int llX=(int)Mathf.Round(legs.position.x/10f);
-			int llY=(int)Mathf.Round(legs.position.y/10f);
-			float distance=Mathf.Sqrt((ssX-llX)*(ssX-llX)+(ssY-llY)*(ssY-llY));
-			if(distance>7f&&Communtron1.position.z==0f)
-            {
-                if(!dbr&&WindObject)
-                {
-                    mainWind.GetComponent<SC_terminate>().disabled=false;
-                    mainWind.GetComponent<SC_terminate>().particleDisable();
-                }
-                Destroy(gameObject);
-            }
-
             //Storage data get
             if(IsStorage&&!mother)
             {

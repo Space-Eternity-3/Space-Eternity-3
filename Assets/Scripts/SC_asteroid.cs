@@ -290,7 +290,7 @@ public class SC_asteroid : MonoBehaviour {
 					objectData[i]=arg[3+i];
 				}catch(Exception)
 				{
-					if(objectID[i]==21) objectData[i] = "0;0";
+					if(objectID[i]==21||objectID[i]==2) objectData[i] = "0;0";
 				}
 			}
 			UUTC(saze);
@@ -323,6 +323,7 @@ public class SC_asteroid : MonoBehaviour {
 			int rand,ii;
 			for(ii=0;ii<times;ii++)
 			{
+				GameObject gobT = gameObject;
 				Quaternion quat_angle=new Quaternion(0f,0f,0f,0f);
 				float sinX=Mathf.Sin(ii*alpha*(3.14159f/180f))*(size/2-0.02f);
 				float cosY=Mathf.Cos(ii*alpha*(3.14159f/180f))*(size/2-0.02f);
@@ -333,10 +334,10 @@ public class SC_asteroid : MonoBehaviour {
 
 				if((tid<8||tid>11)&&tid!=16&&tid!=30)
 				{
-					if(tid==21) GenPlaceT[tid].name=objectData[ii]+";";
-					try{Instantiate(GenPlaceT[tid],rotation_place,quat_angle);}catch(Exception)
+					if(tid==21||tid==2) GenPlaceT[tid].name=objectData[ii]+";";
+					try{gobT=Instantiate(GenPlaceT[tid],rotation_place,quat_angle);}catch(Exception)
 					{
-						Instantiate(GenPlaceT[0],rotation_place,quat_angle);
+						gobT=Instantiate(GenPlaceT[0],rotation_place,quat_angle);
 					}
 				}
 				else
@@ -346,8 +347,9 @@ public class SC_asteroid : MonoBehaviour {
 					if(tid>=8&&tid<=11) tud=tid-8;
 					if(tid==16) tud=4;
 					if(tid==30) tud=5;
-					Instantiate(GenPlaceM[tud*3+rand],rotation_place,quat_angle);
+					gobT = Instantiate(GenPlaceM[tud*3+rand],rotation_place,quat_angle);
 				}
+				gobT.transform.parent = gameObject.transform;
 			}
 		}
 	}

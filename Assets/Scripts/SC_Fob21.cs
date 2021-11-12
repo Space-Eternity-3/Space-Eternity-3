@@ -90,7 +90,7 @@ public class SC_Fob21 : MonoBehaviour {
 				}
 				else
 				{
-					SC_control.SendMTP("/FobsDataChange "+SC_control.connectionID+" "+ID+" "+uID+" "+item+" -1 "+slot);
+					SC_control.SendMTP("/FobsDataChange "+SC_control.connectionID+" "+ID+" "+uID+" "+item+" -1 "+slot+" "+SC_fobs.ObjID);
 					if(count==0) item=0;
 				}
 			}
@@ -108,7 +108,7 @@ public class SC_Fob21 : MonoBehaviour {
 				item=itemTym;
 
 				if((int)Communtron4.position.y!=100) SaveSGP();
-				else SC_control.SendMTP("/FobsDataChange "+SC_control.connectionID+" "+ID+" "+uID+" "+itemTym+" 1 "+slot);
+				else SC_control.SendMTP("/FobsDataChange "+SC_control.connectionID+" "+ID+" "+uID+" "+itemTym+" 1 "+slot+" "+SC_fobs.ObjID);
 			}
 		}
 	}
