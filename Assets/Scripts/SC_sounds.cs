@@ -13,7 +13,7 @@ public class SC_sounds : MonoBehaviour
 
     public float GetVolume(Vector3 pos,float nvl)
     {
-        int xd = 1;
+        int xd = 0;
         if(xd > 0) return 0f;
 
         //Linear system
