@@ -29,10 +29,6 @@ var pushInventory = ["0","0","0","0","0","0","0","0","0","0"];
 var growT = [];
 var growW = [];
 
-var drillT = [];
-var drillW = [];
-var drillC = [];
-
 var growSolid = [];
 growSolid[5]="4500;12000;6";
 growSolid[6]="4500;12000;7";
@@ -415,7 +411,7 @@ setInterval(function()
   }
 }, 20);
 
-//Check functions
+//Check functions (in future conID as well)
 function checkPlayer(idm,cn)
 {
   if(nicks[idm]=="0") return false;
@@ -430,8 +426,7 @@ setInterval(function()
 }, 20);
 
 //Grow functions
-setInterval(function()
-{
+setInterval(function(){
   //[Grow]
   var i,lngt=growT.length,localData12;
   for(i=0;i<lngt;i++)
@@ -452,40 +447,13 @@ setInterval(function()
       else
       {
         serverGrow(ulam,place);
-        growT.remove(i); growW.remove(i);
-		lngt--; i--;
+        growT.remove(i); growW.remove(i); lngt--; i--;
       }
     }
     else
     {
-      growT.remove(i); growW.remove(i);
-	  lngt--; i--;
+      growT.remove(i); growW.remove(i); lngt--; i--;
     }
-  }
-  
-  //[Driller]
-  lngt=drillT.length;
-  for(i=0;i<lngt;i++)
-  {
-	  drillW[i]--;
-	  if(drillW[i]>0)
-	  {
-		  drillC[i]-=5;
-		  if(drillC[i]<=0)
-		  {
-			  var ulam=drillT[i].split("w")[0];
-			  var place=drillT[i].split("w")[1];
-			  serverDrill(ulam,place);
-			  
-			  drillT.remove(i); drillW.remove(i); drillC.remove(i);
-			  lngt--; i--;
-		  }
-	  }
-	  else
-	  {
-		  drillT.remove(i); drillW.remove(i); drillC.remove(i);
-		  lngt--; i--;
-	  }
   }
 
   //[Chunks]
@@ -505,43 +473,9 @@ function serverGrow(ulam,place)
     chunk_data[det[0]][det[1]][21+2*parseInt(place)]="";
     chunk_data[det[0]][det[1]][22+2*parseInt(place)]="";
     chunk_data[det[0]][det[1]][parseInt(place)+1]=growSolid[bef].split(";")[2];
+    growActive(ulam);
     sendToAllClients("/GrowNow "+ulam+" "+place+" X X");
   }
-}
-function serverDrill(ulam,place)
-{
-  var det=asteroidIndex(ulam);
-  if(chunk_data[det[0]][det[1]][parseInt(place)+1]=="2")
-  {
-	var gItem = drillGet(det);
-	if(gItem == "0") return;
-	var gCountEnd = parseInt(chunk_data[det[0]][det[1]][22+2*parseInt(place)]);
-	
-	if(isNaN(gCountEnd)) gCountEnd=0;
-	gCountEnd++;
-	
-    chunk_data[det[0]][det[1]][21+2*parseInt(place)]=gItem;
-    chunk_data[det[0]][det[1]][22+2*parseInt(place)]=gCountEnd;
-	
-    sendToAllClients("/RetFobsDataChange "+ulam+" "+place+" "+gItem+" 1 -1 "+gCountEnd+" 2 X X");
-  }
-}
-function drillGet(det)
-{	
-	var typp = chunk_data[det[0]][det[1]][0];
-	var ltdt = drillLoot[typp].split(";");
-	var lngt = ltdt.length;
-	
-	var rnd = randomInteger(0,999);
-	var i;
-	
-	for(i=0;i*3+2<lngt;i++)
-	{
-		if(rnd>=ltdt[i*3+1] && rnd<=ltdt[i*3+2]) return ltdt[i*3];
-	}
-	return 0;
-	
-	return 8;
 }
 function growActive(ulam)
 {
@@ -565,21 +499,11 @@ function growActive(ulam)
           tim=randomInteger(tab[0],tab[1]);
           chunk_data[det[0]][det[1]][21+2*i]=tim;
         }
-        growT.push(ulam+"g"+i); growW.push(10);
+        growT.push(ulam+"g"+i); growW.push(5);
       }
-      ind=growT.indexOf(ulam+"g"+i);
+      ind=growT.indexOf(ulam+"g"+i)
       growW[ind]=10;
     }
-	if(["2"].includes(block) && (chunk_data[det[0]][det[1]][22+2*i]=="" || chunk_data[det[0]][det[1]][22+2*i]<5))
-	{
-	  if(!drillT.includes(ulam+"w"+i))
-	  {
-		  tim=randomInteger(180,450);
-		  drillT.push(ulam+"w"+i); drillW.push(10); drillC.push(tim);
-	  }
-	  ind=drillT.indexOf(ulam+"w"+i);
-	  drillW[ind]=10;
-	}
   }
 }
 function nbtReset(ulam,place)
@@ -592,12 +516,6 @@ function nbtReset(ulam,place)
   {
     ind=growT.indexOf(ulam+"g"+place);
     growT.remove(ind); growW.remove(ind);
-  }
-  
-  if(drillT.includes(ulam+"g"+place))
-  {
-    ind=drillT.indexOf(ulam+"g"+place);
-    drillT.remove(ind); drillW.remove(ind); drillC.remove(ind);
   }
 }
 
@@ -650,7 +568,7 @@ function invChangeTry(invID,item,count,slot)
 function checkFobChange(ulam,place,start1,start2)
 {
   var det=asteroidIndex(ulam);
-  if(chunk_data[det[0]][det[1]][22+2*parseInt(place)]!=""&&(start1==21||start2==21)) return false; //2 not required, driller item might disappear
+  if(chunk_data[det[0]][det[1]][22+2*parseInt(place)]!=""&&(start1==21||start2==21)) return false;
 
   if(chunk_data[det[0]][det[1]][parseInt(place)+1]==start1||chunk_data[det[0]][det[1]][parseInt(place)+1]==start2)
   return true; else return false;
@@ -660,17 +578,18 @@ function fobChange(ulam,place,end)
   var det=asteroidIndex(ulam);
   chunk_data[det[0]][det[1]][parseInt(place)+1] = end;
   nbtReset(ulam,place);
+  growActive(ulam);
 }
 
 //Fob21 change functions
-function checkFobDataChange(ulam,place,item,deltaCount,id21)
+function checkFobDataChange(ulam,place,item,deltaCount)
 {
   var det=asteroidIndex(ulam);
-  if(chunk_data[det[0]][det[1]][parseInt(place)+1] != id21) {return false;}
+  if(chunk_data[det[0]][det[1]][parseInt(place)+1] != 21 && chunk_data[det[0]][det[1]][parseInt(place)+1] != 2) {return false;}
   
   var max_count;
-  if(id21 == 21) max_count = 35;
-  if(id21 == 2) max_count = 5;
+  if(chunk_data[det[0]][det[1]][parseInt(place)+1] == 21) max_count = 35;
+  else max_count = 5;
   
   if(chunk_data[det[0]][det[1]][21+2*parseInt(place)] == "" || chunk_data[det[0]][det[1]][21+2*parseInt(place)] == item)
   {
@@ -922,7 +841,7 @@ wss.on('connection', function connection(ws) {
     }
     if(arg[0]=="/FobsDataChange")
     {
-      //FobsDataChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[Item] 5[DeltaCount] 6[Slot] 7[Id21]
+      //FobsDataChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[Item] 5[DeltaCount] 6[Slot]
       if(!checkPlayer(arg[1],arg[msl-2])) return;
 
       var gPlayerID=arg[1];
@@ -931,14 +850,13 @@ wss.on('connection', function connection(ws) {
       var gItem=arg[4];
       var gDeltaCount=arg[5];
       var gSlot=arg[6];
-	  var gID21=arg[7];
 
-      if(checkFobDataChange(gUlamID,gPlaceID,gItem,gDeltaCount,gID21))
+      if(checkFobDataChange(gUlamID,gPlaceID,gItem,gDeltaCount))
       {
         if(invChangeTry(gPlayerID,gItem,-gDeltaCount,gSlot))
         {
           var gCountEnd = fobDataChange(gUlamID,gPlaceID,gItem,gDeltaCount);
-          sendToAllClients("/RetFobsDataChange "+gUlamID+" "+gPlaceID+" "+gItem+" "+gDeltaCount+" "+gPlayerID+" "+gCountEnd+" "+gID21+" X X");
+          sendToAllClients("/RetFobsDataChange "+gUlamID+" "+gPlaceID+" "+gItem+" "+gDeltaCount+" "+gPlayerID+" "+gCountEnd+" X X");
 		  ws.send("/RetInventory "+gPlayerID+" "+gItem+" 0 "+gSlot+" "+gDeltaCount+" X "+livID[gPlayerID]);
 		  return;
         }
@@ -946,7 +864,7 @@ wss.on('connection', function connection(ws) {
       }
       
 	  //If failied
-	  ws.send("/RetFobsDataCorrection "+gUlamID+" "+gPlaceID+" "+nbt(gUlamID,gPlaceID,"n","0;0")+";"+gDeltaCount+" "+gPlayerID+" "+gID21+" X X");
+	  ws.send("/RetFobsDataCorrection "+gUlamID+" "+gPlaceID+" "+nbt(gUlamID,gPlaceID,"n","0;0")+";"+gDeltaCount+" "+gPlayerID+" X X");
 	  ws.send("/RetInventory "+gPlayerID+" "+gItem+" "+gDeltaCount+" "+gSlot+" "+(-gDeltaCount)+" X "+livID[gPlayerID])
     }
 	if(arg[0]=="/FobsTurn")

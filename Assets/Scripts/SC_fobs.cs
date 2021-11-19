@@ -7,6 +7,8 @@ using System;
 public class SC_fobs : MonoBehaviour
 {
     bool mother=true;
+    bool true_mother=true;
+
     public Transform player, legs;
     public Transform DropParticles;
     public Transform DropParticlesM;
@@ -42,6 +44,7 @@ public class SC_fobs : MonoBehaviour
     public SC_push SC_push;
     public SC_slots SC_slots;
     public SC_halloween SC_halloween;
+    public SC_snd_loop SC_snd_loop;
     SC_Fob21 SC_Fob21;
 
     string worldDIR="";
@@ -60,7 +63,9 @@ public class SC_fobs : MonoBehaviour
     Transform mainWind;
     bool dbr=false;
     int destroyTime = -1;
-
+    int loopSndID = -1;
+    public int lsid;
+    public bool lsb;
     bool started = false;
 
     string getLoot(string str)
@@ -234,7 +239,7 @@ public class SC_fobs : MonoBehaviour
         if(started) return;
         else started = true;
 
-        if(transform.position.z<100f) mother=false;
+        if(transform.position.z<100f) {mother=false; true_mother=false;}
         if((int)Communtron4.position.y==100)
         {
             multiplayer=true;
@@ -256,6 +261,10 @@ public class SC_fobs : MonoBehaviour
         if(WindObject&&!mother)
         {
             mainWind=Instantiate(WindThis,transform.position,transform.rotation);
+        }
+        if(lsb && !mother)
+        {
+            loopSndID = SC_snd_loop.AddToLoop(lsid,transform.position);
         }
 
         if(SC_data.ModifiedDrops.Length>ObjID)
@@ -336,6 +345,13 @@ public class SC_fobs : MonoBehaviour
     }
     void OnDestroy()
     {
+        if(lsb && !true_mother)
+        {
+            try{
+                SC_snd_loop.RemoveFromLoop(loopSndID);
+            }catch(Exception e) {}
+        }
+
         try{
             if(com1act) Communtron1.position-=new Vector3(1f,0f,0f);
         }catch(Exception e) {}
@@ -345,6 +361,10 @@ public class SC_fobs : MonoBehaviour
         if(destroyTime>0) destroyTime--;
         if(destroyTime==0) Destroy(gameObject);
 
+        if(lsb && !true_mother)
+        {
+            SC_snd_loop.sound_pos[loopSndID] = transform.position;
+        }
         if(inGeyzer>0&&GeyzerTurn&&!mother)
         {
             GeyzerTime++;
