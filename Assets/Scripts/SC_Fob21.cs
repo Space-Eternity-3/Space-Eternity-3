@@ -206,6 +206,8 @@ public class SC_Fob21 : MonoBehaviour {
 			count=int.Parse(gameObject.name.Split(';')[1]);
 		}
 		CountTranslate();
+		pub_item=item;
+		pub_count=count;
 	}
 	public void Fob2Drilled(int id)
 	{

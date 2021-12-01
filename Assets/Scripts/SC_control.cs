@@ -286,7 +286,7 @@ public class SC_control : MonoBehaviour {
 			solidPos=transform.position+new Vector3(0f,0f,2500f);
 			Communtron1.position+=new Vector3(0f,0f,75f);
 			SC_sounds.PlaySound(transform.position,2,2);
-			for(int i=0;i<5;i++)
+			//for(int i=0;i<5;i++)
 			Instantiate(explosion,transform.position,transform.rotation);
 			if((int)Communtron4.position.y==100)
 			{
@@ -719,21 +719,21 @@ public class SC_control : MonoBehaviour {
 		if(inpg%10==0) return pig+"0";
 		return pig+"";
 	}
-	void DamageINT(int dmgINT) {Damage(dmgINT*0.01666667f);}
+	public void DamageINT(int dmgINT) {Damage(dmgINT*0.01666667f);}
 	public void Damage(float dmg)
 	{
 		if(livTime<100) return;
 		dmg=(1.2f*dmg)/Mathf.Pow(1.147f,SC_upgrades.MTP_levels[0]);
 		health_V-=dmg;
 		//SC_sounds.PlaySound(transform.position,2,0);
-		Instantiate(explosion2,transform.position,transform.rotation);
+		if(health_V>0f) Instantiate(explosion2,transform.position,transform.rotation);
 		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
 		
 		if((int)Communtron4.position.y==100)
 		{
 			float truX=Mathf.Round(transform.position.x*10000f)/10000f;
 			float truY=Mathf.Round(transform.position.y*10000f)/10000f;
-			SendMTP("/EmitParticles "+connectionID+" 2 "+truX+" "+truY);
+			if(health_V>0f) SendMTP("/EmitParticles "+connectionID+" 2 "+truX+" "+truY);
 		}
 	}
 	void OnCollisionEnter(Collision collision)
@@ -843,7 +843,7 @@ public class SC_control : MonoBehaviour {
 				case 1:
 					//Debug.Log("particles 1");
 					SC_sounds.PlaySound(particlePos,2,2);
-					for(int i=0;i<5;i++)
+					//for(int i=0;i<5;i++)
 					Instantiate(explosionM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 2:

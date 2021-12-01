@@ -33,6 +33,8 @@ public class SC_driller : MonoBehaviour
     }
     void Update()
     {
+        if(mother) return;
+
         if(SC_Fob21.pub_count<5f) active = true;
         else active = false;
 
@@ -40,12 +42,18 @@ public class SC_driller : MonoBehaviour
         {
             noseR.material = activeDrill;
             drillR.material = activeDrill;
-            Particles.localPosition = new Vector3(0f,0f,0f);
         }
         else
         {
             noseR.material = passiveDrill;
             drillR.material = passiveDrill;
+        }
+        if(drilling)
+        {
+            Particles.localPosition = new Vector3(0f,0f,0f);
+        }
+        else
+        {
             Particles.position = new Vector3(0f,0f,10000f);
         }
     }

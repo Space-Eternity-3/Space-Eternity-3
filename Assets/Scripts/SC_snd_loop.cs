@@ -14,6 +14,7 @@ public class SC_snd_loop : MonoBehaviour
     public float log_base;
 
     public SC_sounds SC_sounds;
+    public SC_control SC_control;
 
     public int AddToLoop(int n, Vector3 vec)
     {
@@ -39,6 +40,7 @@ public class SC_snd_loop : MonoBehaviour
     {
         int i,j;
         float max,pom,V;
+
         for(i=0;i<2;i++)
         {
             V = 0f;
@@ -46,11 +48,13 @@ public class SC_snd_loop : MonoBehaviour
             {
                 if(sound_locked[j] && sound_id[j]==i)
                 {
-                    pom = SC_sounds.GetVolume(sound_pos[j],sound_nvl_[i]);
+                    pom = SC_sounds.GetVolumeRaw(sound_pos[j]);
                     V += Mathf.Log(Mathf.Pow(log_base,pom-V)-Mathf.Pow(log_base,-V)+1,log_base);
                 }
             }
-            sounds[i].volume = V;
+            float mn = float.Parse(SC_sounds.SC_data.volume) * sound_nvl_[i];
+            V*=0.5f; if(V>=1f) V=1f;
+            sounds[i].volume = V * mn;
             sounds[i].pitch = sound_ptc_[i];
         }
     }

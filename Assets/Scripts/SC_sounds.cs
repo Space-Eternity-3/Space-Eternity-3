@@ -13,16 +13,20 @@ public class SC_sounds : MonoBehaviour
 
     public float GetVolume(Vector3 pos,float nvl)
     {
+        float dN = nvl;
+        float dS = float.Parse(SC_data.volume);
+        return GetVolumeRaw(pos) * dS * dN;
+    }
+    public float GetVolumeRaw(Vector3 pos)
+    {
         int xd = 0;
         if(xd > 0) return 0f;
 
         //Linear system
-        float dD,dN,dS;
+        float dD;
         dD=(MHD-SC_control.Pitagoras((camera.position - new Vector3(0f,0f,camera.position.z)) - pos))/MHD;
         if(dD<0f) dD=0f;
-        dS=float.Parse(SC_data.volume);
-        dN=nvl;
-        return dD*dN*dS;
+        return dD;
     }
     public void PlaySound(Vector3 pos,int group,int ID)
     {

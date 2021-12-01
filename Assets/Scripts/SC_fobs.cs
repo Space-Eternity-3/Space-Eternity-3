@@ -6,7 +6,7 @@ using System;
 
 public class SC_fobs : MonoBehaviour
 {
-    bool mother=true;
+    public bool mother=true;
     bool true_mother=true;
 
     public Transform player, legs;
@@ -61,9 +61,9 @@ public class SC_fobs : MonoBehaviour
     string potFob21Name="0;0;";
     public int MTPblocker = 0;
     Transform mainWind;
-    bool dbr=false;
     int destroyTime = -1;
     int loopSndID = -1;
+    int loopSndID2 = -1;
     public int lsid;
     public bool lsb;
     bool started = false;
@@ -178,12 +178,6 @@ public class SC_fobs : MonoBehaviour
         }
         else if(GeyzerTurn&&id==GeyzerID) Instantiate(alienKillParticles,transform.position,transform.rotation);
         
-        if(WindObject)
-        {
-            mainWind.GetComponent<SC_terminate>().disabled=false;
-            mainWind.GetComponent<SC_terminate>().particleDisable();
-            dbr=true;
-        }
         if(!MTPchange)
         {
             string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
@@ -261,6 +255,8 @@ public class SC_fobs : MonoBehaviour
         if(WindObject&&!mother)
         {
             mainWind=Instantiate(WindThis,transform.position,transform.rotation);
+            mainWind.GetComponent<SC_terminate>().SC_fobs = gameObject.GetComponent<SC_fobs>();
+            mainWind.GetComponent<SC_terminate>().partgey = true;
         }
         if(lsb && !mother)
         {
