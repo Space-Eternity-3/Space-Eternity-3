@@ -68,6 +68,16 @@ public class SC_fobs : MonoBehaviour
     public bool lsb;
     bool started = false;
 
+    public bool GetRespond()
+    {
+        try{
+            transform.position += new Vector3(0f,0f,0f);
+        }catch(Exception)
+        {
+            return false;
+        }
+        return true;
+    }
     string getLoot(string str)
     {
         int[] marray = new int[5];

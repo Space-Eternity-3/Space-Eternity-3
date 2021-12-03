@@ -11,7 +11,7 @@ public class SC_snd_loop : MonoBehaviour
     public Vector3[] sound_pos = new Vector3[2048];
     public int[] sound_id = new int[2048];
     public bool[] sound_locked = new bool[2048];
-    public float log_base;
+    public float[] log_base = new float[2];
 
     public SC_sounds SC_sounds;
     public SC_control SC_control;
@@ -49,7 +49,7 @@ public class SC_snd_loop : MonoBehaviour
                 if(sound_locked[j] && sound_id[j]==i)
                 {
                     pom = SC_sounds.GetVolumeRaw(sound_pos[j]);
-                    V += Mathf.Log(Mathf.Pow(log_base,pom-V)-Mathf.Pow(log_base,-V)+1,log_base);
+                    V += Mathf.Log(Mathf.Pow(log_base[i],pom-V)-Mathf.Pow(log_base[i],-V)+1,log_base[i]);
                 }
             }
             float mn = float.Parse(SC_sounds.SC_data.volume) * sound_nvl_[i];

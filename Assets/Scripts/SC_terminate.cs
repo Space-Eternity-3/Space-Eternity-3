@@ -26,7 +26,7 @@ public class SC_terminate : MonoBehaviour
             if(timer<=50 && loopSound) SC_snd.terminated = true;
             if(timer<=0) Destroy(gameObject);
         }
-        if(partgey && SC_fobs.mother)
+        if(partgey && (SC_fobs.mother || !SC_fobs.GetRespond()))
         {
             disabled=false;
             particleDisable();
