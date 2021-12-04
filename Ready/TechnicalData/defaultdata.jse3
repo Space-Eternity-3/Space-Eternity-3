@@ -210,7 +210,7 @@ objects_generate
 	stone: stone(35%);
 	stone_geyzer: stone(30%) + geyzer(20%);
 	magnetic_geyzer: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
-	copper: copper(35%) + pumpkin(0,3%);
+	copper: copper(35%);
 	gold: gold(25%);
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%) + pumpkin(0,3%);
 	amethyst: small_amethyst(20%) + medium_amethyst(20%) + large_amethyst(20%);
