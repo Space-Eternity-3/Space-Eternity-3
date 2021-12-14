@@ -51,6 +51,8 @@ public class SC_data : MonoBehaviour
     public string TempFile="0";
     public string camera_zoom="-27,5";
     public string volume="0,5";
+	public string music="0,5";
+	public string compass_mode="0";
     public string[] TempFileConID = new string[11];
     public string[,] UniverseX = new string[8,3];
 
@@ -126,6 +128,7 @@ public class SC_data : MonoBehaviour
     {
         int i,j;
         TempFile="0"; volume="0,5"; camera_zoom="-27,5";
+		music="0,5"; compass_mode="0";
         seed="";
         for(i=0;i<11;i++) TempFileConID[i]="";
         for(i=0;i<2;i++) MultiplayerInput[i]="";
@@ -241,6 +244,8 @@ public class SC_data : MonoBehaviour
                 dataSource=sr.ReadLine();
             }
             else dataSourceStorage=sr.ReadLine();
+			music=float.Parse(sr.ReadLine())+"";
+			compass_mode=int.Parse(sr.ReadLine())+"";
 
             CloseRead();
             if(menu) DatapackTranslate();
@@ -426,6 +431,8 @@ public class SC_data : MonoBehaviour
             sw.WriteLine(MultiplayerInput[1]);
             if(!menu) sw.WriteLine(dataSourceStorage);
             else sw.WriteLine(dataSource);
+			sw.WriteLine(music);
+			sw.WriteLine(compass_mode);
 
             CloseWrite();
             

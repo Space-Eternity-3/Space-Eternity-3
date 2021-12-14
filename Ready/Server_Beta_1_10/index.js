@@ -1579,4 +1579,5 @@ if(!existsF("ServerUniverse/Seed.se3"))
 else seed = parseIntE(readF("ServerUniverse/Seed.se3").split("\r\n")[0]);
 
 console.log("Server started on version: ["+serverVersion+"]");
+console.log("Port: [27683]");
 console.log("-------------------------------");
