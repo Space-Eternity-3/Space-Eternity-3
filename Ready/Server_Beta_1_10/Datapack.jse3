@@ -20,7 +20,7 @@ All other chars are allowed.
 Edit file and select it in your SE3 browser.
 >
 
-version: 'Beta 1.9'; <Don't change>
+version: 'Beta 1.10'; <Don't change>
 name: 'DEFAULT'; <Rename it>
 craftings
 {

@@ -3,8 +3,8 @@ const fs = require("fs");
 const path = require("path");
 
 //Global variables
-var serverVersion = "Beta 1.9";
-var serverRedVersion = "Beta_1_9";
+var serverVersion = "Beta 1.10";
+var serverRedVersion = "Beta_1_10";
 var clientDatapacksVar="";
 var seed;
 var won = false;

@@ -20,8 +20,8 @@ All other chars are allowed.
 Edit file and select it in your SE3 browser.
 >
 
-version: 'Beta 1.9'; <Don't change>
-name: 'Example 1.9'; <Rename it>
+version: 'Beta 1.10'; <Don't change>
+name: 'Example 1.10'; <Rename it>
 craftings
 {
 	<Page>1
