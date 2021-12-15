@@ -145,7 +145,8 @@ public class SC_universe : MonoBehaviour
         if(!Directory.Exists(dir))
         {
 		    SC_data.UniverseX[WorldID-1,0]="0";
-            SC_data.UniverseX[WorldID-1,1]=GetDatapackName(SC_data.datapack_name.text,true)+"~"+SC_data.dataSource;
+			string dtpn = GetDatapackName(SC_data.datapack_name.text,true);
+            SC_data.UniverseX[WorldID-1,1] = dtpn+"~"+SC_data.GetDatapackSe3(); //SC_data.dataSource;
             if(SC_data.DEV_mode) SC_data.UniverseX[WorldID-1,2]="DEV";
             else SC_data.UniverseX[WorldID-1,2]=SC_data.clientVersion;
             SC_data.Save("universeX");

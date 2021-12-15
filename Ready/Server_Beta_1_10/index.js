@@ -1515,7 +1515,6 @@ function finalTranslate(varN)
   if(version!=serverVersion) {datapackError("Wrong version or empty version variable");}
   if(datName=="") {datapackError("Datapack name can't be empty");}
 }
-//-----------------------------------------------------
 
 function intsAll(str, div)
 {
@@ -1537,7 +1536,6 @@ function intsAll(str, div)
     else return false;
 }
 
-//-----------------------------------------------------
 function datapackPaste(splitTab)
 {
 	var dsr = splitTab.split("~");
@@ -1608,8 +1606,7 @@ else
 	
 	var dataGet = uiSource[1].split("~");
 	if(dataGet.length < 2) crash("Error in ServerUniverse/UniverseInfo.se3");
-	if(dataGet[0]=="Server Copy") datapackPaste(uiSource[1]);
-	else datapackTranslate(uiSource[1]);
+	datapackPaste(uiSource[1]);
 	
 	clientDatapacksVar = clientDatapacks();
 	console.log("Datapack loaded");

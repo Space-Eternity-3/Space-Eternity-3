@@ -27,7 +27,9 @@ public class SC_data : MonoBehaviour
     public string example=""; //Default datapack
     public string clientVersion="Beta 1.6",clientRedVersion="Beta_1_6";
     public bool DEV_mode;
-    bool lockData=false;
+    
+	bool lockData = false;
+	bool remember = false;
 
     public int[] imgID = new int[16384];
 	public int[] imgCO = new int[16384];
@@ -356,26 +358,21 @@ public class SC_data : MonoBehaviour
             return;
         }
 
-        dataSource = "";
-
         string[] pod_fal=(UniverseX[worldID-1,1]+"~").Split('~');
-        if(pod_fal[0]=="Custom Data")
-        {
-            string effer=pod_fal[1];
-            for(i=2;i<pod_fal.Length-1;i++) effer+="~"+pod_fal[i];
-            dataSource=effer;
-        }
-        else if(pod_fal[0]=="Server Copy")
+        if(pod_fal[0]!="DEFAULT")
         {
             string effer=pod_fal[1];
             for(i=2;i<pod_fal.Length;i++) effer+="~"+pod_fal[i];
             DatapackMultiplayerLoad(effer);
             return;
         }
-        else if(pod_fal[0]=="DEFAULT") dataSource=example;
-
-        PreData=example;
-        DatapackTranslate();
+		else
+		{
+			dataSource = example;
+			PreData = example;
+			remember = true;
+			DatapackTranslate();
+		}
     }
     public void CollectUpdateDatapack()
     {
@@ -704,11 +701,7 @@ public class SC_data : MonoBehaviour
         if(dataSource!=PreData)
         {
             dataSource=PreData;
-            if(!menu && (worldID>=1 && worldID<=8))
-            {
-                UniverseX[worldID-1,1]="DEFAULT~"+example;
-                Save("universeX");   
-            }
+            if(!menu && (worldID>=1 && worldID<=8)) remember = true;
             DatapackTranslate();
         }
         else
@@ -1129,6 +1122,13 @@ public class SC_data : MonoBehaviour
         if(version!=clientVersion) {DatapackError("Wrong version or empty version variable."); return;}
         if(datapack_name.text=="DEFAULT"&&dataSource!=example) {DatapackError("Custom datapack name can't be DEFAULT. Change it using a text editor."); return;}
         if(datapack_name.text=="") {DatapackError("Datapack name can't be empty. Change it using a text editor."); return;}
+		
+		//Last
+		if(remember)
+		{
+			UniverseX[worldID-1,1]="DEFAULT~"+GetDatapackSe3();
+            Save("universeX"); 
+		}
     }
     bool IntsAll(string str, int div)
     {
@@ -1192,11 +1192,23 @@ public class SC_data : MonoBehaviour
         {
             dataSource = "";
             PreData = example;
-            DatapackError("Wrong multiplayer datapack. Loading DEFAULT...");
+            DatapackError("Wrong se3 datapack. Loading DEFAULT...");
             if(Communtron4.position.y==100) SC_control.MenuReturn();
             lockData = true;
             return;
         }
         lockData = true;
     }
+	public string GetDatapackSe3()
+	{
+		string eff=craftings+"~"+craftMaxPage;
+		
+		eff+="~"+string.Join("\'",DrillLoot);
+		eff+="~"+string.Join("\'",FobGenerate);
+		eff+="~"+string.Join("\'",TypeSet);
+		eff+="~"+string.Join("\'",Gameplay);
+		eff+="~"+string.Join("\'",ModifiedDrops);
+		
+		return eff;
+	}
 }
