@@ -1511,32 +1511,77 @@ function finalTranslate(varN)
   for(i=0;i<=15;i++) if(gameplay[i]=="") {datapackError("Required variable not found: gameplay_"+i);}
   for(i=0;i<7;i++) if(typeSet[i]=="") {datapackError("Required variable not found: asteroid_type_"+(i+4));}
   for(i=7;i<28;i++) if(typeSet[i]=="") typeSet[i]=typeSet[i%7]; //Empty biomes correction
+  
   if(version!=serverVersion) {datapackError("Wrong version or empty version variable");}
   if(datName=="") {datapackError("Datapack name can't be empty");}
 }
+//-----------------------------------------------------
+
+function intsAll(str, div)
+{
+    var strs = str.split(";");
+    var i=0, lngt = strs.length;
+    var pom;
+        
+    try{
+
+        if(str!="")
+        for(i=0;i<lngt;i++) 
+        {
+            pom = parseIntE(strs[i]);
+        }
+
+    }catch{return false;}
+
+    if(i%div==0) return true;
+    else return false;
+}
+
+//-----------------------------------------------------
 function datapackPaste(splitTab)
 {
+	var dsr = splitTab.split("~");
+	splitTab = "";
+	var y; for(y=1;y<dsr.length;y++) splitTab+=dsr[y]+"~";
+	
 	var i;
-	var raws = splitTab;
-		
-	mdl = raws[7].split('\'').length;
-	
-	try{
-		
-	craftings = raws[1];
-	craftMaxPage = raws[2];
-	
-    for(i=0;i<11;i++) drillLoot[i] = raws[3].split('\'')[i];
-    for(i=0;i<11;i++) fobGenerate[i] = raws[4].split('\'')[i];
-    for(i=0;i<28;i++) typeSet[i] = raws[5].split('\'')[i];
-    for(i=0;i<16;i++) gameplay[i] = raws[6].split('\'')[i];
-	for(i=0;i<mdl;i++) modifiedDrops[i] = raws[7].split('\'')[i];
-	
-	for(i=0;i<=15;i++) if(gameplay[i]=="") not_existing_variable = 0;
-	for(i=0;i<7;i++) if(typeSet[i]=="") not_existing_variable = 0;
-	
-	}catch {crash("Failied loading imported datapack\r\nDelete ServerUniverse/UniverseInfo.se3 file and try again ");}
-	for(i=7;i<28;i++) if(typeSet[i]=="") typeSet[i]=typeSet[i%7]; //Empty biomes correction
+    var raws = splitTab.split("~");
+
+    try{
+
+		//Load data
+		var mdl = raws[6].split("\'").length;
+
+        craftings = raws[0];
+        craftMaxPage = parseIntE(raws[1])+"";
+
+        for(i=0;i<11;i++) drillLoot[i] = raws[2].split("\'")[i];
+        for(i=0;i<11;i++) fobGenerate[i] = raws[3].split("\'")[i];
+        for(i=0;i<28;i++) typeSet[i] = raws[4].split("\'")[i];
+        for(i=0;i<16;i++)
+        {
+            if(i==8) gameplay[i] = parseIntE(raws[5].split("\'")[i])+"";
+            else gameplay[i] = parseFloatE(raws[5].split("\'")[i])+"";
+        }
+        for(i=0;i<mdl;i++) modifiedDrops[i] = raws[6].split("\'")[i];
+
+		//Check int arrays
+        if(!intsAll(craftings,6)) nev++;
+        for(i=0;i<11;i++)
+        {
+            if(!intsAll(drillLoot[i],3)) nev++;
+            if(!intsAll(fobGenerate[i],3)) nev++;
+        }
+        for(i=0;i<28;i++)
+        {
+            if(!intsAll(typeSet[i],3)) nev++;
+        }
+        for(i=0;i<mdl;i++)
+        {
+            if(!intsAll(modifiedDrops[i],2)) nev++;
+        }
+        
+    }catch {crash("Failied loading imported datapack\r\nDelete ServerUniverse/UniverseInfo.se3 file and try again");}
 }
 
 //Start functions
@@ -1563,8 +1608,8 @@ else
 	
 	var dataGet = uiSource[1].split("~");
 	if(dataGet.length < 2) crash("Error in ServerUniverse/UniverseInfo.se3");
-	if(dataGet[0]=="Server Copy") datapackPaste(dataGet);
-	else datapackTranslate(dataGet.join("~"));
+	if(dataGet[0]=="Server Copy") datapackPaste(uiSource[1]);
+	else datapackTranslate(uiSource[1]);
 	
 	clientDatapacksVar = clientDatapacks();
 	console.log("Datapack loaded");

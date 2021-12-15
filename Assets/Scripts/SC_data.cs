@@ -838,7 +838,7 @@ public class SC_data : MonoBehaviour
     {
         if(lockData)
         {
-            UnityEngine.Debug.LogWarning("Unexpected datapack load try");
+            UnityEngine.Debug.LogError("Unexpected datapack load try");
             return;
         }
 
@@ -1138,7 +1138,7 @@ public class SC_data : MonoBehaviour
         
         try{
 
-            if(lngt!=1 && strs[0]!="")
+            if(str!="")
             for(i=0;i<lngt;i++) 
             {
                 pom = int.Parse(strs[i]);
@@ -1154,9 +1154,9 @@ public class SC_data : MonoBehaviour
         int i, not_existsing_variable;
         string[] raws = raw.Split('~');
 
-        //Not optimalized, but point-working
         try{
 
+			//Load data
             int mdl = raws[6].Split('\'').Length;
 
             craftings = raws[0];
@@ -1172,8 +1172,8 @@ public class SC_data : MonoBehaviour
             }
             for(i=0;i<mdl;i++) ModifiedDrops[i] = raws[6].Split('\'')[i];
 
+			//Check int arrays
             if(!IntsAll(craftings,6)) not_existsing_variable = int.Parse("error");
-
             for(i=0;i<11;i++)
             {
                 if(!IntsAll(DrillLoot[i],3)) not_existsing_variable = int.Parse("error");

@@ -20,6 +20,7 @@ public class SC_settings : MonoBehaviour
         title.text=visibleNamte+": "+(slider.value*10)+"%";
 	    if(namte=="volume") SC_data.volume=(a*slider.value+b)+"";
         if(namte=="camera_zoom") SC_data.camera_zoom=(a*slider.value+b)+"";
+		if(namte=="music") SC_data.music=(a*slider.value+b)+"";
         SC_data.Save("settings");
     }
     public void valueRead()
@@ -27,12 +28,13 @@ public class SC_settings : MonoBehaviour
         float reat=0f;
         if(namte=="volume") reat=float.Parse(SC_data.volume);
         if(namte=="camera_zoom") reat=float.Parse(SC_data.camera_zoom);
+		if(namte=="music") reat=float.Parse(SC_data.music);
         slider.value=(reat-b)/a;
         title.text=visibleNamte+": "+(slider.value*10)+"%";
     }
     void Update()
     {
-        if(namte=="volume") music.volume=(slider.value*a+b)*music_natural_volume;
+        if(namte=="music") music.volume=(slider.value*a+b)*music_natural_volume;
     }
     void Start()
     {

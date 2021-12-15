@@ -79,7 +79,7 @@ public class SC_universe : MonoBehaviour
 		}
         info.text="Time: "+TimeConvert(int.Parse(timeF))+"\nVersion: "+versionF;
         if(scoreF!="DEFAULT"&&scoreF!="0") info.text=info.text+"\n"+scoreF;
-        if(!(versionF=="NA"||(versionF=="DEV"&&SC_data.DEV_mode)||(versionF==SC_data.clientVersion&&!SC_data.DEV_mode)))
+        if(!(SC_data.DEV_mode||versionF=="NA"||(versionF=="DEV"&&SC_data.DEV_mode)||(versionF==SC_data.clientVersion)))
         {
             playT.text="Incompatible";
             playT.fontSize=38;
