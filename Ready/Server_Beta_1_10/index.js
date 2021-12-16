@@ -8,6 +8,7 @@ var serverRedVersion = "Beta_1_10";
 var clientDatapacksVar="";
 var seed;
 var won = false;
+var gpl_number = 16;
 
 var chunk_data = [];
 var chunk_names = [];
@@ -1169,7 +1170,7 @@ function translate(str,mod)
   }
   else if(mod==2)
   {
-      for(i=0;i<41;i++)
+      for(i=0;i<128;i++)
       {
           if(translateFob[i]==str) return i+"";
       }
@@ -1508,7 +1509,7 @@ function finalTranslate(varN)
   craftMaxPage=(~~(crMax/7)+1)+"";
 
   //Check if all is good
-  for(i=0;i<=15;i++) if(gameplay[i]=="") {datapackError("Required variable not found: gameplay_"+i);}
+  for(i=0;i<gpl_number;i++) if(gameplay[i]=="") {datapackError("Required variable not found: gameplay_"+i);}
   for(i=0;i<7;i++) if(typeSet[i]=="") {datapackError("Required variable not found: asteroid_type_"+(i+4));}
   for(i=7;i<28;i++) if(typeSet[i]=="") typeSet[i]=typeSet[i%7]; //Empty biomes correction
   
@@ -1556,7 +1557,7 @@ function datapackPaste(splitTab)
         for(i=0;i<11;i++) drillLoot[i] = raws[2].split("\'")[i];
         for(i=0;i<11;i++) fobGenerate[i] = raws[3].split("\'")[i];
         for(i=0;i<28;i++) typeSet[i] = raws[4].split("\'")[i];
-        for(i=0;i<16;i++)
+        for(i=0;i<gpl_number;i++)
         {
             if(i==8) gameplay[i] = parseIntE(raws[5].split("\'")[i])+"";
             else gameplay[i] = parseFloatE(raws[5].split("\'")[i])+"";

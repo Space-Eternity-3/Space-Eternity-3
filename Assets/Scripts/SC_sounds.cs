@@ -14,8 +14,9 @@ public class SC_sounds : MonoBehaviour
     public float GetVolume(Vector3 pos,float nvl)
     {
         float dN = nvl;
+		float dG = SC_data.global_volume;
         float dS = float.Parse(SC_data.volume);
-        return GetVolumeRaw(pos) * dS * dN;
+        return GetVolumeRaw(pos) * dS * dN * dG;
     }
     public float GetVolumeRaw(Vector3 pos)
     {

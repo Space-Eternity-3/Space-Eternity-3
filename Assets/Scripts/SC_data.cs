@@ -11,7 +11,7 @@ using SFB;
 
 public class SC_data : MonoBehaviour
 {
-    string settingsDIR="../../settings/";
+    string settingsDIR="./Settings/";
     string savesDIR="../../saves/";
     string datapacksDIR="./Datapacks/";
     string unityDataDIR="./TechnicalData/";
@@ -27,6 +27,8 @@ public class SC_data : MonoBehaviour
     public string example=""; //Default datapack
     public string clientVersion="Beta 1.6",clientRedVersion="Beta_1_6";
     public bool DEV_mode;
+	public float global_volume;
+	int gpl_number = 16;
     
 	bool lockData = false;
 	bool remember = false;
@@ -77,12 +79,12 @@ public class SC_data : MonoBehaviour
     public string[] FobGenerate = new string[11];
     public string[] TypeSet = new string[28];
     public string[] Gameplay = new string[32];
-    public string[] ModifiedDrops = new string[41];
+    public string[] ModifiedDrops = new string[128];
     //---------------------------------------------
     public string[] variable = new string[16384];
     public string[] value = new string[16384];
     //---------------------------------------------
-    public string[] translateFob = new string[41];
+    public string[] translateFob = new string[128];
     public string[] translateAsteroid = new string[11];
     //---------------------------------------------
     public string version="";
@@ -731,7 +733,7 @@ public class SC_data : MonoBehaviour
         }
         else if(mode==2)
         {
-            for(i=0;i<41;i++)
+            for(i=0;i<128;i++)
             {
                 if(translateFob[i]==str) return i+"";
             }
@@ -949,9 +951,9 @@ public class SC_data : MonoBehaviour
         for(y=0;y<11;y++) FobGenerate[y]="";
         for(y=0;y<28;y++) TypeSet[y]="";
         for(y=0;y<32;y++) Gameplay[y]="";
-        for(y=0;y<40;y++) ModifiedDrops[y]="";
+        for(y=0;y<128;y++) ModifiedDrops[y]="";
         for(y=0;y<11;y++) translateAsteroid[y]="";
-        for(y=0;y<40;y++) translateFob[y]="";
+        for(y=0;y<128;y++) translateFob[y]="";
         datapack_name.text="";
         version="";
 
@@ -1115,7 +1117,7 @@ public class SC_data : MonoBehaviour
         craftMaxPage=((crMax/7)+1)+"";
 
         //Check if all is good
-        for(i=0;i<=15;i++) if(Gameplay[i]=="") {DatapackError("Required variable not found: gameplay_"+i); return;}
+        for(i=0;i<gpl_number;i++) if(Gameplay[i]=="") {DatapackError("Required variable not found: gameplay_"+i); return;}
         for(i=0;i<7;i++) if(TypeSet[i]=="") {DatapackError("Required variable not found: asteroid_type_"+(i+4)); return;}
         for(i=7;i<28;i++) if(TypeSet[i]=="") TypeSet[i]=TypeSet[i%7]; //Empty biomes correction
 
@@ -1165,7 +1167,7 @@ public class SC_data : MonoBehaviour
             for(i=0;i<11;i++) DrillLoot[i] = raws[2].Split('\'')[i];
             for(i=0;i<11;i++) FobGenerate[i] = raws[3].Split('\'')[i];
             for(i=0;i<28;i++) TypeSet[i] = raws[4].Split('\'')[i];
-            for(i=0;i<16;i++)
+            for(i=0;i<gpl_number;i++)
             {
                 if(i==8) Gameplay[i] = int.Parse(raws[5].Split('\'')[i])+"";
                 else Gameplay[i] = float.Parse(raws[5].Split('\'')[i])+"";

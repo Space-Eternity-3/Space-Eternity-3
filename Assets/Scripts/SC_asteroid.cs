@@ -20,10 +20,10 @@ public class SC_asteroid : MonoBehaviour {
 	public Transform player;
 	public Image FuelBar;
 	public Renderer asteroidR;
-	public Material[] texture = new Material[11];
+	public Material[] texture = new Material[16];
 	public Material[] textureStone;
 	public Material textureERROR;
-	public GameObject[] GenPlaceT = new GameObject[41];
+	public GameObject[] GenPlaceT = new GameObject[128];
 	public GameObject[] GenPlaceM = new GameObject[18];
 	public SC_control SC_control;
 	public SC_fun SC_fun;
