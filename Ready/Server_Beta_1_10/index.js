@@ -45,12 +45,12 @@ var jse3Dat = [];
 var datName="";
 var version;
 var craftings;
-var craftMaxPage;
-var drillLoot = [];
-var fobGenerate = [];
-var typeSet = [];
-var gameplay = [];
-var modifiedDrops = [];
+var craftMaxPage;			//Array limits
+var drillLoot = []; 		drillLoot[16]="";
+var fobGenerate = []; 		fobGenerate[16]="";
+var typeSet = [];			typeSet[28]="";
+var gameplay = []; 			gameplay[32]="";
+var modifiedDrops = []; 	modifiedDrops[128]="";
 var translateFob = [];
 var translateAsteroid = [];
 
@@ -1163,7 +1163,7 @@ function translate(str,mod)
   var i;
   if(mod==1)
   {
-      for(i=0;i<11;i++)
+      for(i=0;i<16;i++)
       {
           if(translateAsteroid[i]==str) return i+"";
       }
@@ -1550,12 +1550,13 @@ function datapackPaste(splitTab)
 
 		//Load data
 		var mdl = raws[6].split("\'").length;
+		if(mdl>128) mdl=128;
 
         craftings = raws[0];
         craftMaxPage = parseIntE(raws[1])+"";
 
-        for(i=0;i<11;i++) drillLoot[i] = raws[2].split("\'")[i];
-        for(i=0;i<11;i++) fobGenerate[i] = raws[3].split("\'")[i];
+        for(i=0;i<16;i++) drillLoot[i] = raws[2].split("\'")[i];
+        for(i=0;i<16;i++) fobGenerate[i] = raws[3].split("\'")[i];
         for(i=0;i<28;i++) typeSet[i] = raws[4].split("\'")[i];
         for(i=0;i<gpl_number;i++)
         {
@@ -1566,7 +1567,7 @@ function datapackPaste(splitTab)
 
 		//Check int arrays
         if(!intsAll(craftings,6)) nev++;
-        for(i=0;i<11;i++)
+        for(i=0;i<16;i++)
         {
             if(!intsAll(drillLoot[i],3)) nev++;
             if(!intsAll(fobGenerate[i],3)) nev++;

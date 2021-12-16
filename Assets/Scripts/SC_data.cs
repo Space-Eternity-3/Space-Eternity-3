@@ -75,8 +75,8 @@ public class SC_data : MonoBehaviour
     //Datapacks
     public string craftings;
     public string craftMaxPage;
-    public string[] DrillLoot = new string[11];
-    public string[] FobGenerate = new string[11];
+    public string[] DrillLoot = new string[16];
+    public string[] FobGenerate = new string[16];
     public string[] TypeSet = new string[28];
     public string[] Gameplay = new string[32];
     public string[] ModifiedDrops = new string[128];
@@ -85,7 +85,7 @@ public class SC_data : MonoBehaviour
     public string[] value = new string[16384];
     //---------------------------------------------
     public string[] translateFob = new string[128];
-    public string[] translateAsteroid = new string[11];
+    public string[] translateAsteroid = new string[16];
     //---------------------------------------------
     public string version="";
     public string dataSource="";
@@ -726,7 +726,7 @@ public class SC_data : MonoBehaviour
         int i;
         if(mode==1)
         {
-            for(i=0;i<11;i++)
+            for(i=0;i<16;i++)
             {
                 if(translateAsteroid[i]==str) return i+"";
             }
@@ -947,12 +947,12 @@ public class SC_data : MonoBehaviour
         int y;
         craftings="";
         craftMaxPage="";
-        for(y=0;y<11;y++) DrillLoot[y]="";
-        for(y=0;y<11;y++) FobGenerate[y]="";
+        for(y=0;y<16;y++) DrillLoot[y]="";
+        for(y=0;y<16;y++) FobGenerate[y]="";
         for(y=0;y<28;y++) TypeSet[y]="";
         for(y=0;y<32;y++) Gameplay[y]="";
         for(y=0;y<128;y++) ModifiedDrops[y]="";
-        for(y=0;y<11;y++) translateAsteroid[y]="";
+        for(y=0;y<16;y++) translateAsteroid[y]="";
         for(y=0;y<128;y++) translateFob[y]="";
         datapack_name.text="";
         version="";
@@ -1160,12 +1160,13 @@ public class SC_data : MonoBehaviour
 
 			//Load data
             int mdl = raws[6].Split('\'').Length;
+			if(mdl>128) mdl=128;
 
             craftings = raws[0];
             craftMaxPage = int.Parse(raws[1])+"";
 
-            for(i=0;i<11;i++) DrillLoot[i] = raws[2].Split('\'')[i];
-            for(i=0;i<11;i++) FobGenerate[i] = raws[3].Split('\'')[i];
+            for(i=0;i<16;i++) DrillLoot[i] = raws[2].Split('\'')[i];
+            for(i=0;i<16;i++) FobGenerate[i] = raws[3].Split('\'')[i];
             for(i=0;i<28;i++) TypeSet[i] = raws[4].Split('\'')[i];
             for(i=0;i<gpl_number;i++)
             {
@@ -1176,7 +1177,7 @@ public class SC_data : MonoBehaviour
 
 			//Check int arrays
             if(!IntsAll(craftings,6)) not_existsing_variable = int.Parse("error");
-            for(i=0;i<11;i++)
+            for(i=0;i<16;i++)
             {
                 if(!IntsAll(DrillLoot[i],3)) not_existsing_variable = int.Parse("error");
                 if(!IntsAll(FobGenerate[i],3)) not_existsing_variable = int.Parse("error");

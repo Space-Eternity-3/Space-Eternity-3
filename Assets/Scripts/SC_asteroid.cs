@@ -20,6 +20,7 @@ public class SC_asteroid : MonoBehaviour {
 	public Transform player;
 	public Image FuelBar;
 	public Renderer asteroidR;
+	public int asteroid_lim = 16;
 	public Material[] texture = new Material[16];
 	public Material[] textureStone;
 	public Material textureERROR;
@@ -153,7 +154,7 @@ public class SC_asteroid : MonoBehaviour {
 			if(rand>=min[i]&&rand<=max[i])
 			{
 				type=idn[i];
-				if(type<0||type>10) type=0;
+				if(type<0||type>16) type=0;
 				break;
 			}
 		}
@@ -276,7 +277,7 @@ public class SC_asteroid : MonoBehaviour {
 			int i;
 			string[] astDats=arg[2].Split(';');
 			type=int.Parse(astDats[0]);
-			if(type<0||type>10) type=0;
+			if(type<0||type>16) type=0;
 			for(i=0;i<longg(saze);i++)
 			{
 				try{
