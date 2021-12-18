@@ -12780,7 +12780,7 @@ MonoBehaviour:
   visibleNamte: Music
   a: 0.1
   b: 0
-  music_natural_volume: 1
+  music_natural_volume: 0.75
   music: {fileID: 35467492}
   SC_data: {fileID: 35467493}
 --- !u!114 &689294871

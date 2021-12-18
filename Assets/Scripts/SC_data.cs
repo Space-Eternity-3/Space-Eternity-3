@@ -1125,6 +1125,10 @@ public class SC_data : MonoBehaviour
         if(datapack_name.text=="DEFAULT"&&dataSource!=example) {DatapackError("Custom datapack name can't be DEFAULT. Change it using a text editor."); return;}
         if(datapack_name.text=="") {DatapackError("Datapack name can't be empty. Change it using a text editor."); return;}
 		
+		try{
+			checkDatapackGoodE();
+		}catch(Exception){DatapackError("Unknown error detected."); return;}
+		
 		//Last
 		if(remember)
 		{
@@ -1151,17 +1155,97 @@ public class SC_data : MonoBehaviour
         if(i%div==0) return true;
         else return false;
     }
+	bool In1000(string str, bool must_be_1000)
+	{
+		string[] strT = str.Split(';');
+		int i, lngt = strT.Length;
+		if(str=="") lngt = 0;
+		
+		bool ended = true;
+		int actual = -1;
+		for(i=1;i<lngt;i++)
+		{
+			if(ended)
+			{
+				if(actual+1 != int.Parse(strT[i])) return false;
+				actual++; ended = false;
+			}
+			else
+			{
+				if(actual > int.Parse(strT[i])) return false;
+				actual = int.Parse(strT[i]); ended = true; i++;
+			}
+		}
+		if(!must_be_1000 && actual<=999) return true;
+		if(must_be_1000 && actual==999) return true;
+		return false;
+	}
+	bool GoodItems(string str, bool craft_mode)
+	{
+		string[] strT = str.Split(';');
+		int i, lngt = strT.Length;
+		if(str=="") lngt = 0;
+		
+		for(i=0;i<lngt;i+=2)
+		{
+			if(int.Parse(strT[i+1]) < 0) return false;
+			if(strT[i]=="0" && strT[i+1]!="0") return false;
+			if(strT[i+1]=="0" && strT[i]!="0") return false;
+		}
+		if(craft_mode) for(i=0;i<lngt;i+=6)
+		{
+			if(strT[i]!="0" && strT[i+1]!="0" && strT[i+2]!="0" && strT[i+3]!="0" && strT[i+4]!="0" && strT[i+5]!="0")
+			if(
+				strT[i+4] == "0" ||
+				strT[i] == "0" ||
+				strT[i] == strT[i+2] ||
+				strT[i+2] == strT[i+4] ||
+				strT[i+4] == strT[i]
+			)return false;
+		}
+		return true;
+	}
+	bool DrillGoodItem(string str)
+	{
+		string[] strT = str.Split(';');
+		int i, lngt = strT.Length;
+		if(str=="") lngt = 0;
+	
+		for(i=0;i<lngt;i+=3)
+		{
+			if(strT[i+2]=="0") return false;
+		}
+		return true;
+	}
+	//MUST BE INSIDE try{} catch(Exception){}
+	void checkDatapackGoodE()
+	{
+		int i, not_existsing_variable;
+		
+		//Check int arrays
+        if(!IntsAll(craftings,6) || !GoodItems(craftings,true)) not_existsing_variable = int.Parse("error");
+        for(i=0;i<16;i++)
+        {
+            if(!IntsAll(DrillLoot[i],3) || !In1000(DrillLoot[i],false) || !DrillGoodItem(DrillLoot[i])) not_existsing_variable = int.Parse("error");
+            if(!IntsAll(FobGenerate[i],3) || !In1000(FobGenerate[i],false)) not_existsing_variable = int.Parse("error");
+        }
+        for(i=0;i<28;i++)
+        {
+            if(!IntsAll(TypeSet[i],3) || !In1000(TypeSet[i],true)) not_existsing_variable = int.Parse("error");
+        }
+        for(i=0;i<128;i++)
+        {
+            if(!IntsAll(ModifiedDrops[i],2) || !GoodItems(ModifiedDrops[i],false)) not_existsing_variable = int.Parse("error");
+        }
+	}
     public void DatapackMultiplayerLoad(string raw)
     {
-        int i, not_existsing_variable;
+        int i;
         string[] raws = raw.Split('~');
 
         try{
 
 			//Load data
-            int mdl = raws[6].Split('\'').Length;
-			if(mdl>128) mdl=128;
-
             craftings = raws[0];
             craftMaxPage = int.Parse(raws[1])+"";
 
@@ -1173,23 +1257,9 @@ public class SC_data : MonoBehaviour
                 if(i==8) Gameplay[i] = int.Parse(raws[5].Split('\'')[i])+"";
                 else Gameplay[i] = float.Parse(raws[5].Split('\'')[i])+"";
             }
-            for(i=0;i<mdl;i++) ModifiedDrops[i] = raws[6].Split('\'')[i];
+            for(i=0;i<128;i++) ModifiedDrops[i] = raws[6].Split('\'')[i];
 
-			//Check int arrays
-            if(!IntsAll(craftings,6)) not_existsing_variable = int.Parse("error");
-            for(i=0;i<16;i++)
-            {
-                if(!IntsAll(DrillLoot[i],3)) not_existsing_variable = int.Parse("error");
-                if(!IntsAll(FobGenerate[i],3)) not_existsing_variable = int.Parse("error");
-            }
-            for(i=0;i<28;i++)
-            {
-                if(!IntsAll(TypeSet[i],3)) not_existsing_variable = int.Parse("error");
-            }
-            for(i=0;i<mdl;i++)
-            {
-                if(!IntsAll(ModifiedDrops[i],2)) not_existsing_variable = int.Parse("error");
-            }
+			checkDatapackGoodE();
         
         }catch(Exception)
         {

@@ -45,14 +45,33 @@ var jse3Dat = [];
 var datName="";
 var version;
 var craftings;
-var craftMaxPage;			//Array limits
-var drillLoot = []; 		drillLoot[16]="";
-var fobGenerate = []; 		fobGenerate[16]="";
-var typeSet = [];			typeSet[28]="";
-var gameplay = []; 			gameplay[32]="";
-var modifiedDrops = []; 	modifiedDrops[128]="";
+var craftMaxPage;
+var drillLoot = [];
+var fobGenerate = [];
+var typeSet = [];
+var gameplay = [];
+var modifiedDrops = [];
 var translateFob = [];
 var translateAsteroid = [];
+
+var yy;
+for(yy=0;yy<16;yy++)
+{
+	drillLoot[yy]="";
+	fobGenerate[yy]="";
+}
+for(yy=0;yy<28;yy++)
+{
+	typeSet[yy]="";
+}
+for(yy=0;yy<32;yy++)
+{
+	gameplay[yy]="";
+}
+for(yy=0;yy<128;yy++)
+{
+	modifiedDrops[yy]="";
+}
 
 //Websocket functions
 const wss = new WebSocket.Server({
@@ -116,26 +135,6 @@ function fileReadablePlayer(elemT)
 	for(i=0;i<18;i++) if(isNaN(parseIntP(elem1[i]))) return false;
 	for(i=0;i<42;i++) if(isNaN(parseIntP(elem2[i]))) return false;
 	for(i=0;i<5;i++) if(isNaN(parseIntP(elem3[i]))) return false;
-	
-	return true;
-}
-function fileReadableGenerated(elemT)
-{
-	if(elemT.length < 101) {console.log("Error code: 001"); return false;};
-	
-	var i,j,nothing_used;
-	for(i=1;i<=100;i++)
-	{
-		nothing_used = false;
-		var strl = elemT[i].split(";");
-		var lngt = strl.length; if(lngt > 61) lngt = 61;
-		for(j=0;j<lngt;j++) if(strl[j]!="")
-		{
-			if(nothing_used && j<=20) {console.log("Error code: 002"); return false;}
-			if(isNaN(parseIntP(strl[j]))) {console.log("Error code: 003"); return false;}
-		}
-		else if(j<=20) nothing_used = true;
-	}
 	
 	return true;
 }
@@ -217,18 +216,25 @@ function chunkRead(ind)
   if(existsF("ServerUniverse/Asteroids/Generated_"+ind+".se3"))
   {
     var datT = readF("ServerUniverse/Asteroids/Generated_"+ind+".se3").split("\r\n");
+	var pom;
 	
-    if(fileReadableGenerated(datT) && datT[0]==seed)
+	try{
+	
+    if(datT[0]==seed)
     {
       for(i=1;i<=100;i++)
       {
-        var lnt=datT[i].split(";").length;
+        var datM = datT[i].split(";");
+		var lnt = datM.length;
+		for(j=0;j<lnt;j++) if(datM[j]!="") pom = parseIntE(datM[j]);
         for(j=lnt;j<61;j++) datT[i]+=";";
+		eff+=datT[i]+"\r\n";
       }
-      for(i=1;i<=100;i++) eff+=datT[i]+"\r\n";
-      return eff; 
+      return eff;
     }
-    else console.log("Asteroid file ["+ind+"] is invalid. Generating new data...");
+    else nev++;
+	
+	}catch{console.log("Asteroid file ["+ind+"] is invalid. Generating new data...");}
   }
   for(i=0;i<100;i++) eff+=";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"+"\r\n";
   return eff;
@@ -312,7 +318,7 @@ function parseFloatP(str)
 {
 	var i,lngt=str.length;
 	for(i=0;i<lngt;i++) if(!['0','1','2','3','4','5','6','7','8','9',',','-'].includes(str[i])) return parseInt("not_number");
-	return parseFloat(str);
+	return parseFloat(str.replaceAll(',','.'));
 }
 
 //Data functions
@@ -338,7 +344,7 @@ function clientDatapacks()
     drillLoot.join("'"),
     fobGenerate.join("'"),
     typeSet.join("'"),
-    gameplay.join("'"),
+    gameplay.join("'").replaceAll('.',','),
     modifiedDrops.join("'"),
   ].join("~");
 }
@@ -756,23 +762,20 @@ function generateAsteroid(saze)
   var typeDatas=typeSet[sazeConvert(saze)].split(";");
   var rand=randomInteger(0,999);
   var i=0,j,k;
-  while(!(rand>=typeDatas[i+1]&&rand<=typeDatas[i+2])&&i<100) i+=3;
+  while(!(rand>=typeDatas[i+1]&&rand<=typeDatas[i+2])&&i<1000) i+=3;
+  if(i>=1000) td="0"; else td=typeDatas[i];
   var strobj="";
-  var typeDatas2 = fobGenerate[typeDatas[i]].split(";");
+  var typeDatas2 = fobGenerate[td].split(";");
   var how_many=2*parseInt(saze);
   for(j=0;j<how_many;j++)
   {
     k=0;
     rand=randomInteger(0,999);
-    while(!(rand>=typeDatas2[k+1]&&rand<=typeDatas2[k+2])&&k<100) k+=3;
-    if(k>=100) strobj=strobj+";0";
+    while(!(rand>=typeDatas2[k+1]&&rand<=typeDatas2[k+2])&&k<1000) k+=3;
+    if(k>=1000) strobj=strobj+";0";
     else strobj=strobj+";"+typeDatas2[k];
   }
-  if(i<100) return typeDatas[i]+strobj;
-  else{
-    console.log("Generator error: T"+saze);
-    return "6;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1";
-  }
+  return td+strobj;
 }
 
 //Websocket brain
@@ -1515,6 +1518,10 @@ function finalTranslate(varN)
   
   if(version!=serverVersion) {datapackError("Wrong version or empty version variable");}
   if(datName=="") {datapackError("Datapack name can't be empty");}
+  
+  try{
+	  checkDatapackGoodE();
+  }catch{datapackError("Unknown error detected");}
 }
 
 function intsAll(str, div)
@@ -1537,6 +1544,93 @@ function intsAll(str, div)
     else return false;
 }
 
+function in1000(str, must_be_1000)
+{
+	var strT = str.split(";");
+	var i, lngt = strT.length;
+	if(str=="") lngt = 0;
+		
+	var ended = true;
+	var actual = -1;
+	for(i=1;i<lngt;i++)
+	{
+		if(ended)
+		{
+			if(actual+1 != parseIntE(strT[i])) return false;
+			actual++; ended = false;
+		}
+		else
+		{
+			if(actual > parseIntE(strT[i])) return false;
+			actual = parseIntE(strT[i]); ended = true; i++;
+		}
+	}
+	if(!must_be_1000 && actual<=999) return true;
+	if(must_be_1000 && actual==999) return true;
+	return false;
+}
+	
+function goodItems(str, craft_mode)
+{
+	var strT = str.split(";");
+	var i, lngt = strT.length;
+	if(str=="") lngt = 0;
+	
+	for(i=0;i<lngt;i+=2)
+	{
+		if(parseIntE(strT[i+1]) < 0) return false;
+		if(strT[i]=="0" && strT[i+1]!="0") return false;
+		if(strT[i+1]=="0" && strT[i]!="0") return false;
+	}
+	if(craft_mode) for(i=0;i<lngt;i+=6)
+	{
+		if(strT[i]!="0" && strT[i+1]!="0" && strT[i+2]!="0" && strT[i+3]!="0" && strT[i+4]!="0" && strT[i+5]!="0")
+		if(
+			strT[i+4] == "0" ||
+			strT[i] == "0" ||
+			strT[i] == strT[i+2] ||
+			strT[i+2] == strT[i+4] ||
+			strT[i+4] == strT[i]
+		)return false;
+	}
+	return true;
+}
+
+function drillGoodItem(str)
+{
+	var strT = str.split(";");
+	var i, lngt = strT.length;
+	if(str=="") lngt = 0;
+	
+	for(i=0;i<lngt;i+=3)
+	{
+		if(strT[i+2]=="0") return false;
+	}
+	return true;
+}
+
+//MUST BE INSIDE try{} catch{}
+function checkDatapackGoodE()
+{
+	var i;
+		
+	//Check int arrays
+    if(!intsAll(craftings,6) || !goodItems(craftings,true)) nev++;
+    for(i=0;i<16;i++)
+    {
+        if(!intsAll(drillLoot[i],3) || !in1000(drillLoot[i],false) || !drillGoodItem(drillLoot[i])) nev++;
+        if(!intsAll(fobGenerate[i],3) || !in1000(fobGenerate[i],false)) nev++;
+    }
+    for(i=0;i<28;i++)
+    {
+        if(!intsAll(typeSet[i],3) || !in1000(typeSet[i],true)) nev++;
+    }
+    for(i=0;i<128;i++)
+    {
+        if(!intsAll(modifiedDrops[i],2) || !goodItems(modifiedDrops[i],false)) nev++;
+    }
+}
+
 function datapackPaste(splitTab)
 {
 	var dsr = splitTab.split("~");
@@ -1549,9 +1643,6 @@ function datapackPaste(splitTab)
     try{
 
 		//Load data
-		var mdl = raws[6].split("\'").length;
-		if(mdl>128) mdl=128;
-
         craftings = raws[0];
         craftMaxPage = parseIntE(raws[1])+"";
 
@@ -1563,23 +1654,9 @@ function datapackPaste(splitTab)
             if(i==8) gameplay[i] = parseIntE(raws[5].split("\'")[i])+"";
             else gameplay[i] = parseFloatE(raws[5].split("\'")[i])+"";
         }
-        for(i=0;i<mdl;i++) modifiedDrops[i] = raws[6].split("\'")[i];
+        for(i=0;i<128;i++) modifiedDrops[i] = raws[6].split("\'")[i];
 
-		//Check int arrays
-        if(!intsAll(craftings,6)) nev++;
-        for(i=0;i<16;i++)
-        {
-            if(!intsAll(drillLoot[i],3)) nev++;
-            if(!intsAll(fobGenerate[i],3)) nev++;
-        }
-        for(i=0;i<28;i++)
-        {
-            if(!intsAll(typeSet[i],3)) nev++;
-        }
-        for(i=0;i<mdl;i++)
-        {
-            if(!intsAll(modifiedDrops[i],2)) nev++;
-        }
+		checkDatapackGoodE();
         
     }catch {crash("Failied loading imported datapack\r\nDelete ServerUniverse/UniverseInfo.se3 file and try again");}
 }
@@ -1611,6 +1688,11 @@ else
 	datapackPaste(uiSource[1]);
 	
 	clientDatapacksVar = clientDatapacks();
+	uniTime = 0;
+	uniMiddle = "Server Copy~" + clientDatapacksVar;
+	uniVersion = serverVersion;
+	writeF("ServerUniverse/UniverseInfo.se3",[uniTime, uniMiddle, uniVersion, ""].join("\r\n"));
+	
 	console.log("Datapack loaded");
 }
 
