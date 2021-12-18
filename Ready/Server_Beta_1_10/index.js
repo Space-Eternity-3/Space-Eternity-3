@@ -225,7 +225,7 @@ function chunkRead(ind)
       for(i=1;i<=100;i++)
       {
         var datM = datT[i].split(";");
-		var lnt = datM.length;
+		var lnt = datM.length; if(lnt>61) lnt=61;
 		for(j=0;j<lnt;j++) if(datM[j]!="") pom = parseIntE(datM[j]);
         for(j=lnt;j<61;j++) datT[i]+=";";
 		eff+=datT[i]+"\r\n";

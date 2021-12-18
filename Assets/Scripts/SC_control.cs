@@ -354,22 +354,22 @@ public class SC_control : MonoBehaviour {
 
 		if(health_V>0f)
 		{
-			SC_data.data[0]=transform.position.x+"";
-			SC_data.data[1]=transform.position.y+"";
-			SC_data.data[2]=health_V+"";
-			SC_data.data[3]=turbo_V+"";
-			SC_data.data[4]=respawn_point.position.x+"";
-			SC_data.data[5]=respawn_point.position.y+"";
+			SC_data.data[0]=(Mathf.Round(transform.position.x*10000f)/10000f)+"";
+			SC_data.data[1]=(Mathf.Round(transform.position.y*10000f)/10000f)+"";
+			SC_data.data[2]=(Mathf.Round(health_V*10000f)/10000f)+"";
+			SC_data.data[3]=(Mathf.Round(turbo_V*10000f)/10000f)+"";
+			SC_data.data[4]=(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"";
+			SC_data.data[5]=(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"";
 			SC_data.data[6]=timerH+"";
 		}
 		else
 		{
-			SC_data.data[0]=respawn_point.position.x+"";
-			SC_data.data[1]=respawn_point.position.y+"";
+			SC_data.data[0]=(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"";
+			SC_data.data[1]=(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"";
 			SC_data.data[2]="1";
 			SC_data.data[3]="0";
-			SC_data.data[4]=respawn_point.position.x+"";
-			SC_data.data[5]=respawn_point.position.y+"";
+			SC_data.data[4]=(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"";
+			SC_data.data[5]=(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"";
 			SC_data.data[6]="0";
 		}
 		SC_data.Save("player_data");
@@ -457,7 +457,6 @@ public class SC_control : MonoBehaviour {
 		if(turbo)
 		{
 			turbo_V-=unit*float.Parse(SC_data.Gameplay[1]);
-			if(turbo_V<0f) turbo_V=0f;
 		}
 
 		//Force
@@ -545,14 +544,16 @@ public class SC_control : MonoBehaviour {
 		if(health_V>0f&&health_V<1f&&timerH==0)
 		{
 			health_V+=unit*float.Parse(SC_data.Gameplay[5])/Mathf.Pow(1.15f,SC_upgrades.MTP_levels[0]);
-			if(health_V>1f) health_V=1f;
 		}
 		//fuel regeneration
 		if(!turbo)
 		{
 			turbo_V+=unit*float.Parse(SC_data.Gameplay[0]);
-			if(turbo_V>1f) turbo_V=1f;
 		}
+		
+		if(health_V>1f) health_V=1f;
+		if(turbo_V>1f) turbo_V=1f;
+		if(turbo_V<0f) turbo_V=0f;
 
 		if(rocket_fuel.fillAmount<0.1f) rocket_fuel.fillAmount=0.1f;
 		if(rocket_fuel.fillAmount>0.9f) rocket_fuel.fillAmount=0.9f;
@@ -722,7 +723,7 @@ public class SC_control : MonoBehaviour {
 	public void DamageINT(int dmgINT) {Damage(dmgINT*0.01666667f);}
 	public void Damage(float dmg)
 	{
-		if(livTime<100) return;
+		if(livTime<50) return;
 		dmg=(1.2f*dmg)/Mathf.Pow(1.147f,SC_upgrades.MTP_levels[0]);
 		health_V-=dmg;
 		//SC_sounds.PlaySound(transform.position,2,0);

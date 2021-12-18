@@ -575,7 +575,7 @@ public class SC_data : MonoBehaviour
                 if(seed==lines[0]) for(i=0;i<100;i++)
                 {
                     string[] line = lines[i+1].Split(';');
-                    int lngt=line.Length;
+                    int lngt=line.Length; if(lngt>61) lngt=61;
                     for(j=0;j<lngt;j++) if(line[j]!="") World[i,j,asteroidCounter]=int.Parse(line[j])+"";
                 }
                 else

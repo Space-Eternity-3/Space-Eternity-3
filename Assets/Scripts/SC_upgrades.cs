@@ -108,7 +108,7 @@ public class SC_upgrades : MonoBehaviour
             case 4: return 5;
             case 5: return 1;
         }
-        return 1;
+        return 0;
     }
     int costCount(int ust)
     {

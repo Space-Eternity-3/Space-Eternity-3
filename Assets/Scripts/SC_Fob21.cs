@@ -43,7 +43,9 @@ public class SC_Fob21 : MonoBehaviour {
 
 	void CountTranslate()
 	{
-		Ention.material=SC_fun.M[item];
+		try{
+			Ention.material=SC_fun.M[item];
+		}catch{Ention.material=SC_fun.M[23];}
 		int i,lngt;
 
 		for(i=0;i<max_count;i++){

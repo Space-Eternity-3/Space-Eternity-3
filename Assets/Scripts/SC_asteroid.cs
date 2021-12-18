@@ -319,7 +319,6 @@ public class SC_asteroid : MonoBehaviour {
 			}
 			catch(Exception){
 				asteroidR.material=textureERROR;
-				Debug.Log("Game crashed! Asteroid type "+type+" doesn't exists.");
 			}
 			int rand,ii;
 			for(ii=0;ii<times;ii++)
