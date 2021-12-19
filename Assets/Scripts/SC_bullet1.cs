@@ -35,7 +35,7 @@ public class SC_bullet1 : MonoBehaviour {
 			bulletR.velocity=new Vector3(mX*F/Mathf.Sqrt(mX*mX+mY*mY),mY*F/Mathf.Sqrt(mX*mX+mY*mY),0f)+velo;
 			if(type==2) bulletRE.material=type2;
 		}
-		starter=bulletR.velocity;
+		starter = bulletR.velocity;
 	}
 	void FixedUpdate()
 	{

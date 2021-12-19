@@ -811,8 +811,8 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RetInventory"||
 		arg[0]=="/GrowNow"||
 		arg[0]=="/InfoClient"||
-		(arg[0]=="/RetBulletSend"&&int.Parse(arg[1])!=connectionID)||
-		(arg[0]=="/RetEmitParticles"&&int.Parse(arg[1])!=connectionID))
+		arg[0]=="/RetBulletSend"||
+		(arg[0]=="/RetEmitParticles" && arg[1]!=connectionID+""))
 		{
 			cmdArray[n]=e.Data;
 			n++;
@@ -823,13 +823,16 @@ public class SC_control : MonoBehaviour {
 		string[] arg = cmdThis.Split(' ');
 		if(arg[0]=="/RetBulletSend")
 		{
-			SC_bullet1.mX=float.Parse(arg[6].Split(';')[1]);
-			SC_bullet1.mY=float.Parse(arg[6].Split(';')[2]);
-			SC_bullet1.type=int.Parse(arg[2]);
-			SC_bullet1.mode=int.Parse(arg[3]);
-			SC_bullet1.id=int.Parse(arg[6].Split(';')[0]);
-			SC_bullet1.velo=new Vector3(float.Parse(arg[7]),float.Parse(arg[8]),0f);
-			Instantiate(Copper_bullet,new Vector3(float.Parse(arg[4]),float.Parse(arg[5]),0f),transform.rotation);
+			if(arg[1]!=connectionID+"")
+			{
+				SC_bullet1.mX=float.Parse(arg[6].Split(';')[1]);
+				SC_bullet1.mY=float.Parse(arg[6].Split(';')[2]);
+				SC_bullet1.type=int.Parse(arg[2]);
+				SC_bullet1.mode=int.Parse(arg[3]);
+				SC_bullet1.id=int.Parse(arg[6].Split(';')[0]);
+				SC_bullet1.velo=new Vector3(float.Parse(arg[7]),float.Parse(arg[8]),0f);
+				Instantiate(Copper_bullet,new Vector3(float.Parse(arg[4]),float.Parse(arg[5]),0f),transform.rotation);
+			}
 		}
 		if(arg[0]=="/RetUpgrade")
 		{

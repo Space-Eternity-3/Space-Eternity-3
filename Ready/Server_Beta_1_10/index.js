@@ -659,7 +659,7 @@ function checkFobChange(ulam,place,start1,start2)
   var det=asteroidIndex(ulam);
   if(chunk_data[det[0]][det[1]][22+2*parseInt(place)]!=""&&(start1==21||start2==21)) return false; //2 not required, driller item might disappear
 
-  if(chunk_data[det[0]][det[1]][parseInt(place)+1]==start1||chunk_data[det[0]][det[1]][parseInt(place)+1]==start2)
+  if(chunk_data[det[0]][det[1]][parseInt(place)+1]==start1||chunk_data[det[0]][det[1]][parseInt(place)+1]==start2||chunk_data[det[0]][det[1]][parseInt(place)+1]=="")
   return true; else return false;
 }
 function fobChange(ulam,place,end)
