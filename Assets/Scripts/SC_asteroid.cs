@@ -398,7 +398,7 @@ public class SC_asteroid : MonoBehaviour {
 		if(counter==1) counter=-GetTimeDrill();
 		
 		//Particles
-		if(Communtron1.localScale==new Vector3(2f,2f,2f)&&Mining&&Communtron1.position.z==0f&&Communtron3.position.y==0&&Input.GetMouseButton(0))
+		if(Communtron1.localScale==new Vector3(2f,2f,2f)&&Mining&&Communtron1.position.z==0f&&(false||Communtron3.position.y==0f||CommuntronM1.position.x==1f)&&Input.GetMouseButton(0))
 		{
 			if(AD_particleID==0)
 			{
@@ -413,7 +413,7 @@ public class SC_asteroid : MonoBehaviour {
 				if((int)Communtron4.position.y == 100) SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" "+mined+" 1 "+slot);
 			}
 		}
-		if((Communtron1.localScale!=new Vector3(2f,2f,2f)||Communtron3.position.y!=0f||!Input.GetMouseButton(0))&&Communtron1.position.z==0f)
+		if((Communtron1.localScale!=new Vector3(2f,2f,2f)||!Input.GetMouseButton(0))&&Communtron1.position.z==0f)
 		{
 			if(AD_particleID==0)
 			{

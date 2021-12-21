@@ -58,11 +58,11 @@ public class SC_backpack : MonoBehaviour
         int i,lim=Lim();
         for(i=0;i<21;i++)
         {
-            if(i<lim&&SC_slots.BackpackY[i]!=0&&SC_slots.InvHaveB(SC_slots.BackpackX[i],1,true,false,false,0)
+            if((i<lim||i==15)&&SC_slots.BackpackY[i]!=0&&SC_slots.InvHaveB(SC_slots.BackpackX[i],1,true,false,false,0)
             &&SC_slots.InvHaveB(SC_slots.BackpackX[i],SC_slots.BackpackY[i],false,true,false,0)) buttons[i].interactable=true; 
             else buttons[i].interactable=false;
 
-            if(i<lim) darknero[i].localPosition=new Vector3(10000f,0f,0f);
+            if(i<lim||i==15) darknero[i].localPosition=new Vector3(10000f,0f,0f);
             else darknero[i].localPosition=darkPos[i];
         }
     }

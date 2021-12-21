@@ -32,6 +32,10 @@ public class SC_upgrades : MonoBehaviour
     Vector3 startPosCountTR=new Vector3(0f,0f,0f);
     Vector3 startMaxFrame=new Vector3(0f,0f,0f);
     Vector3 startMaxAbout=new Vector3(0f,0f,0f);
+	
+	public Transform at_disabled, at_enabled;
+	Vector3 at_v3_visible=new Vector3(0f,0f,0f);
+	Vector3 at_v3_hidden=new Vector3(0f,0f,0f);
 
     int gI=0;
 
@@ -51,6 +55,9 @@ public class SC_upgrades : MonoBehaviour
         startPosCountTR=countTR.localPosition;
         startMaxFrame=max_frame.localPosition;
         startMaxAbout=max_about.localPosition;
+		
+		at_v3_visible=at_disabled.localPosition;
+		at_v3_hidden=at_enabled.localPosition;
     }
     public void MTP_loadUpgrades(string entry)
     {
@@ -156,6 +163,17 @@ public class SC_upgrades : MonoBehaviour
                 else visibleL[5*i+j].color=C_gray;
             }
         }
+		
+		if(MTP_levels[4]>=5)
+		{
+			at_disabled.localPosition = at_v3_hidden;
+			at_enabled.localPosition = at_v3_visible;
+		}
+		else
+		{
+			at_disabled.localPosition = at_v3_visible;
+			at_enabled.localPosition = at_v3_hidden;
+		}
     }
     public void Upgraded()
     {

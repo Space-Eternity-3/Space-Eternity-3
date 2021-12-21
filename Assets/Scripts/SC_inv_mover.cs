@@ -12,12 +12,12 @@ public class SC_inv_mover : MonoBehaviour {
 	public SC_backpack SC_backpack;
 
 	public bool active=false;
-	int closed;
-	int opened;
+	float closed;
+	float opened;
 
 	public float step_size=17f;
 	public float A;
-	public bool thisMain; 
+	public bool thisMain;
 	public bool backwards;
 	public bool updown;
 	public bool tab;
@@ -57,34 +57,38 @@ public class SC_inv_mover : MonoBehaviour {
 	void FixedUpdate()
 	{
 		if(!updown)
-		if(active)
 		{
-			if((int)transform.localPosition.x>opened) transform.localPosition-=new Vector3(step_size,0f,0f);
-			if((int)transform.localPosition.x<opened) transform.localPosition+=new Vector3(step_size,0f,0f);
-		}
-		else
-		{
-			if((int)transform.localPosition.x>closed) transform.localPosition-=new Vector3(step_size,0f,0f);
-			if((int)transform.localPosition.x<closed) transform.localPosition+=new Vector3(step_size,0f,0f);
+			if(active)
+			{
+				if((int)transform.localPosition.x>(int)opened) transform.localPosition-=new Vector3(step_size,0f,0f);
+				else if((int)transform.localPosition.x<(int)opened) transform.localPosition+=new Vector3(step_size,0f,0f);
+			}
+			else
+			{
+				if((int)transform.localPosition.x>(int)closed) transform.localPosition-=new Vector3(step_size,0f,0f);
+				else if((int)transform.localPosition.x<(int)closed) transform.localPosition+=new Vector3(step_size,0f,0f);
+			}
 		}
 
 		if(updown)
-		if(active)
 		{
-			if((int)transform.localPosition.y>opened) transform.localPosition-=new Vector3(0f,step_size,0f);
-			if((int)transform.localPosition.y<opened) transform.localPosition+=new Vector3(0f,step_size,0f);
-		}
-		else
-		{
-			if((int)transform.localPosition.y>closed) transform.localPosition-=new Vector3(0f,step_size,0f);
-			if((int)transform.localPosition.y<closed) transform.localPosition+=new Vector3(0f,step_size,0f);
+			if(active)
+			{
+				if((int)transform.localPosition.y>(int)opened) transform.localPosition-=new Vector3(0f,step_size,0f);
+				else if((int)transform.localPosition.y<(int)opened) transform.localPosition+=new Vector3(0f,step_size,0f);
+			}
+			else
+			{
+				if((int)transform.localPosition.y>(int)closed) transform.localPosition-=new Vector3(0f,step_size,0f);
+				else if((int)transform.localPosition.y<(int)closed) transform.localPosition+=new Vector3(0f,step_size,0f);
+			}
 		}
 	}
 	void Start()
 	{
-		if(!updown) closed=(int)transform.localPosition.x;
-		else closed=(int)transform.localPosition.y;
-		if(!backwards) opened=closed+(int)(A*step_size);
-		else opened=closed-(int)(A*step_size);
+		if(!updown) closed=transform.localPosition.x;
+		else closed=transform.localPosition.y;
+		if(!backwards) opened=closed+(A*step_size);
+		else opened=closed-(A*step_size);
 	}
 }
