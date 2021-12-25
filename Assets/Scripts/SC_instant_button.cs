@@ -8,6 +8,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
 {
     public int ID;
     public int index;
+	public bool special;
     public bool ASAC; //Allow Spam After Cooldown
     public int ASAC_cooldown;
     public int ASAC_mode;
@@ -58,7 +59,11 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
             }
             if(ID==3) SC_upgrades.Select(index);
             if(ID==4) SC_backpack.Select(index,true);
-            if(ID==5) SC_backpack.Import(index,true);
+            if(ID==5)
+			{
+				if(!special) SC_backpack.Import(index,true);
+				else SC_backpack.ImportArt(index);
+			}
             if(ID==6) SC_upgrades.Upgraded();
             if(ID==7) if(button.interactable) SC_craft2.Crafted();
             if(ID==8) SC_data.RemoveWarning();
@@ -67,7 +72,11 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
         if(mode==1)
         {
             if(ID==4) SC_backpack.Select(index,false);
-            if(ID==5) SC_backpack.Import(index,false);
+            if(ID==5)
+			{
+				if(!special) SC_backpack.Import(index,false);
+				else SC_backpack.ImportArt(index);
+			}
         }
     }
 }

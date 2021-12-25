@@ -50,6 +50,8 @@ public class SC_control : MonoBehaviour {
 	public Image rocket_fuel;
 	public Image health;
 	public Image healthOld;
+	public Image power;
+	
 	int licznikD=0, licznikC=0, timerH=20;
 	public int livTime=0;
 	int reg_wait=0;
@@ -72,10 +74,14 @@ public class SC_control : MonoBehaviour {
 	bool repeted=false;
 	bool repetedAF=false;
 
-	Color32 FuelNormal=new Color32(255,140,0,255);
-	Color32 FuelBurning=new Color32(255,110,0,255);
-	Color32 FuelBlocked=new Color32(255,160,0,255);
-	Color32	FuelFull=new Color32(255,150,0,255);
+	public Color32 HealthNormal;
+
+	public Color32 FuelNormal;
+	public Color32 FuelBurning;
+	public Color32 FuelBlocked;
+	
+	public Color32 PowerNormal; 
+	public Color32 PowerBurning;
 
 	public Transform darkner;
 	Vector3 darknerV;
@@ -120,7 +126,7 @@ public class SC_control : MonoBehaviour {
 	public string[] cmdArray = new string[2048];
 	int n=0; int fixup=0;
 
-	public float health_V=1f, turbo_V=0f;
+	public float health_V=1f, turbo_V=0f, power_V=0f;
 	public Text health_Text, turbo_Text;
 
 	string RPU = "XXX";
@@ -142,9 +148,15 @@ public class SC_control : MonoBehaviour {
 			return -V*(V+15f)/1000f;
 		}
 	}
-	void Update()
+	public void LaterUpdate()
 	{
 		if(Communtron3.position.z<0) Communtron3.position=new Vector3(Communtron3.position.x,Communtron3.position.y,0f);
+		
+		//bar colors {1,2,3}	
+		healthOld.color = HealthNormal;
+		
+		if(true) power.color=PowerNormal;
+		else power.color=PowerBurning;
 		
 		if(turbo) rocket_fuel.color=FuelBurning;
 		else
@@ -153,15 +165,13 @@ public class SC_control : MonoBehaviour {
 			else rocket_fuel.color=FuelNormal;
 		}
 		
-		if(timerH==0&&healthOld.fillAmount<0.9f) healthOld.color=new Color32(61,255,40,255);
-		else healthOld.color=new Color32(61,255,40,255);
-		
+		//cam pos
 		camera.position=new Vector3(player.position.x,player.position.y,camera.position.z);
 
+		//rotate player
 		mX=Input.mousePosition.x-Screen.width/2;
 		mY=Input.mousePosition.y-Screen.height/2;
 
-		//bugfix 1
 		if(mX==0) mX=1;
 		if(mY==0) mY=1;
 		
@@ -330,7 +340,7 @@ public class SC_control : MonoBehaviour {
 		//Restart lags
 		if(truePing>2.5f)
 		{
-			Debug.Log("Ping over 2.50s");
+			Debug.LogWarning("Ping over 2.50s");
 			MenuReturn();
 		}
 	}
@@ -492,6 +502,8 @@ public class SC_control : MonoBehaviour {
 		//Red health reduce
 		healthOld.fillAmount=(health_V*0.8f)+0.1f;
 		rocket_fuel.fillAmount=(turbo_V*0.8f)+0.1f;
+		power.fillAmount=(power_V*0.8f)+0.1f;
+		
 		health_Text_update();
 
 		if(healthOld.fillAmount<health.fillAmount)
@@ -764,10 +776,10 @@ public class SC_control : MonoBehaviour {
 			}
 		}catch(Exception e) {}
 	}
-	public void InfoUp(string info)
+	public void InfoUp(string info, int tim)
 	{
 		SC_slots.inv_full_text2.text = info;
-		SC_slots.comm_time2 = 500;
+		SC_slots.comm_time2 = tim;
 	}
 	string info_space_add(string s)
 	{
@@ -890,7 +902,7 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="/InfoClient")
 		{
 			if(arg[2]==connectionID+"") return;
-			InfoUp(info_space_add(arg[1]));
+			InfoUp(info_space_add(arg[1]),500);
 		}
 		if(arg[0]=="/RetFobsChange"||
 		arg[0]=="/RetFobsDataChange"||
@@ -1032,6 +1044,7 @@ public class SC_control : MonoBehaviour {
 		healthOld.fillAmount=(health_V*0.8f)+0.1f;
 		health.fillAmount=healthOld.fillAmount;
 		rocket_fuel.fillAmount=(turbo_V*0.8f)+0.1f;
+		power.fillAmount=(power_V*0.8f)+0.1f;
 		health_Text_update();
 
 		if((int)Communtron4.position.y!=100)

@@ -15,6 +15,7 @@ public class SC_backpack : MonoBehaviour
     public SC_control SC_control;
     public SC_data SC_data;
     public SC_slots SC_slots;
+	public SC_artefacts SC_artefacts;
 
     public Transform Communtron4;
 
@@ -25,17 +26,38 @@ public class SC_backpack : MonoBehaviour
     {
         int xx = SC_slots.BackpackX[n];
         int yy = SC_slots.BackpackY[n];
-        if(xx == 0) return;
+		if(yy==0) return;
 
         if(yy>0&&!all) yy=1;
         
-        if(yy!=0&&SC_slots.InvHaveB(xx,1,true,false,true,0)&&SC_slots.InvHaveB(xx,-yy,false,true,true,0))
-        {
-            int slI = SC_slots.InvChange(xx,yy,true,false,true);
-            int slB = SC_slots.InvChange(xx,-yy,false,true,true);
-            if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+yy+" "+slI+" "+slB);
-        }
-        else SC_slots.InvHaveB(-1,1,true,true,false,2);
+		if(n!=15)
+		{
+			if(yy!=0&&SC_slots.InvHaveB(xx,1,true,false,true,0)&&SC_slots.InvHaveB(xx,-yy,false,true,true,0))
+			{
+				int slI = SC_slots.InvChange(xx,yy,true,false,true);
+				int slB = SC_slots.InvChange(xx,-yy,false,true,true);
+				
+				if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+yy+" "+slI+" "+slB);
+			}
+			else SC_slots.InvHaveB(-1,-1,true,true,false,2);
+		}
+		else
+		{
+			if(yy!=0&&SC_slots.InvHaveB(xx,1,true,false,true,0)&&SC_slots.BackpackX[15]==xx&&SC_slots.BackpackYA[15]>0)
+			{
+				int slI = SC_slots.InvChange(xx,yy,true,false,true);
+				int slB = 15+9;
+				
+				SC_slots.BackpackX[15] = xx;
+				SC_slots.BackpackY[15] -= yy; //sureMTP
+				SC_slots.BackpackYA[15] -= yy;
+				SC_slots.BackpackYB[15] -= yy;
+				SC_slots.PopInv(15+9,-1);
+				
+				if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+yy+" "+slI+" "+slB);
+			}
+			else SC_slots.InvHaveB(-1,-1,true,true,false,2);
+		}
     }
     public void Import(int n,bool all)
     {
@@ -50,16 +72,40 @@ public class SC_backpack : MonoBehaviour
         {
             int slI = SC_slots.InvChange(xx,-yy,true,false,true);
             int slB = SC_slots.InvChange(xx,yy,false,true,true);
-            if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+(-yy)+" "+slI+" "+slB);
+            
+			if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+(-yy)+" "+slI+" "+slB);
         }
     }
+	public void ImportArt(int n)
+	{
+		destroyLock=true;
+		
+		int xx = SC_slots.SlotX[n-1];
+		int yy = SC_slots.SlotY[n-1];
+		
+		if(yy>0) yy=1;
+		
+		if(yy==1 && SC_upgrades.MTP_levels[4]>=5 && SC_slots.InvHaveB(xx,-yy,true,false,true,0) && SC_slots.BackpackY[15]==0 && SC_artefacts.IsArtefact(xx))
+		{
+			int slI = SC_slots.InvChange(xx,-yy,true,false,true);
+			int slB = 15+9;
+			
+			SC_slots.BackpackX[15] = xx;
+			SC_slots.BackpackY[15] += yy; //sureMTP
+			SC_slots.BackpackYA[15] += yy;
+			SC_slots.BackpackYB[15] += yy;
+			SC_slots.PopInv(15+9,1);
+			
+			if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+(-yy)+" "+slI+" "+slB);
+		}
+	}
     void LateUpdate()
     {
         int i,lim=Lim();
         for(i=0;i<21;i++)
         {
-            if((i<lim||i==15)&&SC_slots.BackpackY[i]!=0&&SC_slots.InvHaveB(SC_slots.BackpackX[i],1,true,false,false,0)
-            &&SC_slots.InvHaveB(SC_slots.BackpackX[i],SC_slots.BackpackY[i],false,true,false,0)) buttons[i].interactable=true; 
+			//virtual mode: one "if part" deleted to simplify code
+            if((i<lim||i==15)&&SC_slots.BackpackY[i]!=0&&SC_slots.InvHaveB(SC_slots.BackpackX[i],1,true,false,false,0)) buttons[i].interactable=true;
             else buttons[i].interactable=false;
 
             if(i<lim||i==15) darknero[i].localPosition=new Vector3(10000f,0f,0f);

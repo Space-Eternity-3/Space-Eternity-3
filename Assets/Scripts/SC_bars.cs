@@ -25,7 +25,7 @@ public class SC_bars : MonoBehaviour
 	public bool swap_left;
 	public bool swap_right;
 	
-	void Update()
+	public void LateUpdate()
 	{
 		if(double_left)
 		{

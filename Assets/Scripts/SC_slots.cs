@@ -272,23 +272,9 @@ public class SC_slots : MonoBehaviour
         
         if(commID != 0)
         {
-            if(commID == 1) inv_full_text.text = "Inventory full";
-            else if(commID == 2 &&
-
-                SC_backT[0].transform.localPosition != SC_backT[0].startPos &&
-                SC_backT[1].transform.localPosition != SC_backT[1].startPos &&
-                SC_backT[2].transform.localPosition != SC_backT[2].startPos &&
-                SC_backT[3].transform.localPosition != SC_backT[3].startPos &&
-                SC_backT[4].transform.localPosition != SC_backT[4].startPos &&
-                SC_backT[5].transform.localPosition != SC_backT[5].startPos &&
-                SC_backT[6].transform.localPosition != SC_backT[6].startPos &&
-                SC_backT[7].transform.localPosition != SC_backT[7].startPos &&
-                SC_backT[8].transform.localPosition != SC_backT[8].startPos
-            
-            ) inv_full_text.text = "Can't use backpack";
+            if(commID == 1) SC_control.InfoUp("Inventory full",380);
+            else if(commID == 2) SC_control.InfoUp("Blocked slot",380);
             else return 0;
-
-            comm_time = 380;
         }
         return 0;
     }
@@ -349,7 +335,7 @@ public class SC_slots : MonoBehaviour
             BackpackYB[i] = BackpackY[i];
         }
     }
-    void PopInv(int slot, int signum)
+    public void PopInv(int slot, int signum)
     {
         int i;
         if(slot<9)
