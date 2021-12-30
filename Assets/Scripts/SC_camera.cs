@@ -67,6 +67,7 @@ public class SC_camera : MonoBehaviour {
 				Debug.Log("Respawned");
 				SC_control.health_V=1f;
 				SC_control.turbo_V=0f;
+				SC_control.power_V=0f;
 				SC_control.Screen1.targetDisplay=0;
 				SC_control.playerR.velocity=new Vector3(0f,0f,0f);
 				SC_control.living=true;

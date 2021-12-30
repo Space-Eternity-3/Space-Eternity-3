@@ -125,13 +125,13 @@ function fileReadablePlayer(elemT)
 {
 	if(elemT.length < 4) return false;
 	
-	var elem0 = elemT[0].split(";"); if(elem0.length < 7) return false;
+	var elem0 = elemT[0].split(";"); if(elem0.length < 8) return false;
 	var elem1 = elemT[1].split(";"); if(elem1.length < 18) return false;
 	var elem2 = elemT[2].split(";"); if(elem2.length < 42) return false;
 	var elem3 = elemT[3].split(";"); if(elem3.length < 5) return false;
 	
 	var i;
-	for(i=0;i<6;i++) if(isNaN(parseFloatP(elem0[i]))) return false; if(isNaN(parseIntP(elem0[6]))) return false;
+	for(i=0;i<6;i++) if(isNaN(parseFloatP(elem0[i]))) return false; if(isNaN(parseIntP(elem0[6]))) return false; if(isNaN(parseFloatP(elem0[7]))) return false;
 	for(i=0;i<18;i++) if(isNaN(parseIntP(elem1[i]))) return false;
 	for(i=0;i<42;i++) if(isNaN(parseIntP(elem2[i]))) return false;
 	for(i=0;i<5;i++) if(isNaN(parseIntP(elem3[i]))) return false;
@@ -143,12 +143,12 @@ function fileReadablePlayer(elemT)
 function msgToPlayer(str)
 {
   var strT=str.split(";");
-  return [strT[0],strT[1],strT[8],strT[9],strT[6],strT[7],strT[10]].join(";");
+  return [strT[0],strT[1],strT[8],strT[9],strT[6],strT[7],strT[10],strT[11]].join(";");
 }
 function playerToMsg(str)
 {
   var strT=str.split(";");
-  return [strT[0],strT[1],0,0,0,0,strT[4],strT[5],strT[2],strT[3],strT[6]].join(";");
+  return [strT[0],strT[1],0,0,0,0,strT[4],strT[5],strT[2],strT[3],strT[6],strT[7]].join(";");
 }
 function pushConvert(inv,psh)
 {
@@ -371,7 +371,7 @@ process.on('SIGUSR2', exitHandler.bind(null, {exit:true})); //???
 //Save optimalize functions
 function SaveAllNow()
 {
-	var i,lngt=chunk_data.length;;
+	var i,lngt=chunk_data.length;
 	for(i=0;i<=9;i++) if(checkPlayer(i,conID[i])) savePlayer(i);
 	for(i=0;i<lngt;i++) chunkSave(i);
 }
@@ -827,7 +827,7 @@ wss.on('connection', function connection(ws) {
           
           readPlayer(i);
           pushInventory[i]="1;2;3;4;5;6;7;8;9";
-          if(data[i]=="0") data[i]="0;0;0;0;0;0;0;0;1;0;0";
+          if(data[i]=="0") data[i]="0;0;0;0;0;0;0;0;1;0;0;0";
           if(inventory[i]=="0") inventory[i]="0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
           if(backpack[i]=="0") backpack[i]="0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
           if(upgrades[i]=="0") upgrades[i]="0;0;0;0;0";
@@ -1033,10 +1033,10 @@ wss.on('connection', function connection(ws) {
 
       var iID=arg[1];
 
-      data[iID]="0;0;0;0;0;0;"+data[iID].split(";")[6]+";"+data[iID].split(";")[7]+";1;0;0";
-      inventory[iID]="0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-      upgrades[iID]="0;0;0;0;0";
-      backpack[iID]="0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+      data[iID] = data[iID].split(";")[6]+";"+data[iID].split(";")[7]+";0;0;0;0;"+data[iID].split(";")[6]+";"+data[iID].split(";")[7]+";1;0;0;0";
+      inventory[iID] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+      upgrades[iID] = "0;0;0;0;0";
+      backpack[iID] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
     }
     if(arg[0]=="/Craft")
     {

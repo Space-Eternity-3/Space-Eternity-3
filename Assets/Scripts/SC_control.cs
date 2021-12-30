@@ -52,7 +52,7 @@ public class SC_control : MonoBehaviour {
 	public Image healthOld;
 	public Image power;
 	
-	int licznikD=0, licznikC=0, timerH=20;
+	int licznikD=0, licznikC=0, timerH=0;
 	public int livTime=0;
 	int reg_wait=0;
 	int cooldown=0;
@@ -65,6 +65,7 @@ public class SC_control : MonoBehaviour {
 
 	public float VacuumDrag,Engines;
 	public float unit=0.0008f;
+	public float health_base;
 
 	int localPing=0;
 	int returnedPing=0;
@@ -110,8 +111,10 @@ public class SC_control : MonoBehaviour {
 	public SC_snd_start SC_snd_start;
 	public SC_slots SC_slots;
 	public SC_halloween SC_halloween;
+	public SC_artefacts SC_artefacts;
 
 	public Transform[] P = new Transform[10];
+	public SC_players[] PL = new SC_players[10];
 	public Rigidbody[] R = new Rigidbody[10];
 	public TextMesh[] N = new TextMesh[10];
 	public Transform[] RU = new Transform[10];
@@ -121,13 +124,16 @@ public class SC_control : MonoBehaviour {
 	Vector3[] RRa = new Vector3[10];
 	float[] Rt = new float[10];
 	int[] Fa = new int[10];
+	int[] At = new int[10];
 	string[] Na = new string[10];
 
 	public string[] cmdArray = new string[2048];
 	int n=0; int fixup=0;
 
 	public float health_V=1f, turbo_V=0f, power_V=0f;
-	public Text health_Text, turbo_Text;
+	public Text health_Text, turbo_Text, power_Text;
+	
+	public int ArtSource = 0;
 
 	string RPU = "XXX";
 	int MTPloadedCounter=5;
@@ -293,22 +299,37 @@ public class SC_control : MonoBehaviour {
 		//KILL
 		if(health_V<=0f&&living)
 		{
-			solidPos=transform.position+new Vector3(0f,0f,2500f);
-			Communtron1.position+=new Vector3(0f,0f,75f);
-			SC_sounds.PlaySound(transform.position,2,2);
-			//for(int i=0;i<5;i++)
-			Instantiate(explosion,transform.position,transform.rotation);
-			if((int)Communtron4.position.y==100)
+			if(SC_artefacts.GetArtefactID() != 4) //Accept death
 			{
-				livID=(int.Parse(livID)+1)+"";
-				float truX=Mathf.Round(transform.position.x*10000f)/10000f;
-				float truY=Mathf.Round(transform.position.y*10000f)/10000f;
-				SendMTP("/EmitParticles "+connectionID+" 1 "+truX+" "+truY);
-				SendMTP("/InventoryReset "+connectionID+" "+livID);
+				solidPos=transform.position+new Vector3(0f,0f,2500f);
+				Communtron1.position+=new Vector3(0f,0f,75f);
+				SC_sounds.PlaySound(transform.position,2,2);
+				//for(int i=0;i<5;i++)
+				Instantiate(explosion,transform.position,transform.rotation);
+				living=false;
+				if((int)Communtron4.position.y==100)
+				{
+					livID=(int.Parse(livID)+1)+"";
+					float truX=Mathf.Round(transform.position.x*10000f)/10000f;
+					float truY=Mathf.Round(transform.position.y*10000f)/10000f;
+					SendMTP("/EmitParticles "+connectionID+" 1 "+truX+" "+truY);
+					SendMTP("/InventoryReset "+connectionID+" "+livID);
+				}
+				Debug.Log("Player died");
+				Screen1.targetDisplay=1;
 			}
-			living=false;
-			Debug.Log("Player died");
-			Screen1.targetDisplay=1;
+			else
+			{
+				health_V=1f;
+				SC_slots.BackpackY[15]--; //sureMTP
+				SC_slots.BackpackYA[15]--;
+				SC_slots.BackpackYB[15]--;
+				if((int)Communtron4.position.y==100)
+				{
+					SendMTP("/InventoryChange "+connectionID+" 45 -1 24");
+				}
+				Debug.Log("Player avoided death");
+			}
 		}
 		if(!living)
 		{
@@ -371,6 +392,7 @@ public class SC_control : MonoBehaviour {
 			SC_data.data[4]=(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"";
 			SC_data.data[5]=(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"";
 			SC_data.data[6]=timerH+"";
+			SC_data.data[7]=(Mathf.Round(power_V*10000f)/10000f)+"";
 		}
 		else
 		{
@@ -381,6 +403,7 @@ public class SC_control : MonoBehaviour {
 			SC_data.data[4]=(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"";
 			SC_data.data[5]=(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"";
 			SC_data.data[6]="0";
+			SC_data.data[7]="0";
 		}
 		SC_data.Save("player_data");
 
@@ -423,10 +446,10 @@ public class SC_control : MonoBehaviour {
 	}
 	void health_Text_update()
 	{
-		float potH=SC_upgrades.MTP_levels[0];
-		float maxH=50f*Mathf.Pow(1.147f,potH);
-		float curH=50f*health_V*Mathf.Pow(1.147f,potH);
-		float maxHr=Mathf.Ceil(50f*Mathf.Pow(1.147f,potH));
+		float potH=SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd();
+		float maxH=50f*Mathf.Pow(health_base,potH);
+		float curH=50f*health_V*Mathf.Pow(health_base,potH);
+		float maxHr=Mathf.Ceil(50f*Mathf.Pow(health_base,potH));
 		float curHr=Mathf.Ceil((curH*maxHr)/maxH);
 		health_Text.text="Health "+curHr+"/"+maxHr;
 
@@ -439,7 +462,12 @@ public class SC_control : MonoBehaviour {
 	}
 	void FixedUpdate()
 	{
-		if(timerH>0) timerH--;
+		if(timerH>0)
+		{
+			if(SC_artefacts.GetArtefactID() != 1) timerH--;
+			else timerH-=2;
+			if(timerH<0) timerH=0;
+		}
 		if(reg_wait>0) reg_wait--;
 		if(cooldown>0) cooldown--;
 		if(licznikD>0) licznikD--;
@@ -555,22 +583,29 @@ public class SC_control : MonoBehaviour {
 		//health regeneration
 		if(health_V>0f&&health_V<1f&&timerH==0)
 		{
-			health_V+=unit*float.Parse(SC_data.Gameplay[5])/Mathf.Pow(1.15f,SC_upgrades.MTP_levels[0]);
+			health_V+=unit*SC_artefacts.GetProtRegenMultiplier()*float.Parse(SC_data.Gameplay[5])/Mathf.Pow(health_base,SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd());
 		}
 		//fuel regeneration
 		if(!turbo)
 		{
 			turbo_V+=unit*float.Parse(SC_data.Gameplay[0]);
 		}
+		//power regeneration
+		int n = SC_artefacts.GetArtefactID();
+		power_V += unit * SC_artefacts.powerRM[n];
 		
 		if(health_V>1f) health_V=1f;
 		if(turbo_V>1f) turbo_V=1f;
 		if(turbo_V<0f) turbo_V=0f;
+		if(power_V>1f) power_V=1f;
+		if(power_V<0f) power_V=0f;
 
 		if(rocket_fuel.fillAmount<0.1f) rocket_fuel.fillAmount=0.1f;
 		if(rocket_fuel.fillAmount>0.9f) rocket_fuel.fillAmount=0.9f;
 		if(healthOld.fillAmount<0.12f) healthOld.fillAmount=0.12f;
 		if(healthOld.fillAmount>0.9f) healthOld.fillAmount=0.9f;
+		if(power.fillAmount<0.1f) power.fillAmount=0.1f;
+		if(power.fillAmount>0.9f) power.fillAmount=0.9f;
 
 		//Update ??? [/RetPlayerUpdate]
 		int h;
@@ -579,16 +614,19 @@ public class SC_control : MonoBehaviour {
 			string eData=RPU;
 			string[] tabe=eData.Split(' ');
 			float PRx=0f;
-			int FRx=0;
+			int FRx=0, ATx=0;
         	int i,k;
 			float pxx,pyy;
 			returnedPing=int.Parse(tabe[connectionID+21]);
-			for(i=1;i<10;i++)
+			for(i=1;i<=9;i++)
 			{
 				Vector3 Px=new Vector3(0f,0f,1000f+i*5);
 				Vector3 Rx=new Vector3(0f,0f,0f);
 				Vector3 RRx=new Vector3(0f,0f,1000f);
+				FRx=0; ATx=0;
+				
 				string Nax="";
+				
 				bool exist=false;
 				k=i;
 				if(connectionID==i) k=0;
@@ -601,29 +639,39 @@ public class SC_control : MonoBehaviour {
 						pxx=float.Parse(tabe2[0]);
 						pyy=float.Parse(tabe2[1]);
 						Px=new Vector3(pxx,pyy,0f);
+						
 						pxx=float.Parse(tabe2[2]);
 						pyy=float.Parse(tabe2[3]);
 						Rx=new Vector3(pxx,pyy,0f);
+						
 						PRx=float.Parse(tabe2[4]);
-						FRx=int.Parse(tabe2[5]);
+						
+						string[] tbo = tabe2[5].Split('&');
+						FRx=int.Parse(tbo[0]);
+						if(tbo.Length>0) ATx=int.Parse(tbo[1]);
+						else ATx=0;
+						
 						pxx=float.Parse(tabe2[6]);
 						pyy=float.Parse(tabe2[7]);
 						RRx=new Vector3(pxx,pyy,1f);
+						
 						if(RRx==new Vector3(0f,0f,1f)) RRx=new Vector3(0f,0f,1000f);
 						Nax=tabe[k+11];
 					}
 					if(Nax=="0") Nax="";
 					exist=true;
 				}
-				Pa[i]=Px; Ra[i]=Rx; if(exist)Rt[i]=PRx; Fa[i]=FRx; Na[i]=Nax; RRa[i]=RRx;
+				Pa[i]=Px; Ra[i]=Rx; if(exist)Rt[i]=PRx; Fa[i]=FRx; At[i]=ATx; Na[i]=Nax; RRa[i]=RRx;
 			}
 			for(h=1;h<=9;h++)
 			{
-				P[h].position=Pa[h]+new Vector3(0f,0f,Fa[h]/10000f);
-				R[h].velocity=Ra[h];
-				P[h].rotation=Quaternion.Euler(0f,0f,Rt[h]);
-				N[h].text=Na[h];
-				RU[h].position=RRa[h];
+				P[h].position = Pa[h];
+				PL[h].ArtSource = At[h];
+				PL[h].OtherSource = Fa[h];
+				R[h].velocity = Ra[h];
+				P[h].rotation = Quaternion.Euler(0f,0f,Rt[h]);
+				N[h].text = Na[h];
+				RU[h].position = RRa[h];
 			}
 
 			fixup--;
@@ -658,7 +706,7 @@ public class SC_control : MonoBehaviour {
 		//Websocket sends
 		if((int)Communtron4.position.y==100)
 		{
-			float trX,trY,rgX,rgY,rpX,rpY,heB,fuB;
+			float trX,trY,rgX,rgY,rpX,rpY,heB,fuB,poB;
 			trX=Mathf.Round(transform.position.x*10000f)/10000f;
 			trY=Mathf.Round(transform.position.y*10000f)/10000f;
 			rgX=Mathf.Round(playerR.velocity.x*10000f)/10000f;
@@ -667,27 +715,30 @@ public class SC_control : MonoBehaviour {
 			rpY=Mathf.Round(respawn_point.position.y*10000f)/10000f;
 			heB=Mathf.Round(health_V*10000f)/10000f;
 			fuB=Mathf.Round(turbo_V*10000f)/10000f;
+			poB=Mathf.Round(power_V*10000f)/10000f;
 			int sendOther=enMode*16+(int)Communtron5.position.x*4+(int)Communtron2.position.x*2+(int)CommuntronM1.transform.position.x*1;
+			int sendOtherParasite=ArtSource;
 			
 			if(living){
 				/*
-				0-posX !1
-				1-posY !2
-				2-velX
-				3-velY
-				4-rotation
-				5-others2
-				6-respX !3
-				7-respY !4
-				8-healthBar !5
-				9-fuelBar !6
-				10-timerH !7
+				0/0 - posX
+				1/1 - posY
+				2[] - velX
+				3[] - velY
+				4[] - rotation
+				5[] - others2
+				6/2 - respX
+				7/3 - respY
+				8/4 - healthBar
+				9/5 - fuelBar
+				10/6 - timerH
+				11/7 - powerBar
 					*/
 				SendMTP(
 					"/PlayerUpdate "+connectionID+" "+
 					trX+";"+trY+";"+rgX+";"+rgY+";"+
-					transform.rotation.eulerAngles.z+";"+sendOther+";"+
-					rpX+";"+rpY+";"+heB+";"+fuB+";"+timerH+" "+localPing+" 250"
+					transform.rotation.eulerAngles.z+";"+sendOther+"&"+sendOtherParasite+";"+
+					rpX+";"+rpY+";"+heB+";"+fuB+";"+timerH+";"+poB+" "+localPing+" 250"
 				);
 			}
 			else SendMTP("/PlayerUpdate "+connectionID+" 1 "+localPing+" 250");
@@ -736,7 +787,7 @@ public class SC_control : MonoBehaviour {
 	public void Damage(float dmg)
 	{
 		if(livTime<50) return;
-		dmg=(1.2f*dmg)/Mathf.Pow(1.147f,SC_upgrades.MTP_levels[0]);
+		dmg=(1.2f*dmg)/Mathf.Pow(health_base,SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd());
 		health_V-=dmg;
 		//SC_sounds.PlaySound(transform.position,2,0);
 		if(health_V>0f) Instantiate(explosion2,transform.position,transform.rotation);
@@ -919,18 +970,6 @@ public class SC_control : MonoBehaviour {
 			}
 		}
 	}
-	void TempInvAdd(int itemm,int countt)
-	{
-		int i;
-		for(i=0;i<9;i++)
-		{
-			if(betterInvConverted[i].x==0||betterInvConverted[i].x==itemm)
-			{
-				betterInvConverted[i]=new Vector3(itemm,betterInvConverted[i].y+countt,0f);
-				return;
-			}
-		}Debug.Log("Game Crashed! Multiplayer inventory...");
-	}
 	void Ws_OnOpen(object sender, System.EventArgs e)
     {
 		SendMTP("/ImNotKicked "+connectionID);
@@ -978,7 +1017,9 @@ public class SC_control : MonoBehaviour {
 		Engines*=float.Parse(SC_data.Gameplay[15]);
 
 		int i;
-		float tX=0f,tY=0f,tH=0f,tF=0f,tVx=0f,tVy=0f;
+		float tX=0f,tY=0f,tH=0f,tF=0f,tP=0f,tVx=0f,tVy=0f;
+		//Global variables starts more important
+		
 		if((int)Communtron4.position.y==100)
 		{
 			try
@@ -1017,10 +1058,12 @@ public class SC_control : MonoBehaviour {
 				tVx=float.Parse(gtd[6]);
 				tVy=float.Parse(gtd[7]);
 				timerH=int.Parse(gtd[10]);
+				tP=float.Parse(gtd[11]);
 
 				transform.position=new Vector3(tX,tY,0f);
 				health_V=tH;
 				turbo_V=tF;
+				power_V=tP;
 				respawn_point.position=new Vector3(tVx,tVy,1f);
 			}
 		}
@@ -1033,12 +1076,15 @@ public class SC_control : MonoBehaviour {
 			tVx=float.Parse(SC_data.data[4]);
 			tVy=float.Parse(SC_data.data[5]);
 			timerH=int.Parse(SC_data.data[6]);
+			tP=float.Parse(SC_data.data[7]);
 
 			transform.position=new Vector3(tX,tY,0f);
 			health_V=tH;
 			turbo_V=tF;
+			power_V=tP;
 			respawn_point.position=new Vector3(tVx,tVy,1f);
 		}
+		
 		servername.text=CommuntronM1.name;
 
 		healthOld.fillAmount=(health_V*0.8f)+0.1f;

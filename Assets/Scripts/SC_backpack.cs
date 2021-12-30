@@ -53,6 +53,7 @@ public class SC_backpack : MonoBehaviour
 				SC_slots.BackpackYA[15] -= yy;
 				SC_slots.BackpackYB[15] -= yy;
 				SC_slots.PopInv(15+9,-1);
+				SC_control.power_V = 0f;
 				
 				if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+yy+" "+slI+" "+slB);
 			}

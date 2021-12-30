@@ -11,7 +11,8 @@ public class SC_artefacts : MonoBehaviour
 	public string[] bar3namets = new string[7];
 	public string[] namets = new string[7];
 	public string[] descriptions = new string[7];
-	public string[] actions = new string[7];
+	
+	public float[] powerRM = new float[7];
 	
 	public Color32[] Color1N = new Color32[7];
 	
@@ -25,9 +26,14 @@ public class SC_artefacts : MonoBehaviour
 	public Text namet, description;
 	public Text bar3namet;
 	
+	public float ProtLevelAdd;
+	public float ProtRegenMultiplier;
+	
 	public SC_slots SC_slots;
 	public SC_bars SC_bars;
 	public SC_control SC_control;
+	public SC_seeking SC_seeking;
+	public SC_invisibler SC_invisibler;
 	
 	public bool IsArtefact(int n)
 	{
@@ -36,36 +42,57 @@ public class SC_artefacts : MonoBehaviour
 			if(objIDs[i]==n) return true;
 		return false;
 	}
-	void Start()
-	{
-		LateUpdate();
-	}
-	void LateUpdate()
+	public int GetArtefactID()
 	{
 		int i;
-		
 		//VISIBILITY and PSYCHICAL (Y==YA) in this case
 		for(i=1;i<=6;i++)
 		{
 			if(SC_slots.BackpackX[15]==objIDs[i] && SC_slots.BackpackY[15]>0) break;
 		}
 		if(i==7) i=0;
+		return i;
+	}
+	public int GetArtSource(int n)
+	{
+		return n*100;
+	}
+	public float GetProtLevelAdd()
+	{
+		if(GetArtefactID()!=1) return 0f;
+		else return ProtLevelAdd;
+	}
+	public float GetProtRegenMultiplier()
+	{
+		if(GetArtefactID()!=1) return 1f;
+		else return ProtRegenMultiplier;
+	}
+	void Start()
+	{
+		LateUpdate();
+	}
+	void LateUpdate()
+	{
+		int n = GetArtefactID();
 		
-		namet.text = namets[i];
-		description.text = descriptions[i];
-		SC_bars.double_right = bar3[i];
+		namet.text = namets[n];
+		description.text = descriptions[n];
+		SC_bars.double_right = bar3[n];
 		
-		SC_control.HealthNormal = Color1N[i];
+		SC_control.HealthNormal = Color1N[n];
 		
-		SC_control.FuelNormal = Color2N[i];
-		SC_control.FuelBurning = Color2B[i];
-		SC_control.FuelBlocked = Color2L[i];
+		SC_control.FuelNormal = Color2N[n];
+		SC_control.FuelBurning = Color2B[n];
+		SC_control.FuelBlocked = Color2L[n];
 		
-		bar3namet.text = bar3namets[i] + " 0/50";
-		SC_control.PowerNormal = Color3N[i];
-		SC_control.PowerBurning = Color3B[i];
+		SC_control.PowerNormal = Color3N[n];
+		SC_control.PowerBurning = Color3B[n];
+		
+		SC_seeking.offset = new Vector3(0f,0f,-450f*n);
+		SC_control.ArtSource = GetArtSource(n);
 		
 		SC_bars.LateUpdate();
 		SC_control.LaterUpdate();
+		SC_invisibler.LaterUpdate();
 	}
 }

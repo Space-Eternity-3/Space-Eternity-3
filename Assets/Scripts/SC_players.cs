@@ -13,17 +13,27 @@ public class SC_players : MonoBehaviour
     public Material M1,M2,M3,M4;
     public Transform drillPar;
     public Transform drill3T;
+	public int IDP;
+	public Transform atZ, atS;
+	public int OtherSource;
+	public int ArtSource;
+	
+	Transform Aeffs;
     Vector3[] memSourced=new Vector3[20];
     
     public SC_snd_start SC_snd_start;
     public SC_fun SC_fun;
 
-    void Start()
+    void Awake()
     {
         int i;
         for(i=0;i<20;i++){
             memSourced[i]=sourced.position;
         }
+		
+		Aeffs = Instantiate(atS,atS.position,atS.rotation);
+		Aeffs.parent = atZ; Aeffs.name = "atS" + IDP;
+		Aeffs.GetComponent<SC_seeking>().seek = transform;
     }
     void ArrayPusher()
     {
@@ -50,15 +60,14 @@ public class SC_players : MonoBehaviour
         Vector3 avar=ArrayAvarge(SC_fun.smooth_size);
         transform.position=new Vector3(avar.x,avar.y,memSourced[0].z);
         transform.rotation=sourced.rotation;
-        //playerR.velocity=sourcedR.velocity;
         ArrayPusher();
 
-        //DRAG
-        //float X=-dragS*playerR.velocity.x*Mathf.Abs(playerR.velocity.x)-dragM*playerR.velocity.x;
-		//float Y=-dragS*playerR.velocity.y*Mathf.Abs(playerR.velocity.y)-dragM*playerR.velocity.y;
-		//playerR.velocity=new Vector3(playerR.velocity.x+X,playerR.velocity.y+Y,0f);
-
-        int bas=(int)(Mathf.Round(memSourced[0].z*10000f));
+		int guitar=ArtSource;
+        int bas=OtherSource;
+		
+		int A=guitar/100;
+		Aeffs.GetComponent<SC_seeking>().offset = new Vector3(0f,0f,-450f*A);
+		
         int M=bas/16;
         if(M>3) M=0;
         if(SC_snd_start.enMode!=M)

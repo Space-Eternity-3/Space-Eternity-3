@@ -64,7 +64,7 @@ public class SC_data : MonoBehaviour
     public string seed;
     public string[,] backpack = new string[21,2];
     public string[] upgrades = new string[5];
-    public string[] data = new string[7];
+    public string[] data = new string[8];
     public string[,] inventory = new string[9,2];
 
     //Asteroids
@@ -144,7 +144,7 @@ public class SC_data : MonoBehaviour
         for(i=0;i<21;i++) for(j=0;j<2;j++) backpack[i,j]="0";
         for(i=0;i<9;i++) for(j=0;j<2;j++) inventory[i,j]="0";
         for(i=0;i<5;i++) upgrades[i]="0";
-        for(i=0;i<7;i++) data[i]="";
+        for(i=0;i<8;i++) data[i]="";
         dataSource=example;
         dataSourceStorage=example;
     }
@@ -333,7 +333,7 @@ public class SC_data : MonoBehaviour
             string[] ST_B = sourceTab[2].Split(';');
             string[] ST_U = sourceTab[3].Split(';');
 
-            for(i=0;i<6;i++) data[i]=float.Parse(ST_D[i])+""; data[6]=int.Parse(ST_D[i])+"";
+            for(i=0;i<6;i++) data[i]=float.Parse(ST_D[i])+""; data[6]=int.Parse(ST_D[6])+""; data[7]=float.Parse(ST_D[7])+"";
             for(i=0;i<9;i++) for(j=0;j<2;j++) inventory[i,j]=int.Parse(ST_I[i*2+j])+"";
             for(i=0;i<21;i++) for(j=0;j<2;j++) backpack[i,j]=int.Parse(ST_B[i*2+j])+"";
             for(i=0;i<5;i++) upgrades[i]=int.Parse(ST_U[i])+"";
@@ -506,7 +506,7 @@ public class SC_data : MonoBehaviour
             string[] effectTab = new string[4];
             for(i=0;i<4;i++) effectTab[i]="";
 
-            for(i=0;i<7;i++) effectTab[0]=effectTab[0]+data[i]+";";
+            for(i=0;i<8;i++) effectTab[0]=effectTab[0]+data[i]+";";
             for(i=0;i<9;i++) for(j=0;j<2;j++) effectTab[1]=effectTab[1]+inventory[i,j]+";";
             for(i=0;i<21;i++) for(j=0;j<2;j++) effectTab[2]=effectTab[2]+backpack[i,j]+";";
             for(i=0;i<5;i++) effectTab[3]=effectTab[3]+upgrades[i]+";";
