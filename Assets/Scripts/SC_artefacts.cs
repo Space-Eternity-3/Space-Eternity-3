@@ -13,6 +13,7 @@ public class SC_artefacts : MonoBehaviour
 	public string[] descriptions = new string[7];
 	
 	public float[] powerRM = new float[7];
+	public float[] powerUM = new float[7];
 	
 	public Color32[] Color1N = new Color32[7];
 	
@@ -22,6 +23,7 @@ public class SC_artefacts : MonoBehaviour
 	
 	public Color32[] Color3N = new Color32[7];
 	public Color32[] Color3B = new Color32[7];
+	public Color32[] Color3L = new Color32[7];
 	
 	public Text namet, description;
 	public Text bar3namet;
@@ -55,11 +57,18 @@ public class SC_artefacts : MonoBehaviour
 	}
 	public int GetArtSource(int n)
 	{
-		return n*100;
+		if(!SC_invisibler.invisible) return n*100;
+		else return 1;
+		
+		/* (%100)
+		
+		1 - invisible
+		
+		*/
 	}
 	public float GetProtLevelAdd()
 	{
-		if(GetArtefactID()!=1) return 0f;
+		if(GetArtefactID()!=1 || SC_invisibler.invisible) return 0f;
 		else return ProtLevelAdd;
 	}
 	public float GetProtRegenMultiplier()
@@ -87,8 +96,17 @@ public class SC_artefacts : MonoBehaviour
 		
 		SC_control.PowerNormal = Color3N[n];
 		SC_control.PowerBurning = Color3B[n];
+		SC_control.PowerBlocked = Color3L[n];
 		
-		SC_seeking.offset = new Vector3(0f,0f,-450f*n);
+		if(n==3 && Input.GetKeyDown(KeyCode.A) && !SC_control.pause)
+		{
+			if(SC_invisibler.invisible) SC_invisibler.invisible = false;
+			else if(SC_control.power_V >= SC_control.F_barrier) SC_invisibler.invisible = true;
+		}
+		if(n!=3) SC_invisibler.invisible = false;
+		
+		if(!SC_invisibler.invisible) SC_seeking.offset = new Vector3(0f,0f,-450f*n); //another direction (projection)
+		else SC_seeking.offset = new Vector3(0f,0f,450f);
 		SC_control.ArtSource = GetArtSource(n);
 		
 		SC_bars.LateUpdate();

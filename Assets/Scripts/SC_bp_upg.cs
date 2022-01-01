@@ -11,6 +11,7 @@ public class SC_bp_upg : MonoBehaviour
     Vector3 upgS,bpS,hidden;
     bool wysuned = false;
     public SC_inv_mover SC_inv_mover;
+	public SC_control SC_control;
 
     void Start()
     {

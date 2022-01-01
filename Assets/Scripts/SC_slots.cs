@@ -238,6 +238,8 @@ public class SC_slots : MonoBehaviour
     }
     public int InvHaveM(int item, int count, bool aI, bool aB, bool physical, int commID)
     {
+		if(SC_control.pause) return 0;
+		
         int i, count_all = 0;
         bool first = true;
         bool emted = false;

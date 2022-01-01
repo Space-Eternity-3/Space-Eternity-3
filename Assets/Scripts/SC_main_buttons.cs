@@ -13,6 +13,7 @@ public class SC_main_buttons : MonoBehaviour {
 
 	public void Start()
 	{
+		Time.timeScale = 1f;
 		fullS=Screen.fullScreen;
 		SAS(0);
 		if(SC_data.TempFile=="-1") SAS(1);

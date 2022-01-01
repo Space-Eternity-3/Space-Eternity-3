@@ -17,6 +17,7 @@ public class SC_players : MonoBehaviour
 	public Transform atZ, atS;
 	public int OtherSource;
 	public int ArtSource;
+	public SC_invisibler SC_invisibler;
 	
 	Transform Aeffs;
     Vector3[] memSourced=new Vector3[20];
@@ -66,7 +67,10 @@ public class SC_players : MonoBehaviour
         int bas=OtherSource;
 		
 		int A=guitar/100;
+		int B=guitar%100;
 		Aeffs.GetComponent<SC_seeking>().offset = new Vector3(0f,0f,-450f*A);
+		if(B==1) SC_invisibler.invisible = true;
+		else SC_invisibler.invisible = false;
 		
         int M=bas/16;
         if(M>3) M=0;
@@ -116,11 +120,15 @@ public class SC_players : MonoBehaviour
         else drillPar.localPosition=new Vector3(0f,1.9f,0f);
 
         int D=(bas%4)/2;
-        if(D==1&&drill3T.localPosition.y<1.4f){
+        if(D==1&&drill3T.localPosition.y<1.44f){
 	        drill3T.localPosition+=new Vector3(0f,0.05f,0f);
 		}
-    	if(D==0&&drill3T.localPosition.y>0.45f){
+    	if(D==0&&drill3T.localPosition.y>0.46f){
 		   	drill3T.localPosition-=new Vector3(0f,0.05f,0f);
 	    }
+		
+		if(SC_invisibler.invisible) drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
+		
+		SC_invisibler.LaterUpdate();
     }
 }

@@ -24,6 +24,8 @@ public class SC_inv_mover : MonoBehaviour {
 
 	void Update()
 	{
+		if(!SC_control.timeStop){
+		
 		if(!tab)
 		if(Input.GetKeyDown(KeyCode.E)&&!active)
 		{
@@ -46,6 +48,8 @@ public class SC_inv_mover : MonoBehaviour {
 		if(Input.GetKeyUp(KeyCode.Escape))
 		{
 			if(thisMain) SC_control.invBlockExit=false;
+		}
+		
 		}
 
 		if(tab&&(int)Communtron4.position.y==100)

@@ -38,7 +38,7 @@ public class SC_arrow_rot : MonoBehaviour {
 		if(dX==0f) dX=0.0001f;
 		float alpha=Mathf.Atan(dY/dX)*(180f/3.14159f)-90f;
 		if(dX>=0f) alpha+=180f;
-		if(Mathf.Sqrt(dX*dX+dY*dY)<1f || ((dZ>=100f || dZ<=-100f)&&!this_main))
+		if(Mathf.Sqrt(dX*dX+dY*dY)<1f || ((dZ>=100f || dZ<=-100f)&&!this_main) || (!this_main&&respawn_point.GetComponent<SC_invisibler>().invisible))
 		{
 			transform.localPosition=new Vector3(1000f,0f,0f);
 		}

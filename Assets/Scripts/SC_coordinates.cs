@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class SC_coordinates : MonoBehaviour {
 
 	public Transform player;
+	public SC_invisibler SC_invisibler;
 	public Text coordinates;
 	public bool mtp_coords;
 	public Text nickname;
@@ -31,7 +32,7 @@ public class SC_coordinates : MonoBehaviour {
 		if(mtp_coords)
 		{
 			nickname.text=nickSource.text;
-			if(player.position.z>100f) coordinates.text="...";
+			if(player.position.z>100f || SC_invisibler.invisible) coordinates.text="...";
 			if(nickSource.text==""||nickSource.text=="0") infoMTP.localPosition=new Vector3(10000f,0f,0f);
 			else infoMTP.localPosition=startPos;
 		}

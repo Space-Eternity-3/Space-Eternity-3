@@ -5,7 +5,10 @@ using UnityEngine;
 public class SC_invisibler : MonoBehaviour
 {
 	public Renderer[] parts;
+	public TextMesh nick;
+	public Color32 def, dis;
 	public bool invisible;
+	public bool this_main;
 	
     public void LaterUpdate()
 	{
@@ -14,5 +17,9 @@ public class SC_invisibler : MonoBehaviour
 		{
 			parts[i].enabled = !invisible;
 		}
+		
+		if(!this_main)
+		if(invisible) nick.color = dis;
+		else nick.color = def;
 	}
 }

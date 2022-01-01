@@ -10,6 +10,8 @@ using System;
 public class SC_control : MonoBehaviour {
 
 	public Canvas Screen1;
+	public Canvas Screen2;
+	public Canvas Screen3;
 	public Transform Communtron1;
 	public Transform Communtron2;
 	public Transform Communtron3;
@@ -17,6 +19,7 @@ public class SC_control : MonoBehaviour {
 	public Transform Communtron5;
 	public GameObject CommuntronM1;
 	public Transform player;
+	public Transform player_illusion;
 	public Transform camera;
 	public Transform explosion;
 	public Transform explosionM;
@@ -83,6 +86,7 @@ public class SC_control : MonoBehaviour {
 	
 	public Color32 PowerNormal; 
 	public Color32 PowerBurning;
+	public Color32 PowerBlocked;
 
 	public Transform darkner;
 	Vector3 darknerV;
@@ -112,6 +116,7 @@ public class SC_control : MonoBehaviour {
 	public SC_slots SC_slots;
 	public SC_halloween SC_halloween;
 	public SC_artefacts SC_artefacts;
+	public SC_invisibler SC_invisibler;
 
 	public Transform[] P = new Transform[10];
 	public SC_players[] PL = new SC_players[10];
@@ -134,7 +139,10 @@ public class SC_control : MonoBehaviour {
 	public Text health_Text, turbo_Text, power_Text;
 	
 	public int ArtSource = 0;
-
+	public bool pause = false;
+	public bool timeStop = false;
+	
+	bool escaped = false;
 	string RPU = "XXX";
 	int MTPloadedCounter=5;
 
@@ -164,16 +172,26 @@ public class SC_control : MonoBehaviour {
 		if(true) power.color=PowerNormal;
 		else power.color=PowerBurning;
 		
+		if(SC_invisibler.invisible) power.color=PowerBurning;
+		else
+		{
+			if(power_V<F_barrier) power.color=PowerBlocked;
+			else power.color=PowerNormal;
+		}
+		
 		if(turbo) rocket_fuel.color=FuelBurning;
 		else
 		{
-			if(turbo_V<=F_barrier) rocket_fuel.color=FuelBlocked;
+			if(turbo_V<F_barrier) rocket_fuel.color=FuelBlocked;
 			else rocket_fuel.color=FuelNormal;
 		}
 		
 		//cam pos
 		camera.position=new Vector3(player.position.x,player.position.y,camera.position.z);
 
+
+		if(!timeStop){
+			
 		//rotate player
 		mX=Input.mousePosition.x-Screen.width/2;
 		mY=Input.mousePosition.y-Screen.height/2;
@@ -184,11 +202,15 @@ public class SC_control : MonoBehaviour {
 		float pom=Mathf.Atan(mY/mX)*57.296f;
 		Quaternion quat_food=new Quaternion(0f,0f,0f,0f);
 		if(mX<0) pom=pom+180f;
-		quat_food.eulerAngles=new Vector3(0f,0f,pom);
-		player.rotation=quat_food;
+		
+		quat_food.eulerAngles = new Vector3(0f,0f,pom);
+		player.rotation = quat_food;
+		
+		quat_food.eulerAngles = new Vector3(90f-pom,90f,-90f);
+		player_illusion.rotation = quat_food;
 
 		//BRAKE
-		if(Input.GetKey(KeyCode.LeftAlt))
+		if(Input.GetKey(KeyCode.LeftAlt)&&!pause)
 		{
 			brake=true;
 			if(!turbo&&!engineON)
@@ -206,7 +228,7 @@ public class SC_control : MonoBehaviour {
 			//engine.material=E1;
 		}
 		//ENGINE
-		if(Input.GetKey(KeyCode.Space)&&living)
+		if(Input.GetKey(KeyCode.Space)&&living&&!pause)
 		{
 			engineON=true;
 			if(!turbo)
@@ -233,9 +255,9 @@ public class SC_control : MonoBehaviour {
 			//engine.material=E1;
 		}
 		//TURBO
-		if((Input.GetKey(KeyCode.LeftShift)&&turbo_V>0f)&&Communtron2.position.x==0&&living)
+		if((Input.GetKey(KeyCode.LeftShift)&&turbo_V>0f)&&Communtron2.position.x==0&&living&&!pause)
 		{
-			if(turbo_V>F_barrier)
+			if(turbo_V>=F_barrier)
 			{
 				turbo=true;
 				F=V_to_F(float.Parse(SC_data.Gameplay[11]),true);
@@ -282,18 +304,31 @@ public class SC_control : MonoBehaviour {
         }
 		
 		//DRILL
-		if(Input.GetKeyDown(KeyCode.R))
+		if(!SC_invisibler.invisible)
+		{
+			if(Input.GetKeyDown(KeyCode.R)&&!pause)
+			{
+				if(drill3B) 
+				{
+					drill3B=false;
+					Communtron2.position-=new Vector3(1f,0f,0f);
+				}
+				else
+				{
+					drill3B=true;
+					Communtron2.position+=new Vector3(1f,0f,0f);
+				}
+			}
+		}
+		else
 		{
 			if(drill3B) 
 			{
 				drill3B=false;
 				Communtron2.position-=new Vector3(1f,0f,0f);
 			}
-			else
-			{
-				drill3B=true;
-				Communtron2.position+=new Vector3(1f,0f,0f);
-			}
+		}
+		
 		}
 
 		//KILL
@@ -317,6 +352,8 @@ public class SC_control : MonoBehaviour {
 				}
 				Debug.Log("Player died");
 				Screen1.targetDisplay=1;
+				Screen2.targetDisplay=1;
+				Screen3.targetDisplay=0;
 			}
 			else
 			{
@@ -352,11 +389,10 @@ public class SC_control : MonoBehaviour {
 			playerR.velocity=new Vector3(0f,0f,0f);
 		}
 
-		//Game end
-		if(Input.GetKey("escape")&&!invBlockExit)
-		{
-			MenuReturn();
-		}
+		//Game pause
+		if(Input.GetKeyUp("escape")) escaped = false;
+		if(Input.GetKey("escape")&&!invBlockExit&&!escaped)
+		esc_press(true);
 
 		//Restart lags
 		if(truePing>2.5f)
@@ -364,6 +400,27 @@ public class SC_control : MonoBehaviour {
 			Debug.LogWarning("Ping over 2.50s");
 			MenuReturn();
 		}
+	}
+	public void esc_press(bool bo)
+	{
+		if(bo) escaped = true;
+		pause = !pause;
+		Screen3.enabled = pause;
+		if((int)Communtron1.position.z == 0)
+		{
+			if(pause)
+			{
+				Screen1.targetDisplay = 1;
+				Screen2.targetDisplay = 1;
+			}
+			else
+			{
+				Screen1.targetDisplay = 0;
+				Screen2.targetDisplay = 0;
+			}
+		}
+		if(pause && (int)Communtron4.position.y!=100) {Time.timeScale = 0f; timeStop = true;}
+		else {Time.timeScale = 1f; timeStop = false;}
 	}
 	public void MainSaveData()
 	{
@@ -591,8 +648,8 @@ public class SC_control : MonoBehaviour {
 			turbo_V+=unit*float.Parse(SC_data.Gameplay[0]);
 		}
 		//power regeneration
-		int n = SC_artefacts.GetArtefactID();
-		power_V += unit * SC_artefacts.powerRM[n];
+		int nn = SC_artefacts.GetArtefactID();
+		power_V += unit * SC_artefacts.powerRM[nn];
 		
 		if(health_V>1f) health_V=1f;
 		if(turbo_V>1f) turbo_V=1f;
@@ -686,15 +743,16 @@ public class SC_control : MonoBehaviour {
 		localPing++;
 
 		//drill fixed update
-		if(drill3B&&drill3T.localPosition.y<1.4f)
+		if(drill3B&&drill3T.localPosition.y<1.44f)
 		{
 			drill3T.localPosition+=new Vector3(0f,0.05f,0f);
 		}
-		if(!drill3B&&drill3T.localPosition.y>0.45f)
+		if(!drill3B&&drill3T.localPosition.y>0.46f)
 		{
 			drill3T.localPosition-=new Vector3(0f,0.05f,0f);
 		}
-		if(drill3T.localPosition.y>1.4f&&Mathf.Sqrt(playerR.velocity.x*playerR.velocity.x+playerR.velocity.y*playerR.velocity.y)<1000f)
+		if(SC_invisibler.invisible) drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
+		if(drill3T.localPosition.y==1.45f&&Mathf.Sqrt(playerR.velocity.x*playerR.velocity.x+playerR.velocity.y*playerR.velocity.y)<1000f)
 		{
 			Communtron1.localScale=new Vector3(Communtron1.localScale.x,Communtron1.localScale.y,2f);
 		}
@@ -925,6 +983,9 @@ public class SC_control : MonoBehaviour {
 					//Debug.Log("particles 4");
 					Instantiate(receiveParticles,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
+					
+				//case 5: immortal particles
+				//case 6: invisibility particles
 			}
 		}
 		if(arg[0]=="/RetInventory")
@@ -994,6 +1055,10 @@ public class SC_control : MonoBehaviour {
 			cmdArray[j]="0";
 			if(j<9) betterInvConverted[j]=new Vector3(0f,0f,0f);
 		}
+		
+		Screen1.targetDisplay=0;
+		Screen2.targetDisplay=0;
+		Screen3.enabled = false;
 
 		worldID=(int)Communtron4.position.y;
 		worldDIR="../../saves/UniverseData"+worldID+"/";

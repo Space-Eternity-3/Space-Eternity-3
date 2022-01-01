@@ -33,12 +33,12 @@ public class SC_camera : MonoBehaviour {
 	void Update()
 	{
 		//Ctrl + Scroll
-		if(Input.GetAxisRaw("Mouse ScrollWheel")<0&&Input.GetKey(KeyCode.LeftControl)&&Communtron1.position.z==0f)
+		if(Input.GetAxisRaw("Mouse ScrollWheel")<0&&Input.GetKey(KeyCode.LeftControl)&&Communtron1.position.z==0f&&!SC_control.pause)
  		{
      		if(camZ>min) camZ-=2.5f;
 			save_zoom(camZ);
  		}
-		if(Input.GetAxisRaw("Mouse ScrollWheel")>0&&Input.GetKey(KeyCode.LeftControl)&&Communtron1.position.z==0f)
+		if(Input.GetAxisRaw("Mouse ScrollWheel")>0&&Input.GetKey(KeyCode.LeftControl)&&Communtron1.position.z==0f&&!SC_control.pause)
  		{
      		if(camZ<max) camZ+=2.5f;
 			save_zoom(camZ);
@@ -68,7 +68,11 @@ public class SC_camera : MonoBehaviour {
 				SC_control.health_V=1f;
 				SC_control.turbo_V=0f;
 				SC_control.power_V=0f;
-				SC_control.Screen1.targetDisplay=0;
+				if(!SC_control.pause)
+				{
+					SC_control.Screen1.targetDisplay=0;
+					SC_control.Screen2.targetDisplay=0;
+				}
 				SC_control.playerR.velocity=new Vector3(0f,0f,0f);
 				SC_control.living=true;
 				player.position=new Vector3(respawn.position.x,respawn.position.y,0f);

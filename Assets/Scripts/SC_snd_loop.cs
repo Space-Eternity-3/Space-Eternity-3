@@ -36,7 +36,7 @@ public class SC_snd_loop : MonoBehaviour
     {
         sound_locked[ind] = false;
     }
-    void FixedUpdate()
+    void Update()
     {
         int i,j;
         float max,pom,V;
@@ -54,7 +54,8 @@ public class SC_snd_loop : MonoBehaviour
             }
             float mn = float.Parse(SC_sounds.SC_data.volume) * sound_nvl_[i] * SC_sounds.SC_data.global_volume;
             V*=0.5f; if(V>=1f) V=1f;
-            sounds[i].volume = V * mn;
+            if(!SC_control.timeStop) sounds[i].volume = V * mn;
+			else sounds[i].volume = 0f;
             sounds[i].pitch = sound_ptc_[i];
         }
     }
