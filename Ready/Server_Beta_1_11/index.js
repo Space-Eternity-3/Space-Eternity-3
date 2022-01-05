@@ -1107,6 +1107,13 @@ wss.on('connection', function connection(ws) {
 		
 		sendToAllClients("/InfoClient "+arg[1]+" "+arg[2]+" X X");
 	}
+	if(arg[0]=="/InvisibilityPulse")
+	{
+		//InvisibilityPulse 1[PlayerID] 2[DataString]
+		if(!checkPlayer(arg[1],arg[msl-2])) return;
+		
+		sendToAllClients("/RetInvisibilityPulse "+arg[1]+" "+arg[2]+" X X");
+	}
     if(arg[0]=="/Backpack")
     {
       //Backpack 1[PlayerID] 2[Item] 3[Count] 4[Slot]

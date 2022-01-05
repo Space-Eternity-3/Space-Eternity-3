@@ -34,7 +34,7 @@ public class SC_settings : MonoBehaviour
     }
     void Update()
     {
-        if(namte=="music") music.volume=(slider.value*a+b)*music_natural_volume;
+        if(namte=="music" && SC_data.menu) music.volume=(slider.value*a+b)*music_natural_volume;
     }
     void Start()
     {

@@ -131,6 +131,9 @@ public class SC_control : MonoBehaviour {
 	int[] Fa = new int[10];
 	int[] At = new int[10];
 	string[] Na = new string[10];
+	bool[] Nulx = new bool[10];
+	
+	public bool[] NUL = new bool[10];
 
 	public string[] cmdArray = new string[2048];
 	int n=0; int fixup=0;
@@ -141,10 +144,13 @@ public class SC_control : MonoBehaviour {
 	public int ArtSource = 0;
 	public bool pause = false;
 	public bool timeStop = false;
+	public int timeInvisiblePulse;
 	
 	bool escaped = false;
 	string RPU = "XXX";
 	int MTPloadedCounter=5;
+	
+	public int[] ramvis = new int[10];
 
 	public string invCurrent()
 	{
@@ -329,6 +335,8 @@ public class SC_control : MonoBehaviour {
 			}
 		}
 		
+		health_Text_update();
+		
 		}
 
 		//KILL
@@ -422,6 +430,11 @@ public class SC_control : MonoBehaviour {
 		if(pause && (int)Communtron4.position.y!=100) {Time.timeScale = 0f; timeStop = true;}
 		else {Time.timeScale = 1f; timeStop = false;}
 	}
+	public void InvisiblityPulseSend(string str)
+	{
+		if(SC_invisibler.invisible)
+		SendMTP("/InvisibilityPulse "+connectionID+" "+str);
+	}
 	public void MainSaveData()
 	{
 		int z;
@@ -512,6 +525,9 @@ public class SC_control : MonoBehaviour {
 
 		float curFr=Mathf.Floor(turbo_V*50f);
 		turbo_Text.text="Turbo "+curFr+"/50";
+		
+		float curPr=Mathf.Floor(power_V*50f);
+		power_Text.text=SC_artefacts.bar3namets[SC_artefacts.GetArtefactID()]+" "+curPr+"/50";
 	}
 	public float Pitagoras(Vector3 pit)
 	{
@@ -530,6 +546,9 @@ public class SC_control : MonoBehaviour {
 		if(licznikD>0) licznikD--;
 		if(dmLicz>0) dmLicz--;
 		if(saveCo>0) saveCo--;
+		for(int ij=0;ij<10;ij++)
+			if(ramvis[ij]>0) ramvis[ij]--;
+		
 		livTime++;
 
 		//Main save data
@@ -548,13 +567,7 @@ public class SC_control : MonoBehaviour {
 			if(MTPloadedCounter==0) MTPloadedCounter=5;
 		}
 
-		//Turbo eat
-		if(turbo)
-		{
-			turbo_V-=unit*float.Parse(SC_data.Gameplay[1]);
-		}
-
-		//Force
+		//something engine
 		float pX=0f,pY=0f;
 		if(engineON||turbo||brake)
 		{
@@ -572,6 +585,7 @@ public class SC_control : MonoBehaviour {
 		}
 		else enMode=0;
 
+		//force generate
 		float dX=0f,dY=0f,DragSize=float.Parse(SC_data.Gameplay[14]);
 		
 		dX-=0.001f*VacuumDrag*DragSize*playerR.velocity.x*Mathf.Abs(playerR.velocity.x);
@@ -588,8 +602,6 @@ public class SC_control : MonoBehaviour {
 		healthOld.fillAmount=(health_V*0.8f)+0.1f;
 		rocket_fuel.fillAmount=(turbo_V*0.8f)+0.1f;
 		power.fillAmount=(power_V*0.8f)+0.1f;
-		
-		health_Text_update();
 
 		if(healthOld.fillAmount<health.fillAmount)
 		{
@@ -633,6 +645,7 @@ public class SC_control : MonoBehaviour {
 			{
 				SC_bullet1.id=UnityEngine.Random.Range(1,999999999);
 				SendMTP("/BulletSend "+connectionID+" "+SC_bullet1.type+" 1 "+transform.position.x+" "+transform.position.y+" "+SC_bullet1.id+";"+SC_bullet1.mX+";"+SC_bullet1.mY+" "+playerR.velocity.x+" "+playerR.velocity.y);
+				InvisiblityPulseSend("none");
 			}
 			Instantiate(Copper_bullet,transform.position,transform.rotation);
 		}
@@ -642,15 +655,41 @@ public class SC_control : MonoBehaviour {
 		{
 			health_V+=unit*SC_artefacts.GetProtRegenMultiplier()*float.Parse(SC_data.Gameplay[5])/Mathf.Pow(health_base,SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd());
 		}
-		//fuel regeneration
+		//turbo regeneration
 		if(!turbo)
 		{
 			turbo_V+=unit*float.Parse(SC_data.Gameplay[0]);
 		}
 		//power regeneration
 		int nn = SC_artefacts.GetArtefactID();
-		power_V += unit * SC_artefacts.powerRM[nn];
+		if(
+			(nn==2 && false)||
+			(nn==3 && !SC_invisibler.invisible)||
+			(nn==5 && false)||
+			(nn==6 && false)
+			
+		) power_V += unit * SC_artefacts.powerRM[nn];
 		
+		//turbo eat
+		if(turbo)
+		{
+			turbo_V-=unit*float.Parse(SC_data.Gameplay[1]);
+		}
+		
+		//power eat
+		int mm = SC_artefacts.GetArtefactID();
+		if(
+			(mm==2 && false)||
+			(mm==3 && SC_invisibler.invisible)||
+			(nn==5 && false)||
+			(mm==6 && false)
+			
+		) power_V -= unit * SC_artefacts.powerUM[mm];
+		
+		//invisibility stop
+		if(power_V<=0f && SC_invisibler.invisible) SC_invisibler.invisible = false;
+		
+		//reducing bars
 		if(health_V>1f) health_V=1f;
 		if(turbo_V>1f) turbo_V=1f;
 		if(turbo_V<0f) turbo_V=0f;
@@ -671,7 +710,7 @@ public class SC_control : MonoBehaviour {
 			string eData=RPU;
 			string[] tabe=eData.Split(' ');
 			float PRx=0f;
-			int FRx=0, ATx=0;
+			int FRx=0, ATx=1;
         	int i,k;
 			float pxx,pyy;
 			returnedPing=int.Parse(tabe[connectionID+21]);
@@ -718,10 +757,11 @@ public class SC_control : MonoBehaviour {
 					if(Nax=="0") Nax="";
 					exist=true;
 				}
-				Pa[i]=Px; Ra[i]=Rx; if(exist)Rt[i]=PRx; Fa[i]=FRx; At[i]=ATx; Na[i]=Nax; RRa[i]=RRx;
+				Pa[i]=Px; Ra[i]=Rx; if(exist)Rt[i]=PRx; Fa[i]=FRx; At[i]=ATx; Na[i]=Nax; RRa[i]=RRx; Nulx[i]=exist;
 			}
 			for(h=1;h<=9;h++)
 			{
+				NUL[h] = Nulx[h];
 				P[h].position = Pa[h];
 				PL[h].ArtSource = At[h];
 				PL[h].OtherSource = Fa[h];
@@ -751,8 +791,9 @@ public class SC_control : MonoBehaviour {
 		{
 			drill3T.localPosition-=new Vector3(0f,0.05f,0f);
 		}
+		
 		if(SC_invisibler.invisible) drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
-		if(drill3T.localPosition.y==1.45f&&Mathf.Sqrt(playerR.velocity.x*playerR.velocity.x+playerR.velocity.y*playerR.velocity.y)<1000f)
+		if(drill3T.localPosition.y>=1.44f&&Mathf.Sqrt(playerR.velocity.x*playerR.velocity.x+playerR.velocity.y*playerR.velocity.y)<1000f)
 		{
 			Communtron1.localScale=new Vector3(Communtron1.localScale.x,Communtron1.localScale.y,2f);
 		}
@@ -813,6 +854,8 @@ public class SC_control : MonoBehaviour {
 		{
 			cmdDo(tempCmd[y-1]);
 		}
+		
+		for(int ij=1;ij<10;ij++) PL[ij].AfterFixedUpdate();
 	}
 	public void SendMTP(string msg)
 	{
@@ -856,6 +899,7 @@ public class SC_control : MonoBehaviour {
 			float truX=Mathf.Round(transform.position.x*10000f)/10000f;
 			float truY=Mathf.Round(transform.position.y*10000f)/10000f;
 			if(health_V>0f) SendMTP("/EmitParticles "+connectionID+" 2 "+truX+" "+truY);
+			InvisiblityPulseSend("wait");
 		}
 	}
 	void OnCollisionEnter(Collision collision)
@@ -933,6 +977,7 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/GrowNow"||
 		arg[0]=="/InfoClient"||
 		arg[0]=="/RetBulletSend"||
+		arg[0]=="/RetInvisibilityPulse"||
 		(arg[0]=="/RetEmitParticles" && arg[1]!=connectionID+""))
 		{
 			cmdArray[n]=e.Data;
@@ -958,6 +1003,22 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="/RetUpgrade")
 		{
 			if(arg[1]==connectionID+"") SC_upgrades.MTP_levels[int.Parse(arg[2])]++;
+		}
+		if(arg[0]=="/RetInvisibilityPulse")
+		{
+			if(connectionID+"" != arg[1])
+			{
+				int cid = int.Parse(arg[1]);
+				if(arg[2]!="wait")
+				{
+					ramvis[cid] = timeInvisiblePulse;
+				}
+				else
+				{
+					if(ramvis[cid]==0) ramvis[cid] = timeInvisiblePulse + 3;
+					else if(ramvis[cid]<=timeInvisiblePulse) ramvis[cid] = timeInvisiblePulse;
+				}
+			}
 		}
 		if(arg[0]=="/RetEmitParticles")
 		{
@@ -1156,7 +1217,6 @@ public class SC_control : MonoBehaviour {
 		health.fillAmount=healthOld.fillAmount;
 		rocket_fuel.fillAmount=(turbo_V*0.8f)+0.1f;
 		power.fillAmount=(power_V*0.8f)+0.1f;
-		health_Text_update();
 
 		if((int)Communtron4.position.y!=100)
         {

@@ -26,7 +26,6 @@ public class SC_artefacts : MonoBehaviour
 	public Color32[] Color3L = new Color32[7];
 	
 	public Text namet, description;
-	public Text bar3namet;
 	
 	public float ProtLevelAdd;
 	public float ProtRegenMultiplier;

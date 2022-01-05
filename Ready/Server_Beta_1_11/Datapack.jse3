@@ -130,7 +130,7 @@ drill_loot
 	coal: coal(100%);
 	magnetic: magnetic_stone(100%);
 	red: red(100%);
-	diamond: small_diamond(4%);
+	diamond: small_diamond(2,5%);
 }
 modified_drops
 {
@@ -177,7 +177,7 @@ asteroid_type
 	{
 		<Size>4: coal(100%);
 		<Size>5: coal(100%);
-		<Size>6: coal(97,5%) + diamond(2,5%);
+		<Size>6: coal(97%) + diamond(3%);
 		<Size>7: coal(65%) + red(35%);
 		<Size>8: coal(65%) + red(35%);
 		<Size>9: coal(45%) + red(55%);

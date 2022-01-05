@@ -13,7 +13,7 @@ public class SC_players : MonoBehaviour
     public Material M1,M2,M3,M4;
     public Transform drillPar;
     public Transform drill3T;
-	public int IDP;
+	public int IDP, IDP_phys;
 	public Transform atZ, atS;
 	public int OtherSource;
 	public int ArtSource;
@@ -26,7 +26,7 @@ public class SC_players : MonoBehaviour
     public SC_fun SC_fun;
 
     void Awake()
-    {
+    {	
         int i;
         for(i=0;i<20;i++){
             memSourced[i]=sourced.position;
@@ -35,7 +35,13 @@ public class SC_players : MonoBehaviour
 		Aeffs = Instantiate(atS,atS.position,atS.rotation);
 		Aeffs.parent = atZ; Aeffs.name = "atS" + IDP;
 		Aeffs.GetComponent<SC_seeking>().seek = transform;
+		
+		IDP_phys = IDP;
     }
+	void Start()
+	{
+		if(IDP==SC_fun.SC_control.connectionID) IDP=0;
+	}
     void ArrayPusher()
     {
         int i;
@@ -56,21 +62,44 @@ public class SC_players : MonoBehaviour
         if(m!=0) return sum/m;
         else return new Vector3(0f,0f,0f);
     }
-    void FixedUpdate()
+    public void AfterFixedUpdate()
     {
+		ArrayPusher();
         Vector3 avar=ArrayAvarge(SC_fun.smooth_size);
-        transform.position=new Vector3(avar.x,avar.y,memSourced[0].z);
+        if(SC_fun.SC_control.NUL[IDP_phys]) transform.position=new Vector3(avar.x,avar.y,memSourced[0].z);
+		else transform.position=new Vector3(0f,0f,10000f+IDP*5f);
         transform.rotation=sourced.rotation;
-        ArrayPusher();
 
 		int guitar=ArtSource;
         int bas=OtherSource;
 		
 		int A=guitar/100;
 		int B=guitar%100;
-		Aeffs.GetComponent<SC_seeking>().offset = new Vector3(0f,0f,-450f*A);
-		if(B==1) SC_invisibler.invisible = true;
-		else SC_invisibler.invisible = false;
+		
+		SC_seeking obj = Aeffs.GetComponent<SC_seeking>();
+		
+		if(B==1)
+		{
+			if(SC_fun.SC_control.ramvis[IDP]>0 && SC_fun.SC_control.ramvis[IDP]<=SC_fun.SC_control.timeInvisiblePulse)
+			{
+				obj.offset = new Vector3(0f,0f,450f);
+				SC_invisibler.visible = true;
+			}
+			else
+			{
+				obj.offset = new Vector3(0f,0f,0f);
+				SC_invisibler.visible = false;
+			}
+			Aeffs.rotation = transform.rotation;
+			SC_invisibler.invisible = true;
+		}
+		else
+		{
+			SC_fun.SC_control.ramvis[IDP]=0;
+			obj.offset = new Vector3(0f,0f,-450f*A);
+			Aeffs.rotation = new Quaternion(0f,0f,0f,0f);
+			SC_invisibler.invisible = false;
+		}
 		
         int M=bas/16;
         if(M>3) M=0;
@@ -130,5 +159,6 @@ public class SC_players : MonoBehaviour
 		if(SC_invisibler.invisible) drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
 		
 		SC_invisibler.LaterUpdate();
+		obj.Update();
     }
 }

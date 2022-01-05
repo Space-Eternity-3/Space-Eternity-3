@@ -455,6 +455,7 @@ public class SC_fobs : MonoBehaviour
                     MTPblocker++;
                     MTPsend(ObjID,ObjID2,hId,hId,-1,slot);
                     SC_control.SendMTP("/FobsPing "+SC_control.connectionID+";"+ID+";"+index);
+					SC_control.InvisiblityPulseSend("none");
                 }
                 Replace(hId,multiplayer);
             }
@@ -473,6 +474,7 @@ public class SC_fobs : MonoBehaviour
                         MTPblocker++;
                         MTPsend(ObjID,ObjID2,0,DropID,DropCount,slot);
                         SC_control.SendMTP("/FobsPing "+SC_control.connectionID+";"+ID+";"+index);
+						SC_control.InvisiblityPulseSend("none");
                     }
                     Replace(0,multiplayer);
                 }
@@ -493,6 +495,7 @@ public class SC_fobs : MonoBehaviour
                         MTPblocker++;
                         MTPsend(ObjID,ObjID2,0,DropID,DropCount,slot);
                         SC_control.SendMTP("/FobsPing "+SC_control.connectionID+";"+ID+";"+index);
+						SC_control.InvisiblityPulseSend("none");
                     }
                     Replace(0,multiplayer);
                 }
@@ -518,6 +521,7 @@ public class SC_fobs : MonoBehaviour
                         MTPblocker++;
                         MTPsend(ObjID,ObjID2,0,ldI,ldC,slot);
                         SC_control.SendMTP("/FobsPing "+SC_control.connectionID+";"+ID+";"+index);
+						SC_control.InvisiblityPulseSend("none");
                     }
                     Replace(0,multiplayer);
                 }

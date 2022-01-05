@@ -8,6 +8,7 @@ public class SC_invisibler : MonoBehaviour
 	public TextMesh nick;
 	public Color32 def, dis;
 	public bool invisible;
+	public bool visible;
 	public bool this_main;
 	
     public void LaterUpdate()
@@ -19,7 +20,7 @@ public class SC_invisibler : MonoBehaviour
 		}
 		
 		if(!this_main)
-		if(invisible) nick.color = dis;
+		if(invisible && !visible) nick.color = dis;
 		else nick.color = def;
 	}
 }
