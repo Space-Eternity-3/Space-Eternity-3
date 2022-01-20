@@ -29,11 +29,14 @@ public class SC_artefacts : MonoBehaviour
 	
 	public float ProtLevelAdd;
 	public float ProtRegenMultiplier;
+	public int ImpulseTime;
+	public float ImpulseSpeed;
 	
 	public SC_slots SC_slots;
 	public SC_bars SC_bars;
 	public SC_control SC_control;
 	public SC_seeking SC_seeking;
+	public SC_seeking SC_seeking2;
 	public SC_invisibler SC_invisibler;
 	
 	public bool IsArtefact(int n)
@@ -56,12 +59,21 @@ public class SC_artefacts : MonoBehaviour
 	}
 	public int GetArtSource(int n)
 	{
-		if(!SC_invisibler.invisible) return n*100;
+		int eff;
+		if(!SC_invisibler.invisible)
+		{
+			eff = n*100;
+			if(SC_control.impulse_enabled) eff+=2;
+			else {} //something
+			return eff;
+		}
 		else return 1;
 		
-		/* (%100)
+		/* (%100-ID) %2:[0-static 1-rotate]
 		
-		1 - invisible
+		0 - default
+		1 - invisible (modified)
+		2 - impulse
 		
 		*/
 	}
@@ -97,16 +109,30 @@ public class SC_artefacts : MonoBehaviour
 		SC_control.PowerBurning = Color3B[n];
 		SC_control.PowerBlocked = Color3L[n];
 		
-		if(n==3 && Input.GetKeyDown(KeyCode.A) && !SC_control.pause)
+		if(n==3 && Input.GetKeyDown(KeyCode.A) && !SC_control.pause && SC_control.livTime!=0)
 		{
 			if(SC_invisibler.invisible) SC_invisibler.invisible = false;
-			else if(SC_control.power_V >= SC_control.F_barrier) SC_invisibler.invisible = true;
+			else if(SC_control.power_V >= SC_control.IL_barrier) SC_invisibler.invisible = true;
 		}
 		if(n!=3) SC_invisibler.invisible = false;
 		
-		if(!SC_invisibler.invisible) SC_seeking.offset = new Vector3(0f,0f,-450f*n); //another direction (projection)
-		else SC_seeking.offset = new Vector3(0f,0f,450f);
+		if(n==2 && Input.GetKeyDown(KeyCode.A) && !SC_control.pause && !SC_control.drill3B)
+		{
+			if(SC_control.power_V >= SC_control.IM_barrier)
+			{
+				SC_control.impulse_enabled = true;
+				SC_control.impulse_time = ImpulseTime;
+				SC_control.power_V -= SC_control.IM_barrier;
+				SC_control.impulse_reset = true;
+				//SC_control.SC_invisibler.invisible_or = true;
+			}
+		}
+		
+		if(SC_invisibler.invisible) SC_seeking.offset = new Vector3(0f,0f,450f);
+		else SC_seeking.offset = new Vector3(0f,0f,-450f*n); //normal projection
+		
 		SC_control.ArtSource = GetArtSource(n);
+		SC_seeking2.offset = new Vector3(0f,0f,-450f*(SC_control.ArtSource % 100));
 		
 		SC_bars.LateUpdate();
 		SC_control.LaterUpdate();

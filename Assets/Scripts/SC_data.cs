@@ -7,6 +7,8 @@ using System.IO;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine.SceneManagement;
+using System.Threading;
+using System.Globalization;
 using SFB;
 
 public class SC_data : MonoBehaviour
@@ -126,7 +128,7 @@ public class SC_data : MonoBehaviour
         CloseWrite();
         crashed=true;
         UnityEngine.Debug.LogError(nam+" can not be saved.");
-        UnityEngine.Application.Quit();
+        Application.Quit();
     }
     void ResetAwakeUniversal()
     {
@@ -150,12 +152,9 @@ public class SC_data : MonoBehaviour
     }
     void PreAwake()
     {
-        PreData=example;
-        int i,j,k;
-        ResetAwakeUniversal();
-        ResetAwakeWorld();
-        for(i=0;i<100;i++) for(j=0;j<61;j++) for(k=0;k<16;k++) World[i,j,k]="";
-        
+		//Culture set to comma (India converter)
+		System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("pl-PL");
+	
         string path="",file="";
         try{
             
@@ -171,7 +170,13 @@ public class SC_data : MonoBehaviour
             Application.Quit();
             throw;
         }
-
+		
+		int i,j,k;
+		PreData=example;
+        ResetAwakeUniversal();
+        ResetAwakeWorld();
+        for(i=0;i<100;i++) for(j=0;j<61;j++) for(k=0;k<16;k++) World[i,j,k]="";
+		
         if(menu)
         {
             dataSource=example;
@@ -710,7 +715,7 @@ public class SC_data : MonoBehaviour
         {
             UnityEngine.Debug.LogError("Datapack jse3 critical error: "+e);
             datapack_name.text="ERROR";
-            UnityEngine.Application.Quit();
+            Application.Quit();
         }
     }
     string ConstructPsPath(string[] tab, string var, int n)
@@ -840,6 +845,7 @@ public class SC_data : MonoBehaviour
         string raw=""; char c;
         bool comment=false,catch_all=false;
         int i,lngt=dataSource.Length;
+		
         for(i=0;i<lngt;i++)
         {
             c=dataSource[i];

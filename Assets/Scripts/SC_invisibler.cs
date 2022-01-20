@@ -9,6 +9,7 @@ public class SC_invisibler : MonoBehaviour
 	public Color32 def, dis;
 	public bool invisible;
 	public bool visible;
+	public bool invisible_or;
 	public bool this_main;
 	
     public void LaterUpdate()
@@ -16,7 +17,7 @@ public class SC_invisibler : MonoBehaviour
 		int i, lngt = parts.Length;
 		for(i=0;i<lngt;i++)
 		{
-			parts[i].enabled = !invisible;
+			parts[i].enabled = !(invisible||invisible_or);
 		}
 		
 		if(!this_main)

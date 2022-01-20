@@ -25,6 +25,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public SC_push SC_push;
     public SC_data SC_data;
     public SC_craft3 SC_craft3;
+	public SC_resume SC_resume;
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -68,6 +69,11 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
             if(ID==7) if(button.interactable) SC_craft2.Crafted();
             if(ID==8) SC_data.RemoveWarning();
             if(ID==9) SC_craft3.PageChange(index);
+			if(ID==10)
+			{
+				if(index==1) SC_resume.Resume();
+				if(index==2) SC_resume.Quit();
+			}
         }
         if(mode==1)
         {

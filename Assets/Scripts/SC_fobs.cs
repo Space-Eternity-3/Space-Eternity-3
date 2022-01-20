@@ -172,7 +172,7 @@ public class SC_fobs : MonoBehaviour
         if(b>=1&&b<=19) return true; //20 -> item respawn
         if(b>=21&&b<=22) return true; //23 -> magnetic alien waited //24 -> copper bullet
         if(b>=25&&b<=38) return true; //39 -> red bullet
-        if(b>=40&&b<=41) return true;
+        if(b>=40&&b<=47) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)
@@ -437,6 +437,8 @@ public class SC_fobs : MonoBehaviour
         float oX=transform.position.x, oY=transform.position.y;
 		float pX=player.position.x, pY=player.position.y;
 		float distance=Mathf.Sqrt((oX-pX)*(oX-pX)+(oY-pY)*(oY-pY));
+
+		if(SC_control.impulse_enabled) return;
 
         if(IsEmpty&&Communtron3.position.y==0f&&distance<15f&&topDistance(safeDistance(SC_slots.SelectedItem()))&&!Input.GetMouseButton(0)&&Communtron2.position.x==0f&&
         HasPhysicalVersion(SC_slots.SelectedItem())&&MTPblocker<=0)

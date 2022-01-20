@@ -32,6 +32,8 @@ public class SC_camera : MonoBehaviour {
 	}
 	void Update()
 	{
+		camZ=float.Parse(SC_data.camera_zoom);
+		
 		//Ctrl + Scroll
 		if(Input.GetAxisRaw("Mouse ScrollWheel")<0&&Input.GetKey(KeyCode.LeftControl)&&Communtron1.position.z==0f&&!SC_control.pause)
  		{

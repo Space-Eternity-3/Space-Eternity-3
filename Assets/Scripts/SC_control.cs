@@ -32,7 +32,7 @@ public class SC_control : MonoBehaviour {
 	public Transform respawn_point;
 	public Transform Copper_bullet;
 	public Text servername,pingname;
-	float mX,mY,X,Y,F=0.3f;
+	float mX,mY,mmX,mmY,X,Y,F=0.3f;
 	bool big_vel=false;
 
 	public Renderer engine;
@@ -45,7 +45,7 @@ public class SC_control : MonoBehaviour {
 	bool engineOFF=false;
 	bool turbo=false;
 	bool brake=false;
-	bool drill3B=false;
+	public bool drill3B=false;
 	public int enMode=0;
 	public string conID;
 	public string livID="0";
@@ -64,6 +64,8 @@ public class SC_control : MonoBehaviour {
 	int saveCo=0;
 
 	public float F_barrier;
+	public float IL_barrier;
+	public float IM_barrier;
 	public bool invBlockExit;
 
 	public float VacuumDrag,Engines;
@@ -145,10 +147,18 @@ public class SC_control : MonoBehaviour {
 	public bool pause = false;
 	public bool timeStop = false;
 	public int timeInvisiblePulse;
+	public bool impulse_reset;
+	
+	public int unstable_probability;
+	public float unstable_force;
 	
 	bool escaped = false;
 	string RPU = "XXX";
 	int MTPloadedCounter=5;
+	Quaternion lock_rot = new Quaternion(0f,0f,0f,0f);
+	
+	public bool impulse_enabled;
+	public int impulse_time;
 	
 	public int[] ramvis = new int[10];
 
@@ -181,11 +191,11 @@ public class SC_control : MonoBehaviour {
 		if(SC_invisibler.invisible) power.color=PowerBurning;
 		else
 		{
-			if(power_V<F_barrier) power.color=PowerBlocked;
+			if(power_V<IL_barrier) power.color=PowerBlocked;
 			else power.color=PowerNormal;
 		}
 		
-		if(turbo) rocket_fuel.color=FuelBurning;
+		if(turbo && !impulse_enabled) rocket_fuel.color=FuelBurning;
 		else
 		{
 			if(turbo_V<F_barrier) rocket_fuel.color=FuelBlocked;
@@ -199,9 +209,20 @@ public class SC_control : MonoBehaviour {
 		if(!timeStop){
 			
 		//rotate player
-		mX=Input.mousePosition.x-Screen.width/2;
-		mY=Input.mousePosition.y-Screen.height/2;
+		
+		mmX=Input.mousePosition.x-Screen.width/2;
+		mmY=Input.mousePosition.y-Screen.height/2;
+		
+		if(!impulse_enabled || impulse_reset)
+		{
+			mX=Input.mousePosition.x-Screen.width/2;
+			mY=Input.mousePosition.y-Screen.height/2;
+			impulse_reset = false;
+		}
 
+		if(mmX==0) mmX=1;
+		if(mmY==0) mmY=1;
+		
 		if(mX==0) mX=1;
 		if(mY==0) mY=1;
 		
@@ -211,9 +232,14 @@ public class SC_control : MonoBehaviour {
 		
 		quat_food.eulerAngles = new Vector3(0f,0f,pom);
 		player.rotation = quat_food;
+		if(ArtSource % 2 == 1) SC_artefacts.SC_seeking2.GetComponent<Transform>().rotation = quat_food;
+		else SC_artefacts.SC_seeking2.GetComponent<Transform>().rotation = new Quaternion(0f,0f,0f,0f);
 		
 		quat_food.eulerAngles = new Vector3(90f-pom,90f,-90f);
 		player_illusion.rotation = quat_food;
+		
+		SC_artefacts.SC_seeking.Update();
+		SC_artefacts.SC_seeking2.Update();
 
 		//BRAKE
 		if(Input.GetKey(KeyCode.LeftAlt)&&!pause)
@@ -277,7 +303,7 @@ public class SC_control : MonoBehaviour {
 
 		//CHECK MATERIAL
 		int M;
-		if(turbo)
+		if(turbo||impulse_enabled)
 		{
 			//turbo
 			engine.material=E3;
@@ -362,6 +388,9 @@ public class SC_control : MonoBehaviour {
 				Screen1.targetDisplay=1;
 				Screen2.targetDisplay=1;
 				Screen3.targetDisplay=0;
+				
+				SC_invisibler.invisible = false;
+				RemoveImpulse();
 			}
 			else
 			{
@@ -533,6 +562,13 @@ public class SC_control : MonoBehaviour {
 	{
 		return Mathf.Sqrt(pit.x*pit.x+pit.y*pit.y+pit.z*pit.z);
 	}
+	public void RemoveImpulse()
+	{
+		impulse_time = 0;
+		impulse_enabled = false;
+		playerR.velocity = new Vector3(0f,0f,0f);
+		//SC_invisibler.invisible_or = false;
+	}
 	void FixedUpdate()
 	{
 		if(timerH>0)
@@ -546,6 +582,8 @@ public class SC_control : MonoBehaviour {
 		if(licznikD>0) licznikD--;
 		if(dmLicz>0) dmLicz--;
 		if(saveCo>0) saveCo--;
+		impulse_time--;
+		if(impulse_time==1) RemoveImpulse();
 		for(int ij=0;ij<10;ij++)
 			if(ramvis[ij]>0) ramvis[ij]--;
 		
@@ -565,6 +603,16 @@ public class SC_control : MonoBehaviour {
 			if(MTPloadedCounter==5) SendMTP("/GrowLoaded "+SC_fun.GenLists[0]+" "+connectionID);
 			MTPloadedCounter--;
 			if(MTPloadedCounter==0) MTPloadedCounter=5;
+		}
+		
+		//rigidbody disable
+		if(impulse_enabled)
+		{
+			//playerR.detectCollisions = false;
+		}
+		else
+		{
+			//playerR.detectCollisions = true;
 		}
 
 		//something engine
@@ -596,7 +644,16 @@ public class SC_control : MonoBehaviour {
 		if(Mathf.Abs(dX)>Mathf.Abs(playerR.velocity.x)) dX=playerR.velocity.x;
 		if(Mathf.Abs(dY)>Mathf.Abs(playerR.velocity.y)) dY=playerR.velocity.y;
 		
-		playerR.velocity+=new Vector3(dX+pX,dY+pY,0f);
+		if(!impulse_enabled) playerR.velocity+=new Vector3(dX+pX,dY+pY,0f);
+		else
+		{
+			float FF = SC_artefacts.ImpulseSpeed;
+			float Fx = FF*mX/Mathf.Sqrt(mX*mX+mY*mY);
+			float Fy = FF*mY/Mathf.Sqrt(mX*mX+mY*mY);
+			float Fmul; if(impulse_time-1 >= 5) Fmul = 1;
+			else Fmul = (impulse_time-1) * 0.2f;
+			playerR.velocity = new Vector3(Fx,Fy,0f) * Fmul;
+		}
 
 		//Red health reduce
 		healthOld.fillAmount=(health_V*0.8f)+0.1f;
@@ -615,11 +672,21 @@ public class SC_control : MonoBehaviour {
 			licznikC=10;
 		}
 		
+		//unstability movement
+		if(SC_artefacts.GetArtefactID()==6)
+		if(UnityEngine.Random.Range(0,unstable_probability)==0)
+		{
+			float alp = UnityEngine.Random.Range(0,360);
+			float ux = Mathf.Cos(alp/(2f*3.14159f));
+			float uy = Mathf.Sin(alp/(2f*3.14159f));
+			playerR.velocity += new Vector3(ux*unstable_force,uy*unstable_force,0f);
+		}
+		
 		//SHOT
 		bool waru=Communtron3.position.y==0f&&Communtron2.position.x==0f&&(SC_slots.InvHaving(24)||SC_slots.InvHaving(39))&&(int)Communtron3.position.z==0;
 		if(Input.GetMouseButton(1)&&(SC_slots.InvHaving(24)||SC_slots.InvHaving(39))) presed++;
 		else presed=-10;
-		if(((presed>=0)||(presed==-9))&&cooldown==0&&waru)
+		if(((presed>=0)||(presed==-9))&&cooldown==0&&waru&&!impulse_enabled)
 		{
 			cooldown=7;
 			int slot;
@@ -645,9 +712,10 @@ public class SC_control : MonoBehaviour {
 			{
 				SC_bullet1.id=UnityEngine.Random.Range(1,999999999);
 				SendMTP("/BulletSend "+connectionID+" "+SC_bullet1.type+" 1 "+transform.position.x+" "+transform.position.y+" "+SC_bullet1.id+";"+SC_bullet1.mX+";"+SC_bullet1.mY+" "+playerR.velocity.x+" "+playerR.velocity.y);
-				InvisiblityPulseSend("none");
+				//InvisiblityPulseSend("none");
 			}
 			Instantiate(Copper_bullet,transform.position,transform.rotation);
+			SC_invisibler.invisible = false;
 		}
 
 		//health regeneration
@@ -656,14 +724,14 @@ public class SC_control : MonoBehaviour {
 			health_V+=unit*SC_artefacts.GetProtRegenMultiplier()*float.Parse(SC_data.Gameplay[5])/Mathf.Pow(health_base,SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd());
 		}
 		//turbo regeneration
-		if(!turbo)
+		if(!turbo || impulse_enabled)
 		{
 			turbo_V+=unit*float.Parse(SC_data.Gameplay[0]);
 		}
 		//power regeneration
 		int nn = SC_artefacts.GetArtefactID();
 		if(
-			(nn==2 && false)||
+			(nn==2 && !impulse_enabled)||
 			(nn==3 && !SC_invisibler.invisible)||
 			(nn==5 && false)||
 			(nn==6 && false)
@@ -671,7 +739,7 @@ public class SC_control : MonoBehaviour {
 		) power_V += unit * SC_artefacts.powerRM[nn];
 		
 		//turbo eat
-		if(turbo)
+		if(turbo && !impulse_enabled)
 		{
 			turbo_V-=unit*float.Parse(SC_data.Gameplay[1]);
 		}
@@ -884,10 +952,10 @@ public class SC_control : MonoBehaviour {
 		if(inpg%10==0) return pig+"0";
 		return pig+"";
 	}
-	public void DamageINT(int dmgINT) {Damage(dmgINT*0.01666667f);}
+	public void DamageINT(int dmgINT) {if(dmgINT!=0) Damage(dmgINT*0.01666667f);}
 	public void Damage(float dmg)
 	{
-		if(livTime<50) return;
+		if(livTime<50 || impulse_enabled) return;
 		dmg=(1.2f*dmg)/Mathf.Pow(health_base,SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd());
 		health_V-=dmg;
 		//SC_sounds.PlaySound(transform.position,2,0);
@@ -1141,6 +1209,11 @@ public class SC_control : MonoBehaviour {
 		}
 
 		Engines*=float.Parse(SC_data.Gameplay[15]);
+		//SC_artefacts.LoadDataArt();
+		
+		F_barrier -= unit * float.Parse(SC_data.Gameplay[0]);
+		IM_barrier -= unit * SC_artefacts.powerRM[2];
+		IL_barrier -= unit * SC_artefacts.powerRM[3];
 
 		int i;
 		float tX=0f,tY=0f,tH=0f,tF=0f,tP=0f,tVx=0f,tVy=0f;

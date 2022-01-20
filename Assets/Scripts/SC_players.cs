@@ -15,11 +15,12 @@ public class SC_players : MonoBehaviour
     public Transform drill3T;
 	public int IDP, IDP_phys;
 	public Transform atZ, atS;
+	public Transform atZZ, atSS;
 	public int OtherSource;
 	public int ArtSource;
 	public SC_invisibler SC_invisibler;
 	
-	Transform Aeffs;
+	Transform Aeffs, Beefs;
     Vector3[] memSourced=new Vector3[20];
     
     public SC_snd_start SC_snd_start;
@@ -35,6 +36,10 @@ public class SC_players : MonoBehaviour
 		Aeffs = Instantiate(atS,atS.position,atS.rotation);
 		Aeffs.parent = atZ; Aeffs.name = "atS" + IDP;
 		Aeffs.GetComponent<SC_seeking>().seek = transform;
+		
+		Beefs = Instantiate(atSS,atSS.position,atSS.rotation);
+		Beefs.parent = atZZ; Beefs.name = "atSS" + IDP;
+		Beefs.GetComponent<SC_seeking>().seek = transform;
 		
 		IDP_phys = IDP;
     }
@@ -77,6 +82,11 @@ public class SC_players : MonoBehaviour
 		int B=guitar%100;
 		
 		SC_seeking obj = Aeffs.GetComponent<SC_seeking>();
+		SC_seeking obj2 = Beefs.GetComponent<SC_seeking>();
+		
+		obj2.offset = new Vector3(0f,0f,-450f*B);
+		if(B % 2 == 1) Beefs.rotation = transform.rotation;
+		else Beefs.rotation = new Quaternion(0f,0f,0f,0f);
 		
 		if(B==1)
 		{
@@ -160,5 +170,6 @@ public class SC_players : MonoBehaviour
 		
 		SC_invisibler.LaterUpdate();
 		obj.Update();
+		obj2.Update();
     }
 }

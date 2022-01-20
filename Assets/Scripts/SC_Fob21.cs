@@ -158,6 +158,8 @@ public class SC_Fob21 : MonoBehaviour {
 	}
 	void OnMouseOver()
 	{
+		if(SC_control.impulse_enabled) return;
+		
 		if(Req(0))
 		{
 			if(Input.GetMouseButtonDown(0))
