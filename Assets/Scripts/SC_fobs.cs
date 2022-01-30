@@ -24,7 +24,7 @@ public class SC_fobs : MonoBehaviour
     public bool CandySource;
     public bool WindObject;
 
-    public int ShotID, GrowID, GeyzerID, ObjID, ObjID2;
+    public int ShotID, BulletID, GrowID, GeyzerID, ObjID, ObjID2;
     public int GrowTimeMin, GrowTimeMax;
     public int placeSoundID,breakSoundID;
     public string lootSE3;
@@ -67,6 +67,7 @@ public class SC_fobs : MonoBehaviour
     public int lsid;
     public bool lsb;
     bool started = false;
+	bool colied = false;
 
     public bool GetRespond()
     {
@@ -172,7 +173,7 @@ public class SC_fobs : MonoBehaviour
         if(b>=1&&b<=19) return true; //20 -> item respawn
         if(b>=21&&b<=22) return true; //23 -> magnetic alien waited //24 -> copper bullet
         if(b>=25&&b<=38) return true; //39 -> red bullet
-        if(b>=40&&b<=47) return true;
+        if(b>=40&&b<=47) return true; //48 -> unstable bullet
         return false;
     }
     void Replace(int id, bool MTPchange)
@@ -330,12 +331,13 @@ public class SC_fobs : MonoBehaviour
         if(Communtron4.position.x!=0f&&Input.GetMouseButtonDown(0)) cursed=true;
         if(cursed&&Input.GetMouseButtonUp(0)) cursed=false;
     }
-    void OnTriggerEnter(Collider collision)
-    {
-        if((collision.gameObject.name=="Bullet1(Clone)"||collision.gameObject.name=="Bullet2(Clone)")&&ShotTurn&&!mother)
+	public void AfterTriggerEnter(Collider collision)
+	{
+		if((collision.gameObject.name=="Bullet1(Clone)")&&!collision.gameObject.GetComponent<SC_bullet1>().turn_used&&ShotTurn&&!mother)
         {
             SC_bullet1 bull = collision.gameObject.GetComponent<SC_bullet1>();
-            if(bull.mode==0)
+			bull.turn_used = true; bull.MakeDestroy("TurnDestroy");
+            if(bull.mode==0 && (bull.type==BulletID || BulletID==0))
             {
                 if(multiplayer)
                 {
@@ -346,14 +348,11 @@ public class SC_fobs : MonoBehaviour
                 Replace(ShotID,multiplayer);
             }
         }
-    }
-    void OnTriggerExit(Collider collision)
+	}
+    void OnTriggerEnter(Collider collision)
     {
-        if(false&&collision.gameObject.name=="Drill2"&&PickUp&&!multiplayer)
-        {
-            com1act=false;
-            Communtron1.position-=new Vector3(1f,0f,0f);
-        }
+		if(IsEmpty) return;
+		AfterTriggerEnter(collision);
     }
     void OnDestroy()
     {
@@ -365,7 +364,11 @@ public class SC_fobs : MonoBehaviour
         }
 
         try{
-            if(com1act) Communtron1.position-=new Vector3(1f,0f,0f);
+            if(com1act)
+			{
+				if(IsEmpty) Communtron1.position+=new Vector3(1f,0f,0f);
+				else Communtron1.position-=new Vector3(1f,0f,0f);
+			}
         }catch(Exception e) {}
     }
     void FixedUpdate()
@@ -459,6 +462,7 @@ public class SC_fobs : MonoBehaviour
                     SC_control.SendMTP("/FobsPing "+SC_control.connectionID+";"+ID+";"+index);
 					SC_control.InvisiblityPulseSend("none");
                 }
+				SC_control.public_placed = true;
                 Replace(hId,multiplayer);
             }
         }
@@ -543,6 +547,11 @@ public class SC_fobs : MonoBehaviour
             com1act=true;
             Communtron1.position+=new Vector3(1f,0f,0f);
         }
+		if(IsEmpty)
+		{
+			com1act=true;
+            Communtron1.position-=new Vector3(1f,0f,0f);
+		}
     }
     void OnMouseExit()
     {
@@ -555,5 +564,10 @@ public class SC_fobs : MonoBehaviour
             com1act=false;
             Communtron1.position-=new Vector3(1f,0f,0f);
         }
+		if(IsEmpty)
+		{
+			com1act=false;
+            Communtron1.position+=new Vector3(1f,0f,0f);
+		}
     }
 }

@@ -34,11 +34,31 @@ public class SC_artefacts : MonoBehaviour
 	
 	public SC_slots SC_slots;
 	public SC_bars SC_bars;
+	public SC_data SC_data;
 	public SC_control SC_control;
 	public SC_seeking SC_seeking;
 	public SC_seeking SC_seeking2;
 	public SC_invisibler SC_invisibler;
 	
+	public void LoadDataArt()
+	{
+		ProtLevelAdd = float.Parse(SC_data.Gameplay[16]);
+		ProtRegenMultiplier = float.Parse(SC_data.Gameplay[17]);
+		
+		powerRM[2] = float.Parse(SC_data.Gameplay[18]);
+		ImpulseTime = (int)(float.Parse(SC_data.Gameplay[19])*50+2);
+		if(ImpulseTime < 2) ImpulseTime = 2;
+		ImpulseSpeed = float.Parse(SC_data.Gameplay[20]);
+		
+		powerRM[3] = float.Parse(SC_data.Gameplay[21]);
+		powerUM[3] = float.Parse(SC_data.Gameplay[22]);
+		
+		SC_control.unstable_probability = (int)(float.Parse(SC_data.Gameplay[23])*50+1);
+		if(SC_control.unstable_probability < 1) SC_control.unstable_probability = 1;
+		SC_control.unstable_sprobability = (int)(float.Parse(SC_data.Gameplay[24])*50+1);
+		if(SC_control.unstable_sprobability < 1) SC_control.unstable_sprobability = 1;
+		SC_control.unstable_force = float.Parse(SC_data.Gameplay[25]);
+	}
 	public bool IsArtefact(int n)
 	{
 		int i;
@@ -69,7 +89,7 @@ public class SC_artefacts : MonoBehaviour
 		}
 		else return 1;
 		
-		/* (%100-ID) %2:[0-static 1-rotate]
+		/* (%100-ID) %2:[1-static 0-rotate]
 		
 		0 - default
 		1 - invisible (modified)
@@ -112,7 +132,16 @@ public class SC_artefacts : MonoBehaviour
 		if(n==3 && Input.GetKeyDown(KeyCode.A) && !SC_control.pause && SC_control.livTime!=0)
 		{
 			if(SC_invisibler.invisible) SC_invisibler.invisible = false;
-			else if(SC_control.power_V >= SC_control.IL_barrier) SC_invisibler.invisible = true;
+			else if(SC_control.power_V >= SC_control.IL_barrier)
+			{
+				SC_invisibler.invisible = true;
+				//Transform trn = Instantiate(SC_control.InvisiPart,SC_control.transform.position,new Quaternion(0f,0f,0f,0f));
+				//trn.GetComponent<SC_seeking>().enabled = true;
+				if((int)SC_control.Communtron4.position.y == 100)
+				{
+					SC_control.SendMTP("/EmitParticles "+SC_control.connectionID+" 6 0 0");
+				}
+			}
 		}
 		if(n!=3) SC_invisibler.invisible = false;
 		
@@ -124,7 +153,7 @@ public class SC_artefacts : MonoBehaviour
 				SC_control.impulse_time = ImpulseTime;
 				SC_control.power_V -= SC_control.IM_barrier;
 				SC_control.impulse_reset = true;
-				//SC_control.SC_invisibler.invisible_or = true;
+				SC_control.turbo = false;
 			}
 		}
 		

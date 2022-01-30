@@ -25,7 +25,7 @@ public class SC_nose : MonoBehaviour {
 		bool dri=(Communtron1.localScale==new Vector3(2f,2f,2f));
 		bool dron=(Communtron2.position.x>0f);
 		if(dron) mat=4;
-		if(Input.GetMouseButton(0)&&Communtron3.position.y==0f)
+		if((Input.GetMouseButton(0)||Input.GetMouseButton(1))&&Communtron3.position.y==0f)
 		{
 			mat=3;
 			if(dron) mat=4;

@@ -116,6 +116,20 @@ craftings
 		3: death_alien + red(3) -> red_alien;
 		4: death_alien -> stone(5);
 	}
+	<Page>13
+	{
+		title_image: gray_artefact;
+		1: stone(80) -> gray_artefact;
+	}
+	<Page>14
+	{
+		title_image: protection_artefact;
+		1: gray_artefact + bush(8) -> protection_artefact;
+		2: gray_artefact + copper(8) -> impulse_artefact;
+		3: gray_artefact + small_amethyst(2) -> illusion_artefact;
+		4: gray_artefact + gold(2) -> immortality_artefact;
+		5: gray_artefact + red(8) -> unstable_artefact;
+	}
 	<Max 512 pages>
 }
 drill_loot
@@ -142,6 +156,7 @@ modified_drops
 }
 gameplay
 {
+	health_level_add: 0;
 	drill_level_add: 0;
 	bullet_level_add: 0;
 	
@@ -160,6 +175,20 @@ gameplay
 	player_turbo_speed: 18; <Only if turbo level is 0>
 	drill_normal_speed: 8;
 	drill_brake_speed: -5;
+	
+	at_protection_health_level_add: 2,272;
+	at_protection_health_regenerate_multiplier: 1,5;	<relative variable>
+					
+	at_impulse_power_regenerate_multiplier: 1;
+	at_impulse_time: 0,4;
+	at_impulse_speed: 50;
+					
+	at_illusion_power_regenerate_multiplier: 1;
+	at_illusion_power_use_multiplier: 2;
+					
+	at_unstable_normal_avarage_time: 1,5;
+	at_unstable_special_avarage_time: 3;
+	at_unstable_force: 15;
 }
 asteroid_type
 {
@@ -277,5 +306,13 @@ game_translate <advenced settings>
 		38: geyzer;
 		39: red_bullet;					<only item>
 		40: death_alien;
+		41: gray_artefact;
+		42: protection_artefact;
+		43: impulse_artefact;
+		44: illusion_artefact;
+		45: immortality_artefact;
+		46: frozen_artefact;			<comming soon>
+		47: unstable_artefact;
+		48: unstable_matter;
 	}
 }

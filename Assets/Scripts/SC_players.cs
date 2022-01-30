@@ -85,7 +85,7 @@ public class SC_players : MonoBehaviour
 		SC_seeking obj2 = Beefs.GetComponent<SC_seeking>();
 		
 		obj2.offset = new Vector3(0f,0f,-450f*B);
-		if(B % 2 == 1) Beefs.rotation = transform.rotation;
+		if(B % 2 == 0) Beefs.rotation = transform.rotation;
 		else Beefs.rotation = new Quaternion(0f,0f,0f,0f);
 		
 		if(B==1)

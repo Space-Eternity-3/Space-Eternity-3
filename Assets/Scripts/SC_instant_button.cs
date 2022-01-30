@@ -71,7 +71,11 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
             if(ID==9) SC_craft3.PageChange(index);
 			if(ID==10)
 			{
-				if(index==1) SC_resume.Resume();
+				if(index==1) 
+				{
+					SC_backpack.destroyLock = true;
+					SC_resume.Resume();
+				}
 				if(index==2) SC_resume.Quit();
 			}
         }

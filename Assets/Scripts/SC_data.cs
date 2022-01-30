@@ -30,7 +30,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion="Beta 1.6",clientRedVersion="Beta_1_6";
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 16;
+	int gpl_number = 27;
     
 	bool lockData = false;
 	bool remember = false;
@@ -981,9 +981,11 @@ public class SC_data : MonoBehaviour
                 {
                     try{
 
+					//Normal gameplay
                     if(psPath[1]=="turbo_regenerate_multiplier") Gameplay[0]=float.Parse(value[i])+"";
                     if(psPath[1]=="turbo_use_multiplier") Gameplay[1]=float.Parse(value[i])+"";
 
+					if(psPath[1]=="health_level_add") Gameplay[26]=float.Parse(value[i])+"";
                     if(psPath[1]=="drill_level_add") Gameplay[2]=float.Parse(value[i])+"";
                     if(psPath[1]=="bullet_level_add") Gameplay[3]=float.Parse(value[i])+"";
 
@@ -1001,6 +1003,21 @@ public class SC_data : MonoBehaviour
 
                     if(psPath[1]=="vacuum_drag_multiplier") Gameplay[14]=float.Parse(value[i])+"";
                     if(psPath[1]=="all_speed_multiplier") Gameplay[15]=float.Parse(value[i])+"";
+					
+					//Artefact gameplay
+					if(psPath[1]=="at_protection_health_level_add") Gameplay[16]=float.Parse(value[i])+"";
+					if(psPath[1]=="at_protection_health_regenerate_multiplier") Gameplay[17]=float.Parse(value[i])+"";
+					
+					if(psPath[1]=="at_impulse_power_regenerate_multiplier") Gameplay[18]=float.Parse(value[i])+"";
+					if(psPath[1]=="at_impulse_time") Gameplay[19]=float.Parse(value[i])+"";
+					if(psPath[1]=="at_impulse_speed") Gameplay[20]=float.Parse(value[i])+"";
+					
+					if(psPath[1]=="at_illusion_power_regenerate_multiplier") Gameplay[21]=float.Parse(value[i])+"";
+					if(psPath[1]=="at_illusion_power_use_multiplier") Gameplay[22]=float.Parse(value[i])+"";
+					
+					if(psPath[1]=="at_unstable_normal_avarage_time") Gameplay[23]=float.Parse(value[i])+"";
+					if(psPath[1]=="at_unstable_special_avarage_time") Gameplay[24]=float.Parse(value[i])+"";
+					if(psPath[1]=="at_unstable_force") Gameplay[25]=float.Parse(value[i])+"";
 
                     }catch(Exception){DatapackError("Error in variable: "+variable[i]); return;}
                 }

@@ -27,6 +27,9 @@ public class SC_control : MonoBehaviour {
 	public Transform explosion2M;
 	public Transform receiveParticles;
 	public Transform respawn2M;
+	public Transform InvisiPart;
+	public Transform ImmortalParticles;
+	public Transform unstablePart;
 	public Rigidbody playerR;
 	public Transform drill3T;
 	public Transform respawn_point;
@@ -43,7 +46,7 @@ public class SC_control : MonoBehaviour {
 
 	bool engineON=false;
 	bool engineOFF=false;
-	bool turbo=false;
+	public bool turbo=false;
 	bool brake=false;
 	public bool drill3B=false;
 	public int enMode=0;
@@ -79,6 +82,7 @@ public class SC_control : MonoBehaviour {
 	bool dont=false;
 	bool repeted=false;
 	bool repetedAF=false;
+	public bool gtm1 = false;
 
 	public Color32 HealthNormal;
 
@@ -150,6 +154,7 @@ public class SC_control : MonoBehaviour {
 	public bool impulse_reset;
 	
 	public int unstable_probability;
+	public int unstable_sprobability;
 	public float unstable_force;
 	
 	bool escaped = false;
@@ -161,6 +166,7 @@ public class SC_control : MonoBehaviour {
 	public int impulse_time;
 	
 	public int[] ramvis = new int[10];
+	public bool public_placed = false;
 
 	public string invCurrent()
 	{
@@ -182,12 +188,53 @@ public class SC_control : MonoBehaviour {
 	{
 		if(Communtron3.position.z<0) Communtron3.position=new Vector3(Communtron3.position.x,Communtron3.position.y,0f);
 		
+		if(!timeStop){
+		
+		//SHOT
+		bool wr_comms = Communtron3.position.y==0f && Communtron2.position.x==0f && Communtron3.position.z==0f;
+		bool wr_have = SC_slots.InvHaving(24) || SC_slots.InvHaving(39) || SC_slots.InvHaving(48);
+		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftControl);
+		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
+		
+		if(wr_isok && wr_moustay && !public_placed)
+		{
+			cooldown=7;
+			int slot;
+
+			//Bullet types
+			if(SC_slots.InvHaving(24))
+			{
+				SC_bullet1.type = 1;
+				slot = SC_slots.InvChange(24,-1,true,false,true);
+				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 24 -1 "+slot);
+			}
+			else if(SC_slots.InvHaving(39))
+			{
+				SC_bullet1.type = 2;
+				slot = SC_slots.InvChange(39,-1,true,false,true);
+				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 39 -1 "+slot);
+			}
+			else if(SC_slots.InvHaving(48))
+			{
+				SC_bullet1.type = 3;
+				slot = SC_slots.InvChange(48,-1,true,false,true);
+				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 48 -1 "+slot);
+			}
+
+			Shot(Input.mousePosition.x-Screen.width/2,Input.mousePosition.y-Screen.height/2);
+			SC_invisibler.invisible = false;
+		}
+		
+		}
+		
 		//bar colors {1,2,3}	
 		healthOld.color = HealthNormal;
 		
-		if(true) power.color=PowerNormal;
+		if(SC_artefacts.GetArtefactID()==2)
+		if(!impulse_enabled) power.color=PowerNormal;
 		else power.color=PowerBurning;
 		
+		if(SC_artefacts.GetArtefactID()==3)
 		if(SC_invisibler.invisible) power.color=PowerBurning;
 		else
 		{
@@ -232,7 +279,7 @@ public class SC_control : MonoBehaviour {
 		
 		quat_food.eulerAngles = new Vector3(0f,0f,pom);
 		player.rotation = quat_food;
-		if(ArtSource % 2 == 1) SC_artefacts.SC_seeking2.GetComponent<Transform>().rotation = quat_food;
+		if(ArtSource % 2 == 0) SC_artefacts.SC_seeking2.GetComponent<Transform>().rotation = quat_food;
 		else SC_artefacts.SC_seeking2.GetComponent<Transform>().rotation = new Quaternion(0f,0f,0f,0f);
 		
 		quat_food.eulerAngles = new Vector3(90f-pom,90f,-90f);
@@ -240,6 +287,11 @@ public class SC_control : MonoBehaviour {
 		
 		SC_artefacts.SC_seeking.Update();
 		SC_artefacts.SC_seeking2.Update();
+		SC_seeking[] scs = FindObjectsOfType<SC_seeking>();
+		foreach(SC_seeking sc in scs)
+		{
+			if(sc.idWord=="inv_part") sc.Update();
+		}
 
 		//BRAKE
 		if(Input.GetKey(KeyCode.LeftAlt)&&!pause)
@@ -401,7 +453,11 @@ public class SC_control : MonoBehaviour {
 				if((int)Communtron4.position.y==100)
 				{
 					SendMTP("/InventoryChange "+connectionID+" 45 -1 24");
+					float troX=Mathf.Round(transform.position.x*10000f)/10000f;
+					float troY=Mathf.Round(transform.position.y*10000f)/10000f;
+					SendMTP("/EmitParticles "+connectionID+" 5 "+troX+" "+troY);
 				}
+				Instantiate(ImmortalParticles,transform.position,transform.rotation);
 				Debug.Log("Player avoided death");
 			}
 		}
@@ -545,11 +601,13 @@ public class SC_control : MonoBehaviour {
 	}
 	void health_Text_update()
 	{
-		float potH=SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd();
+		float potH=SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
+		if(potH<-50f) potH = -50f; if(potH>56.397f) potH = 56.397f;
 		float maxH=50f*Mathf.Pow(health_base,potH);
 		float curH=50f*health_V*Mathf.Pow(health_base,potH);
-		float maxHr=Mathf.Ceil(50f*Mathf.Pow(health_base,potH));
+		float maxHr=Mathf.Ceil(maxH);
 		float curHr=Mathf.Ceil((curH*maxHr)/maxH);
+		if(curHr>maxHr) curHr=maxHr;
 		health_Text.text="Health "+curHr+"/"+maxHr;
 
 		float curFr=Mathf.Floor(turbo_V*50f);
@@ -569,6 +627,20 @@ public class SC_control : MonoBehaviour {
 		playerR.velocity = new Vector3(0f,0f,0f);
 		//SC_invisibler.invisible_or = false;
 	}
+	void Shot(float ix, float iy)
+	{
+		SC_bullet1.mX = ix;
+		SC_bullet1.mY = iy;
+		SC_bullet1.mode = 0;
+		SC_bullet1.velo = playerR.velocity;
+		if((int)Communtron4.position.y!=100) SC_bullet1.id=0;
+		else
+		{
+			SC_bullet1.id=UnityEngine.Random.Range(1,999999999);
+			SendMTP("/BulletSend "+connectionID+" "+SC_bullet1.type+" 1 "+transform.position.x+" "+transform.position.y+" "+SC_bullet1.id+";"+SC_bullet1.mX+";"+SC_bullet1.mY+" "+playerR.velocity.x+" "+playerR.velocity.y);
+		}
+		Instantiate(Copper_bullet,transform.position,transform.rotation);
+	}
 	void FixedUpdate()
 	{
 		if(timerH>0)
@@ -578,7 +650,11 @@ public class SC_control : MonoBehaviour {
 			if(timerH<0) timerH=0;
 		}
 		if(reg_wait>0) reg_wait--;
-		if(cooldown>0) cooldown--;
+		if(cooldown>0)
+		{
+			if(!SC_slots.InvHaving(48)) cooldown--;
+			else if(livTime%2==0) cooldown--;
+		}
 		if(licznikD>0) licznikD--;
 		if(dmLicz>0) dmLicz--;
 		if(saveCo>0) saveCo--;
@@ -673,58 +749,48 @@ public class SC_control : MonoBehaviour {
 		}
 		
 		//unstability movement
-		if(SC_artefacts.GetArtefactID()==6)
-		if(UnityEngine.Random.Range(0,unstable_probability)==0)
+		if(SC_artefacts.GetArtefactID()==6 && livTime>=50)
 		{
-			float alp = UnityEngine.Random.Range(0,360);
-			float ux = Mathf.Cos(alp/(2f*3.14159f));
-			float uy = Mathf.Sin(alp/(2f*3.14159f));
-			playerR.velocity += new Vector3(ux*unstable_force,uy*unstable_force,0f);
-		}
-		
-		//SHOT
-		bool waru=Communtron3.position.y==0f&&Communtron2.position.x==0f&&(SC_slots.InvHaving(24)||SC_slots.InvHaving(39))&&(int)Communtron3.position.z==0;
-		if(Input.GetMouseButton(1)&&(SC_slots.InvHaving(24)||SC_slots.InvHaving(39))) presed++;
-		else presed=-10;
-		if(((presed>=0)||(presed==-9))&&cooldown==0&&waru&&!impulse_enabled)
-		{
-			cooldown=7;
-			int slot;
-
-			//Bullet types
-			if(SC_slots.InvHaving(24))
+			if(UnityEngine.Random.Range(0,unstable_probability)==0)
 			{
-				slot = SC_slots.InvChange(24,-1,true,false,true); SC_bullet1.type = 1;
-				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 24 -1 "+slot);
+				float alp = UnityEngine.Random.Range(0,360);
+				float ux = Mathf.Cos((alp*3.14159f)/180f);
+				float uy = Mathf.Sin((alp*3.14159f)/180f);
+				
+				playerR.velocity += new Vector3(ux*unstable_force,uy*unstable_force,0f);
+				Quaternion quat_foo = new Quaternion(0f,0f,0f,0f);
+				quat_foo.eulerAngles = new Vector3(0f,0f,alp+90f);
+				Transform trn = Instantiate(unstablePart,transform.position,quat_foo);
+				trn.GetComponent<SC_seeking>().enabled = true;
+				SendMTP("/EmitParticles "+connectionID+" 7 "+alp+" 0");
 			}
-			else if(SC_slots.InvHaving(39))
+			if(UnityEngine.Random.Range(0,unstable_sprobability)==0)
 			{
-				slot = SC_slots.InvChange(39,-1,true,false,true); SC_bullet1.type = 2;
-				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 39 -1 "+slot);
+				float alp = UnityEngine.Random.Range(0,360);
+				float ux = Mathf.Cos((alp*3.14159f)/180f);
+				float uy = Mathf.Sin((alp*3.14159f)/180f);
+				
+				SC_bullet1.type = 3;
+				Shot(-ux,-uy);
+				
+				//playerR.velocity += new Vector3(ux*unstable_force,uy*unstable_force,0f);
+				Quaternion quat_foo = new Quaternion(0f,0f,0f,0f);
+				quat_foo.eulerAngles = new Vector3(0f,0f,alp+90f);
+				Transform trn = Instantiate(unstablePart,transform.position,quat_foo);
+				trn.GetComponent<SC_seeking>().enabled = true;
+				SendMTP("/EmitParticles "+connectionID+" 7 "+alp+" 0");
 			}
-
-			SC_bullet1.mX=Input.mousePosition.x-Screen.width/2;
-			SC_bullet1.mY=Input.mousePosition.y-Screen.height/2;
-			SC_bullet1.mode=0;
-			SC_bullet1.velo=playerR.velocity;
-			if((int)Communtron4.position.y!=100) SC_bullet1.id=0;
-			else
-			{
-				SC_bullet1.id=UnityEngine.Random.Range(1,999999999);
-				SendMTP("/BulletSend "+connectionID+" "+SC_bullet1.type+" 1 "+transform.position.x+" "+transform.position.y+" "+SC_bullet1.id+";"+SC_bullet1.mX+";"+SC_bullet1.mY+" "+playerR.velocity.x+" "+playerR.velocity.y);
-				//InvisiblityPulseSend("none");
-			}
-			Instantiate(Copper_bullet,transform.position,transform.rotation);
-			SC_invisibler.invisible = false;
 		}
 
 		//health regeneration
 		if(health_V>0f&&health_V<1f&&timerH==0)
 		{
-			health_V+=unit*SC_artefacts.GetProtRegenMultiplier()*float.Parse(SC_data.Gameplay[5])/Mathf.Pow(health_base,SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd());
+			float potHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
+			if(potHH<-50f) potHH = -50f; if(potHH>56.397f) potHH = 56.397f;
+			health_V+=unit*SC_artefacts.GetProtRegenMultiplier()*float.Parse(SC_data.Gameplay[5])/(Mathf.Ceil(50*Mathf.Pow(health_base,potHH))/50f);
 		}
 		//turbo regeneration
-		if(!turbo || impulse_enabled)
+		if(!turbo && !impulse_enabled)
 		{
 			turbo_V+=unit*float.Parse(SC_data.Gameplay[0]);
 		}
@@ -924,6 +990,9 @@ public class SC_control : MonoBehaviour {
 		}
 		
 		for(int ij=1;ij<10;ij++) PL[ij].AfterFixedUpdate();
+		
+		if(!Input.GetMouseButton(1)) public_placed = false;
+		gtm1 = false;
 	}
 	public void SendMTP(string msg)
 	{
@@ -956,7 +1025,9 @@ public class SC_control : MonoBehaviour {
 	public void Damage(float dmg)
 	{
 		if(livTime<50 || impulse_enabled) return;
-		dmg=(1.2f*dmg)/Mathf.Pow(health_base,SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd());
+		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
+		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
+		dmg=(1.2f*dmg)/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
 		health_V-=dmg;
 		//SC_sounds.PlaySound(transform.position,2,0);
 		if(health_V>0f) Instantiate(explosion2,transform.position,transform.rotation);
@@ -985,17 +1056,15 @@ public class SC_control : MonoBehaviour {
     }
 	void OnTriggerStay(Collider collision)
 	{
-		try{
-			if(collision.gameObject.name=="damager2")
+		if(collision.gameObject.name=="damager2"||(collision.gameObject.name=="damager3"&&SC_artefacts.GetArtefactID()!=6))
+		{
+			if(licznikD==0) licznikD=5;
+			else if(licznikD<=5)
 			{
-				if(licznikD==0) licznikD=5;
-				else if(licznikD<=5)
-				{
-					licznikD=25;
-					DamageINT(int.Parse(SC_data.Gameplay[8]));
-				}
+				licznikD=25;
+				DamageINT(int.Parse(SC_data.Gameplay[8]));
 			}
-		}catch(Exception e) {}
+		}
 	}
 	public void InfoUp(string info, int tim)
 	{
@@ -1090,31 +1159,51 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetEmitParticles")
 		{
-			Vector3 particlePos=new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f);
-			int put=int.Parse(arg[2]);
+			Vector3 particlePos;
+			Quaternion quat_foo = new Quaternion(0f,0f,0f,0f);
+			int put = int.Parse(arg[2]);
+			int pid = int.Parse(arg[1]);
+			if(pid==0) pid = connectionID;
+			
+			if(put==6||put==7)
+			{
+				particlePos = PL[pid].GetComponent<Transform>().position;
+				if(put==7||false)
+				{
+					quat_foo.eulerAngles = new Vector3(0f,0f,90f+float.Parse(arg[3]));
+				}
+			}
+			else particlePos = new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f);
+		
 			switch(put)
 			{
-				case 1:
-					//Debug.Log("particles 1");
+				case 1: //explosion
 					SC_sounds.PlaySound(particlePos,2,2);
-					//for(int i=0;i<5;i++)
 					Instantiate(explosionM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 2:
-					//Debug.Log("particles 2");
 					Instantiate(explosion2M,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 3:
-					//Debug.Log("particles 3");
 					Instantiate(respawn2M,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 4:
-					//Debug.Log("particles 4");
 					Instantiate(receiveParticles,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
-					
-				//case 5: immortal particles
-				//case 6: invisibility particles
+				case 5:
+					Instantiate(ImmortalParticles,particlePos,new Quaternion(0f,0f,0f,0f));
+					break;
+				case 6:
+					Instantiate(InvisiPart,particlePos,new Quaternion(0f,0f,0f,0f));
+					break;
+				case 7:
+					Transform trn = Instantiate(unstablePart,particlePos,quat_foo);
+					trn.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
+					trn.GetComponent<SC_seeking>().enabled = true;
+					break;
+				default:
+					Debug.LogWarning("Unknown particles ID: "+put);
+					break;
 			}
 		}
 		if(arg[0]=="/RetInventory")
@@ -1209,11 +1298,13 @@ public class SC_control : MonoBehaviour {
 		}
 
 		Engines*=float.Parse(SC_data.Gameplay[15]);
-		//SC_artefacts.LoadDataArt();
+		SC_artefacts.LoadDataArt();
 		
-		F_barrier -= unit * float.Parse(SC_data.Gameplay[0]);
-		IM_barrier -= unit * SC_artefacts.powerRM[2];
-		IL_barrier -= unit * SC_artefacts.powerRM[3];
+		float limi = 2 * unit * float.Parse(SC_data.Gameplay[0]);
+		if(limi > 0.01f) limi = 0.01f;
+		F_barrier += limi;
+		//IM_barrier -= unit * SC_artefacts.powerRM[2];
+		//IL_barrier -= unit * SC_artefacts.powerRM[3];
 
 		int i;
 		float tX=0f,tY=0f,tH=0f,tF=0f,tP=0f,tVx=0f,tVy=0f;

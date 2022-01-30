@@ -8,7 +8,7 @@ var serverRedVersion = "Beta_1_11";
 var clientDatapacksVar="";
 var seed;
 var won = false;
-var gpl_number = 16;
+var gpl_number = 27;
 
 var chunk_data = [];
 var chunk_names = [];
@@ -581,7 +581,7 @@ function growActive(ulam)
 	{
 	  if(!drillT.includes(ulam+"w"+i))
 	  {
-		  tim=randomInteger(180,450);
+		  tim=randomInteger(320,700);
 		  drillT.push(ulam+"w"+i); drillW.push(10); drillC.push(tim);
 	  }
 	  ind=drillT.indexOf(ulam+"w"+i);
@@ -1377,9 +1377,11 @@ function finalTranslate(varN)
           {
               try{
 
+			  //Normal gameplay
               if(psPath[1]=="turbo_regenerate_multiplier") gameplay[0]=parseFloatE(jse3Dat[i])+"";
               if(psPath[1]=="turbo_use_multiplier") gameplay[1]=parseFloatE(jse3Dat[i])+"";
 
+			  if(psPath[1]=="health_level_add") gameplay[26]=parseFloatE(jse3Dat[i])+"";
               if(psPath[1]=="drill_level_add") gameplay[2]=parseFloatE(jse3Dat[i])+"";
               if(psPath[1]=="bullet_level_add") gameplay[3]=parseFloatE(jse3Dat[i])+"";
 
@@ -1397,6 +1399,21 @@ function finalTranslate(varN)
 
               if(psPath[1]=="vacuum_drag_multiplier") gameplay[14]=parseFloatE(jse3Dat[i])+"";
               if(psPath[1]=="all_speed_multiplier") gameplay[15]=parseFloatE(jse3Dat[i])+"";
+			  
+			  //Artefact gameplay
+			  if(psPath[1]=="at_protection_health_level_add") gameplay[16]=parseFloatE(jse3Dat[i])+"";
+			  if(psPath[1]=="at_protection_health_regenerate_multiplier") gameplay[17]=parseFloatE(jse3Dat[i])+"";
+					
+			  if(psPath[1]=="at_impulse_power_regenerate_multiplier") gameplay[18]=parseFloatE(jse3Dat[i])+"";
+		   	  if(psPath[1]=="at_impulse_time") gameplay[19]=parseFloatE(jse3Dat[i])+"";
+			  if(psPath[1]=="at_impulse_speed") gameplay[20]=parseFloatE(jse3Dat[i])+"";
+					
+			  if(psPath[1]=="at_illusion_power_regenerate_multiplier") gameplay[21]=parseFloatE(jse3Dat[i])+"";
+			  if(psPath[1]=="at_illusion_power_use_multiplier") gameplay[22]=parseFloatE(jse3Dat[i])+"";
+					
+			  if(psPath[1]=="at_unstable_normal_avarage_time") gameplay[23]=parseFloatE(jse3Dat[i])+"";
+			  if(psPath[1]=="at_unstable_special_avarage_time") gameplay[24]=parseFloatE(jse3Dat[i])+"";
+			  if(psPath[1]=="at_unstable_force") gameplay[25]=parseFloatE(jse3Dat[i])+"";
 
               }catch{datapackError("Error in variable: "+jse3Var[i]);}
           }
