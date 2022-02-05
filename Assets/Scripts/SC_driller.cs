@@ -57,7 +57,7 @@ public class SC_driller : MonoBehaviour
             Particles.position = new Vector3(0f,0f,10000f);
         }
     }
-    int GetTimeDrill() {return UnityEngine.Random.Range(320,700);}
+    int GetTimeDrill() {return UnityEngine.Random.Range(180,420);}
     int GetMined()
     {
         string[] uAst = SC_data.GetAsteroid(SC_fobs.X,SC_fobs.Y).Split(';');

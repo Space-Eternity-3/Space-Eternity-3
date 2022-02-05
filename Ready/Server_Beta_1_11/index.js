@@ -581,7 +581,7 @@ function growActive(ulam)
 	{
 	  if(!drillT.includes(ulam+"w"+i))
 	  {
-		  tim=randomInteger(320,700);
+		  tim=randomInteger(180,420);
 		  drillT.push(ulam+"w"+i); drillW.push(10); drillC.push(tim);
 	  }
 	  ind=drillT.indexOf(ulam+"w"+i);
