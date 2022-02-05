@@ -135,8 +135,8 @@ public class SC_artefacts : MonoBehaviour
 			else if(SC_control.power_V >= SC_control.IL_barrier)
 			{
 				SC_invisibler.invisible = true;
-				//Transform trn = Instantiate(SC_control.InvisiPart,SC_control.transform.position,new Quaternion(0f,0f,0f,0f));
-				//trn.GetComponent<SC_seeking>().enabled = true;
+				Transform trn = Instantiate(SC_control.InvisiPart,SC_control.transform.position,new Quaternion(0f,0f,0f,0f));
+				trn.GetComponent<SC_seeking>().enabled = true;
 				if((int)SC_control.Communtron4.position.y == 100)
 				{
 					SC_control.SendMTP("/EmitParticles "+SC_control.connectionID+" 6 0 0");
@@ -154,6 +154,13 @@ public class SC_artefacts : MonoBehaviour
 				SC_control.power_V -= SC_control.IM_barrier;
 				SC_control.impulse_reset = true;
 				SC_control.turbo = false;
+				
+				Transform trn = Instantiate(SC_control.impulseHidden,SC_control.transform.position,new Quaternion(0f,0f,0f,0f));
+				trn.GetComponent<SC_seeking>().enabled = true;
+				if((int)SC_control.Communtron4.position.y == 100)
+				{
+					SC_control.SendMTP("/EmitParticles "+SC_control.connectionID+" 8 0 0");
+				}
 			}
 		}
 		

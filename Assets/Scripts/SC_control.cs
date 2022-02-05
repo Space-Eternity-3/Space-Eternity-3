@@ -30,6 +30,7 @@ public class SC_control : MonoBehaviour {
 	public Transform InvisiPart;
 	public Transform ImmortalParticles;
 	public Transform unstablePart;
+	public Transform impulseHidden;
 	public Rigidbody playerR;
 	public Transform drill3T;
 	public Transform respawn_point;
@@ -1165,7 +1166,7 @@ public class SC_control : MonoBehaviour {
 			int pid = int.Parse(arg[1]);
 			if(pid==0) pid = connectionID;
 			
-			if(put==6||put==7)
+			if(put>=6 && put<=8)
 			{
 				particlePos = PL[pid].GetComponent<Transform>().position;
 				if(put==7||false)
@@ -1197,9 +1198,14 @@ public class SC_control : MonoBehaviour {
 					Instantiate(InvisiPart,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 7:
-					Transform trn = Instantiate(unstablePart,particlePos,quat_foo);
-					trn.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
-					trn.GetComponent<SC_seeking>().enabled = true;
+					Transform trn7 = Instantiate(unstablePart,particlePos,quat_foo);
+					trn7.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
+					trn7.GetComponent<SC_seeking>().enabled = true;
+					break;
+				case 8: //impulse hidden
+					Transform trn8 = Instantiate(impulseHidden,particlePos,quat_foo);
+					trn8.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
+					trn8.GetComponent<SC_seeking>().enabled = true;
 					break;
 				default:
 					Debug.LogWarning("Unknown particles ID: "+put);

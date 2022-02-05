@@ -174,6 +174,7 @@ public class SC_fobs : MonoBehaviour
         if(b>=21&&b<=22) return true; //23 -> magnetic alien waited //24 -> copper bullet
         if(b>=25&&b<=38) return true; //39 -> red bullet
         if(b>=40&&b<=47) return true; //48 -> unstable bullet
+		if(b==48&&Input.GetKey(KeyCode.LeftControl)) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)

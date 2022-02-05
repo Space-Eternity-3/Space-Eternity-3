@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class SC_snd_loop : MonoBehaviour
 {
-    public AudioSource[] sounds = new AudioSource[2];
-    public float[] sound_nvl_ = new float[2];
-    public float[] sound_ptc_ = new float[2];
+    public AudioSource[] sounds = new AudioSource[3];
+    public float[] sound_nvl_ = new float[3];
+    public float[] sound_ptc_ = new float[3];
 
     public Vector3[] sound_pos = new Vector3[2048];
     public int[] sound_id = new int[2048];
     public bool[] sound_locked = new bool[2048];
-    public float[] log_base = new float[2];
+    public float[] log_base = new float[3];
 
     public SC_sounds SC_sounds;
     public SC_control SC_control;
@@ -41,7 +41,7 @@ public class SC_snd_loop : MonoBehaviour
         int i,j;
         float max,pom,V;
 
-        for(i=0;i<2;i++)
+        for(i=0;i<3;i++)
         {
             V = 0f;
             for(j=0;j<2048;j++)

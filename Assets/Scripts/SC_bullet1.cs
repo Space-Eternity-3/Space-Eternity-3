@@ -27,6 +27,10 @@ public class SC_bullet1 : MonoBehaviour {
 	public float mX,mY;
 	public int id;
 	public Vector3 velo;
+	
+	public SC_snd_loop SC_snd_loop;
+	public SC_sounds SC_sounds;
+	int loopSndID = -1;
 
 	void Start()
 	{
@@ -42,14 +46,28 @@ public class SC_bullet1 : MonoBehaviour {
 				Transform trn = Instantiate(type3effect,transform.position,transform.rotation);
 				trn.parent = transform;
 			}
+			
+			if(type!=3)
+			{
+				SC_sounds.PlaySound(transform.position,2,1);
+			}
+			else
+			{
+				SC_sounds.PlaySound(transform.position,2,17);
+			}
 		}
 		starter = bulletR.velocity;
+		
+		if(!mother && type==3) loopSndID = SC_snd_loop.AddToLoop(2,transform.position);
 	}
 	void FixedUpdate()
 	{
 		if(transform.position.z<100f)
 		if(counter==Lifetime) Make2Destroy(gameObject);
 		else counter++;
+		
+		if(loopSndID!=-1) SC_snd_loop.sound_pos[loopSndID] = transform.position;
+		
 		if(counter>=Jednotime)
 		bulletR.velocity-=drag*starter;
 		if(Mathf.Round(bulletR.velocity.x*10)/10==0f&&Mathf.Round(bulletR.velocity.y*10)/10==0f&&transform.position.z<100f) Make2Destroy(gameObject);
@@ -75,7 +93,16 @@ public class SC_bullet1 : MonoBehaviour {
 	}
 	void Make2Destroy(GameObject gob)
 	{
-		if(type==3 && !turn_used) Instantiate(unstableExpl,transform.position,new Quaternion(0f,0f,0f,0f));
+		if(loopSndID!=-1)
+		{
+			SC_snd_loop.RemoveFromLoop(loopSndID);
+			loopSndID = -1;
+		}
+		if(type==3 && !turn_used)
+		{
+			SC_sounds.PlaySound(transform.position,2,15);
+			Instantiate(unstableExpl,transform.position,new Quaternion(0f,0f,0f,0f));
+		}
 		Destroy(gob);
 	}
 	public void cmdDoo(string eData)
