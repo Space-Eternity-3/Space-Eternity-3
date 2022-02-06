@@ -3,8 +3,8 @@ const fs = require("fs");
 const path = require("path");
 
 //Global variables
-var serverVersion = "Beta 1.11";
-var serverRedVersion = "Beta_1_11";
+var serverVersion = "Beta 1.12";
+var serverRedVersion = "Beta_1_12";
 var clientDatapacksVar="";
 var seed;
 var won = false;
@@ -1705,7 +1705,7 @@ else
 {
 	var uiSource = readF("ServerUniverse/UniverseInfo.se3").split("\r\n");
 	if(uiSource.length < 3) crash("Error in ServerUniverse/UniverseInfo.se3");
-	if(uiSource[2] != serverVersion) crash("Loaded universe has wrong version: "+uiSource[2]+" != "+serverVersion);
+	if(uiSource[2] != serverVersion) crash("Loaded universe has a wrong version: "+uiSource[2]+" != "+serverVersion);
 	
 	var dataGet = uiSource[1].split("~");
 	if(dataGet.length < 2) crash("Error in ServerUniverse/UniverseInfo.se3");
