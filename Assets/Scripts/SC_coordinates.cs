@@ -13,12 +13,6 @@ public class SC_coordinates : MonoBehaviour {
 	public TextMesh nickSource;
 	public Transform infoMTP;
 
-	Vector3 startPos;
-
-	void Start()
-	{
-		if(mtp_coords) startPos=infoMTP.localPosition;
-	}
 	void Update()
 	{
 		float fX=(Mathf.Round(player.position.x*10f)/10f);
@@ -34,7 +28,7 @@ public class SC_coordinates : MonoBehaviour {
 			nickname.text=nickSource.text;
 			if(player.position.z>100f || SC_invisibler.invisible) coordinates.text="...";
 			if(nickSource.text==""||nickSource.text=="0") infoMTP.localPosition=new Vector3(10000f,0f,0f);
-			else infoMTP.localPosition=startPos;
+			else infoMTP.localPosition=new Vector3(0f,0f,0f);
 		}
 	}
 }
