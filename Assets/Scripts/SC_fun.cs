@@ -122,8 +122,24 @@ public class SC_fun : MonoBehaviour
         if(ID==1) return false;
         if(IDm%2==0) return false;
         char it=SC_long_strings.AsteroidBase[(IDm%65536-1)/2];
-        if(it=='V'||it=='R') return true;
-        else return false;
+		
+		float[] dau = GetBiomeDAU(ID);
+		float distance = dau[0];
+		int ulam = (int)dau[1];
+		
+		string biost = GetBiomeString(ulam);
+		float size = GetBiomeSize(ulam);
+		string tags = GetBiomeTag(ulam);
+		
+		if((distance<size) && biost!="b0")
+		{
+			if(TagContains(tags,"empty")) return false;
+			if(TagContains(tags,"circle") && distance<size-20f) return false;
+			if(TagContains(tags,"dense")) return true;
+		}
+		
+		if(it=='V') return true;
+		else return false;
     }
     public char AsteroidChar(int ID)
     {
@@ -181,22 +197,95 @@ public class SC_fun : MonoBehaviour
             default: return "0;0"; 
         }
     }
+	int[] UlamToXY(int ulam)
+	{
+		int[] retu = new int[2];
+		
+		int sqrt=(int)Mathf.Sqrt(ulam);
+		if(sqrt%2==0) sqrt--;
+		int x=sqrt/2+1,y=-sqrt/2-1;
+		int pot=sqrt*sqrt;
+		int delta=ulam-pot;
+		int cwr=delta/(sqrt+1);
+		int dlt=delta%(sqrt+1);
+		if(cwr==0&&dlt==0)
+		{
+			retu[0]=x-1; retu[1]=y+1;
+			return retu;
+		}
+  
+		if(cwr>0) y+=(sqrt+1);
+		if(cwr>1) x-=(sqrt+1);
+		if(cwr>2) y-=(sqrt+1);
+
+		if(cwr==0) y+=dlt;
+		if(cwr==1) x-=dlt;
+		if(cwr==2) y-=dlt;
+		if(cwr==3) x+=dlt;
+
+		retu[0]=x; retu[1]=y;
+		return retu;
+	}
 
 //-----------------------------------------------------------------------------------------------
 
     public float GetBiomeSize(int ulam)
     {
         string typ=GetBiomeString(ulam);
-        if(typ=="") return 0f;
-        if(typ=="void1") return 30f;
-        else
+		string tags=GetBiomeTag(ulam);
+		
+        if(typ=="b0") return 0f;
+		
+		//tiny biomes
+		if(TagContains(tags,"size20")) return 20f;
+		if(TagContains(tags,"size25")) return 25f;
+		if(TagContains(tags,"size30")) return 30f;
+		//small biomes
+		if(TagContains(tags,"size35")) return 35f;
+		if(TagContains(tags,"size40")) return 40f;
+		if(TagContains(tags,"size45")) return 45f;
+		//medium biomes
+		if(TagContains(tags,"size50")) return 50f;
+		if(TagContains(tags,"size55")) return 55f;
+		if(TagContains(tags,"size60")) return 60f;
+		//big biomes
+		if(TagContains(tags,"size65")) return 65f;
+		if(TagContains(tags,"size70")) return 70f;
+		if(TagContains(tags,"size75")) return 75f;
+		if(TagContains(tags,"size80")) return 80f;
+		//full square biome
+		if(TagContains(tags,"sizeFull")) return 10000f;
+		
+        if(TagContains(tags,"big"))
         {
-            if(ulam%3==0) return 60f;
-            if(ulam%3==1) return 70f;
-            if(ulam%3==2) return 80f;
-            UnityEngine.Debug.Log("Game crashed! Wrong divider: "+ulam+";"+(ulam%3));
-            return 60f;
+            if(ulam%4==0) return 80f;
+            if(ulam%4==1) return 75f;
+            if(ulam%4==2) return 70f;
+			if(ulam%4==3) return 65f;
         }
+		
+		if(TagContains(tags,"medium") || (!TagContains(tags,"small") && !TagContains(tags,"tiny")))
+        {
+            if(ulam%4==0) return 60f;
+            if(ulam%4==1) return 55f;
+            if(ulam%4==2) return 50f;
+			if(ulam%4==3) return 45f;
+        }
+		
+		if(TagContains(tags,"small"))
+        {
+            if(ulam%3==0) return 40f;
+            if(ulam%3==1) return 35f;
+			if(ulam%3==2) return 30f;
+        }
+		
+		if(TagContains(tags,"tiny"))
+        {
+            if(ulam%2==0) return 25f;
+            if(ulam%2==1) return 20f;
+        }
+		
+		return 0f;
     }
     public Vector3 GetBiomeMove(int ulam)
     {
@@ -206,18 +295,60 @@ public class SC_fun : MonoBehaviour
         float dY=(int.Parse(red.Split(';')[1])-1)*(biome_sector_size/2f-size);
         return new Vector3(dX,dY,0f);
     }
+	public int pseudoRandom1000(int prSeed)
+	{
+		prSeed = prSeed % 10000;
+		string psInt = (SC_long_strings.BiomeNewBase[3*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[3*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[3*prSeed+2]+"");
+		return int.Parse(psInt);
+	}
     public string GetBiomeString(int ulam)
     {
+		if(ulam==1) return "b0";
+		
         int IDm=ulam+seed;
-        char cha=SC_long_strings.BiomeBase[(IDm%32768-1)];
-        if(ulam==1||cha=='O') return "";
-
-        if(cha=='A') return "b1";
-        if(cha=='B') return "b2";
-        if(cha=='C') return "b3";
-        if(cha=='V') return "void1";
-
-        UnityEngine.Debug.Log("Game crashed! Char '"+cha+"' doesn't exists in code.");
-        return "";
+		int pr=pseudoRandom1000(IDm);
+		string[] bcSourced = SC_data.biomeChances.Split(';');
+		int i,lngt=bcSourced.Length/3;
+		
+		for(i=0;i<lngt;i++)
+		{
+			int min = int.Parse(bcSourced[3*i+1]);
+			int max = int.Parse(bcSourced[3*i+2]);
+			if(pr>=min && pr<=max)
+			{
+				int bb = int.Parse(bcSourced[3*i]);
+				if(bb>=1 && bb<=31) return "b"+bb;
+				else return "b0";
+			}
+		}
+		
+		return "b0";
     }
+	public string GetBiomeTag(int ulam)
+	{
+		return SC_data.BiomeTags[int.Parse(GetBiomeString(ulam).Split('b')[1])];
+	}
+	public bool TagContains(string tags, string tag)
+	{
+		return (Array.IndexOf(tags.Split('_'),tag)>-1);
+	}
+	public float[] GetBiomeDAU(int ID)
+	{
+		float[] retu = new float[2];
+		
+		int[] astXY = UlamToXY(ID);
+		Vector3 astPos = new Vector3(astXY[0]*10f,astXY[1]*10f,0f);
+		
+		Vector3 BS = new Vector3(Mathf.Round(astPos.x/biome_sector_size),Mathf.Round(astPos.y/biome_sector_size),0f);
+		int ulam = CheckID((int)BS.x,(int)BS.y);
+		BS = BS * biome_sector_size;
+
+		BS += GetBiomeMove(ulam);
+		float dX = astPos.x - BS.x;
+		float dY = astPos.y - BS.y;
+		float distance = Mathf.Sqrt(dX*dX+dY*dY);
+		
+		retu[0]=distance; retu[1]=ulam;
+		return retu;
+	}
 }

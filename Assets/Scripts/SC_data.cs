@@ -77,9 +77,11 @@ public class SC_data : MonoBehaviour
     //Datapacks
     public string craftings;
     public string craftMaxPage;
+	public string biomeChances;
     public string[] DrillLoot = new string[16];
     public string[] FobGenerate = new string[16];
-    public string[] TypeSet = new string[28];
+	public string[] BiomeTags = new string[32];
+    public string[] TypeSet = new string[224];
     public string[] Gameplay = new string[32];
     public string[] ModifiedDrops = new string[128];
     //---------------------------------------------
@@ -558,8 +560,10 @@ public class SC_data : MonoBehaviour
         filePre=GetFile("generated");
         file=filePre+"_"+gX+"_"+gY+".se3";
 
+		AsteroidReset(asteroidCounter);
         WorldSector[asteroidCounter]=gX+";"+gY;
-        if(Directory.Exists(path))
+        
+		if(Directory.Exists(path))
         {
             if(File.Exists(file))
             {
@@ -572,7 +576,6 @@ public class SC_data : MonoBehaviour
                 for(i=0;i<=100;i++)
                 {
                     lines[i]=sr.ReadLine();
-                    if(i!=0) for(j=lines[i].Split(';').Length;j<61;j++) lines[i]=lines[i]+";";
                 }
 
                 CloseRead();
@@ -585,7 +588,7 @@ public class SC_data : MonoBehaviour
                 }
                 else
                 {
-                    UnityEngine.Debug.LogWarning("Asteroid file "+file+" has wrong a seed. Generating new...");
+                    UnityEngine.Debug.LogWarning("Asteroid file "+file+" has a wrong seed. Generating new...");
                     AsteroidReset(asteroidCounter);
                 }
                 
@@ -593,6 +596,7 @@ public class SC_data : MonoBehaviour
                 {
                     CloseRead();
                     UnityEngine.Debug.LogWarning("Asteroid file "+file+" is broken. Generating new...");
+					AsteroidReset(asteroidCounter);
 
                     try{
                         if(File.Exists(file)) File.Delete(file);
@@ -747,7 +751,7 @@ public class SC_data : MonoBehaviour
         //If just translated
         try{
 
-            string ipr=int.Parse(str)+"";;
+            string ipr=int.Parse(str)+"";
             return ipr;
 
         }catch(Exception){return "ERROR";}
@@ -953,9 +957,11 @@ public class SC_data : MonoBehaviour
         int y;
         craftings="";
         craftMaxPage="";
+		biomeChances="";
         for(y=0;y<16;y++) DrillLoot[y]="";
         for(y=0;y<16;y++) FobGenerate[y]="";
-        for(y=0;y<28;y++) TypeSet[y]="";
+		for(y=0;y<32;y++) BiomeTags[y]="";
+        for(y=0;y<224;y++) TypeSet[y]="";
         for(y=0;y<32;y++) Gameplay[y]="";
         for(y=0;y<128;y++) ModifiedDrops[y]="";
         for(y=0;y<16;y++) translateAsteroid[y]="";
@@ -1052,6 +1058,7 @@ public class SC_data : MonoBehaviour
         string pom; int mID2, crMax=0;
         string[] crafts = new string[3584]; //512*7
         for(i=0;i<3584;i++) crafts[i]="0;0;0;0;0;0";
+		int cur1000biome = 0;
 
         for(i=0;i<varN;i++)
         {
@@ -1116,17 +1123,50 @@ public class SC_data : MonoBehaviour
                 {
                     try{
 
+						int nev;
                         mID=int.Parse(psPath[1]);
-                        mID2=int.Parse(psPath[2])-4;
-                        mID=7*mID+mID2;
-                        variable[i]=psPath[0]+";"+mID;
+						if(mID<0||mID>31) nev = int.Parse("error");
+						
+						if(psPath[2]=="tag")
+						{
+							if(mID==0) nev = int.Parse("error");
+							else BiomeTags[mID] = value[i].Replace(' ','_');
+						}
+						else if(psPath[2]=="chance")
+						{
+							if(mID==0) nev = int.Parse("error");
+							string efe = mID+";"+cur1000biome+";";
+							
+							int le = value[i].Length;
+							if((value[i])[le-1]=='%') value[i] = PercentRemove(value[i]);
+							else nev = int.Parse("error");
+							
+							cur1000biome += int.Parse((float.Parse(value[i])*10f)+"");
+							efe += (cur1000biome-1)+";";
+							biomeChances += efe;
+						}
+						else
+						{
+							if(psPath[2]=="all_sizes") mID2=-4;
+							else mID2=int.Parse(psPath[2])-4;
+						
+							if((mID2<0||mID2>6)&&mID2!=-4) nev = int.Parse("error");
+							if(mID2!=-4) mID=7*mID+mID2;
+							else mID=7*mID;
+							variable[i]=psPath[0]+";"+mID;
 
-                        value[i]=TranslateAll(value[i],1);
-                        value[i]=AllPercentRemove(value[i],true);
+							value[i]=TranslateAll(value[i],1);
+							value[i]=AllPercentRemove(value[i],true);
 
-                        if(value[i].Split(';').Length%3!=0) {DatapackError("Error in variable: "+raw_name); return;}
+							if(value[i].Split(';').Length%3!=0) {DatapackError("Error in variable: "+raw_name); return;}
 
-                        TypeSet[mID]=value[i];
+							if(mID2!=-4) TypeSet[mID]=value[i];
+							else
+							{
+								int uu;
+								for(uu=0;uu<7;uu++) TypeSet[mID+uu]=value[i];
+							}
+						}
 
                     }catch(Exception){DatapackError("Error in variable: "+raw_name); return;}
                 }
@@ -1138,11 +1178,13 @@ public class SC_data : MonoBehaviour
             craftings=craftings+";"+crafts[i];
         }
         craftMaxPage=((crMax/7)+1)+"";
+		
+		//last biome chance correction
+		if(biomeChances!="") biomeChances = PercentRemove(biomeChances);
 
         //Check if all is good
         for(i=0;i<gpl_number;i++) if(Gameplay[i]=="") {DatapackError("Required variable not found: gameplay_"+i); return;}
-        for(i=0;i<7;i++) if(TypeSet[i]=="") {DatapackError("Required variable not found: asteroid_type_"+(i+4)); return;}
-        for(i=7;i<28;i++) if(TypeSet[i]=="") TypeSet[i]=TypeSet[i%7]; //Empty biomes correction
+		if(cur1000biome>1000) {DatapackError("Biome chance sum is bigger than 100%"); return;}
 
         if(version!=clientVersion) {DatapackError("Wrong version or empty version variable."); return;}
         if(datapack_name.text=="DEFAULT"&&dataSource!=example) {DatapackError("Custom datapack name can't be DEFAULT. Change it using a text editor."); return;}
@@ -1195,7 +1237,7 @@ public class SC_data : MonoBehaviour
 			}
 			else
 			{
-				if(actual > int.Parse(strT[i])) return false;
+				if(actual > int.Parse(strT[i]) + 1) return false;
 				actual = int.Parse(strT[i]); ended = true; i++;
 			}
 		}
@@ -1247,14 +1289,15 @@ public class SC_data : MonoBehaviour
 		
 		//Check int arrays
         if(!IntsAll(craftings,6) || !GoodItems(craftings,true)) not_existsing_variable = int.Parse("error");
+		if(!IntsAll(biomeChances,3) || !In1000(biomeChances,false)) not_existsing_variable = int.Parse("error");
         for(i=0;i<16;i++)
         {
             if(!IntsAll(DrillLoot[i],3) || !In1000(DrillLoot[i],false) || !DrillGoodItem(DrillLoot[i])) not_existsing_variable = int.Parse("error");
             if(!IntsAll(FobGenerate[i],3) || !In1000(FobGenerate[i],false)) not_existsing_variable = int.Parse("error");
         }
-        for(i=0;i<28;i++)
+        for(i=0;i<224;i++)
         {
-            if(!IntsAll(TypeSet[i],3) || !In1000(TypeSet[i],true)) not_existsing_variable = int.Parse("error");
+            if(TypeSet[i]!="") if(!IntsAll(TypeSet[i],3) || !In1000(TypeSet[i],true)) not_existsing_variable = int.Parse("error");
         }
         for(i=0;i<128;i++)
         {
@@ -1270,17 +1313,19 @@ public class SC_data : MonoBehaviour
 
 			//Load data
             craftings = raws[0];
+			biomeChances = raws[8];
             craftMaxPage = int.Parse(raws[1])+"";
 
             for(i=0;i<16;i++) DrillLoot[i] = raws[2].Split('\'')[i];
             for(i=0;i<16;i++) FobGenerate[i] = raws[3].Split('\'')[i];
-            for(i=0;i<28;i++) TypeSet[i] = raws[4].Split('\'')[i];
+            for(i=0;i<224;i++) TypeSet[i] = raws[4].Split('\'')[i];
             for(i=0;i<gpl_number;i++)
             {
                 if(i==8) Gameplay[i] = int.Parse(raws[5].Split('\'')[i])+"";
                 else Gameplay[i] = float.Parse(raws[5].Split('\'')[i])+"";
             }
             for(i=0;i<128;i++) ModifiedDrops[i] = raws[6].Split('\'')[i];
+			for(i=0;i<32;i++) BiomeTags[i] = raws[7].Replace(' ','_').Split('\'')[i];
 
 			checkDatapackGoodE();
         
@@ -1304,6 +1349,9 @@ public class SC_data : MonoBehaviour
 		eff+="~"+string.Join("\'",TypeSet);
 		eff+="~"+string.Join("\'",Gameplay);
 		eff+="~"+string.Join("\'",ModifiedDrops);
+		eff+="~"+string.Join("\'",BiomeTags);
+		
+		eff+="~"+biomeChances;
 		
 		return eff;
 	}

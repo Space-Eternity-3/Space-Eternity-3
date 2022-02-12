@@ -51,6 +51,7 @@ public class SC_asteroid : MonoBehaviour {
 	float saze;
 	bool pseudoF1=false;
 	string biome="";
+	string generation_code="";
 	public float upg3down, upg3up, upg3hugity;
 
 	string worldDIR="";
@@ -133,12 +134,12 @@ public class SC_asteroid : MonoBehaviour {
 		int[] max = new int[2048];
 		
 		int B=0;
-		if(biome=="b1") B=1; 
-		if(biome=="b2") B=2;
-		if(biome=="b3") B=3;
-		int I=(int)size+B*7-4;
+		B = int.Parse(biome.Split('b')[1]);
+		int I=(int)size-4 + B*7;
 
-		string[] dGet = SC_data.TypeSet[I].Split(';');
+		string ts = SC_data.TypeSet[I];
+		if(ts=="") ts="0;0;999";
+		string[] dGet = ts.Split(';');
 		lngt=dGet.Length/3;
 
 		for(i=0;i<lngt&&i<2048;i++)
@@ -154,7 +155,7 @@ public class SC_asteroid : MonoBehaviour {
 			if(rand>=min[i]&&rand<=max[i])
 			{
 				type=idn[i];
-				if(type<0||type>16) type=0;
+				if(type<0||type>=16) type=0;
 				break;
 			}
 		}
@@ -178,18 +179,12 @@ public class SC_asteroid : MonoBehaviour {
 	}
 	void GetBiome()
 	{
-		Vector3 BS = new Vector3(Mathf.Round(transform.position.x/SC_fun.biome_sector_size),Mathf.Round(transform.position.y/SC_fun.biome_sector_size),0f);
-		int ulam=SC_fun.CheckID((int)BS.x,(int)BS.y);
-		BS=BS*SC_fun.biome_sector_size;
-		float biomeSize=SC_fun.GetBiomeSize(ulam);
-		if(biomeSize==0f) return;
-
-		BS+=SC_fun.GetBiomeMove(ulam);
-		float dX=transform.position.x-BS.x;
-		float dY=transform.position.y-BS.y;
-		float distance=Mathf.Sqrt(dX*dX+dY*dY);
+		float[] dau = SC_fun.GetBiomeDAU(ID);
+		float distance = dau[0];
+		int ulam = (int)dau[1];
 		
-		if(distance<biomeSize) biome=SC_fun.GetBiomeString(ulam);
+		if(distance < SC_fun.GetBiomeSize(ulam)) biome=SC_fun.GetBiomeString(ulam);
+		else biome="b0";
 	}
 	void StructureReplace(int st)
 	{
@@ -199,16 +194,7 @@ public class SC_asteroid : MonoBehaviour {
 	void Awake()
 	{
 		ID=SC_fun.CheckID((int)(transform.position.x/10f),(int)(transform.position.y/10f));
-		if(ID!=1)
-		{
-			GetBiome();
-			if(biome!="") if(biome[0]=='v')
-			{
-				SC_fun.GenListRemove(ID,0);
-				Destroy(gameObject);
-				return;
-			}
-		}
+		if(ID!=1) GetBiome();
 	}
 	void Start()
 	{
@@ -230,6 +216,7 @@ public class SC_asteroid : MonoBehaviour {
 		string Mg=SC_fun.GetMove(X,Y);
 		Move(size,Mg);
 		transform.localScale=new Vector3(size,size,size*0.75f);
+		generation_code = suze + biome;
 		
 		//DATA downloader (singleplayer, multiplayer)
 		if(ID!=1)
@@ -238,6 +225,7 @@ public class SC_asteroid : MonoBehaviour {
 			{
 				string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
 				int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]),i;
+				
 				if(SC_data.World[a,0,c]=="")
 				{
 					//Not exists
@@ -263,7 +251,7 @@ public class SC_asteroid : MonoBehaviour {
 			}
 			else //If multiplayer
 			{
-				SC_control.SendMTP("/AsteroidData "+ID+" "+suze+biome+" "+SC_control.connectionID);
+				SC_control.SendMTP("/AsteroidData "+ID+" "+generation_code+" "+SC_control.connectionID);
 			}
 		}
 	}
@@ -277,7 +265,7 @@ public class SC_asteroid : MonoBehaviour {
 			int i;
 			string[] astDats=arg[2].Split(';');
 			type=int.Parse(astDats[0]);
-			if(type<0||type>16) type=0;
+			if(type<0||type>=16) type=0;
 			for(i=0;i<longg(saze);i++)
 			{
 				try{
@@ -355,6 +343,11 @@ public class SC_asteroid : MonoBehaviour {
 	}
 	void Update()
 	{
+		SC_asteroid[] asts = FindObjectsOfType<SC_asteroid>();
+		foreach(SC_asteroid astt in asts)
+		{
+			if(astt.ID==ID && transform.position!=astt.transform.position) Debug.LogWarning("Warning! ID conflict: "+ID+";"+transform.position+";"+astt.transform.position);
+		}
 		if(transform.position.z<100&&UUTCed)
 		{	
 			//Optimalize

@@ -16,7 +16,7 @@ public class SC_point_expand : MonoBehaviour {
 		{
 			SC_fun.GenListAdd(ID,0);
 			char it=SC_fun.AsteroidChar(ID);
-			if(it=='V') {Instantiate(asteroid, transform.position, Quaternion.identity); return;}
+			Instantiate(asteroid, transform.position, Quaternion.identity); return;
 		}
 	}
 }

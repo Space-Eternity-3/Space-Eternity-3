@@ -194,6 +194,7 @@ asteroid_type
 {
 	<Default>0
 	{
+		<Default generation>
 		<Size>4: stone(50%) + copper(45%) + gold(5%);
 		<Size>5: stone(50%) + copper(45%) + gold(5%);
 		<Size>6: stone(50%) + copper(20%) + coal(23,5%) + gold(5%) + amethyst(1,5%);
@@ -204,6 +205,10 @@ asteroid_type
 	}
 	<Biome>1
 	{
+		<Hell biome>
+		tag: 'biome big';
+		chance: 14%;
+	
 		<Size>4: coal(100%);
 		<Size>5: coal(100%);
 		<Size>6: coal(97%) + diamond(3%);
@@ -214,25 +219,24 @@ asteroid_type
 	}
 	<Biome>2
 	{
-		<Size>4: stone_geyzer(100%);
+		<Geyzer biome>
+		tag: 'biome big';
+		chance: 14%;
+	
+		all_sizes: stone_geyzer(100%);
 		<Size>5: stone_geyzer(70%) + magnetic_geyzer(30%);
 		<Size>6: stone_geyzer(70%) + magnetic_geyzer(30%);
 		<Size>7: stone_geyzer(70%) + magnetic_geyzer(30%);
-		<Size>8: stone_geyzer(100%);
-		<Size>9: stone_geyzer(100%);
-		<Size>10: stone_geyzer(100%);
 	}
 	<Biome>3
 	{
-		<Size>4: grass(60%) + magnetic(40%);
-		<Size>5: grass(60%) + magnetic(40%);
-		<Size>6: grass(60%) + magnetic(40%);
-		<Size>7: grass(60%) + magnetic(40%);
-		<Size>8: grass(60%) + magnetic(40%);
-		<Size>9: grass(60%) + magnetic(40%);
-		<Size>10: grass(60%) + magnetic(40%);
+		<Alien biome>
+		tag: 'biome big';
+		chance: 14%;
+	
+		all_sizes: grass(60%) + magnetic(40%);
 	}
-	<max 3 biomes>
+	<max 31 biomes + default>
 }
 objects_generate
 {

@@ -21,7 +21,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 1.12'; <Don't change>
-name: 'DEFAULT'; <Rename it>
+name: 'Biome Visible'; <Rename it>
 craftings
 {
 	<Page>1
@@ -194,47 +194,30 @@ asteroid_type
 {
 	<Default>0
 	{
-		<Default generation>
-		<Size>4: stone(50%) + copper(45%) + gold(5%);
-		<Size>5: stone(50%) + copper(45%) + gold(5%);
-		<Size>6: stone(50%) + copper(20%) + coal(23,5%) + gold(5%) + amethyst(1,5%);
-		<Size>7: stone(50%) + copper(30%) + coal(20%);
-		<Size>8: stone(50%) + copper(30%) + coal(20%);
-		<Size>9: stone(50%) + coal(20%) + grass(15%) + magnetic(15%);
-		<Size>10: stone(35%) + coal(15%) + grass(25%) + magnetic(25%);
+		all_sizes: stone(100%);
 	}
 	<Biome>1
 	{
-		<Hell biome>
-		tag: 'biome big';
-		chance: 14%;
-	
-		<Size>4: coal(100%);
-		<Size>5: coal(100%);
-		<Size>6: coal(97%) + diamond(3%);
-		<Size>7: coal(65%) + red(35%);
-		<Size>8: coal(65%) + red(35%);
-		<Size>9: coal(45%) + red(55%);
-		<Size>10: coal(45%) + red(55%);
+		chance: 25%;
+		all_sizes: amethyst(100%);
 	}
 	<Biome>2
 	{
-		<Geyzer biome>
-		tag: 'biome big';
-		chance: 14%;
-	
-		all_sizes: stone_geyzer(100%);
-		<Size>5: stone_geyzer(70%) + magnetic_geyzer(30%);
-		<Size>6: stone_geyzer(70%) + magnetic_geyzer(30%);
-		<Size>7: stone_geyzer(70%) + magnetic_geyzer(30%);
+		tag: 'circle';
+		chance: 25%;
+		all_sizes: gold(100%);
 	}
 	<Biome>3
 	{
-		<Alien biome>
-		tag: 'biome big';
-		chance: 14%;
-	
-		all_sizes: grass(60%) + magnetic(40%);
+		tag: 'dense';
+		chance: 25%;
+		all_sizes: red(100%);
+	}
+	<Biome>4
+	{
+		tag: 'dense circle';
+		chance: 25%;
+		all_sizes: diamond(100%);
 	}
 	<max 31 biomes + default>
 }

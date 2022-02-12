@@ -43,35 +43,25 @@ var jse3Var = [];
 var jse3Dat = [];
 
 var datName="";
-var version;
-var craftings;
-var craftMaxPage;
-var drillLoot = [];
-var fobGenerate = [];
-var typeSet = [];
-var gameplay = [];
-var modifiedDrops = [];
+var version="";
+var craftings="";
+var craftMaxPage="";
+var biomeChances="";
+var drillLoot = new Array(16);
+var fobGenerate = new Array(16);
+var biomeTags = new Array(32);
+var typeSet = new Array(224);
+var gameplay = new Array(32);
+var modifiedDrops = new Array(128);
 var translateFob = [];
 var translateAsteroid = [];
 
-var yy;
-for(yy=0;yy<16;yy++)
-{
-	drillLoot[yy]="";
-	fobGenerate[yy]="";
-}
-for(yy=0;yy<28;yy++)
-{
-	typeSet[yy]="";
-}
-for(yy=0;yy<32;yy++)
-{
-	gameplay[yy]="";
-}
-for(yy=0;yy<128;yy++)
-{
-	modifiedDrops[yy]="";
-}
+drillLoot.fill(""); Object.seal(drillLoot);
+fobGenerate.fill(""); Object.seal(fobGenerate);
+biomeTags.fill(""); Object.seal(biomeTags);
+typeSet.fill(""); Object.seal(typeSet);
+gameplay.fill(""); Object.seal(gameplay);
+modifiedDrops.fill(""); Object.seal(modifiedDrops);
 
 //Websocket functions
 const wss = new WebSocket.Server({
@@ -346,6 +336,8 @@ function clientDatapacks()
     typeSet.join("'"),
     gameplay.join("'").replaceAll('.',','),
     modifiedDrops.join("'"),
+	biomeTags.join("'"),
+	biomeChances
   ].join("~");
 }
 
@@ -751,15 +743,13 @@ function getBlockAt(ulam,place)
 //Asteroid functions
 function sazeConvert(saze)
 {
-  saze=saze+"";
-  if(saze[2]=="1"||saze[3]=="1") return 7+(parseInt(saze)-4);
-  if(saze[2]=="2"||saze[3]=="2") return 14+(parseInt(saze)-4);
-  if(saze[2]=="3"||saze[3]=="3") return 21+(parseInt(saze)-4);
-  return parseInt(saze)-4;
+  return parseIntE(saze.split("b")[1])*7+parseIntE(saze.split("b")[0])-4;
 }
 function generateAsteroid(saze)
 {
-  var typeDatas=typeSet[sazeConvert(saze)].split(";");
+  var typeDatas=typeSet[sazeConvert(saze)];
+  if(typeDatas!="") typeDatas = typeDatas.split(";");
+  else typeDatas = "0;0;999".split(";");
   var rand=randomInteger(0,999);
   var i=0,j,k;
   while(!(rand>=typeDatas[i+1]&&rand<=typeDatas[i+2])&&i<1000) i+=3;
@@ -866,7 +856,7 @@ wss.on('connection', function connection(ws) {
     }
     if(arg[0]=="/AsteroidData")
     {
-      //AsteroidData 1[UlamID] 2[size] 3[PlayerID]
+      //AsteroidData 1[UlamID] 2[generation_code] 3[PlayerID]
       if(!checkPlayer(arg[3],arg[msl-2])) return;
 
       var ulamID=arg[1];
@@ -1362,6 +1352,7 @@ function finalTranslate(varN)
   //Final translate
   var i,mID,lg;
   var mSTR;
+  var cur1000biome = 0;
   for(i=0;i<varN;i++)
   {
       var psPath = jse3Var[i].split(";");
@@ -1510,19 +1501,51 @@ function finalTranslate(varN)
           }
           else if(psPath[0]=="asteroid_type")
           {
-              try{
+             try{
 
-                  mID=parseIntE(psPath[1]);
-                  mID2=parseIntE(psPath[2])-4;
-                  mID=7*mID+mID2;
-                  jse3Var[i]=psPath[0]+";"+mID;
+                mID=parseIntE(psPath[1]);
+				if(mID<0||mID>31) nev++;
+				  
+				if(psPath[2]=="tag")
+				{
+					if(mID==0) nev++;
+					else biomeTags[mID] = jse3Dat[i].replaceAll(" ","_");
+				}
+				else if(psPath[2]=="chance")
+				{
+					if(mID==0) nev++;
+					var efe = mID+";"+cur1000biome+";";
+							
+					var le = jse3Dat[i].length;
+					if((jse3Dat[i])[le-1]=='%') jse3Dat[i] = percentRemove(jse3Dat[i]);
+					else nev++;
+							
+					cur1000biome += parseIntE((parseFloatE(jse3Dat[i])*10)+"");
+					efe += (cur1000biome-1)+";";
+					biomeChances += efe;
+				}
+				else
+				{ 
+                    if(psPath[2]=="all_sizes") mID2=-4;
+			        else mID2=parseIntE(psPath[2])-4;
+				    if((mID2<0||mID2>6)&&mID2!=-4) nev++;
+				  
+                    if(mID2!=-4) mID=7*mID+mID2;
+			  	    else mID=7*mID;
+                    jse3Var[i]=psPath[0]+";"+mID;
 
-                  jse3Dat[i]=translateAll(jse3Dat[i],1);
-                  jse3Dat[i]=allPercentRemove(jse3Dat[i],true);
+                    jse3Dat[i]=translateAll(jse3Dat[i],1);
+                    jse3Dat[i]=allPercentRemove(jse3Dat[i],true);
 
-                  if(jse3Dat[i].split(";").length%3!=0) {datapackError("Error in variable: "+raw_name);}
+                    if(jse3Dat[i].split(";").length%3!=0) {datapackError("Error in variable: "+raw_name);}
 
-                  typeSet[mID]=jse3Dat[i];
+                    if(mID2!=-4) typeSet[mID]=jse3Dat[i];
+				    else
+				    {
+				  	    var uu;
+			  		    for(uu=0;uu<7;uu++) typeSet[mID+uu]=jse3Dat[i];
+				    }
+				}
 
               }catch{datapackError("Error in variable: "+raw_name);}
           }
@@ -1534,11 +1557,13 @@ function finalTranslate(varN)
       craftings=craftings+";"+crafts[i];
   }
   craftMaxPage=(~~(crMax/7)+1)+"";
+  
+  //last biome chance correction
+  if(biomeChances!="") biomeChances = percentRemove(biomeChances);
 
   //Check if all is good
   for(i=0;i<gpl_number;i++) if(gameplay[i]=="") {datapackError("Required variable not found: gameplay_"+i);}
-  for(i=0;i<7;i++) if(typeSet[i]=="") {datapackError("Required variable not found: asteroid_type_"+(i+4));}
-  for(i=7;i<28;i++) if(typeSet[i]=="") typeSet[i]=typeSet[i%7]; //Empty biomes correction
+  if(cur1000biome>1000) {datapackError("Biome chance sum is bigger than 100%");}
   
   if(version!=serverVersion) {datapackError("Wrong version or empty version variable");}
   if(datName=="") {datapackError("Datapack name can't be empty");}
@@ -1585,7 +1610,7 @@ function in1000(str, must_be_1000)
 		}
 		else
 		{
-			if(actual > parseIntE(strT[i])) return false;
+			if(actual > parseIntE(strT[i]) + 1) return false;
 			actual = parseIntE(strT[i]); ended = true; i++;
 		}
 	}
@@ -1640,14 +1665,15 @@ function checkDatapackGoodE()
 		
 	//Check int arrays
     if(!intsAll(craftings,6) || !goodItems(craftings,true)) nev++;
+	if(!intsAll(biomeChances,3) || !in1000(biomeChances,false)) nev++;
     for(i=0;i<16;i++)
     {
         if(!intsAll(drillLoot[i],3) || !in1000(drillLoot[i],false) || !drillGoodItem(drillLoot[i])) nev++;
         if(!intsAll(fobGenerate[i],3) || !in1000(fobGenerate[i],false)) nev++;
     }
-    for(i=0;i<28;i++)
+    for(i=0;i<224;i++)
     {
-        if(!intsAll(typeSet[i],3) || !in1000(typeSet[i],true)) nev++;
+        if(typeSet[i]!="") if(!intsAll(typeSet[i],3) || !in1000(typeSet[i],true)) nev++;
     }
     for(i=0;i<128;i++)
     {
@@ -1668,17 +1694,19 @@ function datapackPaste(splitTab)
 
 		//Load data
         craftings = raws[0];
+		biomeChances = raws[8];
         craftMaxPage = parseIntE(raws[1])+"";
 
         for(i=0;i<16;i++) drillLoot[i] = raws[2].split("\'")[i];
         for(i=0;i<16;i++) fobGenerate[i] = raws[3].split("\'")[i];
-        for(i=0;i<28;i++) typeSet[i] = raws[4].split("\'")[i];
+        for(i=0;i<224;i++) typeSet[i] = raws[4].split("\'")[i];
         for(i=0;i<gpl_number;i++)
         {
             if(i==8) gameplay[i] = parseIntE(raws[5].split("\'")[i])+"";
             else gameplay[i] = parseFloatE(raws[5].split("\'")[i])+"";
         }
         for(i=0;i<128;i++) modifiedDrops[i] = raws[6].split("\'")[i];
+		for(i=0;i<32;i++) biomeTags[i] = raws[7].replaceAll(" ","_").split("\'")[i];
 
 		checkDatapackGoodE();
         

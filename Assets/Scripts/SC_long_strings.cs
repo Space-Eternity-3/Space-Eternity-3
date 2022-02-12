@@ -6,6 +6,7 @@ public class SC_long_strings : MonoBehaviour
 {
     public string AsteroidBase;
     public string BiomeBase;
+	public string BiomeNewBase;
 
     /*
     
