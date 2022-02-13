@@ -21,7 +21,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 1.12'; <Don't change>
-name: 'Tryt'; <Rename it>
+name: 'Skoczow 1'; <Rename it>
 craftings
 {
 	<Page>1
@@ -199,29 +199,36 @@ asteroid_type
 	}
 	<Biome>1
 	{
-		tag: 'dense tiny';
-		chance: 25%;
+		tag: 'density=0';
+		chance: 20%;
 	
-		all_sizes: diamond(100%);
+		all_sizes: 11(100%);
 	}
 	<Biome>2
 	{
-		tag: 'dense small';
-		chance: 25%;
+		tag: 'density=1';
+		chance: 20%;
 	
-		all_sizes: gold(100%);
+		all_sizes: diamond(100%);
 	}
 	<Biome>3
 	{
-		tag: 'dense medium';
-		chance: 25%;
+		tag: 'density=2';
+		chance: 20%;
 	
-		all_sizes: copper(100%);
+		all_sizes: gold(100%);
 	}
 	<Biome>4
 	{
-		tag: 'dense big';
-		chance: 25%;
+		tag: 'density=3';
+		chance: 20%;
+	
+		all_sizes: copper(100%);
+	}
+	<Biome>5
+	{
+		tag: 'density=4';
+		chance: 20%;
 	
 		all_sizes: coal(100%);
 	}

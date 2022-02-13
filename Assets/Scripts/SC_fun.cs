@@ -10,6 +10,7 @@ public class SC_fun : MonoBehaviour
     public Material[] M = new Material[128];
     public Texture[] Item = new Texture[128];
     public Texture Item20u;
+	
     public float volume;
     public int seed;
     public bool halloween_theme;
@@ -17,6 +18,12 @@ public class SC_fun : MonoBehaviour
     public string[] GenLists = new string[2];
     public float biome_sector_size;
     public bool[] pushed_markers = new bool[9];
+	
+	public int[] bW = new int[32];
+	public int[] bMI = new int[32];
+	public int[] bMA = new int[32];
+	public int[] bD = new int[32];
+	
     public Transform[] structures;
     public Transform[] structures2;
     public SC_control SC_control;
@@ -130,16 +137,26 @@ public class SC_fun : MonoBehaviour
 		string biost = GetBiomeString(ulam);
 		float size = GetBiomeSize(ulam);
 		string tags = GetBiomeTag(ulam);
+		int bid = int.Parse(biost.Split('b')[1]);
+		int locD = bD[bid];
 		
 		if((distance<size) && biost!="b0")
 		{
-			if(TagContains(tags,"empty")) return false;
-			if(TagContains(tags,"circle") && distance<size-20f) return false;
-			if(TagContains(tags,"dense")) return true;
+			if(TagContains(tags,"circle") && !TagContains(tags,"full") && distance<size-GetCircleWide(biost)) return false;
 		}
+		else locD = bD[0];
 		
-		if(it=='V') return true;
-		else return false;
+		if(it=='a' && locD>=1) return true;
+		if(it=='b' && locD>=2) return true;
+		if(it=='c' && locD>=3) return true;
+		if(it=='d' && locD>=4) return true;
+		if(it=='e' && locD>=5) return true;
+		if(it=='f' && locD>=6) return true;
+		if(it=='g' && locD>=7) return true;
+		if(it=='h' && locD>=8) return true;
+		if(it=='i' && locD>=9) return true;
+		if(it=='j' && locD>=10) return true;
+		return false;
     }
     public char AsteroidChar(int ID)
     {
@@ -229,70 +246,42 @@ public class SC_fun : MonoBehaviour
 
 //-----------------------------------------------------------------------------------------------
 
-    public float GetBiomeSize(int ulam)
+    public float GetCircleWide(string typ)
+	{
+		int i;
+		return bW[int.Parse(typ.Split('b')[1])];
+	}
+	public float GetBiomeSize(int ulam)
     {
         string typ=GetBiomeString(ulam);
 		string tags=GetBiomeTag(ulam);
 		
         if(typ=="b0") return 0f;
+		if(TagContains(tags,"full")) return 10000f;
 		
-		//tiny biomes
-		if(TagContains(tags,"size20")) return 20f;
-		if(TagContains(tags,"size25")) return 25f;
-		if(TagContains(tags,"size30")) return 30f;
-		//small biomes
-		if(TagContains(tags,"size35")) return 35f;
-		if(TagContains(tags,"size40")) return 40f;
-		if(TagContains(tags,"size45")) return 45f;
-		//medium biomes
-		if(TagContains(tags,"size50")) return 50f;
-		if(TagContains(tags,"size55")) return 55f;
-		if(TagContains(tags,"size60")) return 60f;
-		//big biomes
-		if(TagContains(tags,"size65")) return 65f;
-		if(TagContains(tags,"size70")) return 70f;
-		if(TagContains(tags,"size75")) return 75f;
-		if(TagContains(tags,"size80")) return 80f;
-		//full square biome
-		if(TagContains(tags,"sizeFull")) return 10000f;
+		int i,j;
+		float min, max;
 		
-        if(TagContains(tags,"big"))
-        {
-            if(ulam%4==0) return 80f;
-            if(ulam%4==1) return 75f;
-            if(ulam%4==2) return 70f;
-			if(ulam%4==3) return 65f;
-        }
+		min = bMI[int.Parse(typ.Split('b')[1])];
+		max = bMA[int.Parse(typ.Split('b')[1])];
 		
-		if(TagContains(tags,"medium") || (!TagContains(tags,"small") && !TagContains(tags,"tiny")))
-        {
-            if(ulam%4==0) return 60f;
-            if(ulam%4==1) return 55f;
-            if(ulam%4==2) return 50f;
-			if(ulam%4==3) return 45f;
-        }
+		if(min>max)
+		{
+			float pom=min;
+			min=max; max=pom;
+		}
 		
-		if(TagContains(tags,"small"))
-        {
-            if(ulam%3==0) return 40f;
-            if(ulam%3==1) return 35f;
-			if(ulam%3==2) return 30f;
-        }
-		
-		if(TagContains(tags,"tiny"))
-        {
-            if(ulam%2==0) return 25f;
-            if(ulam%2==1) return 20f;
-        }
-		
-		return 0f;
+		int ps_rand = (ulam+seed) % (((int)max-(int)min)+1);
+		float ret = min + ps_rand;
+		return ret;
     }
     public Vector3 GetBiomeMove(int ulam)
     {
         float size=GetBiomeSize(ulam);
+		if(size>1000f) return new Vector3(0f,0f,0f);
         string red=LocalMove(ulam);
-        float dX=(int.Parse(red.Split(';')[0])-1)*(biome_sector_size/2f-size);
-        float dY=(int.Parse(red.Split(';')[1])-1)*(biome_sector_size/2f-size);
+        float dX=(int.Parse(red.Split(';')[0])-1)*(80f-size);
+        float dY=(int.Parse(red.Split(';')[1])-1)*(80f-size);
         return new Vector3(dX,dY,0f);
     }
 	public int pseudoRandom1000(int prSeed)
@@ -350,5 +339,31 @@ public class SC_fun : MonoBehaviour
 		
 		retu[0]=distance; retu[1]=ulam;
 		return retu;
+	}
+	public void BTPT()
+	{
+		//BIOME TAG PRE TRANSLATE
+		int i,j;
+		for(i=0;i<32;i++)
+		{
+			bW[i] = 20;
+			bMI[i] = 65;
+			bMA[i] = 80;
+			bD[i] = 6;
+			
+			string tags = SC_data.BiomeTags[i];
+			
+			for(j=0;j<=80;j++)
+				if(TagContains(tags,"wide="+j)) bW[i]=j;
+			for(j=0;j<=80;j++)
+				if(TagContains(tags,"min="+j)) bMI[i]=j;
+			for(j=0;j<=80;j++)
+				if(TagContains(tags,"max="+j)) bMA[i]=j;
+			for(j=0;j<=80;j++)
+				if(TagContains(tags,"radius="+j)) {bMI[i]=j; bMA[i]=j;}
+			
+			for(j=0;j<=10;j++)
+				if(TagContains(tags,"density="+j)) bD[i]=j;
+		}
 	}
 }

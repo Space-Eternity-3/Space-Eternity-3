@@ -1508,8 +1508,7 @@ function finalTranslate(varN)
 				  
 				if(psPath[2]=="tag")
 				{
-					if(mID==0) nev++;
-					else biomeTags[mID] = jse3Dat[i].replaceAll(" ","_");
+					biomeTags[mID] = jse3Dat[i].replaceAll(" ","_");
 				}
 				else if(psPath[2]=="chance")
 				{

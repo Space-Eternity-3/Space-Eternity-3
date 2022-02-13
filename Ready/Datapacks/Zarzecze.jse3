@@ -21,7 +21,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 1.12'; <Don't change>
-name: 'Tymo'; <Rename it>
+name: 'Zarzecze'; <Rename it>
 craftings
 {
 	<Page>1
@@ -170,7 +170,7 @@ gameplay
 	vacuum_drag_multiplier: 1;
 	
 	all_speed_multiplier: 1;
-	player_normal_speed: 30;
+	player_normal_speed: 50;
 	player_brake_speed: -7;
 	player_turbo_speed: 18; <Only if turbo level is 0>
 	drill_normal_speed: 8;
@@ -195,35 +195,16 @@ asteroid_type
 	<Default>0
 	{
 		<Default generation>
+		tag: 'density=0';
+		
 		all_sizes: stone(100%);
 	}
 	<Biome>1
 	{
-		tag: 'circle';
-		chance: 30%;
-		
-		all_sizes: gold(100%);
-	}
-	<Biome>2
-	{
-		tag: 'dense';
-		chance: 30%;
+		tag: 'density=3 min=40 max=60';
+		chance: 50%;
 	
-		all_sizes: diamond(100%);
-	}
-	<Biome>3
-	{
-		tag: 'dense circle';
-		chance: 30%;
-	
-		all_sizes: amethyst(100%);
-	}
-	<Biome>4
-	{
-		tag: 'empty';
-		chance: 10%;
-		
-		all_sizes: coal(100%);
+		all_sizes: 11(100%);
 	}
 	<max 31 biomes + default>
 }

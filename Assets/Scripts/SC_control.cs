@@ -1311,6 +1311,8 @@ public class SC_control : MonoBehaviour {
 		F_barrier += limi;
 		//IM_barrier -= unit * SC_artefacts.powerRM[2];
 		//IL_barrier -= unit * SC_artefacts.powerRM[3];
+		
+		SC_fun.BTPT();
 
 		int i;
 		float tX=0f,tY=0f,tH=0f,tF=0f,tP=0f,tVx=0f,tVy=0f;

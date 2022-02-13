@@ -1129,8 +1129,7 @@ public class SC_data : MonoBehaviour
 						
 						if(psPath[2]=="tag")
 						{
-							if(mID==0) nev = int.Parse("error");
-							else BiomeTags[mID] = value[i].Replace(' ','_');
+							BiomeTags[mID] = value[i].Replace(' ','_');
 						}
 						else if(psPath[2]=="chance")
 						{
