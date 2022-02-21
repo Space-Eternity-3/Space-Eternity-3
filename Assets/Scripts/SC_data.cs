@@ -1119,7 +1119,7 @@ public class SC_data : MonoBehaviour
 
                     }catch(Exception){DatapackError("Error in variable: "+raw_name); return;}
                 }
-                else if(psPath[0]=="asteroid_type")
+                else if(psPath[0]=="generator_settings")
                 {
                     try{
 
@@ -1127,7 +1127,7 @@ public class SC_data : MonoBehaviour
                         mID=int.Parse(psPath[1]);
 						if(mID<0||mID>31) nev = int.Parse("error");
 						
-						if(psPath[2]=="tag")
+						if(psPath[2]=="settings")
 						{
 							BiomeTags[mID] = value[i].Replace(' ','_');
 						}

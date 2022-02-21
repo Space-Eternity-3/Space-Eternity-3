@@ -190,7 +190,7 @@ gameplay
 	at_unstable_special_avarage_time: 3;
 	at_unstable_force: 15;
 }
-asteroid_type
+generator_settings
 {
 	<Default>0
 	{
@@ -206,7 +206,7 @@ asteroid_type
 	<Biome>1
 	{
 		<Hell biome>
-		tag: 'biome big';
+		settings: 'biome big';
 		chance: 14%;
 	
 		<Size>4: coal(100%);
@@ -220,7 +220,7 @@ asteroid_type
 	<Biome>2
 	{
 		<Geyzer biome>
-		tag: 'biome big';
+		settings: 'biome big';
 		chance: 14%;
 	
 		all_sizes: stone_geyzer(100%);
@@ -231,7 +231,7 @@ asteroid_type
 	<Biome>3
 	{
 		<Alien biome>
-		tag: 'biome big';
+		settings: 'biome big';
 		chance: 14%;
 	
 		all_sizes: grass(60%) + magnetic(40%);

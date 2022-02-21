@@ -162,20 +162,15 @@ public class SC_asteroid : MonoBehaviour {
 	}
 	void Move(float size, string Mg)
 	{
-		int pX=int.Parse(Mg.Split(';')[0]);
-		int pY=int.Parse(Mg.Split(';')[1]);
-		float R=size/2;
-		float P=5f-R;
-		switch(pX)
-		{
-			case 0: transform.position += new Vector3(-P,0f,0f); break;
-			case 2: transform.position += new Vector3(P,0f,0f); break;
-		}
-		switch(pY)
-		{
-			case 0: transform.position += new Vector3(0f,-P,0f); break;
-			case 2: transform.position += new Vector3(0f,P,0f); break;
-		}
+		if(ID==1) return;
+		string tags = SC_data.BiomeTags[int.Parse(biome.Split('b')[1])];
+		if(SC_fun.TagContains(tags,"grid")) return;
+		
+		int r121 = SC_fun.pseudoRandom1000(ID+SC_fun.seed) % 121;
+		float dE = 5f - (size+2f)*0.35f;
+		float dZ = (r121/11-5) * dE * 0.2f;
+		float dW = (r121%11-5) * dE * 0.2f;
+		transform.position += new Vector3(dW-dZ,dW+dZ,0f);
 	}
 	void GetBiome()
 	{

@@ -23,9 +23,11 @@ public class SC_fun : MonoBehaviour
 	public int[] bMI = new int[32];
 	public int[] bMA = new int[32];
 	public int[] bD = new int[32];
+	public int[] bP = new int[32];
 	
     public Transform[] structures;
     public Transform[] structures2;
+	public Transform biomeCAN;
     public SC_control SC_control;
     public SC_data SC_data;
     public SC_long_strings SC_long_strings;
@@ -128,7 +130,9 @@ public class SC_fun : MonoBehaviour
         int IDm=MakeID(ID,seed);
         if(ID==1) return false;
         if(IDm%2==0) return false;
-        char it=SC_long_strings.AsteroidBase[(IDm%65536-1)/2];
+        int it = System.Text.Encoding.ASCII.GetBytes(SC_long_strings.AsteroidBase[(IDm%65536-1)/2]+"a")[0];
+		int ia = 28; //from 28th ASCII char
+		int inu = it - ia;
 		
 		float[] dau = GetBiomeDAU(ID);
 		float distance = dau[0];
@@ -142,20 +146,11 @@ public class SC_fun : MonoBehaviour
 		
 		if((distance<size) && biost!="b0")
 		{
-			if(TagContains(tags,"circle") && !TagContains(tags,"full") && distance<size-GetCircleWide(biost)) return false;
+			if(!TagContains(tags,"full") && distance<size-GetCircleWide(biost)) return false;
 		}
 		else locD = bD[0];
 		
-		if(it=='a' && locD>=1) return true;
-		if(it=='b' && locD>=2) return true;
-		if(it=='c' && locD>=3) return true;
-		if(it=='d' && locD>=4) return true;
-		if(it=='e' && locD>=5) return true;
-		if(it=='f' && locD>=6) return true;
-		if(it=='g' && locD>=7) return true;
-		if(it=='h' && locD>=8) return true;
-		if(it=='i' && locD>=9) return true;
-		if(it=='j' && locD>=10) return true;
+		if(inu < locD) return true;
 		return false;
     }
     public char AsteroidChar(int ID)
@@ -166,32 +161,19 @@ public class SC_fun : MonoBehaviour
     public bool StructureCheck(int ID)
     {
         if(GenListContains(ID,1)) return false;
-        string gbs=GetBiomeString(ID);
-        if(gbs!="") if(gbs[0]=='v') return true;
+        string tags = GetBiomeTag(ID);
+        if(TagContains(tags,"arena")) return true;
         return false;
+    }
+	public bool BiomeCheck(int ID)
+    {
+        if(GenListContains(ID,2)) return false;
+        else return true;
     }
     public int GetSize(int ID)
     {
-        switch(MakeID(ID,seed)%32)
-        {
-            case 1: return 4;
-            case 3: return 5;
-            case 5: return 6;
-            case 7: return 7;
-            case 9: return 7;
-            case 11: return 8;
-            case 13: return 8;
-            case 15: return 9;
-            case 17: return 4;
-            case 19: return 5;
-            case 21: return 10;
-            case 23: return 7;
-            case 25: return 6;
-            case 27: return 4;
-            case 29: return 5;
-            case 31: return 6;
-            default: return 4;
-        }
+		int IDm=MakeID(ID,seed);
+		return (int)SC_long_strings.AsteroidSizeBase[(IDm%65536-1)/2]-48;
     }
     public string GetMove(int X,int Y)
     {
@@ -271,28 +253,55 @@ public class SC_fun : MonoBehaviour
 			min=max; max=pom;
 		}
 		
-		int ps_rand = (ulam+seed) % (((int)max-(int)min)+1);
+		int ps_rand = pseudoRandom10e4(ulam+seed) % (((int)max-(int)min)+1);
 		float ret = min + ps_rand;
 		return ret;
     }
     public Vector3 GetBiomeMove(int ulam)
     {
         float size=GetBiomeSize(ulam);
+		int bint=int.Parse(GetBiomeString(ulam).Split('b')[1]);
+		string tags=GetBiomeTag(ulam);
 		if(size>1000f) return new Vector3(0f,0f,0f);
         string red=LocalMove(ulam);
-        float dX=(int.Parse(red.Split(';')[0])-1)*(80f-size);
-        float dY=(int.Parse(red.Split(';')[1])-1)*(80f-size);
+        float dX,dY;
+		float maxD=(biome_sector_size-20f)/2f;
+		
+		if(TagContains(tags,"centred"))
+		{
+			dX = (int.Parse(red.Split(';')[0])-1)*(maxD-10f*Mathf.Ceil(size/10f));
+			dY = (int.Parse(red.Split(';')[1])-1)*(maxD-10f*Mathf.Ceil(size/10f));
+		}
+		else
+		{
+			dX = (int.Parse(red.Split(';')[0])-1)*(maxD-size);
+			dY = (int.Parse(red.Split(';')[1])-1)*(maxD-size);
+		}
+		
         return new Vector3(dX,dY,0f);
     }
+	public int pseudoRandom100(int prSeed)
+	{
+		prSeed = prSeed % 15000;
+		string psInt = (SC_long_strings.BiomeNewBase[2*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[2*prSeed+1]+"");
+		return int.Parse(psInt);
+	}
 	public int pseudoRandom1000(int prSeed)
 	{
 		prSeed = prSeed % 10000;
 		string psInt = (SC_long_strings.BiomeNewBase[3*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[3*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[3*prSeed+2]+"");
 		return int.Parse(psInt);
 	}
+	public int pseudoRandom10e4(int prSeed)
+	{
+		prSeed = prSeed % 7500;
+		string psInt = (SC_long_strings.BiomeNewBase[4*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+2]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+3]+"");
+		return int.Parse(psInt);
+	}
     public string GetBiomeString(int ulam)
     {
-		if(ulam==1) return "b0";
+		if(ulam>=1 && ulam<=9) return "b0";
+		if(ulam%2==0) return "b0";
 		
         int IDm=ulam+seed;
 		int pr=pseudoRandom1000(IDm);
@@ -319,7 +328,52 @@ public class SC_fun : MonoBehaviour
 	}
 	public bool TagContains(string tags, string tag)
 	{
-		return (Array.IndexOf(tags.Split('_'),tag)>-1);
+		return (Array.IndexOf(tags.Replace('[','_').Replace(']','_').Replace('_',',').Split(','),tag)>-1);
+	}
+	public int TrueBiomeUlam(Vector3 cenPos, Vector3 astPos)
+	{
+		int ux = (int)(cenPos.x/biome_sector_size);
+		int uy = (int)(cenPos.y/biome_sector_size);
+		int i;
+		
+		Vector3[] udels = new Vector3[9];
+		udels[0] = new Vector3(-1f,1f,0f);
+		udels[1] = new Vector3(0f,1f,0f);
+		udels[2] = new Vector3(1f,1f,0f);
+		udels[3] = new Vector3(-1f,0f,0f);
+		udels[4] = new Vector3(0f,0f,0f);
+		udels[5] = new Vector3(1f,0f,0f);
+		udels[6] = new Vector3(-1f,-1f,0f);
+		udels[7] = new Vector3(0f,-1f,0f);
+		udels[8] = new Vector3(1f,-1f,0f);
+		
+		int[] ulams = new int[9];
+		for(i=0;i<9;i++) ulams[i] = CheckID(ux+(int)udels[i].x,uy+(int)udels[i].y);
+		
+		bool[] insp = new bool[9];
+		for(i=0;i<9;i++) insp[i] = ((SC_control.Pitagoras(cenPos+GetBiomeMove(ulams[i])+biome_sector_size*udels[i]-astPos) < GetBiomeSize(ulams[i])));
+			
+		//Here structural neighbor remove
+	
+		int proper = 0;
+		int prr = 0;
+		for(i=0;i<9;i++)
+		{
+			if(insp[i])
+			{
+				int locP = bP[int.Parse(GetBiomeString(ulams[i]).Split('b')[1])];
+				if(locP >= prr)
+				{
+					if(locP > prr || pseudoRandom100(ulams[i]+seed) > pseudoRandom100(ulams[proper]+seed))
+					{
+						proper = i;
+						prr = locP;
+					}
+				}
+			}
+		}
+		
+		return ulams[proper];
 	}
 	public float[] GetBiomeDAU(int ID)
 	{
@@ -328,11 +382,12 @@ public class SC_fun : MonoBehaviour
 		int[] astXY = UlamToXY(ID);
 		Vector3 astPos = new Vector3(astXY[0]*10f,astXY[1]*10f,0f);
 		
-		Vector3 BS = new Vector3(Mathf.Round(astPos.x/biome_sector_size),Mathf.Round(astPos.y/biome_sector_size),0f);
-		int ulam = CheckID((int)BS.x,(int)BS.y);
-		BS = BS * biome_sector_size;
-
+		Vector3 BS = biome_sector_size * new Vector3(Mathf.Round(astPos.x/biome_sector_size),Mathf.Round(astPos.y/biome_sector_size),0f);
+		int ulam = TrueBiomeUlam(BS,astPos);
+		int[] tupXY = UlamToXY(ulam);
+		BS = biome_sector_size * new Vector3(tupXY[0],tupXY[1],0f);
 		BS += GetBiomeMove(ulam);
+		
 		float dX = astPos.x - BS.x;
 		float dY = astPos.y - BS.y;
 		float distance = Mathf.Sqrt(dX*dX+dY*dY);
@@ -340,30 +395,41 @@ public class SC_fun : MonoBehaviour
 		retu[0]=distance; retu[1]=ulam;
 		return retu;
 	}
+	public int GetBiomePriority(int ulam)
+	{
+		return bP[int.Parse(GetBiomeString(ulam).Split('b')[1])];
+	}
 	public void BTPT()
 	{
 		//BIOME TAG PRE TRANSLATE
 		int i,j;
 		for(i=0;i<32;i++)
 		{
-			bW[i] = 20;
-			bMI[i] = 65;
-			bMA[i] = 80;
-			bD[i] = 6;
+			bW[i] = 80; //wide
+			bMI[i] = 65; //min size
+			bMA[i] = 80; //max size
+			bD[i] = 60; //denity [%]
+			bP[i] = 16; //priority
 			
 			string tags = SC_data.BiomeTags[i];
 			
+			if(TagContains(tags,"circle")) bW[i]=25;
+			
 			for(j=0;j<=80;j++)
-				if(TagContains(tags,"wide="+j)) bW[i]=j;
+				if(TagContains(tags,"circle="+j)) bW[i]=j;
 			for(j=0;j<=80;j++)
 				if(TagContains(tags,"min="+j)) bMI[i]=j;
 			for(j=0;j<=80;j++)
 				if(TagContains(tags,"max="+j)) bMA[i]=j;
-			for(j=0;j<=80;j++)
+			for(j=0;j<=100;j++)
 				if(TagContains(tags,"radius="+j)) {bMI[i]=j; bMA[i]=j;}
 			
-			for(j=0;j<=10;j++)
-				if(TagContains(tags,"density="+j)) bD[i]=j;
+			for(j=0;j<=100;j++)
+				if(TagContains(tags,"density="+j+"%")) bD[i]=j;
+			for(j=1;j<=31;j++)
+				if(TagContains(tags,"priority="+j)) bP[i]=j;
 		}
+		
+		bP[0] = 0;
 	}
 }

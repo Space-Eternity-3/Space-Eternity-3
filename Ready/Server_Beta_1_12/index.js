@@ -1499,14 +1499,14 @@ function finalTranslate(varN)
 
               }catch{datapackError("Error in variable: "+raw_name);}
           }
-          else if(psPath[0]=="asteroid_type")
+          else if(psPath[0]=="generator_settings")
           {
              try{
 
                 mID=parseIntE(psPath[1]);
 				if(mID<0||mID>31) nev++;
 				  
-				if(psPath[2]=="tag")
+				if(psPath[2]=="settings")
 				{
 					biomeTags[mID] = jse3Dat[i].replaceAll(" ","_");
 				}

@@ -21,14 +21,6 @@ public class SC_legs : MonoBehaviour {
 				pet.PointGenerate();
 			}
 		}
-		if(legsID==1)
-		{
-			SC_structure_expand[] SC_structure_expand=FindObjectsOfType<SC_structure_expand>();
-			foreach(SC_structure_expand pet in SC_structure_expand)
-			{
-				pet.StructureGenerate();
-			}
-		}
 	}
 	void Start()
 	{
