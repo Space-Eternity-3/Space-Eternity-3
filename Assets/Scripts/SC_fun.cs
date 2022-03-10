@@ -124,6 +124,14 @@ public class SC_fun : MonoBehaviour
         }
         return false;
     }
+	public int StructureCheck(int ulam)
+	{
+		if(GenListContains(ulam,1) || GetBiomeSize(ulam)==-1f) return 0;
+		string tags = GetBiomeTag(ulam);
+		if(!TagContains(tags,"structural")) return 0;
+		if(TagContains(tags,"arena")) return 1;
+		return 0;
+	}
     public bool AsteroidCheck(int ID)
     {
         if(GenListContains(ID,0)) return false;
@@ -146,7 +154,7 @@ public class SC_fun : MonoBehaviour
 		
 		if((distance<size) && biost!="b0")
 		{
-			if(!TagContains(tags,"full") && distance<size-GetCircleWide(biost)) return false;
+			if(distance<size-GetCircleWide(biost)) return false;
 		}
 		else locD = bD[0];
 		
@@ -157,18 +165,6 @@ public class SC_fun : MonoBehaviour
     {
         int IDm=MakeID(ID,seed);
         return SC_long_strings.AsteroidBase[(IDm%65536-1)/2];
-    }
-    public bool StructureCheck(int ID)
-    {
-        if(GenListContains(ID,1)) return false;
-        string tags = GetBiomeTag(ID);
-        if(TagContains(tags,"arena")) return true;
-        return false;
-    }
-	public bool BiomeCheck(int ID)
-    {
-        if(GenListContains(ID,2)) return false;
-        else return true;
     }
     public int GetSize(int ID)
     {
@@ -196,7 +192,7 @@ public class SC_fun : MonoBehaviour
             default: return "0;0"; 
         }
     }
-	int[] UlamToXY(int ulam)
+	public int[] UlamToXY(int ulam)
 	{
 		int[] retu = new int[2];
 		
@@ -238,8 +234,9 @@ public class SC_fun : MonoBehaviour
         string typ=GetBiomeString(ulam);
 		string tags=GetBiomeTag(ulam);
 		
-        if(typ=="b0") return 0f;
-		if(TagContains(tags,"full")) return 10000f;
+		int[] ulXY = UlamToXY(ulam);
+        if(typ=="b0") return -1f;
+		if(TagContains(tags,"structural") && !(ulXY[0]%2==0 && ulXY[1]%2==0)) return -1f;
 		
 		int i,j;
 		float min, max;
@@ -262,20 +259,27 @@ public class SC_fun : MonoBehaviour
         float size=GetBiomeSize(ulam);
 		int bint=int.Parse(GetBiomeString(ulam).Split('b')[1]);
 		string tags=GetBiomeTag(ulam);
-		if(size>1000f) return new Vector3(0f,0f,0f);
         string red=LocalMove(ulam);
-        float dX,dY;
-		float maxD=(biome_sector_size-20f)/2f;
+        float dX=0f, dY=0f;
+		float maxD=(biome_sector_size*2-20f)/2f;
 		
-		if(TagContains(tags,"centred"))
+		int[] ulXY = UlamToXY(ulam);
+		bool[] alXY = new bool[2]; alXY[0]=true; alXY[1]=true;
+		/*if(TagContains(tags,"structural"))
 		{
-			dX = (int.Parse(red.Split(';')[0])-1)*(maxD-10f*Mathf.Ceil(size/10f));
-			dY = (int.Parse(red.Split(';')[1])-1)*(maxD-10f*Mathf.Ceil(size/10f));
+			if((int)Mathf.Abs(ulXY[0]+ulXY[1])%4 == 2) alXY[0]=false;
+			if((int)Mathf.Abs(ulXY[0]+ulXY[1])%4 == 0) alXY[1]=false;
+		}*/
+		
+		if(bW[int.Parse(GetBiomeString(ulam).Split('b')[1])]!=81)
+		{
+			if(alXY[0]) dX = (int.Parse(red.Split(';')[0])-1)*(maxD-10f*Mathf.Ceil(size/10f));
+			if(alXY[1]) dY = (int.Parse(red.Split(';')[1])-1)*(maxD-10f*Mathf.Ceil(size/10f));
 		}
 		else
 		{
-			dX = (int.Parse(red.Split(';')[0])-1)*(maxD-size);
-			dY = (int.Parse(red.Split(';')[1])-1)*(maxD-size);
+			if(alXY[0]) dX = (int.Parse(red.Split(';')[0])-1)*(maxD-size);
+			if(alXY[1]) dY = (int.Parse(red.Split(';')[1])-1)*(maxD-size);
 		}
 		
         return new Vector3(dX,dY,0f);
@@ -330,6 +334,26 @@ public class SC_fun : MonoBehaviour
 	{
 		return (Array.IndexOf(tags.Replace('[','_').Replace(']','_').Replace('_',',').Split(','),tag)>-1);
 	}
+	bool HasBadNeighbor(int ulam, Vector3[] udels)
+	{
+		int[] getXY = UlamToXY(ulam);
+		int uX = getXY[0];
+		int uY = getXY[1];
+		int i;
+		
+		for(i=0;i<9;i++)
+		{
+			int ulam2 = CheckID(uX+(int)udels[i].x,uY+(int)udels[i].y);
+			string tags = GetBiomeTag(ulam2);
+			if(TagContains(tags,"structural") && GetBiomeString(ulam2)!="b0")
+			{
+				if(pseudoRandom100(ulam2+seed) > pseudoRandom100(ulam+seed)) return true;
+				if(pseudoRandom100(ulam2+seed) == pseudoRandom100(ulam+seed) && ulam2>ulam) return true;
+			}
+		}
+		
+		return false;
+	}
 	public int TrueBiomeUlam(Vector3 cenPos, Vector3 astPos)
 	{
 		int ux = (int)(cenPos.x/biome_sector_size);
@@ -353,7 +377,15 @@ public class SC_fun : MonoBehaviour
 		bool[] insp = new bool[9];
 		for(i=0;i<9;i++) insp[i] = ((SC_control.Pitagoras(cenPos+GetBiomeMove(ulams[i])+biome_sector_size*udels[i]-astPos) < GetBiomeSize(ulams[i])));
 			
-		//Here structural neighbor remove
+		/*for(i=0;i<9;i++)
+		{
+			if(insp[i] && false)
+			{
+				string tags = GetBiomeTag(ulams[i]);
+				if(TagContains(tags,"structural"))
+					if(HasBadNeighbor(ulams[i],udels)) insp[i] = false;
+			}
+		}*/
 	
 		int proper = 0;
 		int prr = 0;
@@ -362,17 +394,31 @@ public class SC_fun : MonoBehaviour
 			if(insp[i])
 			{
 				int locP = bP[int.Parse(GetBiomeString(ulams[i]).Split('b')[1])];
-				if(locP >= prr)
+				if(locP > prr)
 				{
-					if(locP > prr || pseudoRandom100(ulams[i]+seed) > pseudoRandom100(ulams[proper]+seed))
+					proper = i;
+					prr = locP;
+				}
+				else if(locP == prr)
+				{
+					if(pseudoRandom100(ulams[i]+seed) > pseudoRandom100(ulams[proper]+seed))
 					{
 						proper = i;
 						prr = locP;
+					}
+					else if(pseudoRandom100(ulams[i]+seed) == pseudoRandom100(ulams[proper]+seed))
+					{
+						if(ulams[i] > ulams[proper])
+						{
+							proper = i;
+							prr = locP;
+						}
 					}
 				}
 			}
 		}
 		
+		if(proper==0 && !insp[0]) return 1; //guaranted empty sector
 		return ulams[proper];
 	}
 	public float[] GetBiomeDAU(int ID)
@@ -383,8 +429,10 @@ public class SC_fun : MonoBehaviour
 		Vector3 astPos = new Vector3(astXY[0]*10f,astXY[1]*10f,0f);
 		
 		Vector3 BS = biome_sector_size * new Vector3(Mathf.Round(astPos.x/biome_sector_size),Mathf.Round(astPos.y/biome_sector_size),0f);
+		
 		int ulam = TrueBiomeUlam(BS,astPos);
 		int[] tupXY = UlamToXY(ulam);
+		
 		BS = biome_sector_size * new Vector3(tupXY[0],tupXY[1],0f);
 		BS += GetBiomeMove(ulam);
 		
@@ -405,7 +453,7 @@ public class SC_fun : MonoBehaviour
 		int i,j;
 		for(i=0;i<32;i++)
 		{
-			bW[i] = 80; //wide
+			bW[i] = 81; //wide
 			bMI[i] = 65; //min size
 			bMA[i] = 80; //max size
 			bD[i] = 60; //denity [%]
@@ -428,6 +476,8 @@ public class SC_fun : MonoBehaviour
 				if(TagContains(tags,"density="+j+"%")) bD[i]=j;
 			for(j=1;j<=31;j++)
 				if(TagContains(tags,"priority="+j)) bP[i]=j;
+			
+			if(TagContains(tags,"structural")) bP[i]=32;
 		}
 		
 		bP[0] = 0;

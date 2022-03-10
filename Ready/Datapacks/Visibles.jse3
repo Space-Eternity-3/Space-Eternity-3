@@ -165,11 +165,11 @@ gameplay
 	turbo_regenerate_multiplier: 1;
 	turbo_use_multiplier: 2;
 	crash_minimum_energy: 5;
-	crash_damage_multiplier: 1;
-	spike_damage: 10;
+	crash_damage_multiplier: 0;
+	spike_damage: 0;
 	vacuum_drag_multiplier: 1;
 	
-	all_speed_multiplier: 1;
+	all_speed_multiplier: 3;
 	player_normal_speed: 11;
 	player_brake_speed: -7;
 	player_turbo_speed: 18; <Only if turbo level is 0>
@@ -205,7 +205,7 @@ generator_settings
 		chance: 25%;
 		settings:[
 			density = 100%,
-			priority = 17,
+			circle,
 			grid,
 		];
 		
@@ -216,6 +216,7 @@ generator_settings
 		chance: 25%;
 		settings:[
 			density = 100%,
+			circle,
 			grid,
 		];
 		
@@ -226,17 +227,21 @@ generator_settings
 		chance: 25%;
 		settings:[
 			density = 100%,
+			structural,
+			circle,
 			grid,
+			radius = 60,
 		];
 		
-		all_sizes: gold(100%);
+		all_sizes: diamond(100%);
 	}
 	<Biome>4
 	{
 		chance: 25%;
 		settings:[
 			density = 100%,
-			priority = 15,
+			structural,
+			circle,
 			grid,
 		];
 		
@@ -246,7 +251,7 @@ generator_settings
 }
 objects_generate
 {
-	stone: stone(35%);
+	<stone: stone(35%);
 	stone_geyzer: stone(30%) + geyzer(20%);
 	magnetic_geyzer: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
 	copper: copper(35%);
@@ -256,7 +261,7 @@ objects_generate
 	coal: coal(45%);
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	red: red(35%) + red_spikes(7,5%) + red_alien(15%);
-	diamond: medium_diamond(15%) + small_diamond(25%);
+	diamond: medium_diamond(15%) + small_diamond(25%);>
 }
 game_translate <advenced settings>
 {

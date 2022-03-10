@@ -34,7 +34,7 @@ public class SC_asteroid : MonoBehaviour {
 	public SC_slots SC_slots;
 
 	int type=0;
-	public int ID=0,X=0,Y=0;
+	public int ID=1,X=0,Y=0;
 	int[] objectID = new int[32];
 	string[] objectData = new string[32];
 	string[] objectGrow = new string[32];
@@ -51,7 +51,7 @@ public class SC_asteroid : MonoBehaviour {
 	float saze;
 	bool pseudoF1=false;
 	string biome="";
-	string generation_code="";
+	public string generation_code="";
 	public float upg3down, upg3up, upg3hugity;
 
 	string worldDIR="";
@@ -186,28 +186,13 @@ public class SC_asteroid : MonoBehaviour {
 		Debug.Log(ID+" replaced to: "+st);
 		Destroy(gameObject);
 	}
-	void Awake()
-	{
-		ID=SC_fun.CheckID((int)(transform.position.x/10f),(int)(transform.position.y/10f));
-		if(ID!=1) GetBiome();
-	}
 	void Start()
 	{
-		worldID=(int)Communtron4.position.y;
-		worldDIR="../../saves/UniverseData"+worldID+"/WorldData/";
-		if(worldID!=100){
-			datapackDIR="../../saves/UniverseData"+worldID+"/Datapacks/";
-		}
-		else{
-			datapackDIR="../../saves/ServerData/Datapacks/";
-		}
-
 		//UNIVERSAL asteroid generator (UAG)
+		if(ID!=1) GetBiome();
 		float size=SC_fun.GetSize(ID);
 		suze=(int)size;
 		saze=size;
-		X=(int)(transform.position.x/10f);
-		Y=(int)(transform.position.y/10f);
 		string Mg=SC_fun.GetMove(X,Y);
 		Move(size,Mg);
 		transform.localScale=new Vector3(size,size,size*0.75f);
@@ -311,7 +296,7 @@ public class SC_asteroid : MonoBehaviour {
 				float sinX=Mathf.Sin(ii*alpha*(3.14159f/180f))*(size/2-0.02f);
 				float cosY=Mathf.Cos(ii*alpha*(3.14159f/180f))*(size/2-0.02f);
 				quat_angle.eulerAngles=new Vector3(0f,0f,-ii*alpha);
-				Vector3 rotation_place=transform.position+new Vector3(sinX,cosY,(ii+1)/100000f);
+				Vector3 rotation_place=transform.position+new Vector3(sinX,cosY,0f);
 
 				int tid=objectID[ii]; //tid -> Physical ID
 
@@ -333,21 +318,17 @@ public class SC_asteroid : MonoBehaviour {
 					gobT = Instantiate(GenPlaceM[tud*3+rand],rotation_place,quat_angle);
 				}
 				gobT.transform.parent = gameObject.transform;
+				gobT.GetComponent<SC_fobs>().index = ii;
 			}
 		}
 	}
 	void Update()
 	{
-		SC_asteroid[] asts = FindObjectsOfType<SC_asteroid>();
-		foreach(SC_asteroid astt in asts)
-		{
-			if(astt.ID==ID && transform.position!=astt.transform.position) Debug.LogWarning("Warning! ID conflict: "+ID+";"+transform.position+";"+astt.transform.position);
-		}
 		if(transform.position.z<100&&UUTCed)
 		{	
 			//Optimalize
-			float ssX=Mathf.Round(transform.position.x/10f);
-			float ssY=Mathf.Round(transform.position.y/10f);
+			float ssX=X;
+			float ssY=Y;
 			float llX=Mathf.Round(legs.position.x/10f);
 			float llY=Mathf.Round(legs.position.y/10f);
 			float distance=Mathf.Sqrt((ssX-llX)*(ssX-llX)+(ssY-llY)*(ssY-llY));

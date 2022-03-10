@@ -192,9 +192,10 @@ gameplay
 }
 generator_settings
 {
-	<Default>0
+	<Default generation> 0
 	{
-		<Default generation>
+		settings: [];
+		
 		<Size>4: stone(50%) + copper(45%) + gold(5%);
 		<Size>5: stone(50%) + copper(45%) + gold(5%);
 		<Size>6: stone(50%) + copper(20%) + coal(23,5%) + gold(5%) + amethyst(1,5%);
@@ -203,11 +204,10 @@ generator_settings
 		<Size>9: stone(50%) + coal(20%) + grass(15%) + magnetic(15%);
 		<Size>10: stone(35%) + coal(15%) + grass(25%) + magnetic(25%);
 	}
-	<Biome>1
+	<Hell biome> 1
 	{
-		<Hell biome>
-		settings: 'biome big';
-		chance: 14%;
+		chance: 10%;
+		settings: [];
 	
 		<Size>4: coal(100%);
 		<Size>5: coal(100%);
@@ -217,22 +217,22 @@ generator_settings
 		<Size>9: coal(45%) + red(55%);
 		<Size>10: coal(45%) + red(55%);
 	}
-	<Biome>2
+	<Geyzer biome> 2
 	{
-		<Geyzer biome>
-		settings: 'biome big';
-		chance: 14%;
+		chance: 10%;
+		settings: [
+			density = 75%,
+		];
 	
 		all_sizes: stone_geyzer(100%);
 		<Size>5: stone_geyzer(70%) + magnetic_geyzer(30%);
 		<Size>6: stone_geyzer(70%) + magnetic_geyzer(30%);
 		<Size>7: stone_geyzer(70%) + magnetic_geyzer(30%);
 	}
-	<Biome>3
+	<Alien biome> 3
 	{
-		<Alien biome>
-		settings: 'biome big';
-		chance: 14%;
+		chance: 10%;
+		settings: [];
 	
 		all_sizes: grass(60%) + magnetic(40%);
 	}

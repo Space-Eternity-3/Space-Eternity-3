@@ -13,13 +13,10 @@ public class SC_legs : MonoBehaviour {
 
 	void ChildGenerate()
 	{
-		if(legsID==0)
+		SC_point_expand[] SC_point_expand=FindObjectsOfType<SC_point_expand>();
+		foreach(SC_point_expand pet in SC_point_expand)
 		{
-			SC_point_expand[] SC_point_expand=FindObjectsOfType<SC_point_expand>();
-			foreach(SC_point_expand pet in SC_point_expand)
-			{
-				pet.PointGenerate();
-			}
+			if(pet.mode==legsID) pet.PointGenerate(jumpSize);
 		}
 	}
 	void Start()

@@ -240,6 +240,7 @@ public class SC_fobs : MonoBehaviour
             destroyTime = 50;
             transform.position = new Vector3(0f,0f,10000f);
         }
+		gobT.GetComponent<SC_fobs>().index = index;
         gobT.GetComponent<SC_fobs>().StartM();
     }
     public void StartM()
@@ -265,10 +266,13 @@ public class SC_fobs : MonoBehaviour
 
         if(IsEmpty) gameObject.GetComponent<Renderer>().enabled=false;
 
-        X=(int)Mathf.Round(transform.position.x/10f);
-		Y=(int)Mathf.Round(transform.position.y/10f);
-        ID=SC_fun.CheckID(X,Y);
-        index=(int)Mathf.Round(transform.position.z*100000f)-1;
+		if(!mother)
+		{
+			X=transform.parent.GetComponent<SC_asteroid>().X;
+			Y=transform.parent.GetComponent<SC_asteroid>().Y;
+			ID=transform.parent.GetComponent<SC_asteroid>().ID;
+			//index=(int)Mathf.Round(transform.position.z*100000f)-1;
+		}
 
         if(WindObject&&!mother)
         {
