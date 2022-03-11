@@ -10,6 +10,7 @@ public class SC_fun : MonoBehaviour
     public Material[] M = new Material[128];
     public Texture[] Item = new Texture[128];
     public Texture Item20u;
+	public Material[] st_materials = new Material[16];
 	
     public float volume;
     public int seed;

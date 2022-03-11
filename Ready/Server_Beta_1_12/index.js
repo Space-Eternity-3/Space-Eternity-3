@@ -747,16 +747,29 @@ function sazeConvert(saze)
 }
 function generateAsteroid(saze)
 {
-  var typeDatas=typeSet[sazeConvert(saze)];
-  if(typeDatas!="") typeDatas = typeDatas.split(";");
+  var typeDatas;
+  
+  if(saze.split("").includes("b"))
+  {
+	  typeDatas=typeSet[sazeConvert(saze)];
+	  if(typeDatas!="") typeDatas = typeDatas.split(";");
+	  else typeDatas = "0;0;999".split(";");
+  }
+  else if(saze.split("").includes("t"))
+  {
+	  typeDatas = (saze.split("t")[1]+";0;999").split(";");
+  }
   else typeDatas = "0;0;999".split(";");
+  
   var rand=randomInteger(0,999);
   var i=0,j,k;
   while(!(rand>=typeDatas[i+1]&&rand<=typeDatas[i+2])&&i<1000) i+=3;
   if(i>=1000) td="0"; else td=typeDatas[i];
+  
   var strobj="";
   var typeDatas2 = fobGenerate[td].split(";");
-  var how_many=2*parseInt(saze);
+  var how_many=2*parseInt(saze); //parse all before first letter
+  
   for(j=0;j<how_many;j++)
   {
     k=0;
@@ -1353,6 +1366,8 @@ function finalTranslate(varN)
   var i,mID,lg;
   var mSTR;
   var cur1000biome = 0;
+  
+  //Starting actions
   for(i=0;i<varN;i++)
   {
       var psPath = jse3Var[i].split(";");
@@ -1435,7 +1450,7 @@ function finalTranslate(varN)
       }
   }
 
-  //Dictionary required
+  //Dictionary required actions
   var pom, mID2, crMax=0;
   var crafts = []; //512*7
   for(i=0;i<3584;i++) crafts[i]="0;0;0;0;0;0";
@@ -1445,7 +1460,8 @@ function finalTranslate(varN)
       var raw_name = jse3Var[i];
       var psPath = jse3Var[i].split(";");
       var lgt=psPath.length;
-      if(lgt==2)
+      
+	  if(lgt==2)
       {
           if(psPath[0]=="drill_loot"||psPath[0]=="objects_generate"||psPath[0]=="modified_drops")
           {
@@ -1510,20 +1526,7 @@ function finalTranslate(varN)
 				{
 					biomeTags[mID] = jse3Dat[i].replaceAll(" ","_");
 				}
-				else if(psPath[2]=="chance")
-				{
-					if(mID==0) nev++;
-					var efe = mID+";"+cur1000biome+";";
-							
-					var le = jse3Dat[i].length;
-					if((jse3Dat[i])[le-1]=='%') jse3Dat[i] = percentRemove(jse3Dat[i]);
-					else nev++;
-							
-					cur1000biome += parseIntE((parseFloatE(jse3Dat[i])*10)+"");
-					efe += (cur1000biome-1)+";";
-					biomeChances += efe;
-				}
-				else
+				else if(psPath[2]!="chance")
 				{ 
                     if(psPath[2]=="all_sizes") mID2=-4;
 			        else mID2=parseIntE(psPath[2])-4;
@@ -1550,6 +1553,45 @@ function finalTranslate(varN)
           }
       }
   }
+  
+  //Late actions
+  for(i=0;i<varN;i++)
+  {
+      var raw_name = jse3Var[i];
+      var psPath = jse3Var[i].split(";");
+      var lgt=psPath.length;
+	  
+	  if(lgt==3)
+	  {
+		  if(psPath[0]=="generator_settings")
+          {
+             try{
+
+                mID=parseIntE(psPath[1]);
+				if(mID<0||mID>31) nev++;
+				  
+				if(psPath[2]=="chance")
+				{
+					if(mID==0) nev++;
+					var efe = mID+";"+cur1000biome+";";
+							
+					var le = jse3Dat[i].length;
+					if((jse3Dat[i])[le-1]=='%') jse3Dat[i] = percentRemove(jse3Dat[i]);
+					else nev++;
+							
+					var mno; if(tagContains(biomeTags[mID],"structural")) mno = 2;
+					else mno = 1;
+							
+					cur1000biome += mno * parseIntE((parseFloatE(jse3Dat[i])*10)+"");
+					efe += (cur1000biome-1)+";";
+					biomeChances += efe;
+				}
+
+              }catch{datapackError("Error in variable: "+raw_name);}
+          }
+	  }
+  }
+  
   craftings=crafts[0];
   for(i=1;i<=crMax;i++)
   {
@@ -1562,7 +1604,7 @@ function finalTranslate(varN)
 
   //Check if all is good
   for(i=0;i<gpl_number;i++) if(gameplay[i]=="") {datapackError("Required variable not found: gameplay_"+i);}
-  if(cur1000biome>1000) {datapackError("Biome chance sum is bigger than 100%");}
+  if(cur1000biome>1000) {datapackError("Total biome chance can't be over 1000p. Current: "+cur1000biome+"p. 1p = 0,1%.\r\nNote: structural option doubles 'p' ussage, but the chance is still multiplied by 1.");}
   
   if(version!=serverVersion) {datapackError("Wrong version or empty version variable");}
   if(datName=="") {datapackError("Datapack name can't be empty");}
@@ -1570,6 +1612,11 @@ function finalTranslate(varN)
   try{
 	  checkDatapackGoodE();
   }catch{datapackError("Unknown error detected");}
+}
+
+function tagContains(tags, tag)
+{
+	return ((tags.replaceAll('[','_').replaceAll(']','_').replaceAll('_',',').split(',')).indexOf(tag)>-1);
 }
 
 function intsAll(str, div)

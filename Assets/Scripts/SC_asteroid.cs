@@ -16,7 +16,6 @@ public class SC_asteroid : MonoBehaviour {
 	public Transform Communtron3;
 	public Transform Communtron4;
 	public Transform CommuntronM1;
-	public Light fela_lune;
 	public Transform player;
 	public Image FuelBar;
 	public Renderer asteroidR;
@@ -53,6 +52,10 @@ public class SC_asteroid : MonoBehaviour {
 	string biome="";
 	public string generation_code="";
 	public float upg3down, upg3up, upg3hugity;
+	
+	public bool proto = false;
+	public float protsize = 4;
+	public int prottype = 0;
 
 	string worldDIR="";
 	int worldID=1;
@@ -133,32 +136,36 @@ public class SC_asteroid : MonoBehaviour {
 		int[] min = new int[2048];
 		int[] max = new int[2048];
 		
-		int B=0;
-		B = int.Parse(biome.Split('b')[1]);
-		int I=(int)size-4 + B*7;
-
-		string ts = SC_data.TypeSet[I];
-		if(ts=="") ts="0;0;999";
-		string[] dGet = ts.Split(';');
-		lngt=dGet.Length/3;
-
-		for(i=0;i<lngt&&i<2048;i++)
+		if(!proto)
 		{
-			idn[i]=int.Parse(dGet[i*3]);
-			min[i]=int.Parse(dGet[i*3+1]);
-			max[i]=int.Parse(dGet[i*3+2]);
-		}
-		
-		rand=UnityEngine.Random.Range(0,1000);
-		for(i=0;i<lngt;i++)
-		{
-			if(rand>=min[i]&&rand<=max[i])
+			int B=0;
+			B = int.Parse(biome.Split('b')[1]);
+			int I=(int)size-4 + B*7;
+
+			string ts = SC_data.TypeSet[I];
+			if(ts=="") ts="0;0;999";
+			string[] dGet = ts.Split(';');
+			lngt=dGet.Length/3;
+
+			for(i=0;i<lngt&&i<2048;i++)
 			{
-				type=idn[i];
-				if(type<0||type>=16) type=0;
-				break;
+				idn[i]=int.Parse(dGet[i*3]);
+				min[i]=int.Parse(dGet[i*3+1]);
+				max[i]=int.Parse(dGet[i*3+2]);
+			}
+		
+			rand=UnityEngine.Random.Range(0,1000);
+			for(i=0;i<lngt;i++)
+			{
+				if(rand>=min[i]&&rand<=max[i])
+				{
+					type=idn[i];
+					if(type<0||type>=16) type=0;
+					break;
+				}
 			}
 		}
+		else type = int.Parse(generation_code.Split('t')[1]);
 	}
 	void Move(float size, string Mg)
 	{
@@ -187,16 +194,19 @@ public class SC_asteroid : MonoBehaviour {
 		Destroy(gameObject);
 	}
 	void Start()
-	{
+	{	
 		//UNIVERSAL asteroid generator (UAG)
 		if(ID!=1) GetBiome();
-		float size=SC_fun.GetSize(ID);
+		float size;
+		if(!proto) size=SC_fun.GetSize(ID);
+		else size=protsize;
 		suze=(int)size;
 		saze=size;
 		string Mg=SC_fun.GetMove(X,Y);
-		Move(size,Mg);
+		if(!proto) Move(size,Mg);
 		transform.localScale=new Vector3(size,size,size*0.75f);
-		generation_code = suze + biome;
+		if(!proto) generation_code = suze + biome;
+		else generation_code = suze + "t" + prottype;
 		
 		//DATA downloader (singleplayer, multiplayer)
 		if(ID!=1)
@@ -324,7 +334,7 @@ public class SC_asteroid : MonoBehaviour {
 	}
 	void Update()
 	{
-		if(transform.position.z<100&&UUTCed)
+		if(transform.position.z<100&&UUTCed&&!proto)
 		{	
 			//Optimalize
 			float ssX=X;

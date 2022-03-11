@@ -21,7 +21,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 1.12'; <Don't change>
-name: 'DEFAULT'; <Rename it>
+name: 'Protoarena 4'; <Rename it>
 craftings
 {
 	<Page>1
@@ -165,11 +165,11 @@ gameplay
 	turbo_regenerate_multiplier: 1;
 	turbo_use_multiplier: 2;
 	crash_minimum_energy: 5;
-	crash_damage_multiplier: 1;
-	spike_damage: 10;
+	crash_damage_multiplier: 0;
+	spike_damage: 0;
 	vacuum_drag_multiplier: 1;
 	
-	all_speed_multiplier: 1;
+	all_speed_multiplier: 5;
 	player_normal_speed: 11;
 	player_brake_speed: -7;
 	player_turbo_speed: 18; <Only if turbo level is 0>
@@ -206,7 +206,7 @@ generator_settings
 	}
 	<Hell biome> 1
 	{
-		chance: 10%;
+		chance: 0%;
 		settings: [];
 	
 		<Size>4: coal(100%);
@@ -219,7 +219,7 @@ generator_settings
 	}
 	<Geyzer biome> 2
 	{
-		chance: 10%;
+		chance: 0%;
 		settings: [
 			density = 75%,
 		];
@@ -231,10 +231,23 @@ generator_settings
 	}
 	<Alien biome> 3
 	{
-		chance: 10%;
+		chance: 0%;
 		settings: [];
 	
 		all_sizes: grass(60%) + magnetic(40%);
+	}
+	<Artefact arena> 4
+	{
+		chance: 50%;
+		settings: [
+			structural,
+			radius = 50,
+			circle,
+			arena,
+			density = 100%,
+		];
+		
+		all_sizes: 12(100%);
 	}
 	<max 31 biomes + default>
 }

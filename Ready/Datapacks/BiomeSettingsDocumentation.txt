@@ -1,0 +1,86 @@
+1. Biome settings are used to customize biomes
+and default generation
+
+2. Biome settings variable look:
+
+settings: [
+	tag1,
+	tag2,
+	tag3,
+	tag4,
+];
+
+3. Datapack will be always imported, even if some tags are incorrect,
+so put them precisely.
+
+4. Tags might have a parameter for example density=5% and it is
+called {} in this documentation.
+
+5. All tag list:
+
+a) min={A}, max={B}
+Use them to set a minimum and maximum biome radius.
+Picked number will be random between these 2 parameters.
+Parameters are integers <0;80>
+Default: [min=65, max=80]
+
+b) radius={C}
+Use it to set biome radius precisely.
+Parameter is an integer <0;80>
+Default: [min=65, max=80]
+
+c) density={D}
+Use it to set how often asteroids will appear.
+Parameter is a percent integer <0%;100%>
+0% means no asteroids.
+Default: [density=60%]
+
+d) ring={E}
+Use it to set an asteroid ring around a biome.
+Parameter sets a wideness of the ring.
+Parameter is an integer <0;80>
+Incompatible with "hole={F}"
+Default: [NOT USED]
+
+e) hole={F}
+Use it to set a generation hole in the middle of
+a biome. Parameter sets a radius of the hole.
+Parameter is an integer <0;80>
+Incompatible with "ring={E}"
+Default: [NOT USED]
+
+f) priority={G}
+Use it to show which biome will
+generate at the end and overwrite
+others, when they touch each other.
+No biomes will be removed.
+Parameter is an integer <1;31>
+Default: [priority=16]
+
+g) grid
+Use it to disable asteroid offset and see
+a beauty of the asteroid grid generator
+Default: [NOT USED]
+
+h) full
+Use it to make a 300x300 biome square.
+Sometimes it might be overwriten by other
+biomes, but you can always set a high
+priority to prevent it.
+Default: [NOT USED]
+
+i) structural
+Use it to disable touching other biomes with this tag.
+It automatically sets priority to 32 (bigger than max)
+Biomes with this tag have double generation points.
+That means, they engage 2 times more space in a biome
+generation array because of technical reasons.
+Do not use it, when it is not necessarily!
+Default: [NOT USED]
+
+j) arena
+Use it to generate arena in the middle of a biome.
+Tag "structural" is required to work. It is also recommended
+to use tag "hole={F}" or "ring={E}" and set a minimum biome
+radius to at least 40
+Default: [NOT USED]

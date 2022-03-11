@@ -972,11 +972,14 @@ public class SC_data : MonoBehaviour
         //Final translate
         int i,mID,lg;
         string mSTR;
+		
+		//Starting actions
         for(i=0;i<varN;i++)
         {
             string[] psPath = variable[i].Split(';');
             int lgt=psPath.Length;
-            if(lgt==1)
+            
+			if(lgt==1)
             {
                 if(psPath[0]=="name") datapack_name.text=value[i];
                 if(psPath[0]=="version") version=value[i];
@@ -1054,7 +1057,7 @@ public class SC_data : MonoBehaviour
             }
         }
 
-        //Dictionary required
+        //Dictionary required actions
         string pom; int mID2, crMax=0;
         string[] crafts = new string[3584]; //512*7
         for(i=0;i<3584;i++) crafts[i]="0;0;0;0;0;0";
@@ -1065,7 +1068,8 @@ public class SC_data : MonoBehaviour
             string raw_name=variable[i];
             string[] psPath = variable[i].Split(';');
             int lgt=psPath.Length;
-            if(lgt==2)
+            
+			if(lgt==2)
             {
                 if(psPath[0]=="drill_loot"||psPath[0]=="objects_generate"||psPath[0]=="modified_drops")
                 {
@@ -1131,20 +1135,7 @@ public class SC_data : MonoBehaviour
 						{
 							BiomeTags[mID] = value[i].Replace(' ','_');
 						}
-						else if(psPath[2]=="chance")
-						{
-							if(mID==0) nev = int.Parse("error");
-							string efe = mID+";"+cur1000biome+";";
-							
-							int le = value[i].Length;
-							if((value[i])[le-1]=='%') value[i] = PercentRemove(value[i]);
-							else nev = int.Parse("error");
-							
-							cur1000biome += int.Parse((float.Parse(value[i])*10f)+"");
-							efe += (cur1000biome-1)+";";
-							biomeChances += efe;
-						}
-						else
+						else if(psPath[2]!="chance")
 						{
 							if(psPath[2]=="all_sizes") mID2=-4;
 							else mID2=int.Parse(psPath[2])-4;
@@ -1171,6 +1162,46 @@ public class SC_data : MonoBehaviour
                 }
             }
         }
+		
+		//Late actions
+		for(i=0;i<varN;i++)
+        {
+			string raw_name=variable[i];
+            string[] psPath = variable[i].Split(';');
+            int lgt=psPath.Length;
+			
+			if(lgt==3)
+			{
+				if(psPath[0]=="generator_settings")
+                {
+					try{
+						
+						int nev;
+                        mID=int.Parse(psPath[1]);
+						if(mID<0||mID>31) nev = int.Parse("error");
+						
+						if(psPath[2]=="chance")
+						{
+							if(mID==0) nev = int.Parse("error");
+							string efe = mID+";"+cur1000biome+";";
+							
+							int le = value[i].Length;
+							if((value[i])[le-1]=='%') value[i] = PercentRemove(value[i]);
+							else nev = int.Parse("error");
+							
+							int mno; if(TagContains(BiomeTags[mID],"structural")) mno = 2;
+							else mno = 1;
+							
+							cur1000biome += mno * int.Parse((float.Parse(value[i])*10f)+"");
+							efe += (cur1000biome-1)+";";
+							biomeChances += efe;
+						}
+					}
+					catch(Exception){DatapackError("Error in variable: "+raw_name); return;}
+				}
+			}
+		}
+		
         craftings=crafts[0];
         for(i=1;i<=crMax;i++)
         {
@@ -1183,7 +1214,7 @@ public class SC_data : MonoBehaviour
 
         //Check if all is good
         for(i=0;i<gpl_number;i++) if(Gameplay[i]=="") {DatapackError("Required variable not found: gameplay_"+i); return;}
-		if(cur1000biome>1000) {DatapackError("Biome chance sum is bigger than 100%"); return;}
+		if(cur1000biome>1000) {DatapackError("Total biome chance can't be over 1000p. Current: "+cur1000biome+"p. 1p = 0,1%. Note: structural option doubles 'p' ussage, but the chance is still multiplied by 1."); return;}
 
         if(version!=clientVersion) {DatapackError("Wrong version or empty version variable."); return;}
         if(datapack_name.text=="DEFAULT"&&dataSource!=example) {DatapackError("Custom datapack name can't be DEFAULT. Change it using a text editor."); return;}
@@ -1200,6 +1231,10 @@ public class SC_data : MonoBehaviour
             Save("universeX"); 
 		}
     }
+	public bool TagContains(string tags, string tag)
+	{
+		return (Array.IndexOf(tags.Replace('[','_').Replace(']','_').Replace('_',',').Split(','),tag)>-1);
+	}
     bool IntsAll(string str, int div)
     {
         string[] strs = str.Split(';');
