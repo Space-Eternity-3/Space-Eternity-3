@@ -17,6 +17,11 @@ All other chars are allowed.
  ;  - value end char
  '  - on/off remove space
 -------------------------------
+Info about biome settings in file:
+"BiomeSettingsDocumentation.txt"
+Open datapack folder using SE3 to find it.
+Don't open file using double click. Choose "edit".
+-------------------------------
 Edit file and select it in your SE3 browser.
 >
 
@@ -116,20 +121,6 @@ craftings
 		3: death_alien + red(3) -> red_alien;
 		4: death_alien -> stone(5);
 	}
-	<Page>13
-	{
-		title_image: gray_artefact;
-		1: stone(80) -> gray_artefact;
-	}
-	<Page>14
-	{
-		title_image: protection_artefact;
-		1: gray_artefact + bush(8) -> protection_artefact;
-		2: gray_artefact + copper(8) -> impulse_artefact;
-		3: gray_artefact + small_amethyst(2) -> illusion_artefact;
-		4: gray_artefact + gold(2) -> immortality_artefact;
-		5: gray_artefact + red(8) -> unstable_artefact;
-	}
 	<Max 512 pages>
 }
 drill_loot
@@ -144,7 +135,7 @@ drill_loot
 	coal: coal(100%);
 	magnetic: magnetic_stone(100%);
 	red: red(100%);
-	diamond: small_diamond(2,5%);
+	diamond: small_diamond(2%);
 }
 modified_drops
 {
@@ -204,9 +195,12 @@ generator_settings
 		<Size>9: stone(50%) + coal(20%) + grass(15%) + magnetic(15%);
 		<Size>10: stone(35%) + coal(15%) + grass(25%) + magnetic(25%);
 	}
+	
+	<---BIOMES--->
+	
 	<Hell biome> 1
 	{
-		chance: 10%;
+		chance: 8%;
 		settings: [];
 	
 		<Size>4: coal(100%);
@@ -219,10 +213,8 @@ generator_settings
 	}
 	<Geyzer biome> 2
 	{
-		chance: 10%;
-		settings: [
-			density = 75%,
-		];
+		chance: 8%;
+		settings: [];
 	
 		all_sizes: stone_geyzer(100%);
 		<Size>5: stone_geyzer(70%) + magnetic_geyzer(30%);
@@ -231,10 +223,25 @@ generator_settings
 	}
 	<Alien biome> 3
 	{
-		chance: 10%;
+		chance: 8%;
 		settings: [];
 	
 		all_sizes: grass(60%) + magnetic(40%);
+	}
+	
+	<---STRUCTURES--->
+	
+	<Normal arena structure> 4
+	{
+		chance: 5%;
+		settings: [
+			structural, arena,
+			ring.inner.change -> 0, ring.inner.change -> 45,
+			radius = 80,
+			density = 90%,
+		];
+		
+		all_sizes: coal(85%) + gold(15%);
 	}
 	<max 31 biomes + default>
 }
@@ -251,6 +258,7 @@ objects_generate
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	red: red(35%) + red_spikes(7,5%) + red_alien(15%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
+	bedrock: stone(30%) + melted_stone(15%);
 }
 game_translate <advenced settings>
 {
@@ -267,6 +275,7 @@ game_translate <advenced settings>
 		8: magnetic;
 		9: red;
 		10: diamond;
+		12: bedrock;
 	}
 	Items_and_objects
 	{

@@ -175,6 +175,7 @@ public class SC_fobs : MonoBehaviour
         if(b>=25&&b<=38) return true; //39 -> red bullet
         if(b>=40&&b<=47) return true; //48 -> unstable bullet
 		if(b==48&&Input.GetKey(KeyCode.LeftControl)) return true;
+		if(b>=49&&b<=49) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)
@@ -257,14 +258,20 @@ public class SC_fobs : MonoBehaviour
         {
             multiplayer=true;
         }
-        if(IsStorage)
-        {
-            SC_Fob21 = gameObject.GetComponent<SC_Fob21>();
-        }
 		worldID=(int)Communtron4.position.y;
 		worldDIR="../../saves/UniverseData"+worldID+"/WorldData/";
 
         if(IsEmpty) gameObject.GetComponent<Renderer>().enabled=false;
+		
+		if(IsStorage)
+		{
+			SC_Fob21 = gameObject.GetComponent<SC_Fob21>();
+			SC_Fob21.X=X;
+			SC_Fob21.Y=Y;
+			SC_Fob21.ID=ID;
+			SC_Fob21.uID=index;
+			SC_Fob21.StartF();
+		}
 
 		if(!mother)
 		{

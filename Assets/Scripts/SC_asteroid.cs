@@ -56,6 +56,12 @@ public class SC_asteroid : MonoBehaviour {
 	public bool proto = false;
 	public float protsize = 4;
 	public int prottype = 0;
+	public string fobCode = ";;;;;;;;;;;;;;;;;;;";
+	
+	public bool[] fobCenPos = new bool[20];
+	public bool[] fobCenRot = new bool[20];
+	public Vector3[] fobInfoPos = new Vector3[20];
+	public float[] fobInfoRot = new float[20];
 
 	string worldDIR="";
 	int worldID=1;
@@ -105,6 +111,7 @@ public class SC_asteroid : MonoBehaviour {
 		int[] idn = new int[2048];
 		int[] min = new int[2048];
 		int[] max = new int[2048];
+		string[] prefobs = fobCode.Split(';');
 		
 		string[] dGet = SC_data.FobGenerate[type].Split(';');
 		lngt=dGet.Length/3;
@@ -118,6 +125,11 @@ public class SC_asteroid : MonoBehaviour {
 		
 		for(i=0;i<20;i++)
 		{
+			if(prefobs[i]!="")
+			{
+				objectID[i]=int.Parse(prefobs[i]);
+				continue;	
+			}
 			rand=UnityEngine.Random.Range(0,1000);
 			for(j=0;j<lngt;j++)
 			{
@@ -206,7 +218,7 @@ public class SC_asteroid : MonoBehaviour {
 		if(!proto) Move(size,Mg);
 		transform.localScale=new Vector3(size,size,size*0.75f);
 		if(!proto) generation_code = suze + biome;
-		else generation_code = suze + "t" + prottype;
+		else generation_code = suze + "t" + prottype + "t" + fobCode;
 		
 		//DATA downloader (singleplayer, multiplayer)
 		if(ID!=1)
@@ -301,12 +313,18 @@ public class SC_asteroid : MonoBehaviour {
 			int rand,ii;
 			for(ii=0;ii<times;ii++)
 			{
+				float beta = ii*alpha-transform.rotation.eulerAngles.z;
+				
 				GameObject gobT = gameObject;
+				float sinX=Mathf.Sin(beta*(3.14159f/180f))*(size/2f);
+				float cosY=Mathf.Cos(beta*(3.14159f/180f))*(size/2f);
+				
 				Quaternion quat_angle=new Quaternion(0f,0f,0f,0f);
-				float sinX=Mathf.Sin(ii*alpha*(3.14159f/180f))*(size/2-0.02f);
-				float cosY=Mathf.Cos(ii*alpha*(3.14159f/180f))*(size/2-0.02f);
-				quat_angle.eulerAngles=new Vector3(0f,0f,-ii*alpha);
-				Vector3 rotation_place=transform.position+new Vector3(sinX,cosY,0f);
+				quat_angle.eulerAngles=new Vector3(0f,0f,-beta-fobInfoRot[ii]);
+				Vector3 modvec = new Vector3(sinX,cosY,0f);
+				Vector3 rotation_place=transform.position+modvec+fobInfoPos[ii];
+				if(fobCenRot[ii]) quat_angle.eulerAngles=new Vector3(0f,0f,-fobInfoRot[ii]);
+				if(fobCenPos[ii]) rotation_place=fobInfoPos[ii];
 
 				int tid=objectID[ii]; //tid -> Physical ID
 

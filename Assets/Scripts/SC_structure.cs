@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class SC_structure : MonoBehaviour
 {
@@ -10,7 +11,9 @@ public class SC_structure : MonoBehaviour
 	public Transform asteroid;
 	public Transform stwall;
     public int X=0,Y=0,ID=1;
+	public float c_multiplier, fattnum, zwalnum;
 	public string[] st_commands = new string[50];
+	public Transform[] st_structs = new Transform[50];
 	bool mother = true;
 	
 	void Start()
@@ -19,7 +22,7 @@ public class SC_structure : MonoBehaviour
 		transform.position += SC_fun.GetBiomeMove(ID);
 		
 		int i,lngt=st_commands.Length;
-		for(i=0;i<lngt;i++) CommandDo(st_commands[i],i);
+		for(i=0;i<lngt;i++) CommandDo((ConvCmd(st_commands[i])+"          ").Split(' '),i);
 	}
 	void Update()
 	{
@@ -38,6 +41,36 @@ public class SC_structure : MonoBehaviour
 			}
 		}
 	}
+	string uzup20(string str)
+	{
+		string[] strs = str.Split(';');
+		int i,lngt=strs.Length;
+		for(i=lngt;i<20;i++) str+=";";
+		return str;
+	}
+	string ConvCmd(string cmd)
+	{
+		string ret = "";
+		int spaces = 0;
+		
+		int i,j,lngt=cmd.Length;
+		for(i=0;i<lngt;i++)
+		{
+			if(cmd[i]==' ') spaces++;
+			if(cmd[i]=='|')
+			{
+				for(j=spaces%7;j<7;j++)
+				{
+					ret+=" ";
+					spaces++;
+				}
+				continue;
+			}
+			ret+=cmd[i];
+		}
+		
+		return ret;
+	}
 	int[] BuildXY(int id) //<0;49>
 	{
 		int[] retu = new int[2];
@@ -52,32 +85,142 @@ public class SC_structure : MonoBehaviour
 		
 		return retu;
 	}
-	void CommandDo(string cmd, int index)
-	{
-		string[] cmds = cmd.Split(' ');
+	void CommandDo(string[] cmds, int index)
+	{	
+		//gen [pX;pY;pZ] [rZ] [sX;sY;sZ] -> (...)
+			// (...) ast/asr [size;type] [fobCode?] <cmdn>
+			// (...) wal [material] - <cmdn>
+			
+		//cmdns:
+		//fob [index] -> (...)
+			// (...) mov [X;Y;Z] - - - <cmdn>
+			// (...) rot [rZ] - - - <cmdn>
 		
+		//example:
+		//gen 10;10;0 0 1;1;1 ast 6;10 - - fob 1 rot st 90 - - fob 1 mov ch 10;0;0 - - fob 1 rrt - - - - fob 1 set 42 - - -
+		
+		if(cmds.Length==0) return;
 		if(cmds[0]=="gen")
 		{
-			if(cmds[1]=="ast")
+			float[] zp = new float[3];
+			float[] zs = new float[3];
+			float zr;
+			
+			if(cmds[1][0]!='c'){
+				zp[0] = float.Parse(cmds[1].Split(';')[0]);
+				zp[1] = float.Parse(cmds[1].Split(';')[1]);
+				zp[2] = float.Parse(cmds[1].Split(';')[2]);
+			}
+			else switch(cmds[1])
 			{
-				SC_asteroid ast = Instantiate(asteroid,transform.position + new Vector3(float.Parse(cmds[2]),float.Parse(cmds[3]),0f),Quaternion.identity).GetComponent<SC_asteroid>();
+				case "c1":
+					zp[0]=c_multiplier;
+					zp[1]=c_multiplier;
+					zp[2]=0f;
+					break;
+				case "c2":
+					zp[0]=-c_multiplier;
+					zp[1]=c_multiplier;
+					zp[2]=0f;
+					break;
+				case "c3":
+					zp[0]=-c_multiplier;
+					zp[1]=-c_multiplier;
+					zp[2]=0f;
+					break;
+				case "c4":
+					zp[0]=c_multiplier;
+					zp[1]=-c_multiplier;
+					zp[2]=0f;
+					break;
+				default:
+					zp[0]=0f;
+					zp[1]=0f;
+					zp[2]=0f;
+					break;
+			}
+			
+			zr = float.Parse(cmds[2]);
+			
+			zs[0] = float.Parse(cmds[3].Split(';')[0]);
+			zs[1] = float.Parse(cmds[3].Split(';')[1]);
+			zs[2] = float.Parse(cmds[3].Split(';')[2]);
+			
+			Vector3 dpos, curpos;
+			dpos = new Vector3(zp[0],zp[1],zp[2]);
+			float radangle = (zs[0]*3.14159f)/180f;
+			
+			if(cmds[4]!="asr" && cmds[4]!="war") curpos = new Vector3(0f,0f,0f);
+			else curpos = zs[1] * new Vector3(Mathf.Cos(radangle),Mathf.Sin(radangle),0f);
+			
+			if(cmds[4]=="ast"||cmds[4]=="asr")
+			{
+				int[] astdat = new int[2];
+				astdat[0] = int.Parse(cmds[5].Split(';')[0]);
+				astdat[1] = int.Parse(cmds[5].Split(';')[1]);
+				
+				SC_asteroid ast = Instantiate(asteroid,transform.position+dpos+curpos,Quaternion.Euler(0f,0f,zr)).GetComponent<SC_asteroid>();
 				ast.GetComponent<Transform>().parent = transform;
+				st_structs[index] = ast.GetComponent<Transform>();
 				
 				int[] sXY = BuildXY(index);
 				ast.proto = true; ast.X=sXY[0]; ast.Y=sXY[1]; ast.ID=SC_fun.CheckID(ast.X,ast.Y);
-				ast.protsize = float.Parse(cmds[4]);
-				ast.prottype = int.Parse(cmds[5]);
+				ast.protsize = astdat[0];
+				ast.prottype = astdat[1];
+				ast.fobCode = uzup20(cmds[6]);
 			}
-			if(cmds[1]=="wal")
+			if(cmds[4]=="wal"||cmds[4]=="war")
 			{
-				Transform trn = Instantiate(stwall,transform.position + new Vector3(float.Parse(cmds[2]),float.Parse(cmds[3]),0f),Quaternion.Euler(0f,0f,float.Parse(cmds[4])));
-				float scaleX = float.Parse(cmds[5].Split(';')[0]);
-				float scaleY = float.Parse(cmds[5].Split(';')[1]);
-				float scaleZ = float.Parse(cmds[5].Split(';')[2]);
-				trn.localScale = new Vector3(scaleX,scaleY,scaleZ);
+				int waldata0 = int.Parse(cmds[5]);
+				
+				Transform trn = Instantiate(stwall,transform.position+dpos+curpos,Quaternion.Euler(0f,0f,zr));
+				trn.localScale = new Vector3(fattnum,zs[2],zwalnum);
 				trn.parent = transform;
-				trn.GetComponent<Renderer>().material = SC_fun.st_materials[int.Parse(cmds[6])];
+				st_structs[index] = trn;
+				
+				trn.GetComponent<Renderer>().material = SC_fun.st_materials[waldata0];
 			}
 		}
+		else if(cmds[0]=="fob")
+		{
+			int findex = int.Parse(cmds[1]);
+			SC_asteroid ast = st_structs[index].GetComponent<SC_asteroid>();
+			
+			if(cmds[2]=="mov")
+			{
+				float[] zp = new float[3];
+				zp[0] = float.Parse(cmds[3].Split(';')[0]);
+				zp[1] = float.Parse(cmds[3].Split(';')[1]);
+				zp[2] = float.Parse(cmds[3].Split(';')[2]);
+				
+				if(cmds[4]=="cen")
+				{
+					ast.fobCenPos[findex] = true;
+					ast.fobInfoPos[findex] = transform.position;
+					ast.fobInfoPos[findex] += new Vector3(zp[0],zp[1],zp[2]);
+				}
+				else
+				{
+					ast.fobInfoPos[findex] = new Vector3(0f,0f,0f);
+					ast.fobInfoPos[findex] += new Vector3(zp[0],zp[1],zp[2]);
+				}
+			}
+			if(cmds[2]=="rot")
+			{
+				float zr = float.Parse(cmds[3]);
+				
+				ast.fobInfoRot[findex] = zr;
+				if(cmds[4]=="cen") ast.fobCenRot[findex] = true;
+			}
+		}
+		else return;
+		
+		//CommandDo other
+		int i, lngt = cmds.Length;
+		string[] narray = new string[2048];
+		for(i=7;i<lngt;i++){
+			narray[i-7] = cmds[i];
+		}
+		if(i!=7) CommandDo(narray,index);
 	}
 }

@@ -21,7 +21,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 1.12'; <Don't change>
-name: 'Protoarena 4'; <Rename it>
+name: 'Protoarena 5'; <Rename it>
 craftings
 {
 	<Page>1
@@ -241,13 +241,13 @@ generator_settings
 		chance: 50%;
 		settings: [
 			structural,
-			radius = 50,
-			circle,
+			radius = 80,
+			ring.inner.change -> 0, ring.inner.change -> 50,
 			arena,
 			density = 100%,
 		];
 		
-		all_sizes: 12(100%);
+		all_sizes: 11(100%);
 	}
 	<max 31 biomes + default>
 }

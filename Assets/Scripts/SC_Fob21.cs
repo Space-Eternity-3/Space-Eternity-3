@@ -23,7 +23,7 @@ public class SC_Fob21 : MonoBehaviour {
 	public SC_fobs SC_fobs;
 	public int max_count;
 	
-	int ID=0,uID=0,X,Y;
+	public int ID=0,uID=0,X,Y;
 	public int ASAC_cooldown;
 	public int item=0;
 	public int count=0;
@@ -185,15 +185,9 @@ public class SC_Fob21 : MonoBehaviour {
 		}
 		else pressed_1 = false;
 	}
-	void Start()
+	public void StartF()
 	{
 		worldID=(int)Communtron4.position.y;
-		worldDIR="../../saves/UniverseData"+worldID+"/WorldData/";
-
-		X=(int)Mathf.Round(transform.position.x/10f);
-		Y=(int)Mathf.Round(transform.position.y/10f);
-		ID=SC_fun.CheckID(X,Y);
-		uID=(int)Mathf.Round(transform.position.z*100000f)-1;
 		
 		//NBT read
 		if(transform.position.z<100f)

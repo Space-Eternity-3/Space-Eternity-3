@@ -403,13 +403,13 @@ public class SC_data : MonoBehaviour
         }catch(Exception)
         {
             CloseRead();
-            dataSource=example;
+            dataSource=PreData;
             DatapackTranslate();
             return;
         }
         else
         {
-            dataSource=example;
+            dataSource=PreData;
             DatapackTranslate();
         }
     }
@@ -674,7 +674,7 @@ public class SC_data : MonoBehaviour
 
         var extensions = new []
         {
-            new ExtensionFilter("Jse3 files", "jse3"),
+            new ExtensionFilter("Jse3 files", "jse3", "txt"),
         };
         DirQ(datapacksDIR);
         var paths = StandaloneFileBrowser.OpenFilePanel("Open File", "./Datapacks/", extensions, true);

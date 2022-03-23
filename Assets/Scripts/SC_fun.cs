@@ -21,10 +21,14 @@ public class SC_fun : MonoBehaviour
     public bool[] pushed_markers = new bool[9];
 	
 	public int[] bW = new int[32];
+	public int[] bH = new int[32];
 	public int[] bMI = new int[32];
 	public int[] bMA = new int[32];
 	public int[] bD = new int[32];
 	public int[] bP = new int[32];
+	
+	public bool[,] bbW = new bool[32,81];
+	public bool[,] bbH = new bool[32,81];
 	
     public Transform[] structures;
     public Transform[] structures2;
@@ -131,6 +135,8 @@ public class SC_fun : MonoBehaviour
 		string tags = GetBiomeTag(ulam);
 		if(!TagContains(tags,"structural")) return 0;
 		if(TagContains(tags,"arena")) return 1;
+		if(TagContains(tags,"black.hole")) return 1;
+		if(TagContains(tags,"star")) return 1;
 		return 0;
 	}
     public bool AsteroidCheck(int ID)
@@ -155,13 +161,31 @@ public class SC_fun : MonoBehaviour
 		
 		if((distance<size) && biost!="b0")
 		{
-			if(distance<size-GetCircleWide(biost)) return false;
+			if(CheckAppearing(bid,distance,size)==TagContains(tags,"swap"))
+				return false;
 		}
 		else locD = bD[0];
 		
 		if(inu < locD) return true;
 		return false;
     }
+	public bool CheckAppearing(int bid, float distance, float size)
+	{
+		int from;
+		bool bpW, bpH;
+		
+		//Checking outer (W)
+		from = (int)Mathf.Round(size-distance);
+		if(from<0) from=0; if(from>80) from=80;
+		bpW = bbW[bid,from];
+		
+		//Checking inner (H)
+		from = (int)Mathf.Round(distance);
+		if(from<0) from=0; if(from>80) from=80;
+		bpH = bbH[bid,from];
+		
+		return (!bpW && !bpH);
+	}
     public char AsteroidChar(int ID)
     {
         int IDm=MakeID(ID,seed);
@@ -225,15 +249,12 @@ public class SC_fun : MonoBehaviour
 
 //-----------------------------------------------------------------------------------------------
 
-    public float GetCircleWide(string typ)
-	{
-		int i;
-		return bW[int.Parse(typ.Split('b')[1])];
-	}
 	public float GetBiomeSize(int ulam)
     {
         string typ=GetBiomeString(ulam);
 		string tags=GetBiomeTag(ulam);
+		
+		if(TagContains(tags,"full")) return 900f;
 		
 		int[] ulXY = UlamToXY(ulam);
         if(typ=="b0") return -1f;
@@ -257,7 +278,10 @@ public class SC_fun : MonoBehaviour
     }
     public Vector3 GetBiomeMove(int ulam)
     {
+		string bstr=GetBiomeString(ulam);
         float size=GetBiomeSize(ulam);
+		if(size==900f) return new Vector3(0f,0f,0f);
+		
 		int bint=int.Parse(GetBiomeString(ulam).Split('b')[1]);
 		string tags=GetBiomeTag(ulam);
         string red=LocalMove(ulam);
@@ -266,13 +290,8 @@ public class SC_fun : MonoBehaviour
 		
 		int[] ulXY = UlamToXY(ulam);
 		bool[] alXY = new bool[2]; alXY[0]=true; alXY[1]=true;
-		/*if(TagContains(tags,"structural"))
-		{
-			if((int)Mathf.Abs(ulXY[0]+ulXY[1])%4 == 2) alXY[0]=false;
-			if((int)Mathf.Abs(ulXY[0]+ulXY[1])%4 == 0) alXY[1]=false;
-		}*/
 		
-		if(bW[int.Parse(GetBiomeString(ulam).Split('b')[1])]!=81)
+		if(TagContains(tags,"precise") || TagContains(tags,"structural"))
 		{
 			if(alXY[0]) dX = (int.Parse(red.Split(';')[0])-1)*(maxD-10f*Mathf.Ceil(size/10f));
 			if(alXY[1]) dY = (int.Parse(red.Split(';')[1])-1)*(maxD-10f*Mathf.Ceil(size/10f));
@@ -377,16 +396,6 @@ public class SC_fun : MonoBehaviour
 		
 		bool[] insp = new bool[9];
 		for(i=0;i<9;i++) insp[i] = ((SC_control.Pitagoras(cenPos+GetBiomeMove(ulams[i])+biome_sector_size*udels[i]-astPos) < GetBiomeSize(ulams[i])));
-			
-		/*for(i=0;i<9;i++)
-		{
-			if(insp[i] && false)
-			{
-				string tags = GetBiomeTag(ulams[i]);
-				if(TagContains(tags,"structural"))
-					if(HasBadNeighbor(ulams[i],udels)) insp[i] = false;
-			}
-		}*/
 	
 		int proper = 0;
 		int prr = 0;
@@ -452,20 +461,45 @@ public class SC_fun : MonoBehaviour
 	{
 		//BIOME TAG PRE TRANSLATE
 		int i,j;
+		bool truing;
+		
 		for(i=0;i<32;i++)
 		{
 			bW[i] = 81; //wide
+			bH[i] = -1; //hole
 			bMI[i] = 65; //min size
 			bMA[i] = 80; //max size
 			bD[i] = 60; //denity [%]
 			bP[i] = 16; //priority
 			
+			for(j=0;j<=80;j++) bbW[i,j] = false;
+			for(j=0;j<=80;j++) bbH[i,j] = false;
+			
 			string tags = SC_data.BiomeTags[i];
 			
-			if(TagContains(tags,"circle")) bW[i]=25;
-			
 			for(j=0;j<=80;j++)
-				if(TagContains(tags,"circle="+j)) bW[i]=j;
+				if(TagContains(tags,"ring.outer.change->"+j)) bbW[i,j]=true;
+			for(j=0;j<=80;j++)
+				if(TagContains(tags,"ring.inner.change->"+j)) bbH[i,j]=true;
+			
+			truing = false;
+			for(j=0;j<=80;j++)
+			{
+				if(TagContains(tags,"full"))
+				{
+					bbW[i,j] = false;
+					continue;
+				}
+				if(bbW[i,j]) truing = !truing;
+				bbW[i,j] = truing;
+			}
+			truing = false;
+			for(j=0;j<=80;j++)
+			{
+				if(bbH[i,j]) truing = !truing;
+				bbH[i,j] = truing;
+			}
+			
 			for(j=0;j<=80;j++)
 				if(TagContains(tags,"min="+j)) bMI[i]=j;
 			for(j=0;j<=80;j++)

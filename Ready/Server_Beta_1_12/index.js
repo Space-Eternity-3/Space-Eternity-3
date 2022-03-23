@@ -775,7 +775,8 @@ function generateAsteroid(saze)
     k=0;
     rand=randomInteger(0,999);
     while(!(rand>=typeDatas2[k+1]&&rand<=typeDatas2[k+2])&&k<1000) k+=3;
-    if(k>=1000) strobj=strobj+";0";
+    if(saze.split("").includes("t") && ((saze.split("t")[2]).split(";"))[j]!="") strobj=strobj+";"+parseIntE(((saze.split("t")[2]).split(";"))[j]);
+	else if(k>=1000) strobj=strobj+";0";
     else strobj=strobj+";"+typeDatas2[k];
   }
   return td+strobj;
