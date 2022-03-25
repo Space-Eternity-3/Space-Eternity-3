@@ -38,11 +38,3 @@ sysinfo.txt
 *.unitypackage
 Ready/Server_Beta_1_12/ServerUniverse/
 Ready/Settings/
-
-# pliki bartka xD
-.vsconfig
-Assets/Packages/
-Packages/manifest.json
-Packages/packages-lock.json
-ProjectSettings/
-UserSettings/
