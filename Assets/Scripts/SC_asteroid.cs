@@ -61,6 +61,7 @@ public class SC_asteroid : MonoBehaviour {
 	public bool[] fobCenPos = new bool[20];
 	public bool[] fobCenRot = new bool[20];
 	public Vector3[] fobInfoPos = new Vector3[20];
+	public Vector3[] fobInfoPosrel = new Vector3[20];
 	public float[] fobInfoRot = new float[20];
 
 	string worldDIR="";
@@ -314,14 +315,19 @@ public class SC_asteroid : MonoBehaviour {
 			for(ii=0;ii<times;ii++)
 			{
 				float beta = ii*alpha-transform.rotation.eulerAngles.z;
+				float gamma = -beta-fobInfoRot[ii];
+				float gammaR = gamma*(3.14159f/180f);
 				
 				GameObject gobT = gameObject;
-				float sinX=Mathf.Sin(beta*(3.14159f/180f))*(size/2f);
-				float cosY=Mathf.Cos(beta*(3.14159f/180f))*(size/2f);
+				float uuX=Mathf.Sin(beta*(3.14159f/180f))*(size/2f);
+				float uuY=Mathf.Cos(beta*(3.14159f/180f))*(size/2f);
+				
+				fobInfoPos[ii].x += Mathf.Cos(gammaR)*fobInfoPosrel[ii].x + Mathf.Sin(gammaR)*fobInfoPosrel[ii].y;
+				fobInfoPos[ii].y += Mathf.Sin(gammaR)*fobInfoPosrel[ii].x + Mathf.Cos(gammaR)*fobInfoPosrel[ii].y;
 				
 				Quaternion quat_angle=new Quaternion(0f,0f,0f,0f);
-				quat_angle.eulerAngles=new Vector3(0f,0f,-beta-fobInfoRot[ii]);
-				Vector3 modvec = new Vector3(sinX,cosY,0f);
+				quat_angle.eulerAngles=new Vector3(0f,0f,gamma);
+				Vector3 modvec = new Vector3(uuX,uuY,0f);
 				Vector3 rotation_place=transform.position+modvec+fobInfoPos[ii];
 				if(fobCenRot[ii]) quat_angle.eulerAngles=new Vector3(0f,0f,-fobInfoRot[ii]);
 				if(fobCenPos[ii]) rotation_place=fobInfoPos[ii];

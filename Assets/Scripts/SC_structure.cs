@@ -11,7 +11,7 @@ public class SC_structure : MonoBehaviour
 	public Transform asteroid;
 	public Transform stwall;
     public int X=0,Y=0,ID=1;
-	public float c_multiplier, fattnum, zwalnum;
+	public float c_multiplier, zwalnum;
 	public string[] st_commands = new string[50];
 	public Transform[] st_structs = new Transform[50];
 	bool mother = true;
@@ -174,7 +174,6 @@ public class SC_structure : MonoBehaviour
 				int waldata0 = int.Parse(cmds[5]);
 				
 				Transform trn = Instantiate(stwall,transform.position+dpos+curpos,Quaternion.Euler(0f,0f,zr));
-				trn.localScale = new Vector3(fattnum,zs[2],zwalnum);
 				trn.parent = transform;
 				st_structs[index] = trn;
 				
@@ -189,9 +188,40 @@ public class SC_structure : MonoBehaviour
 			if(cmds[2]=="mov")
 			{
 				float[] zp = new float[3];
+				
+				if(cmds[3][0]!='c'){
 				zp[0] = float.Parse(cmds[3].Split(';')[0]);
 				zp[1] = float.Parse(cmds[3].Split(';')[1]);
 				zp[2] = float.Parse(cmds[3].Split(';')[2]);
+				}
+				else switch(cmds[3])
+				{
+					case "c1":
+						zp[0]=c_multiplier;
+						zp[1]=c_multiplier;
+						zp[2]=0f;
+						break;
+					case "c2":
+						zp[0]=-c_multiplier;
+						zp[1]=c_multiplier;
+						zp[2]=0f;
+						break;
+					case "c3":
+						zp[0]=-c_multiplier;
+						zp[1]=-c_multiplier;
+						zp[2]=0f;
+						break;
+					case "c4":
+						zp[0]=c_multiplier;
+						zp[1]=-c_multiplier;
+						zp[2]=0f;
+						break;
+					default:
+						zp[0]=0f;
+						zp[1]=0f;
+						zp[2]=0f;
+						break;
+				}
 				
 				if(cmds[4]=="cen")
 				{
@@ -199,11 +229,21 @@ public class SC_structure : MonoBehaviour
 					ast.fobInfoPos[findex] = transform.position;
 					ast.fobInfoPos[findex] += new Vector3(zp[0],zp[1],zp[2]);
 				}
-				else
+				else if(cmds[4]=="cer")
 				{
-					ast.fobInfoPos[findex] = new Vector3(0f,0f,0f);
-					ast.fobInfoPos[findex] += new Vector3(zp[0],zp[1],zp[2]);
+					float[] zsr = new float[2];
+					zsr[0] = float.Parse(cmds[5].Split(';')[0]);
+					zsr[1] = float.Parse(cmds[5].Split(';')[1]);
+					zsr[0] *= 3.14159f/180f;
+					
+					Vector3 curposr = zsr[1] * new Vector3(Mathf.Cos(zsr[0]),Mathf.Sin(zsr[0]),0f);
+					
+					ast.fobCenPos[findex] = true;
+					ast.fobInfoPos[findex] = transform.position;
+					ast.fobInfoPos[findex] += new Vector3(zp[0],zp[1],zp[2]) + curposr;
 				}
+				else if(cmds[4]=="rel") ast.fobInfoPosrel[findex] += new Vector3(zp[0],zp[1],zp[2]);
+				else ast.fobInfoPos[findex] += new Vector3(zp[0],zp[1],zp[2]);
 			}
 			if(cmds[2]=="rot")
 			{
