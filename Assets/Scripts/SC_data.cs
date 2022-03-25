@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Diagnostics;
 using System.IO;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -157,7 +156,7 @@ public class SC_data : MonoBehaviour
 		//Culture set to comma (India converter)
 		System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("pl-PL");
 	
-        string path="",file="";
+        string file="";
         try{
             
             file=GetFile("defaultdata");
@@ -166,7 +165,7 @@ public class SC_data : MonoBehaviour
             while(!sr.EndOfStream) example += sr.ReadLine();
             CloseRead();
 
-        }catch(Exception e)
+        }catch(Exception)
         {
             UnityEngine.Debug.LogError("Default data doesn't exists");
             Application.Quit();
@@ -224,8 +223,8 @@ public class SC_data : MonoBehaviour
     public void CollectAwakeUniversal()
     {
         PreAwake();
-        string path="",file="",source,prePath;
-        int i,j;
+        string path="",file="",prePath;
+        int i;
 
         try{
         path=GetPath("Temp");
@@ -310,7 +309,7 @@ public class SC_data : MonoBehaviour
     }
     public void CollectAwakeWorld()
     {
-        string path="",file="",filePre,source;
+        string path="",file="";
         int i,j;
 
         try{
@@ -385,8 +384,8 @@ public class SC_data : MonoBehaviour
     }
     public void CollectUpdateDatapack()
     {
-        string path="",file="",filePre;
-        int i,j;
+        string file="";
+        int i;
         DirQ(datapacksDIR);
 
         int lngt=CustomDataPath.Length;
@@ -417,7 +416,7 @@ public class SC_data : MonoBehaviour
     {
         if(crashed&&E!="temp") return;
 
-        string file,effect,path,pathPre;
+        string file,path,pathPre;
         int i,j;
 
         DirQ(savesDIR);
@@ -555,7 +554,7 @@ public class SC_data : MonoBehaviour
 
         SC_control.MainSaveData();
 
-        string path,file,filePre,source;
+        string path,file,filePre;
         path=GetPath("generated");
         filePre=GetFile("generated");
         file=filePre+"_"+gX+"_"+gY+".se3";
@@ -970,8 +969,7 @@ public class SC_data : MonoBehaviour
         version="";
 
         //Final translate
-        int i,mID,lg;
-        string mSTR;
+        int i,mID;
 		
 		//Starting actions
         for(i=0;i<varN;i++)
@@ -1058,7 +1056,7 @@ public class SC_data : MonoBehaviour
         }
 
         //Dictionary required actions
-        string pom; int mID2, crMax=0;
+        int mID2, crMax=0;
         string[] crafts = new string[3584]; //512*7
         for(i=0;i<3584;i++) crafts[i]="0;0;0;0;0;0";
 		int cur1000biome = 0;
@@ -1126,10 +1124,8 @@ public class SC_data : MonoBehaviour
                 else if(psPath[0]=="generator_settings")
                 {
                     try{
-
-						int nev;
                         mID=int.Parse(psPath[1]);
-						if(mID<0||mID>31) nev = int.Parse("error");
+						if(mID<0||mID>31) throw new Exception("error");
 						
 						if(psPath[2]=="settings")
 						{
@@ -1140,7 +1136,7 @@ public class SC_data : MonoBehaviour
 							if(psPath[2]=="all_sizes") mID2=-4;
 							else mID2=int.Parse(psPath[2])-4;
 						
-							if((mID2<0||mID2>6)&&mID2!=-4) nev = int.Parse("error");
+							if((mID2<0||mID2>6)&&mID2!=-4) throw new Exception("error");
 							if(mID2!=-4) mID=7*mID+mID2;
 							else mID=7*mID;
 							variable[i]=psPath[0]+";"+mID;
@@ -1175,19 +1171,17 @@ public class SC_data : MonoBehaviour
 				if(psPath[0]=="generator_settings")
                 {
 					try{
-						
-						int nev;
                         mID=int.Parse(psPath[1]);
-						if(mID<0||mID>31) nev = int.Parse("error");
+						if(mID<0||mID>31) throw new Exception("error");
 						
 						if(psPath[2]=="chance")
 						{
-							if(mID==0) nev = int.Parse("error");
+							if(mID==0) throw new Exception("error");
 							string efe = mID+";"+cur1000biome+";";
 							
 							int le = value[i].Length;
 							if((value[i])[le-1]=='%') value[i] = PercentRemove(value[i]);
-							else nev = int.Parse("error");
+							else throw new Exception("error");
 							
 							int mno; if(TagContains(BiomeTags[mID],"structural")) mno = 2;
 							else mno = 1;
@@ -1319,23 +1313,23 @@ public class SC_data : MonoBehaviour
 	//MUST BE INSIDE try{} catch(Exception){}
 	void checkDatapackGoodE()
 	{
-		int i, not_existsing_variable;
+		int i;
 		
 		//Check int arrays
-        if(!IntsAll(craftings,6) || !GoodItems(craftings,true)) not_existsing_variable = int.Parse("error");
-		if(!IntsAll(biomeChances,3) || !In1000(biomeChances,false)) not_existsing_variable = int.Parse("error");
+        if(!IntsAll(craftings,6) || !GoodItems(craftings,true)) throw new Exception("error");
+		if(!IntsAll(biomeChances,3) || !In1000(biomeChances,false)) throw new Exception("error");
         for(i=0;i<16;i++)
         {
-            if(!IntsAll(DrillLoot[i],3) || !In1000(DrillLoot[i],false) || !DrillGoodItem(DrillLoot[i])) not_existsing_variable = int.Parse("error");
-            if(!IntsAll(FobGenerate[i],3) || !In1000(FobGenerate[i],false)) not_existsing_variable = int.Parse("error");
+            if(!IntsAll(DrillLoot[i],3) || !In1000(DrillLoot[i],false) || !DrillGoodItem(DrillLoot[i])) throw new Exception("error");
+            if(!IntsAll(FobGenerate[i],3) || !In1000(FobGenerate[i],false)) throw new Exception("error");
         }
         for(i=0;i<224;i++)
         {
-            if(TypeSet[i]!="") if(!IntsAll(TypeSet[i],3) || !In1000(TypeSet[i],true)) not_existsing_variable = int.Parse("error");
+            if(TypeSet[i]!="") if(!IntsAll(TypeSet[i],3) || !In1000(TypeSet[i],true)) throw new Exception("error");
         }
         for(i=0;i<128;i++)
         {
-            if(!IntsAll(ModifiedDrops[i],2) || !GoodItems(ModifiedDrops[i],false)) not_existsing_variable = int.Parse("error");
+            if(!IntsAll(ModifiedDrops[i],2) || !GoodItems(ModifiedDrops[i],false)) throw new Exception("error");
         }
 	}
     public void DatapackMultiplayerLoad(string raw)
