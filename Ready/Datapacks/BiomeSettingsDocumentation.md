@@ -12,22 +12,21 @@ so put them precisely.
   - [Contents](#contents)
   - [Biome settings variable look:](#biome-settings-variable-look)
   - [Tags](#tags)
-    - [Tag list](#tag-list)
-      - [a) min={A}, max={B}](#a-mina-maxb)
-      - [b) radius={C}](#b-radiusc)
-      - [c) density={D}](#c-densityd)
-      - [d) ring.inner.change->{E}](#d-ringinnerchange-e)
-      - [e) ring.outer.change->{F}](#e-ringouterchange-f)
-      - [de) ring.X.change->{E/F}](#de-ringxchange-ef)
-      - [f) swap](#f-swap)
-      - [g) priority={G}](#g-priorityg)
-      - [h) grid](#h-grid)
-      - [i) full](#i-full)
-      - [j) precise](#j-precise)
-      - [k) structural](#k-structural)
-      - [l) arena](#l-arena)
-      - [m) black.hole](#m-blackhole)
-      - [n) star](#n-star)
+    - [a) min={A}, max={B}](#a-mina-maxb)
+    - [b) radius={C}](#b-radiusc)
+    - [c) density={D}](#c-densityd)
+    - [d) ring.inner.change->{E}](#d-ringinnerchange-e)
+    - [e) ring.outer.change->{F}](#e-ringouterchange-f)
+    - [de) ring.X.change->{E/F}](#de-ringxchange-ef)
+    - [f) swap](#f-swap)
+    - [g) priority={G}](#g-priorityg)
+    - [h) grid](#h-grid)
+    - [i) full](#i-full)
+    - [j) precise](#j-precise)
+    - [k) structural](#k-structural)
+    - [l) arena](#l-arena)
+    - [m) black.hole](#m-blackhole)
+    - [n) star](#n-star)
 
 ## Biome settings variable look:
 
@@ -49,9 +48,7 @@ called {} in this documentation.
 Note: Do not use {} around parameters.  
 Bad: `ring={30}`, Good: `ring=30`, Best: `ring = 30`
 
-### Tag list
-
-#### a) min={A}, max={B}
+### a) min={A}, max={B}
 
 Use them to set a minimum and maximum biome radius.  
 Picked number will be random between these 2 parameters.  
@@ -59,21 +56,21 @@ Parameters are integers `<0;80>`
 
 Default: `[min=65, max=80]`
 
-#### b) radius={C}
+### b) radius={C}
 
 Use it to set biome radius precisely.  
 Parameter is an integer `<0;80>`
 
 Default: `[min=65, max=80]`
 
-#### c) density={D}
+### c) density={D}
 
 Use it to set how often asteroids will appear.  
 Parameter is a percent integer `<0%;100%>`, 0% means no asteroids.
 
 Default: `[density=60%]`
 
-#### d) ring.inner.change->{E}
+### d) ring.inner.change->{E}
 
 Use it to set biome layers, where asteroids appear counting from center.  
 Multiple tags of this type allowed.  
@@ -82,7 +79,7 @@ More info in de) point.
 
 Default: `[THE WHOLE ZONE IS ASTEROID ZONE]`
 
-#### e) ring.outer.change->{F}
+### e) ring.outer.change->{F}
 
 Use it to set biome layers, where asteroids appear counting from border.  
 Multiple tags of this type allowed.  
@@ -92,7 +89,7 @@ More info in de) point.
 
 Default: `[THE WHOLE ZONE IS ASTEROID ZONE]`
 
-#### de) ring.X.change->{E/F}
+### de) ring.X.change->{E/F}
 
 Ring system is a bit complicated, so here you have a little text tutorial:
 
@@ -131,7 +128,7 @@ a constant radius together with tag `ring.X.change->{E/F}`
 if you are not the master in those settings. If you do not  
 do that, simlar biomes might have different ring structures.
 
-#### f) swap
+### f) swap
 
 Use it to swap empty space and asteroid space.  
 Created to collaborate with `ring.X.change->{E/F}`  
@@ -139,7 +136,7 @@ and will be executed always after that.
 
 Default: **NOT USED**
 
-#### g) priority={G}
+### g) priority={G}
 
 Use it to show which biome will  
 generate at the end and overwrite  
@@ -149,7 +146,7 @@ Parameter is an integer `<1;31>`
 
 Default: `[priority=16]`
 
-#### h) grid
+### h) grid
 
 Use it to disable asteroid offset.  
 All asteroids will generate in  
@@ -157,7 +154,7 @@ diagonal grid points.
 
 Default: **NOT USED**
 
-#### i) full
+### i) full
 
 Use it to make a 300x300 biome square.  
 Sometimes it might be overwriten by other biomes,  
@@ -167,14 +164,14 @@ want to make a good datapack :)
 
 Default: **NOT USED**
 
-#### j) precise
+### j) precise
 
 Use it to set center of biome precisely at asteroid  
 grid point to prevent bugs with structures.  
 It is recommended to put it only on structures.  
 Tag structural automatically enables it.
 
-#### k) structural
+### k) structural
 
 Use it to disable touching other biomes with this tag.  
 It automatically sets priority to 32 (bigger than max)  
@@ -185,7 +182,7 @@ It is recommended to add this tag to structures.
 
 Default: **NOT USED**
 
-#### l) arena
+### l) arena
 
 Use it to generate arena in the middle of a biome.  
 Tag "structural" is required to work. It is also recommended  
@@ -195,7 +192,7 @@ radius to at least 50
 
 Default: **NOT USED**
 
-#### m) black.hole
+### m) black.hole
 
 Use it to generate a black hole in the middle of a biome.  
 Those have their own gravity and accretion disc.
@@ -208,7 +205,7 @@ radius to at least XXX
 
 Default: **NOT USED**
 
-#### n) star
+### n) star
 
 Is it too dark in space? Use it to generate a bright star in the  
 middle of a biome. Those have their own weak gravity and are extremally hot.  
