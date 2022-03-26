@@ -1,4 +1,4 @@
-# Biome setting documentation
+# Biome settings documentation
 
 Biome settings are used to customize biomes  
 and default generation
