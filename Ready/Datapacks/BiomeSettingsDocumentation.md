@@ -6,6 +6,29 @@ and default generation
 Datapack will be always imported, even if some tags are incorrect,  
 so put them precisely.
 
+## Contents
+
+- [Biome setting documentation](#biome-setting-documentation)
+  - [Contents](#contents)
+  - [Biome settings variable look:](#biome-settings-variable-look)
+  - [Tags](#tags)
+    - [Tag list](#tag-list)
+      - [a) min={A}, max={B}](#a-mina-maxb)
+      - [b) radius={C}](#b-radiusc)
+      - [c) density={D}](#c-densityd)
+      - [d) ring.inner.change->{E}](#d-ringinnerchange-e)
+      - [e) ring.outer.change->{F}](#e-ringouterchange-f)
+      - [de) ring.X.change->{E/F}](#de-ringxchange-ef)
+      - [f) swap](#f-swap)
+      - [g) priority={G}](#g-priorityg)
+      - [h) grid](#h-grid)
+      - [i) full](#i-full)
+      - [j) precise](#j-precise)
+      - [k) structural](#k-structural)
+      - [l) arena](#l-arena)
+      - [m) black.hole](#m-blackhole)
+      - [n) star](#n-star)
+
 ## Biome settings variable look:
 
 ```text
