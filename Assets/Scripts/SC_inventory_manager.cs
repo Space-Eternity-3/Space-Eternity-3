@@ -21,6 +21,7 @@ public class SC_inventory_manager : MonoBehaviour {
 	public SC_slots SC_slots;
 	public SC_data SC_data;
 	public SC_craft3 SC_craft3;
+	public SC_resp_blocker SC_resp_blocker;
 
 	int pvNum=0;
 
@@ -71,7 +72,7 @@ public class SC_inventory_manager : MonoBehaviour {
 		if(gameObject.name!="ItemImageO"&&gameObject.name!="ItemImageB"&&gameObject.name!="ItemImageOU")
 		{
 			if(pvNum==20f)
-			if(Communtron3.position.x==0f&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&Communtron1.position.y==sNum&&!SC_fun.SC_control.SC_invisibler.invisible)
+			if(SC_resp_blocker.IsAllowing()&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&Communtron1.position.y==sNum&&!SC_fun.SC_control.SC_invisibler.invisible)
 			{
 				sImg.texture=SC_fun.Item20u;
 			}

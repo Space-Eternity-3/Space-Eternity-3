@@ -8,8 +8,11 @@ public class SC_structure : MonoBehaviour
 	public SC_fun SC_fun;
 	public Transform legs;
 	public Transform Communtron1;
+	
 	public Transform asteroid;
 	public Transform stwall;
+	public Transform arcen;
+	
     public int X=0,Y=0,ID=1;
 	public float c_multiplier, zwalnum;
 	public string[] st_commands = new string[50];
@@ -150,7 +153,7 @@ public class SC_structure : MonoBehaviour
 			dpos = new Vector3(zp[0],zp[1],zp[2]);
 			float radangle = (zs[0]*3.14159f)/180f;
 			
-			if(cmds[4]!="asr" && cmds[4]!="war") curpos = new Vector3(0f,0f,0f);
+			if(cmds[4]!="asr" && cmds[4]!="war" && cmds[4]!="arr") curpos = new Vector3(0f,0f,0f);
 			else curpos = zs[1] * new Vector3(Mathf.Cos(radangle),Mathf.Sin(radangle),0f);
 			
 			if(cmds[4]=="ast"||cmds[4]=="asr")
@@ -178,6 +181,11 @@ public class SC_structure : MonoBehaviour
 				st_structs[index] = trn;
 				
 				trn.GetComponent<Renderer>().material = SC_fun.st_materials[waldata0];
+			}
+			if(cmds[4]=="arc"||cmds[4]=="arr")
+			{
+				Transform arc = Instantiate(arcen,transform.position+dpos+curpos,Quaternion.Euler(0f,0f,zr));
+				st_structs[index] = arc;
 			}
 		}
 		else if(cmds[0]=="fob")

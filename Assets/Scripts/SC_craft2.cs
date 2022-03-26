@@ -18,6 +18,7 @@ public class SC_craft2 : MonoBehaviour {
 	public SC_slots SC_slots;
 	public SC_bp_upg SC_bp_upg;
 	public SC_craft3 SC_craft3;
+	public SC_resp_blocker SC_resp_blocker;
 	public Transform respawn_point;
 	public Transform player;
 	public Transform R_set_particles;
@@ -68,7 +69,8 @@ public class SC_craft2 : MonoBehaviour {
 		if(SpaceID==1)
 		{
 			//RESPAWN SET (strange place)
-			if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&Communtron3.position.x==0f)
+			if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f)
+			if(SC_resp_blocker.IsAllowing())
 			{
 				float dX=player.position.x;
 				float dY=player.position.y;
@@ -88,6 +90,7 @@ public class SC_craft2 : MonoBehaviour {
 					respawn_point.position=player.position+new Vector3(0f,0f,1f);
 				}
 			}
+			else if(SC_slots.InvHaving(20)) SC_control.InfoUp("Unrespawnable zone",380);
 		}
 	}
 	void FixedUpdate()

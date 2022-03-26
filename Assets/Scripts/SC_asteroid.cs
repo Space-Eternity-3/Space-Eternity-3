@@ -25,6 +25,8 @@ public class SC_asteroid : MonoBehaviour {
 	public Material textureERROR;
 	public GameObject[] GenPlaceT = new GameObject[128];
 	public GameObject[] GenPlaceM = new GameObject[18];
+	
+	public SC_resp_blocker SC_resp_blocker;
 	public SC_control SC_control;
 	public SC_fun SC_fun;
 	public SC_upgrades SC_upgrades;
@@ -33,6 +35,7 @@ public class SC_asteroid : MonoBehaviour {
 	public SC_slots SC_slots;
 
 	int type=0;
+	bool mother = true;
 	public int ID=1,X=0,Y=0;
 	int[] objectID = new int[32];
 	string[] objectData = new string[32];
@@ -207,7 +210,10 @@ public class SC_asteroid : MonoBehaviour {
 		Destroy(gameObject);
 	}
 	void Start()
-	{	
+	{
+		if(transform.position.z<100f || proto)
+			mother = false;
+		
 		//UNIVERSAL asteroid generator (UAG)
 		if(ID!=1) GetBiome();
 		float size;
@@ -218,6 +224,7 @@ public class SC_asteroid : MonoBehaviour {
 		string Mg=SC_fun.GetMove(X,Y);
 		if(!proto) Move(size,Mg);
 		transform.localScale=new Vector3(size,size,size*0.75f);
+		SC_resp_blocker.radius = size/2f + 3f;
 		if(!proto) generation_code = suze + biome;
 		else generation_code = suze + "t" + prottype + "t" + fobCode;
 		
@@ -261,7 +268,7 @@ public class SC_asteroid : MonoBehaviour {
 	public void onMSG(string eData)
 	{
 		string[] arg = eData.Split(' ');
-		if(transform.position.z>100f) return;
+		if(mother) return;
 
 		if(arg[0]=="/RetAsteroidData"&&int.Parse(arg[1])==ID)
 		{
@@ -358,7 +365,7 @@ public class SC_asteroid : MonoBehaviour {
 	}
 	void Update()
 	{
-		if(transform.position.z<100&&UUTCed&&!proto)
+		if(!mother&&UUTCed&&!proto)
 		{	
 			//Optimalize
 			float ssX=X;
@@ -401,7 +408,7 @@ public class SC_asteroid : MonoBehaviour {
 		if(counter==1) counter=-GetTimeDrill();
 		
 		//Particles
-		if(Communtron1.localScale==new Vector3(2f,2f,2f)&&Mining&&Communtron1.position.z==0f&&(false||Communtron3.position.y==0f||CommuntronM1.position.x==1f)&&Input.GetMouseButton(0))
+		if(Communtron1.localScale==new Vector3(2f,2f,2f)&&Mining&&Communtron1.position.z==0f&&(Communtron3.position.y==0f||CommuntronM1.position.x==1f)&&Input.GetMouseButton(0))
 		{
 			if(AD_particleID==0)
 			{
@@ -416,48 +423,12 @@ public class SC_asteroid : MonoBehaviour {
 				if((int)Communtron4.position.y == 100) SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" "+mined+" 1 "+slot);
 			}
 		}
-		if((Communtron1.localScale!=new Vector3(2f,2f,2f)||!Input.GetMouseButton(0))&&Communtron1.position.z==0f)
+		if((!(Communtron1.localScale==new Vector3(2f,2f,2f) && Input.GetMouseButton(0)))&&Communtron1.position.z==0f)
 		{
 			if(AD_particleID==0)
 			{
 				rHydrogenParticles.localPosition=new Vector3(0f,1.9f,-1000f);
 				CommuntronM1.position=new Vector3(0f,0f,0f);
-			}
-		}
-
-		//Drill singleplayer sounds
-		int G;
-		if(rHydrogenParticles.localPosition.z==0f) G=1;
-		else G=0;
-		if(SC_snd_start.drMode!=G)
-        {
-            SC_snd_start.drMode=G;
-            if(G!=0) SC_snd_start.ManualStartLoop(0);
-            else SC_snd_start.ManualEndLoop();
-        }
-
-		if(transform.position.z<50f&&Communtron1.position.z==0f)
-		{
-			//Respawn scared
-			float rtX=transform.position.x;
-			float rtY=transform.position.y;
-			float atX=player.position.x;
-			float atY=player.position.y;
-			if(Mathf.Sqrt((rtX-atX)*(rtX-atX)+(rtY-atY)*(rtY-atY))<suze/2+3f)
-			{
-				if(!stille)
-				{
-					stille=true;
-					Communtron3.position+=new Vector3(1f,0f,0f);
-				}
-			}
-			else
-			{
-				if(stille)
-				{
-					stille=false;
-					Communtron3.position-=new Vector3(1f,0f,0f);
-				}
 			}
 		}
 	}

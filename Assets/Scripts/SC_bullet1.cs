@@ -147,6 +147,7 @@ public class SC_bullet1 : MonoBehaviour {
 		neme!="Fob47(Clone)"&&
 		neme!="in0collider"&&
 		neme!="Fob49 (bedrock carpet)(Clone)"&&
+		neme!="respawn_blocker"&&
 		!mother&&
 		collision.gameObject.transform.root.gameObject.name[0]!='P')
 		{
