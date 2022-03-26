@@ -1,4 +1,4 @@
-# Biome settings documentation
+# Biome settings documentation - Beta 1.12
 
 Biome settings are used to customize biomes  
 and default generation
