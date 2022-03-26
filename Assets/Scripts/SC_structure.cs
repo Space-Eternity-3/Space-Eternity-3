@@ -186,11 +186,13 @@ public class SC_structure : MonoBehaviour
 			if(cmds[4]=="arc"||cmds[4]=="arr")
 			{
 				Transform arc = Instantiate(arcen,transform.position+dpos+curpos,Quaternion.Euler(0f,0f,zr));
+				arc.parent = transform;
 				st_structs[index] = arc;
 			}
 			if(cmds[4]=="gat"||cmds[4]=="gar")
 			{
 				Transform gat = Instantiate(gatepart,transform.position+dpos+curpos,Quaternion.Euler(0f,0f,zr));
+				gat.parent = transform;
 				st_structs[index] = gat;
 			}
 		}

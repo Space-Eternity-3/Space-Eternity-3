@@ -257,8 +257,9 @@ objects_generate
 	red: red(35%) + red_spikes(7,5%) + red_alien(15%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	bedrock: stone(30%) + packed_stone(15%);
+	artefact_randomizer: protection_artefact(20%) + impulse_artefact(20%) + illusion_artefact(20%) + immortality_artefact(20%) + unstable_artefact(20%);
 }
-game_translate <advenced settings>
+game_translate <advanced settings>
 {
 	Asteroids
 	{
@@ -273,7 +274,9 @@ game_translate <advenced settings>
 		8: magnetic;
 		9: red;
 		10: diamond;
+		11: melted;
 		12: bedrock;
+		13: artefact_randomizer;
 	}
 	Items_and_objects
 	{
