@@ -191,7 +191,7 @@ space in the middle and set a minimum biome
 radius to at least 50
 
 Default: **NOT USED**
-<!
+<!--
 ### m) black.hole
 
 Use it to generate a black hole in the middle of a biome.  
@@ -215,5 +215,5 @@ It is also recommended to use tag `ring.X.change->{E/F}` in order to create some
 space in the middle and set a minimum biome radius to at least XXX
 
 Default: **NOT USED**
->
+-->
 
