@@ -17,10 +17,8 @@ All other chars are allowed.
  ;  - value end char
  '  - on/off remove space
 -------------------------------
-Info about biome settings in file:
-"BiomeSettingsDocumentation.txt"
-Open datapack folder using SE3 to find it.
-Don't open file using double click. Choose "edit".
+Datapack documentation:
+https://space-eternity-3.github.io/docs/docs/Beta-1.12/Datapack/
 -------------------------------
 Edit file and select it in your SE3 browser.
 >
@@ -32,8 +30,8 @@ craftings
 	<Page>1
 	{
 		title_image: stone;
-		1: stone(5) -> melted_stone;
-		2: melted_stone -> stone(5);
+		1: stone(5) -> packed_stone;
+		2: packed_stone -> stone(5);
 		3: stone(2) -> stone_drill;
 		4: stone_drill -> stone(2);
 		5: geyzer -> stone(3);
@@ -41,23 +39,23 @@ craftings
 	<Page>2
 	{
 		title_image: copper;
-		1: copper(5) -> melted_copper;
-		2: melted_copper -> copper(5);
+		1: copper(5) -> packed_copper;
+		2: packed_copper -> copper(5);
 		3: copper -> copper_bullet(5);
 	}
 	<Page>3
 	{
 		title_image: gold;
-		1: gold(5) -> melted_gold;
-		2: melted_gold -> gold(5);
+		1: gold(5) -> packed_gold;
+		2: packed_gold -> gold(5);
 		3: gold(2) -> golden_drill;
 		4: golden_drill -> gold(2);
 	}
 	<Page>4
 	{
 		title_image: magnetic_stone;
-		1: magnetic_stone(5) -> melted_magnetic_stone;
-		2: melted_magnetic_stone -> magnetic_stone(5);
+		1: magnetic_stone(5) -> packed_magnetic_stone;
+		2: packed_magnetic_stone -> magnetic_stone(5);
 		3: magnetic_stone(3) -> magnetic_lamp;
 		4: magnetic_lamp -> magnetic_stone(3);
 		5: mega_geyzer -> magnetic_stone(4);
@@ -233,15 +231,15 @@ generator_settings
 	
 	<Normal arena structure> 4
 	{
-		chance: 5%;
+		chance: 4%;
 		settings: [
 			structural, arena,
-			ring.inner.change -> 0, ring.inner.change -> 45,
+			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
-			density = 90%,
+			density = 100%,
 		];
 		
-		all_sizes: coal(85%) + gold(15%);
+		all_sizes: coal(90%) + gold(10%);
 	}
 	<max 31 biomes + default>
 }
@@ -258,7 +256,7 @@ objects_generate
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	red: red(35%) + red_spikes(7,5%) + red_alien(15%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
-	bedrock: stone(30%) + melted_stone(15%);
+	bedrock: stone(30%) + packed_stone(15%);
 }
 game_translate <advenced settings>
 {
@@ -295,12 +293,12 @@ game_translate <advenced settings>
 		14: big_bush;
 		15: old_pumpkin;				<not used>
 		16: magnetic_stone;
-		17: melted_stone;
-		18: melted_copper;
-		19: melted_gold;
+		17: packed_stone;
+		18: packed_copper;
+		19: packed_gold;
 		20: respawn;					<only item>
 		21: storage;
-		22: melted_magnetic_stone;
+		22: packed_magnetic_stone;
 		23: magnetic_alien_activated;	<only object>
 		24: copper_bullet;				<only item>
 		25: magnetic_alien;

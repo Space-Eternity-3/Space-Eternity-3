@@ -12,6 +12,7 @@ public class SC_structure : MonoBehaviour
 	public Transform asteroid;
 	public Transform stwall;
 	public Transform arcen;
+	public Transform gatepart;
 	
     public int X=0,Y=0,ID=1;
 	public float c_multiplier, zwalnum;
@@ -153,7 +154,7 @@ public class SC_structure : MonoBehaviour
 			dpos = new Vector3(zp[0],zp[1],zp[2]);
 			float radangle = (zs[0]*3.14159f)/180f;
 			
-			if(cmds[4]!="asr" && cmds[4]!="war" && cmds[4]!="arr") curpos = new Vector3(0f,0f,0f);
+			if(cmds[4]!="asr" && cmds[4]!="war" && cmds[4]!="arr" && cmds[4]!="gar") curpos = new Vector3(0f,0f,0f);
 			else curpos = zs[1] * new Vector3(Mathf.Cos(radangle),Mathf.Sin(radangle),0f);
 			
 			if(cmds[4]=="ast"||cmds[4]=="asr")
@@ -186,6 +187,11 @@ public class SC_structure : MonoBehaviour
 			{
 				Transform arc = Instantiate(arcen,transform.position+dpos+curpos,Quaternion.Euler(0f,0f,zr));
 				st_structs[index] = arc;
+			}
+			if(cmds[4]=="gat"||cmds[4]=="gar")
+			{
+				Transform gat = Instantiate(gatepart,transform.position+dpos+curpos,Quaternion.Euler(0f,0f,zr));
+				st_structs[index] = gat;
 			}
 		}
 		else if(cmds[0]=="fob")

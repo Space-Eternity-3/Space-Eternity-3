@@ -38,3 +38,7 @@ sysinfo.txt
 *.unitypackage
 Ready/Server_Beta_1_12/ServerUniverse/
 Ready/Settings/
+Settings/
+
+# Anothers
+*.log
