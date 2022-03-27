@@ -170,7 +170,7 @@ gameplay
 					
 	at_impulse_power_regenerate_multiplier: 1;
 	at_impulse_time: 0,4;
-	at_impulse_speed: 50;
+	at_impulse_speed: 70;
 					
 	at_illusion_power_regenerate_multiplier: 1;
 	at_illusion_power_use_multiplier: 2;
@@ -256,7 +256,7 @@ objects_generate
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	red: red(35%) + red_spikes(7,5%) + red_alien(15%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
-	bedrock: stone(30%) + packed_stone(15%);
+	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
 	artefact_randomizer: protection_artefact(20%) + impulse_artefact(20%) + illusion_artefact(20%) + immortality_artefact(20%) + unstable_artefact(20%);
 }
 game_translate <advanced settings>
@@ -328,5 +328,7 @@ game_translate <advanced settings>
 		46: frozen_artefact;			<comming soon>
 		47: unstable_artefact;
 		48: unstable_matter;
+		49: packed_bedrock;				<only object>
+		50: bedrock_stone;				<only object>
 	}
 }

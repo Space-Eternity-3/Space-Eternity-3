@@ -175,7 +175,7 @@ public class SC_fobs : MonoBehaviour
         if(b>=25&&b<=38) return true; //39 -> red bullet
         if(b>=40&&b<=47) return true; //48 -> unstable bullet
 		if(b==48&&Input.GetKey(KeyCode.LeftControl)) return true;
-		if(b>=49&&b<=49) return true;
+		if(b>=49&&b<=50) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)
@@ -205,7 +205,7 @@ public class SC_fobs : MonoBehaviour
         GameObject gobT=SC_asteroid.GenPlaceT[0];
         int tid=id; //tid -> Physical ID
 
-        if((tid<8||tid>11)&&tid!=16&&tid!=30)
+        if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50)
         {
             if(tid==21||tid==2) SC_asteroid.GenPlaceT[tid].name=potFob21Name;
             try{gobT=Instantiate(SC_asteroid.GenPlaceT[tid],transform.position,transform.rotation);}catch(Exception)
@@ -220,6 +220,7 @@ public class SC_fobs : MonoBehaviour
 			if(tid>=8&&tid<=11) tud=tid-8;
 			if(tid==16) tud=4;
 			if(tid==30) tud=5;
+			if(tid==50) tud=6;
 			try{gobT=Instantiate(SC_asteroid.GenPlaceM[tud*3+rand],transform.position,transform.rotation);}catch(Exception)
 				{
 					gobT=Instantiate(SC_asteroid.GenPlaceT[0],transform.position,transform.rotation);
