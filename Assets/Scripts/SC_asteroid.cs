@@ -341,7 +341,7 @@ public class SC_asteroid : MonoBehaviour {
 
 				int tid=objectID[ii]; //tid -> Physical ID
 
-				if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50)
+				if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50&&tid!=51)
 				{
 					if(tid==21||tid==2) GenPlaceT[tid].name=objectData[ii]+";";
 					try{gobT=Instantiate(GenPlaceT[tid],rotation_place,quat_angle);}catch(Exception)
@@ -357,6 +357,7 @@ public class SC_asteroid : MonoBehaviour {
 					if(tid==16) tud=4;
 					if(tid==30) tud=5;
 					if(tid==50) tud=6;
+					if(tid==51) tud=7;
 					gobT = Instantiate(GenPlaceM[tud*3+rand],rotation_place,quat_angle);
 				}
 				gobT.transform.parent = gameObject.transform;

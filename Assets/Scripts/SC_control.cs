@@ -168,6 +168,7 @@ public class SC_control : MonoBehaviour {
 	
 	public int[] ramvis = new int[10];
 	public bool public_placed = false;
+	public bool f1 = false;
 
 	public string invCurrent()
 	{
@@ -188,6 +189,9 @@ public class SC_control : MonoBehaviour {
 	public void LaterUpdate()
 	{
 		if(Communtron3.position.z<0) Communtron3.position=new Vector3(Communtron3.position.x,Communtron3.position.y,0f);
+		
+		Screen1.enabled = !f1;
+		Screen2.enabled = !f1;
 		
 		if(!timeStop){
 		
@@ -483,10 +487,16 @@ public class SC_control : MonoBehaviour {
 			playerR.velocity=new Vector3(0f,0f,0f);
 		}
 
+		if(Input.GetKeyDown(KeyCode.F1)) f1 = !f1;
+		
 		//Game pause
-		if(Input.GetKeyUp("escape")) escaped = false;
+		if(Screen3.enabled) f1 = false;
+		if(Input.GetKeyUp("escape"))
+		{
+			escaped = false;
+		}
 		if(Input.GetKey("escape")&&!invBlockExit&&!escaped)
-		esc_press(true);
+			esc_press(true);
 
 		//Restart lags
 		if(truePing>2.5f)

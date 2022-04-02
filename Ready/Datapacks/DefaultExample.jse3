@@ -65,6 +65,7 @@ craftings
 		title_image: coal;
 		1: coal(5) -> packed_coal;
 		2: packed_coal -> coal(5);
+		3: stone(6) + coal -> metal_piece;
 	}
 	<Page>6
 	{
@@ -134,6 +135,7 @@ drill_loot
 	magnetic: magnetic_stone(100%);
 	red: red(100%);
 	diamond: small_diamond(2%);
+	metalic: stone(100%);
 }
 modified_drops
 {
@@ -229,7 +231,7 @@ generator_settings
 	
 	<---STRUCTURES--->
 	
-	<Normal arena structure> 4
+	<Arena structure> 4
 	{
 		chance: 4%;
 		settings: [
@@ -239,7 +241,7 @@ generator_settings
 			density = 100%,
 		];
 		
-		all_sizes: coal(90%) + gold(10%);
+		all_sizes: metalic(100%);
 	}
 	<max 31 biomes + default>
 }
@@ -256,6 +258,7 @@ objects_generate
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	red: red(35%) + red_spikes(7,5%) + red_alien(15%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
+	metalic: stone(35%) + metal_piece(25%);
 	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
 	artefact_randomizer: protection_artefact(20%) + impulse_artefact(20%) + illusion_artefact(20%) + immortality_artefact(20%) + unstable_artefact(20%);
 }
@@ -274,7 +277,7 @@ game_translate <advanced settings>
 		8: magnetic;
 		9: red;
 		10: diamond;
-		11: melted;
+		11: metalic;
 		12: bedrock;
 		13: artefact_randomizer;
 	}
@@ -330,5 +333,6 @@ game_translate <advanced settings>
 		48: unstable_matter;
 		49: packed_bedrock;				<only object>
 		50: bedrock_stone;				<only object>
+		51: metal_piece;
 	}
 }
