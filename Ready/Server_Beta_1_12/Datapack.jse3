@@ -65,7 +65,7 @@ craftings
 		title_image: coal;
 		1: coal(5) -> packed_coal;
 		2: packed_coal -> coal(5);
-		3: stone(6) + coal -> metal_piece;
+		3: stone(3) + coal -> metal_piece;
 	}
 	<Page>6
 	{

@@ -357,7 +357,11 @@ public class SC_asteroid : MonoBehaviour {
 					if(tid==16) tud=4;
 					if(tid==30) tud=5;
 					if(tid==50) tud=6;
-					if(tid==51) tud=7;
+					if(tid==51)
+					{
+						tud=7;
+						rand=UnityEngine.Random.Range(0,2);
+					}
 					gobT = Instantiate(GenPlaceM[tud*3+rand],rotation_place,quat_angle);
 				}
 				gobT.transform.parent = gameObject.transform;

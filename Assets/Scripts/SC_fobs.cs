@@ -208,10 +208,13 @@ public class SC_fobs : MonoBehaviour
         if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50&&tid!=51)
         {
             if(tid==21||tid==2) SC_asteroid.GenPlaceT[tid].name=potFob21Name;
-            try{gobT=Instantiate(SC_asteroid.GenPlaceT[tid],transform.position,transform.rotation);}catch(Exception)
-				{
-					gobT=Instantiate(SC_asteroid.GenPlaceT[0],transform.position,transform.rotation);
-				}
+            
+			try{
+				gobT=Instantiate(SC_asteroid.GenPlaceT[tid],transform.position,transform.rotation);
+			}catch(Exception)
+			{
+				gobT=Instantiate(SC_asteroid.GenPlaceT[0],transform.position,transform.rotation);
+			}
         }
         else
         {
@@ -221,11 +224,13 @@ public class SC_fobs : MonoBehaviour
 			if(tid==16) tud=4;
 			if(tid==30) tud=5;
 			if(tid==50) tud=6;
-			if(tid==51) tud=7;
-			try{gobT=Instantiate(SC_asteroid.GenPlaceM[tud*3+rand],transform.position,transform.rotation);}catch(Exception)
-				{
-					gobT=Instantiate(SC_asteroid.GenPlaceT[0],transform.position,transform.rotation);
-				}
+			if(tid==51)
+			{
+				tud=7;
+				rand = UnityEngine.Random.Range(0,2);
+			}
+			
+			gobT=Instantiate(SC_asteroid.GenPlaceM[tud*3+rand],transform.position,transform.rotation);
         }
         gobT.GetComponent<SC_fobs>().MTPblocker = MTPblocker;
         if(ObjID==25&&id==23) gobT.GetComponent<SC_fobs>().GeyzerTime = GeyzerTime;
