@@ -1,25 +1,8 @@
 <This is a comment>
 
 <
-All tabs and enters will be removed.
--------------------------------
-Compiler working:
-Text A - TextA
-'Text B' - Text B
--------------------------------
-You can't use these chars in variable names and values:
-{ } < : ; ~ '
-All other chars are allowed.
--------------------------------
-> < - comments
-{ } - variable tree operators
- :  - variable/value separator
- ;  - value end char
- '  - on/off remove space
--------------------------------
 Datapack documentation:
-https://space-eternity-3.github.io/docs/docs/Beta-1.12/Datapack/
--------------------------------
+https://se3.website
 Edit file and select it in your SE3 browser.
 >
 
