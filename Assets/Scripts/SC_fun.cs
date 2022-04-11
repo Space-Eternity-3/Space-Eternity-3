@@ -26,7 +26,6 @@ public class SC_fun : MonoBehaviour
 	public int[] bMA = new int[32];
 	public int[] bD = new int[32];
 	public int[] bP = new int[32];
-	public bool[] bPR = new bool[32];
 	
 	public bool[,] bbW = new bool[32,81];
 	public bool[,] bbH = new bool[32,81];
@@ -292,10 +291,10 @@ public class SC_fun : MonoBehaviour
 		int[] ulXY = UlamToXY(ulam);
 		bool[] alXY = new bool[2]; alXY[0]=true; alXY[1]=true;
 		
-		if(bPR[bint])
+		if(true)
 		{
-			if(alXY[0]) dX = (int.Parse(red.Split(';')[0])-1)*(maxD-10f*Mathf.Ceil(size/10f));
-			if(alXY[1]) dY = (int.Parse(red.Split(';')[1])-1)*(maxD-10f*Mathf.Ceil(size/10f));
+			if(alXY[0]) dX = (int.Parse(red.Split(';')[0])-1)*(maxD-20f*Mathf.Ceil(size/20f));
+			if(alXY[1]) dY = (int.Parse(red.Split(';')[1])-1)*(maxD-20f*Mathf.Ceil(size/20f));
 		}
 		else
 		{
@@ -482,13 +481,11 @@ public class SC_fun : MonoBehaviour
 				if(TagContains(tags,"ring.outer.change->"+j))
 				{
 					bbW[i,j]=true;
-					bPR[i]=true;
 				}
 			for(j=0;j<=80;j++)
 				if(TagContains(tags,"ring.inner.change->"+j))
 				{
 					bbH[i,j]=true;
-					bPR[i]=true;
 				}
 			
 			truing = false;
@@ -521,13 +518,7 @@ public class SC_fun : MonoBehaviour
 			for(j=1;j<=31;j++)
 				if(TagContains(tags,"priority="+j)) bP[i]=j;
 			
-			if(TagContains(tags,"precise")) bPR[i]=true;
-
-			if(TagContains(tags,"structural"))
-			{
-				bPR[i]=true;
-				bP[i]=32;
-			}
+			if(TagContains(tags,"structural")) bP[i]=32;
 		}
 		
 		bP[0] = 0;
