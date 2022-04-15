@@ -19,6 +19,7 @@ public class SC_magnetic : MonoBehaviour {
 		float dX=player.position.x-transform.position.x;
 		float dY=player.position.y-transform.position.y;
 		range=Mathf.Sqrt(dX*dX+dY*dY);
+		if(range==0) return;
 
 		if(range<MaxRange&&!sameForce)
 		{

@@ -12,7 +12,8 @@ public class SC_long_strings : MonoBehaviour
     /*
     
     String change:
-    1. DEFAULT datapack (file, server, defaultdata x3)
+    1a. DEFAULT datapack (file, server, defaultdata x3)
+    1b. Page link
     2. Credits
     3. Client data
     4. Server data

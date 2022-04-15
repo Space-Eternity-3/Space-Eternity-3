@@ -130,6 +130,10 @@ public class SC_control : MonoBehaviour {
 	public Rigidbody[] R = new Rigidbody[10];
 	public TextMesh[] N = new TextMesh[10];
 	public Transform[] RU = new Transform[10];
+	public Canvas[] NC = new Canvas[10];
+	public Text[] NCT = new Text[10];
+	public Slider[] NCH = new Slider[10];
+	public Image[] NCHOF = new Image[10];
 
 	Vector3[] Pa = new Vector3[10];
 	Vector3[] Ra = new Vector3[10];
@@ -137,6 +141,7 @@ public class SC_control : MonoBehaviour {
 	float[] Rt = new float[10];
 	int[] Fa = new int[10];
 	int[] At = new int[10];
+	float[] He = new float[10];
 	string[] Na = new string[10];
 	bool[] Nulx = new bool[10];
 	
@@ -192,6 +197,9 @@ public class SC_control : MonoBehaviour {
 		
 		Screen1.enabled = !f1;
 		Screen2.enabled = !f1;
+		for(int ji=1;ji<=9;ji++){
+			NC[ji].enabled = !f1;
+		}
 		
 		if(!timeStop){
 		
@@ -614,12 +622,12 @@ public class SC_control : MonoBehaviour {
 	{
 		float potH=SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
 		if(potH<-50f) potH = -50f; if(potH>56.397f) potH = 56.397f;
-		float maxH=50f*Mathf.Pow(health_base,potH);
-		float curH=50f*health_V*Mathf.Pow(health_base,potH);
+		float maxH=50f*Mathf.Pow(health_base,potH) - 1f;
+		float curH=health_V*maxH;
 		float maxHr=Mathf.Ceil(maxH);
 		float curHr=Mathf.Ceil((curH*maxHr)/maxH);
-		if(curHr>maxHr) curHr=maxHr;
-		health_Text.text="Health "+curHr+"/"+maxHr;
+		if(health_V==1f) curHr=maxHr+1f;
+		health_Text.text="Health "+curHr+"/"+(maxHr+1f);
 
 		float curFr=Mathf.Floor(turbo_V*50f);
 		turbo_Text.text="Turbo "+curFr+"/50";
@@ -855,7 +863,8 @@ public class SC_control : MonoBehaviour {
 			string eData=RPU;
 			string[] tabe=eData.Split(' ');
 			float PRx=0f;
-			int FRx=0, ATx=1;
+			int FRx, ATx;
+			float HEv;
         	int i,k;
 			float pxx,pyy;
 			returnedPing=int.Parse(tabe[connectionID+21]);
@@ -864,7 +873,7 @@ public class SC_control : MonoBehaviour {
 				Vector3 Px=new Vector3(0f,0f,1000f+i*5);
 				Vector3 Rx=new Vector3(0f,0f,0f);
 				Vector3 RRx=new Vector3(0f,0f,1000f);
-				FRx=0; ATx=0;
+				FRx=0; ATx=0; HEv=1f;
 				
 				string Nax="";
 				
@@ -886,6 +895,8 @@ public class SC_control : MonoBehaviour {
 						Rx=new Vector3(pxx,pyy,0f);
 						
 						PRx=float.Parse(tabe2[4]);
+						HEv=float.Parse(tabe2[8]);
+						if(HEv<0.05f) HEv=0.05f;
 						
 						string[] tbo = tabe2[5].Split('&');
 						FRx=int.Parse(tbo[0]);
@@ -902,7 +913,7 @@ public class SC_control : MonoBehaviour {
 					if(Nax=="0") Nax="";
 					exist=true;
 				}
-				Pa[i]=Px; Ra[i]=Rx; if(exist)Rt[i]=PRx; Fa[i]=FRx; At[i]=ATx; Na[i]=Nax; RRa[i]=RRx; Nulx[i]=exist;
+				Pa[i]=Px; Ra[i]=Rx; if(exist)Rt[i]=PRx; Fa[i]=FRx; At[i]=ATx; He[i]=HEv; Na[i]=Nax; RRa[i]=RRx; Nulx[i]=exist;
 			}
 			for(h=1;h<=9;h++)
 			{
@@ -912,7 +923,9 @@ public class SC_control : MonoBehaviour {
 				PL[h].OtherSource = Fa[h];
 				R[h].velocity = Ra[h];
 				P[h].rotation = Quaternion.Euler(0f,0f,Rt[h]);
-				N[h].text = Na[h];
+				NCT[h].text = Na[h];
+				NCH[h].value = He[h];
+				NCHOF[h].color = SC_artefacts.Color1N[At[h]/100];
 				RU[h].position = RRa[h];
 			}
 
@@ -1032,13 +1045,13 @@ public class SC_control : MonoBehaviour {
 		if(inpg%10==0) return pig+"0";
 		return pig+"";
 	}
-	public void DamageINT(int dmgINT) {if(dmgINT!=0) Damage(dmgINT*0.01666667f);}
+	public void DamageFLOAT(float dmgFLOAT) {if(dmgFLOAT!=0f) Damage(dmgFLOAT);}
 	public void Damage(float dmg)
 	{
 		if(livTime<50 || impulse_enabled) return;
 		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
-		dmg=(1.2f*dmg)/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
+		dmg=0.02f*dmg/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
 		health_V-=dmg;
 		//SC_sounds.PlaySound(transform.position,2,0);
 		if(health_V>0f) Instantiate(explosion2,transform.position,transform.rotation);
@@ -1060,9 +1073,9 @@ public class SC_control : MonoBehaviour {
        	if(collision.impulse.magnitude>CME&&collision.relativeVelocity.magnitude>CME)
 		{
 			dmLicz=20;
-			float head_ache=collision.impulse.magnitude-CME+1f;
-			int hai=(int)Mathf.Ceil(((head_ache+2f)/50f)*float.Parse(SC_data.Gameplay[7])/0.01666667f);
-			DamageINT(hai);
+			float head_ache=collision.impulse.magnitude-CME + 3f;
+			float hai=float.Parse(SC_data.Gameplay[7])*head_ache*1.2f;
+			DamageFLOAT(hai);
 		}
     }
 	void OnTriggerStay(Collider collision)
@@ -1073,7 +1086,8 @@ public class SC_control : MonoBehaviour {
 			else if(licznikD<=5)
 			{
 				licznikD=25;
-				DamageINT(int.Parse(SC_data.Gameplay[8]));
+				float dmgg = float.Parse(SC_data.Gameplay[8]);
+				if(dmgg!=0f) DamageFLOAT(dmgg+0.00001f);
 			}
 		}
 	}
@@ -1411,5 +1425,30 @@ public class SC_control : MonoBehaviour {
 
 		SC_slots.ResetYAB();
 		Debug.Log("Joined");
+	}
+	void Start()
+	{
+		int i;
+		for(i=1;i<=9;i++)
+		{
+			NC[i] = N[i].GetComponent<Transform>().GetChild(0).GetComponent<Canvas>();
+			foreach(Transform child in NC[i].GetComponent<Transform>())
+			{
+				if(child.name == "Nickname")
+					NCT[i] = child.GetComponent<Text>();
+
+				if(child.name == "HPBar")
+					NCH[i] = child.GetComponent<Slider>();
+			}
+			foreach(Transform child in NCH[i].GetComponent<Transform>())
+			{
+				if(child.name == "OverFill")
+					foreach(Transform child2 in child)
+					{
+						if(child2.name=="Fill")
+							NCHOF[i] = child2.GetComponent<Image>();
+					}
+			}
+		}
 	}
 }

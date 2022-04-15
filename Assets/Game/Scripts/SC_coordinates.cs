@@ -10,8 +10,9 @@ public class SC_coordinates : MonoBehaviour {
 	public Text coordinates;
 	public bool mtp_coords;
 	public Text nickname;
-	public TextMesh nickSource;
+	public int index;
 	public Transform infoMTP;
+	public SC_control SC_control;
 
 	void Update()
 	{
@@ -25,9 +26,10 @@ public class SC_coordinates : MonoBehaviour {
 
 		if(mtp_coords)
 		{
-			nickname.text=nickSource.text;
+			string nik = SC_control.NCT[index].text;
+			nickname.text = nik;
 			if(player.position.z>100f || SC_invisibler.invisible) coordinates.text="...";
-			if(nickSource.text==""||nickSource.text=="0") infoMTP.localPosition=new Vector3(10000f,0f,0f);
+			if(nik==""||nik=="0") infoMTP.localPosition=new Vector3(10000f,0f,0f);
 			else infoMTP.localPosition=new Vector3(0f,0f,0f);
 		}
 	}

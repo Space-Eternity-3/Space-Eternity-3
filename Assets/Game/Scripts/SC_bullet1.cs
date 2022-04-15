@@ -126,7 +126,6 @@ public class SC_bullet1 : MonoBehaviour {
 		neme!="Drill3"&&
 		neme!="Drill4"&&
 		neme[0]!='S'&&
-		neme!="Asteroid_pre(Clone)"&&
 		neme!="FOB0_Empty(Clone)"&&
 		neme!="Fob12(Clone)"&&
 		neme!="Fob14(Clone)"&&
@@ -146,8 +145,8 @@ public class SC_bullet1 : MonoBehaviour {
 		neme!="Fob46(Clone)"&&
 		neme!="Fob47(Clone)"&&
 		neme!="in0collider"&&
-		neme!="Fob49 (bedrock carpet)(Clone)"&&
 		neme!="respawn_blocker"&&
+		neme!="impulse_push_zone"&&
 		!mother&&
 		collision.gameObject.transform.root.gameObject.name[0]!='P')
 		{
