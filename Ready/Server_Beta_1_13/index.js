@@ -1239,7 +1239,7 @@ function finalTranslate(varN) {
           if (psPath[1] == "health_regenerate_multiplier") gameplay[5] = parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "crash_minimum_energy") gameplay[6] = parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "crash_damage_multiplier") gameplay[7] = parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "spike_damage") gameplay[8] = parseIntE(jse3Dat[i]) + "";
+          if (psPath[1] == "spike_damage") gameplay[8] = parseFloatE(jse3Dat[i]) + "";
 
           if (psPath[1] == "player_normal_speed") gameplay[9] = parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "player_brake_speed") gameplay[10] = parseFloatE(jse3Dat[i]) + "";
@@ -1553,7 +1553,7 @@ function datapackPaste(splitTab) {
     for (i = 0; i < 16; i++) fobGenerate[i] = raws[3].split("\'")[i];
     for (i = 0; i < 224; i++) typeSet[i] = raws[4].split("\'")[i];
     for (i = 0; i < gpl_number; i++) {
-      if (i == 8) gameplay[i] = parseIntE(raws[5].split("\'")[i]) + "";
+      if (false) gameplay[i] = parseIntE(raws[5].split("\'")[i]) + "";
       else gameplay[i] = parseFloatE(raws[5].split("\'")[i]) + "";
     }
     for (i = 0; i < 128; i++) modifiedDrops[i] = raws[6].split("\'")[i];

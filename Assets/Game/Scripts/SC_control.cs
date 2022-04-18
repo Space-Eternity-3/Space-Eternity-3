@@ -626,7 +626,8 @@ public class SC_control : MonoBehaviour {
 		float curH=health_V*maxH;
 		float maxHr=Mathf.Ceil(maxH);
 		float curHr=Mathf.Ceil((curH*maxHr)/maxH);
-		if(health_V==1f) curHr=maxHr+1f;
+		if(curHr == (curH*maxHr)/maxH) curHr=maxHr+1f;
+		//if(health_V==1f) curHr=maxHr+1f;
 		health_Text.text="Health "+curHr+"/"+(maxHr+1f);
 
 		float curFr=Mathf.Floor(turbo_V*50f);
@@ -1053,6 +1054,7 @@ public class SC_control : MonoBehaviour {
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
 		dmg=0.02f*dmg/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
 		health_V-=dmg;
+		if(Mathf.Round(health_V*10000f) == 0f) health_V = 0f;
 		//SC_sounds.PlaySound(transform.position,2,0);
 		if(health_V>0f) Instantiate(explosion2,transform.position,transform.rotation);
 		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
@@ -1087,7 +1089,7 @@ public class SC_control : MonoBehaviour {
 			{
 				licznikD=25;
 				float dmgg = float.Parse(SC_data.Gameplay[8]);
-				if(dmgg!=0f) DamageFLOAT(dmgg+0.00001f);
+				if(dmgg!=0f) DamageFLOAT(dmgg);
 			}
 		}
 	}

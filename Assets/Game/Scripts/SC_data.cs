@@ -1000,7 +1000,7 @@ public class SC_data : MonoBehaviour
                     if(psPath[1]=="health_regenerate_multiplier") Gameplay[5]=float.Parse(value[i])+"";
                     if(psPath[1]=="crash_minimum_energy") Gameplay[6]=float.Parse(value[i])+"";
                     if(psPath[1]=="crash_damage_multiplier") Gameplay[7]=float.Parse(value[i])+"";
-                    if(psPath[1]=="spike_damage") Gameplay[8]=int.Parse(value[i])+"";
+                    if(psPath[1]=="spike_damage") Gameplay[8]=float.Parse(value[i])+"";
 
                     if(psPath[1]=="player_normal_speed") Gameplay[9]=float.Parse(value[i])+"";
                     if(psPath[1]=="player_brake_speed") Gameplay[10]=float.Parse(value[i])+"";
@@ -1349,7 +1349,7 @@ public class SC_data : MonoBehaviour
             for(i=0;i<224;i++) TypeSet[i] = raws[4].Split('\'')[i];
             for(i=0;i<gpl_number;i++)
             {
-                if(i==8) Gameplay[i] = int.Parse(raws[5].Split('\'')[i])+"";
+                if(false) Gameplay[i] = int.Parse(raws[5].Split('\'')[i])+"";
                 else Gameplay[i] = float.Parse(raws[5].Split('\'')[i])+"";
             }
             for(i=0;i<128;i++) ModifiedDrops[i] = raws[6].Split('\'')[i];

@@ -18,6 +18,7 @@ public class SC_main_buttons : MonoBehaviour {
 		SAS(0);
 		if(SC_data.TempFile=="-1") SAS(1);
 		if(SC_data.TempFile=="-2") SAS(2);
+		if(SC_data.TempFile=="-4") SAS(4);
 	}
 	public void Button5PermanentExit()
 	{
