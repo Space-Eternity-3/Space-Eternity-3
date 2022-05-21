@@ -134,6 +134,7 @@ public class SC_bullet1 : MonoBehaviour {
 		neme!="Engine1 (1)"&&
 		neme!="Engine2 (1)"&&
 		neme!="Bullet1(Clone)"&&
+		neme!="Bullet(Clone)"&&
 		neme!="wind_active"&&
 		neme!="Fob48(Clone)"&&
 		neme!="cactus_kill_zone"&&

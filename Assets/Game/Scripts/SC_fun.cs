@@ -60,6 +60,10 @@ public class SC_fun : MonoBehaviour
             else SC_control.MenuReturn();
         }
     }
+	public Vector3 Skop(Vector3 V, float F)
+	{
+		return V*F/SC_control.Pitagoras(V);
+	}
     int MakeID(int ID,int sed)
     {
         int sid=sed*2;

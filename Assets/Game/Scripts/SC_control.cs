@@ -124,6 +124,7 @@ public class SC_control : MonoBehaviour {
 	public SC_halloween SC_halloween;
 	public SC_artefacts SC_artefacts;
 	public SC_invisibler SC_invisibler;
+	public SC_bullet SC_bullet;
 
 	public Transform[] P = new Transform[10];
 	public SC_players[] PL = new SC_players[10];
@@ -212,29 +213,40 @@ public class SC_control : MonoBehaviour {
 		if(wr_isok && wr_moustay && !public_placed)
 		{
 			cooldown=7;
-			int slot;
+			int slot, typ = 1;
 
 			//Bullet types
 			if(SC_slots.InvHaving(24))
 			{
 				SC_bullet1.type = 1;
+				typ = 1;
 				slot = SC_slots.InvChange(24,-1,true,false,true);
 				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 24 -1 "+slot);
 			}
 			else if(SC_slots.InvHaving(39))
 			{
 				SC_bullet1.type = 2;
+				typ = 2;
 				slot = SC_slots.InvChange(39,-1,true,false,true);
 				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 39 -1 "+slot);
 			}
 			else if(SC_slots.InvHaving(48))
 			{
 				SC_bullet1.type = 3;
+				typ = 3;
 				slot = SC_slots.InvChange(48,-1,true,false,true);
 				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 48 -1 "+slot);
 			}
 
-			Shot(Input.mousePosition.x-Screen.width/2,Input.mousePosition.y-Screen.height/2);
+			//Shot(Input.mousePosition.x-Screen.width/2,Input.mousePosition.y-Screen.height/2);
+			SC_bullet.Shot(
+				transform.position,
+				new Vector3(Input.mousePosition.x-Screen.width/2,Input.mousePosition.y-Screen.height/2,0f),
+				playerR.velocity*0.02f,
+				typ,
+				"present",
+				true
+			);
 			SC_invisibler.invisible = false;
 		}
 		
@@ -649,6 +661,8 @@ public class SC_control : MonoBehaviour {
 	}
 	void Shot(float ix, float iy)
 	{
+		return; //temp
+
 		SC_bullet1.mX = ix;
 		SC_bullet1.mY = iy;
 		SC_bullet1.mode = 0;
@@ -791,7 +805,14 @@ public class SC_control : MonoBehaviour {
 				float uy = Mathf.Sin((alp*3.14159f)/180f);
 				
 				SC_bullet1.type = 3;
-				Shot(-ux,-uy);
+				SC_bullet.Shot(
+					transform.position,
+					new Vector3(Input.mousePosition.x-Screen.width/2,Input.mousePosition.y-Screen.height/2,0f),
+					playerR.velocity*0.02f,
+					3,
+					"present",
+					true
+				);
 				
 				//playerR.velocity += new Vector3(ux*unstable_force,uy*unstable_force,0f);
 				Quaternion quat_foo = new Quaternion(0f,0f,0f,0f);
