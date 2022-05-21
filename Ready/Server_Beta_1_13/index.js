@@ -7,25 +7,33 @@ var serverVersion = "Beta 1.13";
 var serverRedVersion = "Beta_1_13";
 var clientDatapacksVar = "";
 var seed;
-var won = false;
+var max_players = 10;
 var gpl_number = 27;
 
 var chunk_data = [];
 var chunk_names = [];
 var chunk_waiter = [];
 
-var waiter = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-var players = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var nicks = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var pingTemp = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var conID = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var livID = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
+var plr = {
+  waiter: [0],
+  players: ["0"],
+  nicks: ["0"],
+  pingTemp: ["0"],
+  conID: ["0"],
+  livID: ["0"],
 
-var data = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var inventory = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var backpack = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var upgrades = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
-var pushInventory = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0"];
+  data: ["0"],
+  inventory: ["0"],
+  backpack: ["0"],
+  upgrades: ["0"],
+  pushInventory: ["0"],
+};
+
+var ki, kj, kd = Object.keys(plr);
+var klngt = kd.length;
+for(ki=1;ki<max_players;ki++)
+  for(kj=0;kj<klngt;kj++)
+    plr[kd[kj]].push(plr[kd[kj]][0]);
 
 var growT = [];
 var growW = [];
@@ -34,17 +42,28 @@ var drillT = [];
 var drillW = [];
 var drillC = [];
 
+const bulletTemplate = {
+  ID: 0,
+  owner: -1,
+  type: 0,
+  age: 0,
+  max_age: 100,
+  
+  start: {
+    x: 0,
+    y: 0
+  },
+  vector: {
+    x: 0,
+    y: 0
+  },
+  pos: {
+    x: 0,
+    y: 0
+  }
+};
+
 var bulletsT = [];
-/*
-id: 123
-owner: Kamiloso
-start.x: 16.78
-start.y: 4.52
-vector.x: 1.24
-vector.y: 4.96
-age: 34
-max_age: 100 (*)
-*/
 
 var growSolid = [];
 growSolid[5] = "4500;12000;6";
@@ -68,18 +87,12 @@ var modifiedDrops = new Array(128);
 var translateFob = [];
 var translateAsteroid = [];
 
-drillLoot.fill("");
-Object.seal(drillLoot);
-fobGenerate.fill("");
-Object.seal(fobGenerate);
-biomeTags.fill("");
-Object.seal(biomeTags);
-typeSet.fill("");
-Object.seal(typeSet);
-gameplay.fill("");
-Object.seal(gameplay);
-modifiedDrops.fill("");
-Object.seal(modifiedDrops);
+drillLoot.fill(""); Object.seal(drillLoot);
+fobGenerate.fill(""); Object.seal(fobGenerate);
+biomeTags.fill(""); Object.seal(biomeTags);
+typeSet.fill(""); Object.seal(typeSet);
+gameplay.fill(""); Object.seal(gameplay);
+modifiedDrops.fill(""); Object.seal(modifiedDrops);
 
 //Websocket functions
 const wss = new WebSocket.Server({
@@ -195,36 +208,36 @@ function pushConvert(inv, psh) {
 }
 function savePlayer(n) {
   var effTab = [
-    msgToPlayer(data[n]),
-    pushConvert(inventory[n], pushInventory[n]),
-    backpack[n],
-    upgrades[n],
+    msgToPlayer(plr.data[n]),
+    pushConvert(plr.inventory[n], plr.pushInventory[n]),
+    plr.backpack[n],
+    plr.upgrades[n],
   ];
   var effect = effTab.join(";\r\n") + ";\r\n";
-  writeF("ServerUniverse/Players/" + nicks[n] + ".se3", effect);
+  writeF("ServerUniverse/Players/" + plr.nicks[n] + ".se3", effect);
 }
 function readPlayer(n) {
   var srcTT, i, dd, di, db, du, eff, lngt;
-  if (existsF("ServerUniverse/Players/" + nicks[n] + ".se3"))
-    srcTT = readF("ServerUniverse/Players/" + nicks[n] + ".se3").split("\r\n");
+  if (existsF("ServerUniverse/Players/" + plr.nicks[n] + ".se3"))
+    srcTT = readF("ServerUniverse/Players/" + plr.nicks[n] + ".se3").split("\r\n");
   else return;
 
   if (!fileReadablePlayer(srcTT)) return;
 
-  data[n] = playerToMsg(srcTT[0]);
+  plr.data[n] = playerToMsg(srcTT[0]);
   di = srcTT[1].split(";");
   db = srcTT[2].split(";");
   du = srcTT[3].split(";");
 
   eff = di[0];
   for (i = 1; i < 18; i++) eff += ";" + di[i];
-  inventory[n] = eff;
+  plr.inventory[n] = eff;
   eff = db[0];
   for (i = 1; i < 42; i++) eff += ";" + db[i];
-  backpack[n] = eff;
+  plr.backpack[n] = eff;
   eff = du[0];
   for (i = 1; i < 5; i++) eff += ";" + du[i];
-  upgrades[n] = eff;
+  plr.upgrades[n] = eff;
 }
 
 //File asteroid data function
@@ -433,7 +446,7 @@ process.on("SIGUSR2", exitHandler.bind(null, { exit: true })); //???
 function SaveAllNow() {
   var i,
     lngt = chunk_data.length;
-  for (i = 0; i <= 9; i++) if (checkPlayer(i, conID[i])) savePlayer(i);
+  for (i = 0; i < max_players; i++) if (checkPlayer(i, plr.conID[i])) savePlayer(i);
   for (i = 0; i < lngt; i++) chunkSave(i);
 }
 setInterval(function () {
@@ -459,56 +472,95 @@ setInterval(function () {
 //Kick functions
 function kick(i) {
   SaveAllNow(i);
-  console.log(nicks[i] + " disconnected [" + i + "]");
+  console.log(plr.nicks[i] + " disconnected [" + i + "]");
   sendToAllClients("/RetKickConnection " + i + " X X");
-  if (players[i] != "0")
+  if (plr.players[i] != "0")
     sendToAllClients(
-      "/InfoClient " +
-        (nicks[i] + " left the game").replaceAll(" ", "`") +
+      "/RetInfoClient " +
+        (plr.nicks[i] + " left the game").replaceAll(" ", "`") +
         " " +
         i +
         " X X"
     );
-  waiter[i] = 0;
-  nicks[i] = "0";
-  players[i] = "0";
-  data[i] = "0";
-  conID[i] = "0";
-  livID[i] = "0";
-  pingTemp[i] = "0";
-  upgrades[i] = "0";
-  backpack[i] = "0";
-  inventory[i] = "0";
-  pushInventory[i] = "0";
+  plr.waiter[i] = 0;
+  plr.nicks[i] = "0";
+  plr.players[i] = "0";
+  plr.data[i] = "0";
+  plr.conID[i] = "0";
+  plr.livID[i] = "0";
+  plr.pingTemp[i] = "0";
+  plr.upgrades[i] = "0";
+  plr.backpack[i] = "0";
+  plr.inventory[i] = "0";
+  plr.pushInventory[i] = "0";
 }
 setInterval(function () {
-  var i,lngt;
-  for (i = 0; i < 10; i++) {
-    if (waiter[i] > 0) {
-      waiter[i]--;
-      if (waiter[i] == 0) kick(i);
-    }
-  }
-
-  //Bullet updates
-  lngt = bulletsT.length;
-  for(i=0;i<lngt;i++)
-  {
-    bulletsT[0].lifetime++;
-    if(bulletsT[0].lifetime==100)
-    {
-      sendToAllClients("/RetNewBulletDestroy "+"jakies dane");
-      bulletsT.remove(i);
-      lngt--; i--; continue;
+  var i;
+  for (i = 0; i < max_players; i++) {
+    if (plr.waiter[i] > 0) {
+      plr.waiter[i]--;
+      if (plr.waiter[i] == 0) kick(i);
     }
   }
 
 }, 20);
 
+//STERID UPDATE (optimalization important!)
+var date_before = Date.now();
+setInterval(function () {
+  while(Date.now() >= date_before + 20)
+  {
+    date_before += 20;
+    
+    //Approximately once per unity frame
+    var i, lngt = bulletsT.length;
+    for(i=0;i<lngt;i++)
+    {
+      bulletsT[i].age++;
+      if(bulletsT[i].age>=bulletsT[i].max_age)
+      {
+        bulletsT.remove(i);
+        lngt--; i--; continue;
+      }
+      bulletsT[i].pos.x += bulletsT[i].vector.x;
+      bulletsT[i].pos.y += bulletsT[i].vector.y;
+    }
+    if(lngt>0) console.log(bulletsT);
+  }
+}, 1);
+
+//Bullet functions
+function spawnBullet(tpl,arg)
+{
+  bulletsT.push(tpl);
+  sendToAllClients(
+    "/RetNewBulletSend " +
+      arg[1]+" " +
+      arg[2]+" " +
+      arg[3]+" " +
+      arg[4]+" " +
+      arg[5]+" " +
+      arg[6]+" " +
+      arg[7]+" " +
+      " X X"
+  );
+}
+function destroyBullet(n,arg)
+{
+  bulletsT[n].max_age = parseIntP(arg[3]);
+  sendToAllClients(
+    "/RetNewBulletDestroy "+
+    arg[1]+" "+
+    arg[2]+" "+
+    arg[3]+" "+
+    " X X"
+  );
+}
+
 //Check functions
 function checkPlayer(idm, cn) {
-  if (nicks[idm] == "0") return false;
-  if (conID[idm] != cn) return false;
+  if (plr.nicks[idm] == "0") return false;
+  if (plr.conID[idm] != cn) return false;
   return true;
 }
 
@@ -516,11 +568,11 @@ function checkPlayer(idm, cn) {
 setInterval(function () {
   sendToAllClients(
     "/RetPlayerUpdate " +
-      players.join(" ") +
+      plr.players.join(" ") +
       " " +
-      nicks.join(" ") +
+      plr.nicks.join(" ") +
       " " +
-      pingTemp.join(" ") +
+      plr.pingTemp.join(" ") +
       " X X"
   );
 }, 20);
@@ -598,7 +650,7 @@ function serverGrow(ulam, place) {
     chunk_data[det[0]][det[1]][22 + 2 * parseInt(place)] = "";
     chunk_data[det[0]][det[1]][parseInt(place) + 1] =
       growSolid[bef].split(";")[2];
-    sendToAllClients("/GrowNow " + ulam + " " + place + " X X");
+    sendToAllClients("/RetGrowNow " + ulam + " " + place + " X X");
   }
 }
 function serverDrill(ulam, place) {
@@ -712,13 +764,13 @@ function invChangeTry(invID, item, count, slot) {
   var itemS, countS, effTab, mode;
 
   if (slot < 9) {
-    effTab = inventory[invID].split(";");
+    effTab = plr.inventory[invID].split(";");
     itemS = effTab[slot * 2];
     countS = effTab[slot * 2 + 1];
     mode = "INV";
   } else {
     slot -= 9;
-    effTab = backpack[invID].split(";");
+    effTab = plr.backpack[invID].split(";");
     itemS = effTab[slot * 2];
     countS = effTab[slot * 2 + 1];
     mode = "BPK";
@@ -736,8 +788,8 @@ function invChangeTry(invID, item, count, slot) {
   effTab[slot * 2] = item;
   effTab[slot * 2 + 1] = parseInt(effTab[slot * 2 + 1]) + parseInt(count);
 
-  if (mode == "INV") inventory[invID] = effTab.join(";");
-  else backpack[invID] = effTab.join(";");
+  if (mode == "INV") plr.inventory[invID] = effTab.join(";");
+  else plr.backpack[invID] = effTab.join(";");
 
   return true;
 }
@@ -911,13 +963,13 @@ wss.on("connection", function connection(ws) {
       //PlayerUpdate 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[time]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
-      if (waiter[arg[1]] > 1) waiter[arg[1]] = arg[4];
+      if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = arg[4];
 
-      players[arg[1]] = arg[2];
-      pingTemp[arg[1]] = arg[3];
+      plr.players[arg[1]] = arg[2];
+      plr.pingTemp[arg[1]] = arg[3];
 
       if (arg[2] != "1") {
-        data[arg[1]] = arg[2];
+        plr.data[arg[1]] = arg[2];
       }
       return;
     }
@@ -925,58 +977,58 @@ wss.on("connection", function connection(ws) {
       //ImConnected 1[PlayerID] 2[time]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
-      if (waiter[arg[1]] > 1) waiter[arg[1]] = arg[2];
+      if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = arg[2];
       return;
     }
     if (arg[0] == "/AllowConnection") {
       //AllowConnection 1[nick] 2[password] 3[conID]
-      for (i = 0; i <= 10; i++) {
+      for (i = 0; i <= max_players; i++) {
         if (
-          i == 10 ||
+          i == max_players ||
           arg[2] != serverRedVersion ||
-          nicks.includes(arg[1]) ||
+          plr.nicks.includes(arg[1]) ||
           nickCorrect(arg[1])
         ) {
           ws.send("/RetAllowConnection -1 X X");
           console.log("Connection dennied");
           break;
         }
-        if (waiter[i] == 0) {
-          waiter[i] = 250;
-          nicks[i] = arg[1];
+        if (plr.waiter[i] == 0) {
+          plr.waiter[i] = 250;
+          plr.nicks[i] = arg[1];
 
           readPlayer(i);
-          pushInventory[i] = "1;2;3;4;5;6;7;8;9";
-          if (data[i] == "0") data[i] = "0;0;0;0;0;0;0;0;1;0;0;0";
-          if (inventory[i] == "0")
-            inventory[i] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-          if (backpack[i] == "0")
-            backpack[i] =
+          plr.pushInventory[i] = "1;2;3;4;5;6;7;8;9";
+          if (plr.data[i] == "0") plr.data[i] = "0;0;0;0;0;0;0;0;1;0;0;0";
+          if (plr.inventory[i] == "0")
+            plr.inventory[i] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+          if (plr.backpack[i] == "0")
+            plr.backpack[i] =
               "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-          if (upgrades[i] == "0") upgrades[i] = "0;0;0;0;0";
+          if (plr.upgrades[i] == "0") plr.upgrades[i] = "0;0;0;0;0";
 
           SaveAllNow();
-          conID[i] = arg[3];
+          plr.conID[i] = arg[3];
           ws.send(
             "/RetAllowConnection " +
               i +
               " " +
-              data[i] +
+              plr.data[i] +
               " " +
-              inventory[i] +
+              plr.inventory[i] +
               " " +
-              pushInventory[i] +
+              plr.pushInventory[i] +
               " " +
               clientDatapacksVar +
               " " +
-              upgrades[i] +
+              plr.upgrades[i] +
               " " +
-              backpack[i] +
+              plr.backpack[i] +
               " " +
               seed +
               " X X"
           );
-          console.log(nicks[i] + " connected [" + i + "]");
+          console.log(plr.nicks[i] + " connected [" + i + "]");
           break;
         }
       }
@@ -985,7 +1037,7 @@ wss.on("connection", function connection(ws) {
       //ImDisconnected 1[PlayerID]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
-      waiter[arg[1]] = 1;
+      plr.waiter[arg[1]] = 1;
     }
     if (arg[0] == "/EmitParticles") {
       //EmitParticles 1[PlayerID] 2[type] 3[posX] 4[posY]
@@ -1087,7 +1139,7 @@ wss.on("connection", function connection(ws) {
               " " +
               -fCount +
               " X " +
-              livID[fPlayerID]
+              plr.livID[fPlayerID]
           );
           return;
         } else kick(fPlayerID);
@@ -1117,7 +1169,7 @@ wss.on("connection", function connection(ws) {
           " " +
           fCount +
           " X " +
-          livID[fPlayerID]
+          plr.livID[fPlayerID]
       );
     }
     if (arg[0] == "/FobsDataChange") {
@@ -1162,7 +1214,7 @@ wss.on("connection", function connection(ws) {
               " " +
               gDeltaCount +
               " X " +
-              livID[gPlayerID]
+              plr.livID[gPlayerID]
           );
           return;
         } else kick(gPlayerID);
@@ -1196,7 +1248,7 @@ wss.on("connection", function connection(ws) {
           " " +
           -gDeltaCount +
           " X " +
-          livID[gPlayerID]
+          plr.livID[gPlayerID]
       );
     }
     if (arg[0] == "/FobsTurn") {
@@ -1267,36 +1319,36 @@ wss.on("connection", function connection(ws) {
       var ljSlot = arg[5];
 
       if (invChangeTry(ljPlaID, ljItem, -ljCount, ljSlot)) {
-        var ljTab = upgrades[ljPlaID].split(";");
+        var ljTab = plr.upgrades[ljPlaID].split(";");
         ljTab[ljUpgID] = parseInt(ljTab[ljUpgID]) + 1;
         var ij,
           eff = ljTab[0];
         for (ij = 1; ij < 5; ij++) eff += ";" + ljTab[ij];
-        upgrades[ljPlaID] = eff;
+        plr.upgrades[ljPlaID] = eff;
         ws.send(
-          "/RetUpgrade " + ljPlaID + " " + ljUpgID + " X " + livID[ljPlaID]
+          "/RetUpgrade " + ljPlaID + " " + ljUpgID + " X " + plr.livID[ljPlaID]
         );
       } else kick(ljPlaID);
     }
     if (arg[0] == "/InventoryReset") {
       //InventoryReset 1[PlayerID] 2[NewLivID]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
-      livID[arg[1]] = arg[2];
+      plr.livID[arg[1]] = arg[2];
 
       var iID = arg[1];
 
-      data[iID] =
-        data[iID].split(";")[6] +
+      plr.data[iID] =
+        plr.data[iID].split(";")[6] +
         ";" +
-        data[iID].split(";")[7] +
+        plr.data[iID].split(";")[7] +
         ";0;0;0;0;" +
-        data[iID].split(";")[6] +
+        plr.data[iID].split(";")[6] +
         ";" +
-        data[iID].split(";")[7] +
+        plr.data[iID].split(";")[7] +
         ";1;0;0;0";
-      inventory[iID] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-      upgrades[iID] = "0;0;0;0;0";
-      backpack[iID] =
+      plr.inventory[iID] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+      plr.upgrades[iID] = "0;0;0;0;0";
+      plr.backpack[iID] =
         "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
     }
     if (arg[0] == "/Craft") {
@@ -1317,15 +1369,15 @@ wss.on("connection", function connection(ws) {
       var cCoE = arg[9];
       var cSlE = arg[10];
 
-      var safeCopyI = inventory[cPlaID];
-      var safeCopyB = backpack[cPlaID];
+      var safeCopyI = plr.inventory[cPlaID];
+      var safeCopyB = plr.backpack[cPlaID];
 
       if (invChangeTry(cPlaID, cId1, cCo1, cSl1))
         if (invChangeTry(cPlaID, cId2, cCo2, cSl2))
           if (invChangeTry(cPlaID, cIdE, cCoE, cSlE)) return;
 
-      inventory[cPlaID] = safeCopyI;
-      backpack[cPlaID] = safeCopyB;
+      plr.inventory[cPlaID] = safeCopyI;
+      plr.backpack[cPlaID] = safeCopyB;
       kick(cPlaID);
     }
     if (arg[0] == "/InventoryPush") {
@@ -1336,67 +1388,49 @@ wss.on("connection", function connection(ws) {
       var locPushID = arg[2];
       var pom, l;
 
-      var pushTab = pushInventory[locPlaID].split(";");
+      var pushTab = plr.pushInventory[locPlaID].split(";");
       pom = pushTab[locPushID - 1];
       pushTab[locPushID - 1] = pushTab[locPushID];
       pushTab[locPushID] = pom;
 
       var newPush = "" + pushTab[0];
       for (l = 1; l < 9; l++) newPush = newPush + ";" + pushTab[l];
-      pushInventory[locPlaID] = newPush;
-    }
-    if (arg[0] == "/BulletSend") {
-      //BulletSend 1[PlayerID] 2[type] 3[mode] 4[X] 5[Y] 6[otherData]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
-
-      sendToAllClients(
-        "/RetBulletSend " +
-          arg[1] +
-          " " +
-          arg[2] +
-          " " +
-          arg[3] +
-          " " +
-          arg[4] +
-          " " +
-          arg[5] +
-          " " +
-          arg[6] +
-          " " +
-          arg[7] +
-          " " +
-          arg[8] +
-          " X X"
-      );
+      plr.pushInventory[locPlaID] = newPush;
     }
     if (arg[0] == "/NewBulletSend") {
-      //BulletSend 1[PlayerID] 2[type] 3[position] 4[vector] 5[ID]
+      //BulletSend 1[PlayerID] 2[type] 3,4[position] 5,6[vector] 7[ID]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
-      sendToAllClients(
-        "/RetNewBulletSend " +
-          arg[1] +
-          " " +
-          arg[2] +
-          " " +
-          arg[3] +
-          " " +
-          arg[4] +
-          " " +
-          arg[5] +
-          " " +
-          " X X"
-      );
+      var tpl = Object.assign({},bulletTemplate);
+      tpl.start = Object.assign({},bulletTemplate.start);
+      tpl.vector = Object.assign({},bulletTemplate.vector);
+      tpl.pos = Object.assign({},bulletTemplate.pos);
+
+      tpl.ID = parseIntP(arg[7]);
+      tpl.owner = parseIntP(arg[1]);
+      tpl.type = parseIntP(arg[2]);
+      tpl.start.x = parseFloatP(arg[3]);
+      tpl.start.y = parseFloatP(arg[4]);
+      tpl.vector.x = parseFloatP(arg[5]);
+      tpl.vector.y = parseFloatP(arg[6]);
+      tpl.pos = tpl.start;
+
+      spawnBullet(tpl,arg);
     }
-    if (arg[0] == "/BulletDestroy") {
-      //BulletDestroy 1[id]
-      sendToAllClients("/RetBulletDestroy " + arg[1] + " X X");
+    if (arg[0] == "/NewBulletRemove") {
+      //BulletSend 1[PlayerID] 2[ID] 3[age]
+      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      
+      var lngt = bulletsT.length;
+      for(i=0;i<lngt;i++)
+        if(bulletsT[i].owner==arg[1] && bulletsT[i].ID==arg[2])
+          destroyBullet(i,arg);
     }
     if (arg[0] == "/InfoUp") {
       //InfoUp 1[info] 2[PlayerID]
       if (!checkPlayer(arg[2], arg[msl - 2])) return;
 
-      sendToAllClients("/InfoClient " + arg[1] + " " + arg[2] + " X X");
+      sendToAllClients("/RetInfoClient " + arg[1] + " " + arg[2] + " X X");
     }
     if (arg[0] == "/InvisibilityPulse") {
       //InvisibilityPulse 1[PlayerID] 2[DataString]
@@ -1416,14 +1450,14 @@ wss.on("connection", function connection(ws) {
       var bpSlotI = arg[4];
       var bpSlotB = arg[5];
 
-      var safeCopyI = inventory[bpPlaID];
-      var safeCopyB = backpack[bpPlaID];
+      var safeCopyI = plr.inventory[bpPlaID];
+      var safeCopyB = plr.backpack[bpPlaID];
 
       if (invChangeTry(bpPlaID, bpItem, bpCount, bpSlotI))
         if (invChangeTry(bpPlaID, bpItem, -bpCount, bpSlotB)) return;
 
-      inventory[bpPlaID] = safeCopyI;
-      backpack[bpPlaID] = safeCopyB;
+      plr.inventory[bpPlaID] = safeCopyI;
+      plr.backpack[bpPlaID] = safeCopyB;
       kick(bpPlaID);
     }
     if (arg[0] == "/ImNotKicked") {
@@ -1431,13 +1465,13 @@ wss.on("connection", function connection(ws) {
       var imkConID = arg[1];
       if (!checkPlayer(arg[1], arg[msl - 2]))
         ws.send(
-          "/RetKickConnection " + imkConID + " " + conID[imkConID] + " X"
+          "/RetKickConnection " + imkConID + " " + plr.conID[imkConID] + " X"
         );
       else {
-        console.log(nicks[imkConID] + " joined [" + imkConID + "]");
+        console.log(plr.nicks[imkConID] + " joined [" + imkConID + "]");
         sendToAllClients(
-          "/InfoClient " +
-            (nicks[imkConID] + " joined the game").replaceAll(" ", "`") +
+          "/RetInfoClient " +
+            (plr.nicks[imkConID] + " joined the game").replaceAll(" ", "`") +
             " " +
             imkConID +
             " X X"

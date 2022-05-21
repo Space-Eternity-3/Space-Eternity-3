@@ -80,6 +80,7 @@ public class SC_control : MonoBehaviour {
 	int returnedPing=0;
 	string trping="0,00";
 	float truePing;
+	int intPing;
 	bool dont=false;
 	bool repeted=false;
 	bool repetedAF=false;
@@ -97,7 +98,6 @@ public class SC_control : MonoBehaviour {
 
 	public Transform darkner;
 	Vector3 darknerV;
-	public SC_bullet1 SC_bullet1;
 
 	string worldDIR="";
 	int worldID=1;
@@ -210,7 +210,7 @@ public class SC_control : MonoBehaviour {
 		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftControl);
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
 		
-		if(wr_isok && wr_moustay && !public_placed)
+		if(wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
 		{
 			cooldown=7;
 			int slot, typ = 1;
@@ -218,34 +218,28 @@ public class SC_control : MonoBehaviour {
 			//Bullet types
 			if(SC_slots.InvHaving(24))
 			{
-				SC_bullet1.type = 1;
 				typ = 1;
 				slot = SC_slots.InvChange(24,-1,true,false,true);
 				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 24 -1 "+slot);
 			}
 			else if(SC_slots.InvHaving(39))
 			{
-				SC_bullet1.type = 2;
 				typ = 2;
 				slot = SC_slots.InvChange(39,-1,true,false,true);
 				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 39 -1 "+slot);
 			}
 			else if(SC_slots.InvHaving(48))
 			{
-				SC_bullet1.type = 3;
 				typ = 3;
 				slot = SC_slots.InvChange(48,-1,true,false,true);
 				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 48 -1 "+slot);
 			}
 
-			//Shot(Input.mousePosition.x-Screen.width/2,Input.mousePosition.y-Screen.height/2);
 			SC_bullet.Shot(
 				transform.position,
 				new Vector3(Input.mousePosition.x-Screen.width/2,Input.mousePosition.y-Screen.height/2,0f),
 				playerR.velocity*0.02f,
-				typ,
-				"present",
-				true
+				typ
 			);
 			SC_invisibler.invisible = false;
 		}
@@ -605,10 +599,11 @@ public class SC_control : MonoBehaviour {
 		if(repeted) return;
 		repeted=true;
 
-		SC_bullet1[] SCT_bullet1 = FindObjectsOfType<SC_bullet1>();
-		foreach(SC_bullet1 bul in SCT_bullet1)
+		SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
+		foreach(SC_bullet bul in buls)
 		{
-			bul.serverExitDestroy();
+			if(bul.mode!="mother")
+			bul.MakeDestroy(false);
 		}
 
 		if(!dont)
@@ -658,22 +653,6 @@ public class SC_control : MonoBehaviour {
 		impulse_enabled = false;
 		playerR.velocity = new Vector3(0f,0f,0f);
 		//SC_invisibler.invisible_or = false;
-	}
-	void Shot(float ix, float iy)
-	{
-		return; //temp
-
-		SC_bullet1.mX = ix;
-		SC_bullet1.mY = iy;
-		SC_bullet1.mode = 0;
-		SC_bullet1.velo = playerR.velocity;
-		if((int)Communtron4.position.y!=100) SC_bullet1.id=0;
-		else
-		{
-			SC_bullet1.id=UnityEngine.Random.Range(1,999999999);
-			SendMTP("/BulletSend "+connectionID+" "+SC_bullet1.type+" 1 "+transform.position.x+" "+transform.position.y+" "+SC_bullet1.id+";"+SC_bullet1.mX+";"+SC_bullet1.mY+" "+playerR.velocity.x+" "+playerR.velocity.y);
-		}
-		Instantiate(Copper_bullet,transform.position,transform.rotation);
 	}
 	void FixedUpdate()
 	{
@@ -783,7 +762,7 @@ public class SC_control : MonoBehaviour {
 		}
 		
 		//unstability movement
-		if(SC_artefacts.GetArtefactID()==6 && livTime>=50)
+		if(SC_artefacts.GetArtefactID()==6 && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
 		{
 			if(UnityEngine.Random.Range(0,unstable_probability)==0)
 			{
@@ -804,14 +783,11 @@ public class SC_control : MonoBehaviour {
 				float ux = Mathf.Cos((alp*3.14159f)/180f);
 				float uy = Mathf.Sin((alp*3.14159f)/180f);
 				
-				SC_bullet1.type = 3;
 				SC_bullet.Shot(
 					transform.position,
 					new Vector3(Input.mousePosition.x-Screen.width/2,Input.mousePosition.y-Screen.height/2,0f),
 					playerR.velocity*0.02f,
-					3,
-					"present",
-					true
+					3
 				);
 				
 				//playerR.velocity += new Vector3(ux*unstable_force,uy*unstable_force,0f);
@@ -954,13 +930,13 @@ public class SC_control : MonoBehaviour {
 			fixup--;
 			if(fixup<=0)
 			{
-				truePing=(localPing-returnedPing)/50f;
-				trping=retping(truePing);
-				pingname.text="Ping: "+trping+"s";
-				fixup=10;
+				intPing = (localPing-returnedPing);
+				truePing = intPing/50f;
+				trping = retping(truePing);
+				pingname.text = "Ping: "+trping+"s";
+				fixup = 10;
 			}
 		}
-		localPing++;
 
 		//drill fixed update
 		if(drill3B&&drill3T.localPosition.y<1.44f)
@@ -1022,6 +998,8 @@ public class SC_control : MonoBehaviour {
 			}
 			else SendMTP("/PlayerUpdate "+connectionID+" 1 "+localPing+" 250");
 		}
+
+		localPing++;
 
 		string[] tempCmd = new string[2048];
 		int y;
@@ -1149,8 +1127,7 @@ public class SC_control : MonoBehaviour {
 			Debug.Log("Server kicked");
 			ws.Close();
 		}
-		if(arg[0]=="/RetBulletDestroy"||
-		arg[0]=="/RetUpgrade"||
+		if(arg[0]=="/RetUpgrade"||
 		arg[0]=="/RetFobsChange"||
 		arg[0]=="/RetFobsDataChange"||
 		arg[0]=="/RetFobsDataCorrection"||
@@ -1159,9 +1136,10 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RetFobsPing"||
 		arg[0]=="/RetGeyzerTurn"||
 		arg[0]=="/RetInventory"||
-		arg[0]=="/GrowNow"||
-		arg[0]=="/InfoClient"||
-		arg[0]=="/RetBulletSend"||
+		arg[0]=="/RetGrowNow"||
+		arg[0]=="/RetNewBulletSend"||
+		arg[0]=="/RetNewBulletDestroy"||
+		arg[0]=="/RetInfoClient"||
 		arg[0]=="/RetInvisibilityPulse"||
 		(arg[0]=="/RetEmitParticles" && arg[1]!=connectionID+""))
 		{
@@ -1172,22 +1150,52 @@ public class SC_control : MonoBehaviour {
 	void cmdDo(string cmdThis)
 	{
 		string[] arg = cmdThis.Split(' ');
-		if(arg[0]=="/RetBulletSend")
-		{
-			if(arg[1]!=connectionID+"")
-			{
-				SC_bullet1.mX=float.Parse(arg[6].Split(';')[1]);
-				SC_bullet1.mY=float.Parse(arg[6].Split(';')[2]);
-				SC_bullet1.type=int.Parse(arg[2]);
-				SC_bullet1.mode=int.Parse(arg[3]);
-				SC_bullet1.id=int.Parse(arg[6].Split(';')[0]);
-				SC_bullet1.velo=new Vector3(float.Parse(arg[7]),float.Parse(arg[8]),0f);
-				Instantiate(Copper_bullet,new Vector3(float.Parse(arg[4]),float.Parse(arg[5]),0f),transform.rotation);
-			}
-		}
 		if(arg[0]=="/RetUpgrade")
 		{
 			if(arg[1]==connectionID+"") SC_upgrades.MTP_levels[int.Parse(arg[2])]++;
+		}
+		if(arg[0]=="/RetNewBulletSend")
+		{
+			SC_bullet.ShotProjection(
+				new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
+				new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
+				int.Parse(arg[2]),
+				"server",
+				int.Parse(arg[7])
+			);
+
+			if(connectionID+""!=arg[1]){
+				SC_bullet bul = SC_bullet.ShotProjection(
+					new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
+					new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
+					int.Parse(arg[2]),
+					"present",
+					int.Parse(arg[7])
+				);
+				bul.InstantMove(intPing);
+			}
+
+			if(connectionID+""!=arg[1]){
+				SC_bullet.ShotProjection(
+					new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
+					new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
+					int.Parse(arg[2]),
+					"projection",
+					int.Parse(arg[7])
+				);
+			}
+		}
+		if(arg[0]=="/RetNewBulletDestroy")
+		{
+			SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
+			foreach(SC_bullet bul in buls)
+			{
+				if(bul.mode!="mother" && bul.ID+""==arg[2])
+				{
+					bul.max_age = int.Parse(arg[3]);
+					bul.CheckAge();
+				}
+			}
 		}
 		if(arg[0]=="/RetInvisibilityPulse")
 		{
@@ -1266,13 +1274,10 @@ public class SC_control : MonoBehaviour {
 		}
 
 		//Other scripts
-		if(arg[0]=="/RetBulletDestroy")
+		if(arg[0]=="/RetInfoClient")
 		{
-			SC_bullet1[] SCT_bullet1 = Component.FindObjectsOfType<SC_bullet1>();
-			foreach(SC_bullet1 bul in SCT_bullet1)
-			{
-				bul.cmdDoo(cmdThis);
-			}
+			if(arg[2]==connectionID+"") return;
+			InfoUp(info_space_add(arg[1]),500);
 		}
 		if(arg[0]=="/RetAsteroidData")
 		{
@@ -1282,18 +1287,13 @@ public class SC_control : MonoBehaviour {
 				aul.onMSG(cmdThis);
 			}
 		}
-		if(arg[0]=="/InfoClient")
-		{
-			if(arg[2]==connectionID+"") return;
-			InfoUp(info_space_add(arg[1]),500);
-		}
 		if(arg[0]=="/RetFobsChange"||
 		arg[0]=="/RetFobsDataChange"||
 		arg[0]=="/RetFobsDataCorrection"||
 		arg[0]=="/RetFobsTurn"||
 		arg[0]=="/RetFobsPing"||
 		arg[0]=="/RetGeyzerTurn"||
-		arg[0]=="/GrowNow")
+		arg[0]=="/RetGrowNow")
 		{
 			SC_fobs[] SCT_fobs = Component.FindObjectsOfType<SC_fobs>();
 			foreach(SC_fobs ful in SCT_fobs)

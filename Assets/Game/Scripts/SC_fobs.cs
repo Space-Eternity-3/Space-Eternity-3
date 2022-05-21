@@ -152,7 +152,7 @@ public class SC_fobs : MonoBehaviour
                 else SC_Fob21.item = itym;
             }
         }
-        if(arg[0]=="/GrowNow")
+        if(arg[0]=="/RetGrowNow")
         if((arg[1]==ID+"") && (arg[2]==index+"") && GrowTurn)
         {
             Replace(GrowID,true);
@@ -352,6 +352,7 @@ public class SC_fobs : MonoBehaviour
     }
 	public void AfterTriggerEnter(Collider collision)
 	{
+        /*
 		if((collision.gameObject.name=="Bullet1(Clone)")&&!collision.gameObject.GetComponent<SC_bullet1>().turn_used&&ShotTurn&&!mother)
         {
             SC_bullet1 bull = collision.gameObject.GetComponent<SC_bullet1>();
@@ -366,7 +367,7 @@ public class SC_fobs : MonoBehaviour
                 }
                 Replace(ShotID,multiplayer);
             }
-        }
+        }*/
 	}
     void OnTriggerEnter(Collider collision)
     {
