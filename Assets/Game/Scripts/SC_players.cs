@@ -4,36 +4,44 @@ using UnityEngine;
 
 public class SC_players : MonoBehaviour
 {
+    //Constants
     public float dragS, dragM;
-    public Rigidbody playerR;
-    public Transform sourced;
-    public Rigidbody sourcedR;
-    public Renderer engine,nose,drillRen;
     public Material normal,active,turbo,brake;
     public Material M1,M2,M3,M4;
-    public Transform drillPar;
-    public Transform drill3T;
-	public int IDP, IDP_phys;
-	public Transform atZ, atS;
-	public Transform atZZ, atSS;
-    public Transform CanvPS;
-    public Transform TestNick;
-	public int OtherSource;
-	public int ArtSource;
-	public SC_invisibler SC_invisibler;
-	
-	Transform Aeffs, Beefs;
-    Transform CanvP;
-    Vector3[] memSourced=new Vector3[20];
-    
     public SC_snd_start SC_snd_start;
     public SC_fun SC_fun;
+
+    //Relative constants
+    public Renderer engine,nose,drillRen;
+    public Transform drillPar;
+    public Transform drill3T;
+    public SC_invisibler SC_invisibler;
+
+    //Less relative constants
+    public Transform TestNick;
+
+    //Roots
+	public Transform atZ, atS;      //Z - root parents (static)
+	public Transform atZZ, atSS;    //S - root artefact effects (clonable)
+    public Transform CanvPS;        //PS - root player mini canvas (clonable)
+	
+    //Auto sets
+	Transform Aeffs, Beefs;
+    Transform CanvP;
+    public int IDP, IDP_phys;
+
+    //Gameplay variables
+    public int OtherSource;
+	public int ArtSource;
+    public Vector3 sourcedPosition = new Vector3(0f,0f,0f);
+    public Quaternion sourcedRotation = Quaternion.identity;
+    Vector3[] memSourced=new Vector3[20];
 
     void Awake()
     {	
         int i;
         for(i=0;i<20;i++){
-            memSourced[i]=sourced.position;
+            memSourced[i]=new Vector3(0f,0f,300f);
         }
 		
 		Aeffs = Instantiate(atS,atS.position,atS.rotation);
@@ -53,13 +61,13 @@ public class SC_players : MonoBehaviour
 	{
 		if(IDP==SC_fun.SC_control.connectionID) IDP=0;
 	}
-    void ArrayPusher()
+    void ArrayPusher(Vector3 new_push)
     {
         int i;
         for(i=19;i>0;i--){
             memSourced[i]=memSourced[i-1];
         }
-        memSourced[0]=sourced.position;
+        memSourced[0]=new_push;
     }
     Vector3 ArrayAvarge(int n)
     {
@@ -67,19 +75,20 @@ public class SC_players : MonoBehaviour
         Vector3 sum=new Vector3(0f,0f,0f);
         for(i=0;i<n;i++){
             if(memSourced[i].z<100f)
-            sum+=memSourced[i];
-            else m--;
+                sum+=memSourced[i];
+            else
+                m--;
         }
         if(m!=0) return sum/m;
         else return new Vector3(0f,0f,0f);
     }
     public void AfterFixedUpdate()
     {
-		ArrayPusher();
+		ArrayPusher(sourcedPosition);
         Vector3 avar=ArrayAvarge(SC_fun.smooth_size);
-        if(SC_fun.SC_control.NUL[IDP_phys]) transform.position=new Vector3(avar.x,avar.y,memSourced[0].z);
+        if(SC_fun.SC_control.NUL[IDP_phys]) transform.position=new Vector3(avar.x,avar.y,0f);
 		else transform.position=new Vector3(0f,0f,10000f+IDP*5f);
-        transform.rotation=sourced.rotation;
+        transform.rotation=sourcedRotation;
 
 		int guitar=ArtSource;
         int bas=OtherSource;

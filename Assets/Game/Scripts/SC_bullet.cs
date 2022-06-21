@@ -9,6 +9,7 @@ public class SC_bullet : MonoBehaviour
     public int type;
     public string mode = "mother";  //[mother, present, projection, server]
     public int ID = 0;
+    public bool dev_bullets_show = false;
 
     public float bullet_speed;
     public float[] speed = new float[5];
@@ -22,12 +23,18 @@ public class SC_bullet : MonoBehaviour
 
     public SC_fun SC_fun;
     public SC_sounds SC_sounds;
+    public SC_snd_loop SC_snd_loop;
     public SC_control SC_control;
 
     public int age = 0;
     public int max_age = 100;
+    public int delta_age = 0;
+    public int float_age = 0;
     bool controller = false;
     bool multiplayer = false;
+    bool destroyed = false;
+    int looper = 0;
+    int loopSndID = -1;
 
     public SC_bullet Shot(Vector3 position, Vector3 vector, Vector3 delta, int typ)
     {
@@ -38,13 +45,14 @@ public class SC_bullet : MonoBehaviour
         gob.st_vect = SC_fun.Skop(vector, bullet_speed * speed[typ]) + delta;
         gob.ID = UnityEngine.Random.Range(0,1000000000);
 
-        ShotProjection(
+        SC_bullet bul = ShotProjection(
             position,
             gob.st_vect,
             typ,
             "projection",
             gob.ID
         );
+        bul.delta_age = -1000; //undefined very low
 
         if(multiplayer)
             SC_control.SendMTP(
@@ -89,6 +97,11 @@ public class SC_bullet : MonoBehaviour
     }
     public void MakeDestroy(bool graphics)
     {
+        if(destroyed) return;
+        destroyed = true;
+
+        if(loopSndID!=-1) SC_snd_loop.RemoveFromLoop(loopSndID);
+
         if(controller && multiplayer)
             SC_control.SendMTP(
                 "/NewBulletRemove "+
@@ -118,11 +131,8 @@ public class SC_bullet : MonoBehaviour
     }
     void Start()
     {
-        if (mode == "mother")
-        {
-            multiplayer = (int)Communtron4.position.y==100;
-            return;
-        }
+        multiplayer = (int)Communtron4.position.y==100;
+        if (mode == "mother") return;
 
         if(mode=="projection")
         {
@@ -134,14 +144,49 @@ public class SC_bullet : MonoBehaviour
             {
                 Transform trn = Instantiate(Bullet3Effect, transform.position, Quaternion.identity);
                 trn.parent = transform;
+                loopSndID = SC_snd_loop.AddToLoop(2,transform.position);
             }
         }
-        else bulletRE.material = BulletMaterials[0];
+        else if(dev_bullets_show) bulletRE.material = BulletMaterials[0];
+        else bulletRE.enabled = false;
     }
     void FixedUpdate()
     {
-        if (mode == "mother") return;
-        InstantMove(1);
+        if(mode=="mother") return;
+
+        if(loopSndID!=-1) SC_snd_loop.sound_pos[loopSndID] = transform.position;
+
+        looper++;
+        if(looper>=3) looper=0; //Start: 1-2-0-1-2-0...
+
+        if(mode=="present" || mode=="server") InstantMove(1);
+        if(mode=="projection")
+        {
+            if(delta_age == 0 || !multiplayer)
+            {
+                transform.position -= float_age*(st_vect/3);
+                float_age = 0;
+                InstantMove(1);
+            }
+            else if(delta_age > 0)
+            {//Relict
+                InstantMove(2);
+                delta_age--;
+            }
+            else if(delta_age < 0)
+            {
+                transform.position += 2*(st_vect/3);
+                float_age+=2;
+                delta_age++;
+            }
+            while(float_age >= 3)
+            {
+                transform.position -= st_vect;
+                float_age-=3;
+                delta_age--;
+                InstantMove(1);
+            }
+        }
     }
     void OnTriggerEnter(Collider collision)
     {
@@ -154,7 +199,7 @@ public class SC_bullet : MonoBehaviour
             Array.IndexOf(SafeNames, neme) == -1 &&
             controller
         ) || (
-            neme == "Asteroid(Clone)" &&
+            (neme == "Asteroid(Clone)" || neme == "StWall(Clone)") &&
             !controller
         ))
         {

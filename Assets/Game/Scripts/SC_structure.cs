@@ -18,6 +18,8 @@ public class SC_structure : MonoBehaviour
 	public float c_multiplier, zwalnum;
 	public string[] st_commands = new string[50];
 	public Transform[] st_structs = new Transform[50];
+
+	int counter_to_destroy = 200;
 	bool mother = true;
 	
 	void Start()
@@ -28,7 +30,7 @@ public class SC_structure : MonoBehaviour
 		int i,lngt=st_commands.Length;
 		for(i=0;i<lngt;i++) CommandDo((ConvCmd(st_commands[i])+"          ").Split(' '),i);
 	}
-	void Update()
+	void FixedUpdate()
 	{
 		if(!mother)
 		{
@@ -40,9 +42,14 @@ public class SC_structure : MonoBehaviour
 			float distance=Mathf.Sqrt((ssX-llX)*(ssX-llX)+(ssY-llY)*(ssY-llY));
 			if(distance>2f&&Communtron1.position.z==0f)
 			{
-				SC_fun.GenListRemove(ID,1);
-				Destroy(gameObject);
+				if(counter_to_destroy==0)
+				{
+					SC_fun.GenListRemove(ID,1);
+					Destroy(gameObject);
+				}
+				else counter_to_destroy--;
 			}
+			else counter_to_destroy = 200;
 		}
 	}
 	string uzup20(string str)

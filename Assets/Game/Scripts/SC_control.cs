@@ -35,6 +35,7 @@ public class SC_control : MonoBehaviour {
 	public Transform drill3T;
 	public Transform respawn_point;
 	public Transform Copper_bullet;
+	public Transform BodyProjection;
 	public Text servername,pingname;
 	float mX,mY,mmX,mmY,X,Y,F=0.3f;
 	bool big_vel=false;
@@ -125,10 +126,10 @@ public class SC_control : MonoBehaviour {
 	public SC_artefacts SC_artefacts;
 	public SC_invisibler SC_invisibler;
 	public SC_bullet SC_bullet;
+	public SC_projection SC_projection;
 
-	public Transform[] P = new Transform[10];
+	public bool[] NUL = new bool[10];
 	public SC_players[] PL = new SC_players[10];
-	public Rigidbody[] R = new Rigidbody[10];
 	public TextMesh[] N = new TextMesh[10];
 	public Transform[] RU = new Transform[10];
 	public Canvas[] NC = new Canvas[10];
@@ -145,8 +146,6 @@ public class SC_control : MonoBehaviour {
 	float[] He = new float[10];
 	string[] Na = new string[10];
 	bool[] Nulx = new bool[10];
-	
-	public bool[] NUL = new bool[10];
 
 	public string[] cmdArray = new string[2048];
 	int n=0; int fixup=0;
@@ -199,7 +198,7 @@ public class SC_control : MonoBehaviour {
 		Screen1.enabled = !f1;
 		Screen2.enabled = !f1;
 		for(int ji=1;ji<=9;ji++){
-			NC[ji].enabled = !f1;
+			NC[ji].enabled = !f1 && (At[ji]%100!=1);
 		}
 		
 		if(!timeStop){
@@ -854,78 +853,71 @@ public class SC_control : MonoBehaviour {
 		if(power.fillAmount<0.1f) power.fillAmount=0.1f;
 		if(power.fillAmount>0.9f) power.fillAmount=0.9f;
 
-		//Update ??? [/RetPlayerUpdate]
+		//RPU converter
 		int h;
-		if(Communtron4.position.y==100f&&RPU!="XXX")
+		if(Communtron4.position.y==100f && RPU!="XXX")
 		{
-			string eData=RPU;
-			string[] tabe=eData.Split(' ');
-			float PRx=0f;
-			int FRx, ATx;
-			float HEv;
-        	int i,k;
-			float pxx,pyy;
-			returnedPing=int.Parse(tabe[connectionID+21]);
-			for(i=1;i<=9;i++)
+			string[] arg = RPU.Split(' ');
+			int i,lngt = int.Parse(arg[1]);
+			for(i=1;i<lngt;i++)
 			{
-				Vector3 Px=new Vector3(0f,0f,1000f+i*5);
-				Vector3 Rx=new Vector3(0f,0f,0f);
-				Vector3 RRx=new Vector3(0f,0f,1000f);
-				FRx=0; ATx=0; HEv=1f;
-				
-				string Nax="";
-				
-				bool exist=false;
-				k=i;
-				if(connectionID==i) k=0;
-				if(tabe[k+1]!="0")
+				// i -> Projection ID
+				// k -> Place in msg
+
+				int k=i; if(i==connectionID) k=0;
+				string[] arh = arg[k+2].Split('|');
+				string[] ari = arh[0].Split(';');
+
+				int atf=0;
+
+				if(arh[0]=="0")
 				{
-					if(tabe[k+1]=="1") Nax=tabe[k+11];
-					else
-					{
-						string[] tabe2=tabe[k+1].Split(';');
-						pxx=float.Parse(tabe2[0]);
-						pyy=float.Parse(tabe2[1]);
-						Px=new Vector3(pxx,pyy,0f);
-						
-						pxx=float.Parse(tabe2[2]);
-						pyy=float.Parse(tabe2[3]);
-						Rx=new Vector3(pxx,pyy,0f);
-						
-						PRx=float.Parse(tabe2[4]);
-						HEv=float.Parse(tabe2[8]);
-						if(HEv<0.05f) HEv=0.05f;
-						
-						string[] tbo = tabe2[5].Split('&');
-						FRx=int.Parse(tbo[0]);
-						if(tbo.Length>0) ATx=int.Parse(tbo[1]);
-						else ATx=0;
-						
-						pxx=float.Parse(tabe2[6]);
-						pyy=float.Parse(tabe2[7]);
-						RRx=new Vector3(pxx,pyy,1f);
-						
-						if(RRx==new Vector3(0f,0f,1f)) RRx=new Vector3(0f,0f,1000f);
-						Nax=tabe[k+11];
-					}
-					if(Nax=="0") Nax="";
-					exist=true;
+					//Player is not joined
+					NUL[i] = false;
+					PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
+					PL[i].ArtSource = 0; //Other artefact
+					PL[i].OtherSource = 0; //Other state
+					//[Rotation don't touch]
+					NCT[i].text = ""; //Nick
+					NCH[i].value = 1; //Health
+					RU[i].position = new Vector3(0f,0f,300f); //Respawn position
 				}
-				Pa[i]=Px; Ra[i]=Rx; if(exist)Rt[i]=PRx; Fa[i]=FRx; At[i]=ATx; He[i]=HEv; Na[i]=Nax; RRa[i]=RRx; Nulx[i]=exist;
+				else if(arh[0]=="1")
+				{
+					//Player is joined but not living
+					NUL[i] = false;
+					PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
+					PL[i].ArtSource = 0; //Other artefact
+					PL[i].OtherSource = 0; //Other state
+					//[Rotation don't touch]
+					NCT[i].text = arh[1]; //Nick
+					NCH[i].value = 0; //Health
+					RU[i].position = RU[i].position; //Respawn position
+				}
+				else
+				{
+					//Player is playing normally
+					NUL[i] = true;
+					PL[i].sourcedPosition = new Vector3(float.Parse(ari[0]),float.Parse(ari[1]),1f); //Position
+						atf = int.Parse(ari[5].Split('&')[1]);
+					PL[i].ArtSource = atf; //Other artefact
+					PL[i].OtherSource = int.Parse(ari[5].Split('&')[0]); //Other state
+					PL[i].sourcedRotation = Quaternion.Euler(0f,0f,float.Parse(ari[4])); //Rotation
+					NCT[i].text = arh[1]; //Nick
+						float hv = float.Parse(ari[8]);
+						if(hv<0.05f && hv!=0f) hv=0.05f;
+					NCH[i].value = hv; //Health
+						Vector3 ev = new Vector3(float.Parse(ari[6]),float.Parse(ari[7]),1f);
+						if(ev==new Vector3(0f,0f,1f)) ev = new Vector3(0f,0f,300f);
+					RU[i].position = ev; //Respawn position
+				}
+
+				//Based on <atf> value
+				NC[i].enabled = !f1 && (atf%100!=1);
+				NCHOF[i].color = SC_artefacts.Color1N[atf/100];
 			}
-			for(h=1;h<=9;h++)
-			{
-				NUL[h] = Nulx[h];
-				P[h].position = Pa[h];
-				PL[h].ArtSource = At[h];
-				PL[h].OtherSource = Fa[h];
-				R[h].velocity = Ra[h];
-				P[h].rotation = Quaternion.Euler(0f,0f,Rt[h]);
-				NCT[h].text = Na[h];
-				NCH[h].value = He[h];
-				NCHOF[h].color = SC_artefacts.Color1N[At[h]/100];
-				RU[h].position = RRa[h];
-			}
+
+			returnedPing = int.Parse(arg[connectionID+2].Split('|')[2]);
 
 			fixup--;
 			if(fixup<=0)
@@ -1119,7 +1111,6 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="/RetPlayerUpdate")
 		{
 			RPU=e.Data;
-			returnedPing=int.Parse(arg[connectionID+21]);
 			return;
 		}
 		if(arg[0]=="/RetKickConnection"&&int.Parse(arg[1])==connectionID)
@@ -1156,33 +1147,44 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetNewBulletSend")
 		{
-			SC_bullet.ShotProjection(
+			SC_bullet bul1 = SC_bullet.ShotProjection(
 				new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
 				new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
 				int.Parse(arg[2]),
 				"server",
 				int.Parse(arg[7])
 			);
+			if(connectionID+""==arg[1])
+			{
+				SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
+				foreach(SC_bullet bul in buls)
+				{
+					if(bul.ID+""==arg[7] && bul.mode=="projection")
+						bul.delta_age = -bul.age-1;
+				}
+			}
 
 			if(connectionID+""!=arg[1]){
-				SC_bullet bul = SC_bullet.ShotProjection(
+				SC_bullet bul2 = SC_bullet.ShotProjection(
 					new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
 					new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
 					int.Parse(arg[2]),
 					"present",
 					int.Parse(arg[7])
 				);
-				bul.InstantMove(intPing);
+				bul2.InstantMove(intPing);
 			}
 
 			if(connectionID+""!=arg[1]){
-				SC_bullet.ShotProjection(
+				SC_bullet bul3 = SC_bullet.ShotProjection(
 					new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
 					new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
 					int.Parse(arg[2]),
 					"projection",
 					int.Parse(arg[7])
 				);
+				//if(intPing>=6) bul3.delta_age = 6; //intPing;
+				//else bul3.delta_age = intPing;
 			}
 		}
 		if(arg[0]=="/RetNewBulletDestroy")
@@ -1412,39 +1414,40 @@ public class SC_control : MonoBehaviour {
 				respawn_point.position=new Vector3(tVx,tVy,1f);
 			}
 		}
-		else if(SC_data.data[0]!="")
+		else
 		{
-			tX=float.Parse(SC_data.data[0]);
-			tY=float.Parse(SC_data.data[1]);
-			tH=float.Parse(SC_data.data[2]);
-			tF=float.Parse(SC_data.data[3]);
-			tVx=float.Parse(SC_data.data[4]);
-			tVy=float.Parse(SC_data.data[5]);
-			timerH=int.Parse(SC_data.data[6]);
-			tP=float.Parse(SC_data.data[7]);
+			BodyProjection.position = new Vector3(0f,0f,10000f);
+			if(SC_data.data[0]!="")
+			{
+				tX=float.Parse(SC_data.data[0]);
+				tY=float.Parse(SC_data.data[1]);
+				tH=float.Parse(SC_data.data[2]);
+				tF=float.Parse(SC_data.data[3]);
+				tVx=float.Parse(SC_data.data[4]);
+				tVy=float.Parse(SC_data.data[5]);
+				timerH=int.Parse(SC_data.data[6]);
+				tP=float.Parse(SC_data.data[7]);
 
-			transform.position=new Vector3(tX,tY,0f);
-			health_V=tH;
-			turbo_V=tF;
-			power_V=tP;
-			respawn_point.position=new Vector3(tVx,tVy,1f);
+				transform.position=new Vector3(tX,tY,0f);
+				health_V=tH;
+				turbo_V=tF;
+				power_V=tP;
+				respawn_point.position=new Vector3(tVx,tVy,1f);
+			}
+
+			for(i=0;i<21;i++)
+            {
+                SC_slots.BackpackX[i]=int.Parse(SC_data.backpack[i,0]);
+                SC_slots.BackpackY[i]=int.Parse(SC_data.backpack[i,1]);
+            }
 		}
-		
+
 		servername.text=CommuntronM1.name;
 
 		healthOld.fillAmount=(health_V*0.8f)+0.1f;
 		health.fillAmount=healthOld.fillAmount;
 		rocket_fuel.fillAmount=(turbo_V*0.8f)+0.1f;
 		power.fillAmount=(power_V*0.8f)+0.1f;
-
-		if((int)Communtron4.position.y!=100)
-        {
-			for(i=0;i<21;i++)
-            {
-                SC_slots.BackpackX[i]=int.Parse(SC_data.backpack[i,0]);
-                SC_slots.BackpackY[i]=int.Parse(SC_data.backpack[i,1]);
-            }
-        }
 
 		SC_slots.ResetYAB();
 		Debug.Log("Joined");

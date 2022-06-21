@@ -525,7 +525,6 @@ setInterval(function () {
       bulletsT[i].pos.x += bulletsT[i].vector.x;
       bulletsT[i].pos.y += bulletsT[i].vector.y;
     }
-    if(lngt>0) console.log(bulletsT);
   }
 }, 1);
 
@@ -566,15 +565,12 @@ function checkPlayer(idm, cn) {
 
 //RetPlayerUpdate
 setInterval(function () {
-  sendToAllClients(
-    "/RetPlayerUpdate " +
-      plr.players.join(" ") +
-      " " +
-      plr.nicks.join(" ") +
-      " " +
-      plr.pingTemp.join(" ") +
-      " X X"
-  );
+  var i,lngt = plr.players.length;
+  var eff = "/RetPlayerUpdate " + max_players + " ";
+  for(i=0;i<lngt;i++)
+    eff += plr.players[i] + "|" + plr.nicks[i] + "|" + plr.pingTemp[i] + " ";
+  eff += "X X"
+  sendToAllClients(eff);
 }, 20);
 
 //Grow functions
@@ -982,7 +978,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/AllowConnection") {
       //AllowConnection 1[nick] 2[password] 3[conID]
-      for (i = 0; i <= max_players; i++) {
+      for (i = 8; i <= max_players; i++) {
         if (
           i == max_players ||
           arg[2] != serverRedVersion ||
@@ -1398,7 +1394,7 @@ wss.on("connection", function connection(ws) {
       plr.pushInventory[locPlaID] = newPush;
     }
     if (arg[0] == "/NewBulletSend") {
-      //BulletSend 1[PlayerID] 2[type] 3,4[position] 5,6[vector] 7[ID]
+      //NewBulletSend 1[PlayerID] 2[type] 3,4[position] 5,6[vector] 7[ID]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
       var tpl = Object.assign({},bulletTemplate);
@@ -1418,7 +1414,7 @@ wss.on("connection", function connection(ws) {
       spawnBullet(tpl,arg);
     }
     if (arg[0] == "/NewBulletRemove") {
-      //BulletSend 1[PlayerID] 2[ID] 3[age]
+      //NewBulletRemove 1[PlayerID] 2[ID] 3[age]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
       
       var lngt = bulletsT.length;

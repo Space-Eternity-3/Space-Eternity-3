@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class SC_arrow_rot : MonoBehaviour {
 
-	public Transform respawn_point;
+	public Transform respawn_point; //dynamic variable
+
 	public Transform player;
 	public Transform coords;
 	public Transform compass;
 	public SC_data SC_data;
 	public float deltaPos;
 	public bool this_main;
-	public SC_arrow_rot[] compasses = new SC_arrow_rot[9];
+	public SC_arrow_rot[] compasses = new SC_arrow_rot[8];
 	
 	bool E=false;
 
@@ -30,6 +31,10 @@ public class SC_arrow_rot : MonoBehaviour {
 		if(this_main) if(SC_data.compass_mode=="1") ChangePosVisible();
 	}
 	void Update()
+	{
+		if(this_main) B_Update();
+	}
+	public void B_Update()
 	{
 		float dX=player.position.x-respawn_point.position.x;
 		float dY=player.position.y-respawn_point.position.y;
@@ -55,7 +60,7 @@ public class SC_arrow_rot : MonoBehaviour {
 	}
 	public void ChangePosVisible()
 	{
-			if(this_main) for(int i=0;i<9;i++) compasses[i].ChangePosVisible();
+			if(this_main) for(int i=0;i<8;i++) compasses[i].ChangePosVisible();
 			
 			if(!E)
 			{

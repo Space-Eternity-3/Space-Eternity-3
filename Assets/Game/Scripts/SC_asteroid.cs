@@ -47,6 +47,7 @@ public class SC_asteroid : MonoBehaviour {
 	int AD_particleID=0;
 	int AD_loottableID=0;
 	int counter=-1;
+	int counter_to_destroy = 200;
 	int suze;
 	bool stille=false;
 	bool UUTCed=false;
@@ -369,23 +370,6 @@ public class SC_asteroid : MonoBehaviour {
 			}
 		}
 	}
-	void Update()
-	{
-		if(!mother&&UUTCed&&!proto)
-		{	
-			//Optimalize
-			float ssX=X;
-			float ssY=Y;
-			float llX=Mathf.Round(legs.position.x/10f);
-			float llY=Mathf.Round(legs.position.y/10f);
-			float distance=Mathf.Sqrt((ssX-llX)*(ssX-llX)+(ssY-llY)*(ssY-llY));
-			if(distance>7f&&Communtron1.position.z==0f)
-			{
-				SC_fun.GenListRemove(ID,0);
-				Destroy(gameObject);
-			}
-		}
-	}
 	void OnTriggerEnter(Collider collision)
 	{
 		if(collision.gameObject.name=="Drill3")
@@ -412,6 +396,26 @@ public class SC_asteroid : MonoBehaviour {
 		if(!Input.GetMouseButton(0)) counter=0;
 		counter++;
 		if(counter==1) counter=-GetTimeDrill();
+
+		if(!mother&&UUTCed&&!proto)
+		{	
+			//Optimalize
+			float ssX=X;
+			float ssY=Y;
+			float llX=Mathf.Round(legs.position.x/10f);
+			float llY=Mathf.Round(legs.position.y/10f);
+			float distance=Mathf.Sqrt((ssX-llX)*(ssX-llX)+(ssY-llY)*(ssY-llY));
+			if(distance>7f&&Communtron1.position.z==0f)
+			{
+				if(counter_to_destroy==0)
+				{
+					SC_fun.GenListRemove(ID,0);
+					Destroy(gameObject);
+				}
+				else counter_to_destroy--;
+			}
+			else counter_to_destroy = 200;
+		}
 		
 		//Particles
 		if(Communtron1.localScale==new Vector3(2f,2f,2f)&&Mining&&Communtron1.position.z==0f&&(Communtron3.position.y==0f||CommuntronM1.position.x==1f)&&Input.GetMouseButton(0))
