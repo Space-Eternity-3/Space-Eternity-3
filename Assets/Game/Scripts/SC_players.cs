@@ -37,7 +37,7 @@ public class SC_players : MonoBehaviour
     public Quaternion sourcedRotation = Quaternion.identity;
     Vector3[] memSourced=new Vector3[20];
 
-    void Awake()
+    public void B_Awake()
     {	
         int i;
         for(i=0;i<20;i++){
@@ -57,7 +57,7 @@ public class SC_players : MonoBehaviour
 		
 		IDP_phys = IDP;
     }
-	void Start()
+	public void B_Start()
 	{
 		if(IDP==SC_fun.SC_control.connectionID) IDP=0;
 	}

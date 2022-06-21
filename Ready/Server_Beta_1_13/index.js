@@ -7,7 +7,7 @@ var serverVersion = "Beta 1.13";
 var serverRedVersion = "Beta_1_13";
 var clientDatapacksVar = "";
 var seed;
-var max_players = 10;
+var max_players = 25;
 var gpl_number = 27;
 
 var chunk_data = [];
@@ -978,7 +978,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/AllowConnection") {
       //AllowConnection 1[nick] 2[password] 3[conID]
-      for (i = 8; i <= max_players; i++) {
+      for (i = 15; i <= max_players; i++) {
         if (
           i == max_players ||
           arg[2] != serverRedVersion ||

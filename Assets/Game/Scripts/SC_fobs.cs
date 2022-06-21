@@ -33,8 +33,6 @@ public class SC_fobs : MonoBehaviour
     public int GeyzerTime=0;
     public int inGeyzer=0;
 
-    public Transform[] MTPplayers = new Transform[10];
-
     public SC_control SC_control;
     public SC_asteroid SC_asteroid;
     public SC_backpack SC_backpack;
@@ -436,12 +434,12 @@ public class SC_fobs : MonoBehaviour
         float oY = transform.position.y;
         float pX,pY,dist;
         int i;
-        for(i=0;i<10;i++)
+        for(i=0;i<SC_control.PL.Length-1;i++)
         {
-            if(MTPplayers[i].position.z<100f)
+            if(SC_control.PL[i+1].GetComponent<Transform>().position.z<100f)
             {
-                pX=MTPplayers[i].position.x;
-                pY=MTPplayers[i].position.y;
+                pX=SC_control.PL[i+1].GetComponent<Transform>().position.x;
+                pY=SC_control.PL[i+1].GetComponent<Transform>().position.y;
                 dist=Mathf.Sqrt((oX-pX)*(oX-pX)+(oY-pY)*(oY-pY));
                 if(dist<minDis) return false;
             } 

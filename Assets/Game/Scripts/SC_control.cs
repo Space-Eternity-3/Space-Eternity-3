@@ -129,23 +129,16 @@ public class SC_control : MonoBehaviour {
 	public SC_projection SC_projection;
 
 	public bool[] NUL = new bool[10];
+	public Transform[] RR = new Transform[10];
 	public SC_players[] PL = new SC_players[10];
-	public TextMesh[] N = new TextMesh[10];
 	public Transform[] RU = new Transform[10];
+	public TextMesh[] N = new TextMesh[10];
 	public Canvas[] NC = new Canvas[10];
 	public Text[] NCT = new Text[10];
 	public Slider[] NCH = new Slider[10];
 	public Image[] NCHOF = new Image[10];
 
-	Vector3[] Pa = new Vector3[10];
-	Vector3[] Ra = new Vector3[10];
-	Vector3[] RRa = new Vector3[10];
-	float[] Rt = new float[10];
-	int[] Fa = new int[10];
-	int[] At = new int[10];
-	float[] He = new float[10];
-	string[] Na = new string[10];
-	bool[] Nulx = new bool[10];
+	public int[] ramvis = new int[10];
 
 	public string[] cmdArray = new string[2048];
 	int n=0; int fixup=0;
@@ -171,7 +164,6 @@ public class SC_control : MonoBehaviour {
 	public bool impulse_enabled;
 	public int impulse_time;
 	
-	public int[] ramvis = new int[10];
 	public bool public_placed = false;
 	public bool f1 = false;
 
@@ -197,8 +189,8 @@ public class SC_control : MonoBehaviour {
 		
 		Screen1.enabled = !f1;
 		Screen2.enabled = !f1;
-		for(int ji=1;ji<=9;ji++){
-			NC[ji].enabled = !f1 && (At[ji]%100!=1);
+		for(int ji=1;ji<PL.Length;ji++){
+			NC[ji].enabled = !f1 && (PL[ji].ArtSource % 100!=1);
 		}
 		
 		if(!timeStop){
@@ -672,7 +664,7 @@ public class SC_control : MonoBehaviour {
 		if(saveCo>0) saveCo--;
 		impulse_time--;
 		if(impulse_time==1) RemoveImpulse();
-		for(int ij=0;ij<10;ij++)
+		for(int ij=0;ij<PL.Length;ij++)
 			if(ramvis[ij]>0) ramvis[ij]--;
 		
 		livTime++;
@@ -1005,7 +997,7 @@ public class SC_control : MonoBehaviour {
 			cmdDo(tempCmd[y-1]);
 		}
 		
-		for(int ij=1;ij<10;ij++) PL[ij].AfterFixedUpdate();
+		for(int ij=1;ij<PL.Length;ij++) PL[ij].AfterFixedUpdate();
 		
 		if(!Input.GetMouseButton(1)) public_placed = false;
 		gtm1 = false;
@@ -1455,7 +1447,34 @@ public class SC_control : MonoBehaviour {
 	void Start()
 	{
 		int i;
-		for(i=1;i<=9;i++)
+		for(i=2;i<PL.Length;i++)
+		{
+			//Clone player projection
+			RR[i] = Instantiate(RR[1],RR[1].position,RR[1].rotation);
+			RR[i].name = "Player" + i;
+			RR[i].SetParent(RR[1].parent);
+
+			foreach(Transform child in RR[i].GetComponent<Transform>())
+			{
+				if(child.name == "PlayerMT1") {
+					child.name = "PlayerMT" + i;
+					PL[i] = child.GetComponent<SC_players>();
+					PL[i].IDP = i;
+				}
+				if(child.name == "MTP_resp1") {
+					child.name = "MTP_resp" + i;
+					RU[i] = child;
+				}
+				if(child.name == "TestNick1") {
+					child.name = "TestNick" + i;
+					N[i] = child.GetComponent<TextMesh>();
+				}
+			}
+		}
+		for(i=1;i<PL.Length;i++)
+			PL[i].B_Awake();
+
+		for(i=1;i<PL.Length;i++)
 		{
 			NC[i] = N[i].GetComponent<Transform>().GetChild(0).GetComponent<Canvas>();
 			foreach(Transform child in NC[i].GetComponent<Transform>())
@@ -1476,5 +1495,7 @@ public class SC_control : MonoBehaviour {
 					}
 			}
 		}
+		for(i=1;i<PL.Length;i++)
+			PL[i].B_Start();
 	}
 }
