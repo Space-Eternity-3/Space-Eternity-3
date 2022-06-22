@@ -41,7 +41,7 @@ public class SC_connection : MonoBehaviour
 
     string getData="";
     string getInventory="";
-    string getPush="";
+    string maxPlayers="";
     string transfer_datapack="0";
     string getUpgrades="";
     string getBackpack="";
@@ -198,7 +198,7 @@ public class SC_connection : MonoBehaviour
                 connectionID=int.Parse(e.Data.Split(' ')[1]);
                 getData=e.Data.Split(' ')[2];
                 getInventory=e.Data.Split(' ')[3];
-                getPush=e.Data.Split(' ')[4];
+                maxPlayers=e.Data.Split(' ')[4];
                 transfer_datapack=e.Data.Split(' ')[5];
                 getUpgrades=e.Data.Split(' ')[6];
                 getBackpack=e.Data.Split(' ')[7];
@@ -286,7 +286,7 @@ public class SC_connection : MonoBehaviour
         SC_data.TempFileConID[2]=IF_nickname.text;
         SC_data.TempFileConID[3]=getData;
         SC_data.TempFileConID[4]=getInventory;
-        SC_data.TempFileConID[5]=getPush;
+        SC_data.TempFileConID[5]=maxPlayers;
         SC_data.TempFileConID[6]=getUpgrades;
         SC_data.TempFileConID[7]=getBackpack;
         SC_data.TempFileConID[8]=getSeed+"";

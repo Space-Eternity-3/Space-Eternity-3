@@ -67,6 +67,7 @@ public class SC_control : MonoBehaviour {
 	int presed=-25;
 	int dmLicz=0;
 	int saveCo=0;
+	public int max_players = 10;
 
 	public float F_barrier;
 	public float IL_barrier;
@@ -111,7 +112,6 @@ public class SC_control : MonoBehaviour {
 	public string nick;
 	string getData="";
 	string getInventory="";
-	string getPush="";
 	int[] invdata = new int[18];
 	Vector3[] betterInvConverted = new Vector3[9];
 	
@@ -128,17 +128,16 @@ public class SC_control : MonoBehaviour {
 	public SC_bullet SC_bullet;
 	public SC_projection SC_projection;
 
-	public bool[] NUL = new bool[10];
-	public Transform[] RR = new Transform[10];
-	public SC_players[] PL = new SC_players[10];
-	public Transform[] RU = new Transform[10];
-	public TextMesh[] N = new TextMesh[10];
-	public Canvas[] NC = new Canvas[10];
-	public Text[] NCT = new Text[10];
-	public Slider[] NCH = new Slider[10];
-	public Image[] NCHOF = new Image[10];
-
-	public int[] ramvis = new int[10];
+	public List<bool> NUL = new List<bool>();
+	public List<Transform> RR = new List<Transform>();
+	public List<SC_players> PL = new List<SC_players>();
+	public List<Transform> RU = new List<Transform>();
+	public List<TextMesh> N = new List<TextMesh>();
+	public List<Canvas> NC = new List<Canvas>();
+	public List<Text> NCT = new List<Text>();
+	public List<Slider> NCH = new List<Slider>();
+	public List<Image> NCHOF = new List<Image>();
+	public List<int> ramvis = new List<int>();
 
 	public string[] cmdArray = new string[2048];
 	int n=0; int fixup=0;
@@ -189,7 +188,7 @@ public class SC_control : MonoBehaviour {
 		
 		Screen1.enabled = !f1;
 		Screen2.enabled = !f1;
-		for(int ji=1;ji<PL.Length;ji++){
+		for(int ji=1;ji<max_players;ji++){
 			NC[ji].enabled = !f1 && (PL[ji].ArtSource % 100!=1);
 		}
 		
@@ -664,7 +663,7 @@ public class SC_control : MonoBehaviour {
 		if(saveCo>0) saveCo--;
 		impulse_time--;
 		if(impulse_time==1) RemoveImpulse();
-		for(int ij=0;ij<PL.Length;ij++)
+		for(int ij=0;ij<max_players;ij++)
 			if(ramvis[ij]>0) ramvis[ij]--;
 		
 		livTime++;
@@ -992,12 +991,12 @@ public class SC_control : MonoBehaviour {
 			tempCmd[y]=cmdArray[n-1];
 			cmdArray[n-1]="0";
 		}
-		for(;y>0;y--)
-		{
-			cmdDo(tempCmd[y-1]);
-		}
+		for(;y>0;y--) cmdDo(tempCmd[y-1]);
 		
-		for(int ij=1;ij<PL.Length;ij++) PL[ij].AfterFixedUpdate();
+		for(int ij=1;ij<max_players;ij++)
+		{
+			PL[ij].AfterFixedUpdate();
+		}
 		
 		if(!Input.GetMouseButton(1)) public_placed = false;
 		gtm1 = false;
@@ -1336,7 +1335,7 @@ public class SC_control : MonoBehaviour {
 			nick=SC_data.TempFileConID[2];
 			getData=SC_data.TempFileConID[3];
 			getInventory=SC_data.TempFileConID[4];
-			getPush=SC_data.TempFileConID[5];
+			max_players=int.Parse(SC_data.TempFileConID[5]);
 			SC_upgrades.MTP_loadUpgrades(SC_data.TempFileConID[6]);
 			SC_backpack.MTP_loadBackpack(SC_data.TempFileConID[7]);
 			SC_data.DatapackMultiplayerLoad(SC_data.TempFileConID[9]);
@@ -1447,7 +1446,21 @@ public class SC_control : MonoBehaviour {
 	void Start()
 	{
 		int i;
-		for(i=2;i<PL.Length;i++)
+		for(i=2;i<max_players;i++)
+		{
+			NUL.Add(false);
+			RR.Add(null);
+			PL.Add(null);
+			RU.Add(null);
+			N.Add(null);
+			NC.Add(null);
+			NCT.Add(null);
+			NCH.Add(null);
+			NCHOF.Add(null);
+			ramvis.Add(0);
+		}
+
+		for(i=2;i<max_players;i++)
 		{
 			//Clone player projection
 			RR[i] = Instantiate(RR[1],RR[1].position,RR[1].rotation);
@@ -1471,10 +1484,11 @@ public class SC_control : MonoBehaviour {
 				}
 			}
 		}
-		for(i=1;i<PL.Length;i++)
+
+		for(i=1;i<max_players;i++)
 			PL[i].B_Awake();
 
-		for(i=1;i<PL.Length;i++)
+		for(i=1;i<max_players;i++)
 		{
 			NC[i] = N[i].GetComponent<Transform>().GetChild(0).GetComponent<Canvas>();
 			foreach(Transform child in NC[i].GetComponent<Transform>())
@@ -1495,7 +1509,7 @@ public class SC_control : MonoBehaviour {
 					}
 			}
 		}
-		for(i=1;i<PL.Length;i++)
+		for(i=1;i<max_players;i++)
 			PL[i].B_Start();
 	}
 }

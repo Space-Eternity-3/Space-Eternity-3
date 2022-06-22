@@ -7,7 +7,7 @@ var serverVersion = "Beta 1.13";
 var serverRedVersion = "Beta_1_13";
 var clientDatapacksVar = "";
 var seed;
-var max_players = 25;
+var max_players = 128;
 var gpl_number = 27;
 
 var chunk_data = [];
@@ -978,7 +978,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/AllowConnection") {
       //AllowConnection 1[nick] 2[password] 3[conID]
-      for (i = 15; i <= max_players; i++) {
+      for (i = 0; i <= max_players; i++) {
         if (
           i == max_players ||
           arg[2] != serverRedVersion ||
@@ -1013,7 +1013,7 @@ wss.on("connection", function connection(ws) {
               " " +
               plr.inventory[i] +
               " " +
-              plr.pushInventory[i] +
+              max_players +
               " " +
               clientDatapacksVar +
               " " +
@@ -2169,6 +2169,15 @@ if (!existsF("ServerUniverse/Seed.se3")) {
   console.log("New seed generated: [" + seed + "]");
 } else seed = parseIntE(readF("ServerUniverse/Seed.se3").split("\r\n")[0]);
 
+function laggy_comment(nn)
+{
+  if(nn<=0) return "\nWarning: Can't join to server with "+max_players+" max players.";
+  if(nn>=1 && nn<=128) return "";
+  if(nn>=129 && nn<=512) return "\nWarning: It is recommended to set max players to 128 or less";
+  if(nn>=513) return "\nWarning: Too many players! Shut it down! Your device might explode, but of course you can try joining ;)";
+}
+
 console.log("Server started on version: [" + serverVersion + "]");
-console.log("Port: [27683]");
+console.log("Max players: [" + max_players + "]");
+console.log("Port: [27683]" + laggy_comment(max_players));
 console.log("-------------------------------");

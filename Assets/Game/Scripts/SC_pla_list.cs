@@ -18,7 +18,7 @@ public class SC_pla_list : MonoBehaviour
     {
         NamePages.text = "Page " + page + "/0"; //Change using player number variable!!!
 
-        int i,n,lngt = SC_control.PL.Length;
+        int i,n,lngt = SC_control.max_players;
         for(i=0;i<8;i++)
         {
             n = 8*(page-1) + i + 1;

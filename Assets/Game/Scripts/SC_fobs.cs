@@ -434,12 +434,12 @@ public class SC_fobs : MonoBehaviour
         float oY = transform.position.y;
         float pX,pY,dist;
         int i;
-        for(i=0;i<SC_control.PL.Length-1;i++)
+        for(i=1;i<SC_control.max_players;i++)
         {
-            if(SC_control.PL[i+1].GetComponent<Transform>().position.z<100f)
+            if(SC_control.PL[i].GetComponent<Transform>().position.z<100f)
             {
-                pX=SC_control.PL[i+1].GetComponent<Transform>().position.x;
-                pY=SC_control.PL[i+1].GetComponent<Transform>().position.y;
+                pX=SC_control.PL[i].GetComponent<Transform>().position.x;
+                pY=SC_control.PL[i].GetComponent<Transform>().position.y;
                 dist=Mathf.Sqrt((oX-pX)*(oX-pX)+(oY-pY)*(oY-pY));
                 if(dist<minDis) return false;
             } 
