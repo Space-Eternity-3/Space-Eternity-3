@@ -166,6 +166,8 @@ public class SC_control : MonoBehaviour {
 	public bool public_placed = false;
 	public bool f1 = false;
 
+	public bool[] chars = new bool[124];
+
 	public string invCurrent()
 	{
 		return "2";
@@ -850,16 +852,18 @@ public class SC_control : MonoBehaviour {
 		{
 			string[] arg = RPU.Split(' ');
 			int i,lngt = int.Parse(arg[1]);
+			string[] arh = splitChars(arg[2],lngt);
+
 			for(i=1;i<lngt;i++)
 			{
 				// i -> Projection ID
 				// k -> Place in msg
 
 				int k=i; if(i==connectionID) k=0;
-				string[] arh = arg[k+2].Split('|');
-				string[] ari = arh[0].Split(';');
-
 				int atf=0;
+
+				/*string[] arh = arg[k+2].Split('|');
+				string[] ari = arh[0].Split(';');
 
 				if(arh[0]=="0")
 				{
@@ -901,14 +905,58 @@ public class SC_control : MonoBehaviour {
 						Vector3 ev = new Vector3(float.Parse(ari[6]),float.Parse(ari[7]),1f);
 						if(ev==new Vector3(0f,0f,1f)) ev = new Vector3(0f,0f,300f);
 					RU[i].position = ev; //Respawn position
+				}*/
+
+				//TEMPORARY
+				string ari = arh[k];
+
+				if(arh[k]=="0")
+				{
+					//Player is not joined
+					NUL[i] = false;
+					PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
+					//[Rotation don't touch]
+
+					NCT[i].text = "";
+					NCH[i].value = 1;
+					RU[i].position = new Vector3(0f,0f,300f);
+						atf = 0;
+					PL[i].ArtSource = atf;
+					PL[i].OtherSource = 0;
+				}
+				else if(arh[k]=="1")
+				{
+					//Player is joined but not living
+					NUL[i] = false;
+					PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
+					//[Rotation don't touch]
+
+					NCT[i].text = "Player"+i;
+					NCH[i].value = 1;
+					RU[i].position = new Vector3(0f,0f,300f);
+						atf = 0;
+					PL[i].ArtSource = atf;
+					PL[i].OtherSource = 0;
+				}
+				else
+				{
+					//Player is playing normally
+					NUL[i] = true;
+					PL[i].sourcedPosition = new Vector3(Char4ToFloat(ari,0),Char4ToFloat(ari,4),1f); //Position
+					PL[i].sourcedRotation = Quaternion.Euler(0f,0f,Char1ToRot(ari,8)); //Rotation
+
+					NCT[i].text = "Player"+i;
+					NCH[i].value = 1;
+					RU[i].position = new Vector3(0f,0f,300f);
+						atf = 0;
+					PL[i].ArtSource = atf;
+					PL[i].OtherSource = 0;
 				}
 
 				//Based on <atf> value
 				NC[i].enabled = !f1 && (atf%100!=1);
 				NCHOF[i].color = SC_artefacts.Color1N[atf/100];
 			}
-
-			returnedPing = int.Parse(arg[connectionID+2].Split('|')[2]);
 
 			fixup--;
 			if(fixup<=0)
@@ -1021,6 +1069,22 @@ public class SC_control : MonoBehaviour {
 			}
 		}
 	}
+	string[] splitChars(string str, int amount)
+	{
+		string[] effect = new string[amount];
+		int i,n=0,lngt=str.Length;
+		for(i=0;i<lngt;i++)
+		{
+			if(str[i]=='!') effect[n] = "0";
+			else if(str[i]=='\"') effect[n] = "1";
+			else {
+				effect[n] = str[i]+""+str[i+1]+""+str[i+2]+""+str[i+3]+""+str[i+4]+""+str[i+5]+""+str[i+6]+""+str[i+7]+""+str[i+8];
+				i+=8;
+			}
+			n++;
+		}
+		return effect;
+	}
 	string retping(float pig)
 	{
 		int inpg=(int)(pig*100);
@@ -1093,15 +1157,30 @@ public class SC_control : MonoBehaviour {
 	void Ws_OnMessage(object sender, MessageEventArgs e)
     {
 		string[] arg = e.Data.Split(' ');
+
+		if((arg[0])[0]=='P')
+		{
+			//Short ping return message
+			string pgg = arg[0],pggn="";
+			int i,lngt=pgg.Length;
+			for(i=1;i<lngt;i++) pggn+=pgg[i];
+			returnedPing = int.Parse(pggn);
+		}
+
 		int msl=arg.Length;
 		int blo=0;
 		if(arg[msl-2]!=conID&&arg[msl-2]!="X") blo=1;
 		if(arg[msl-1]!=livID&&arg[msl-1]!="X") blo=2;
 		if(blo>0) return;
 
-		if(arg[0]=="/RetPlayerUpdate")
+		if(arg[0]=="/RPU")
 		{
 			RPU=e.Data;
+			return;
+		}
+		if(arg[0]=="/RPC")
+		{
+			//variable set here
 			return;
 		}
 		if(arg[0]=="/RetKickConnection"&&int.Parse(arg[1])==connectionID)
@@ -1511,5 +1590,44 @@ public class SC_control : MonoBehaviour {
 		}
 		for(i=1;i<max_players;i++)
 			PL[i].B_Start();
+	}
+	int RASCII_toInt(char c)
+	{
+		int ret;
+		string cc = c+"";
+		int intt = System.Text.Encoding.ASCII.GetBytes(cc)[0];
+		if(intt>=1 && intt<=31) ret = intt-1;
+		else ret = intt-4;
+		return ret;
+	}
+	float Char4ToFloat(string dat, int st)
+	{
+		bool minus = false;
+
+		int[] bs = new int[4];
+		bs[0] = 1906624;
+		bs[1] = 15376;
+		bs[2] = 124;
+		bs[3] = 1;
+
+		float[] get = new float[4];
+		get[0] = RASCII_toInt(dat[st+0]);
+		get[1] = RASCII_toInt(dat[st+1]);
+		get[2] = RASCII_toInt(dat[st+2]);
+		get[3] = RASCII_toInt(dat[st+3]);
+
+		if(get[0]>=62)
+		{
+			minus = true;
+			get[0]-=62;
+		}
+
+		float ret = (get[0]*bs[0] + get[1]*bs[1] + get[2]*bs[2] + get[3]*bs[3]) / 124f;
+		if(minus) ret = -ret;
+		return ret;
+	}
+	float Char1ToRot(string dat, int st)
+	{
+		return (RASCII_toInt(dat[st+0])*360f)/124f;
 	}
 }

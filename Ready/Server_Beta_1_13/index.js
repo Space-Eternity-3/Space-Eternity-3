@@ -1,14 +1,18 @@
 const WebSocket = require("ws");
 const fs = require("fs");
 const path = require("path");
+const config = require("./config.json");
 
 //Global variables
 var serverVersion = "Beta 1.13";
 var serverRedVersion = "Beta_1_13";
 var clientDatapacksVar = "";
 var seed;
-var max_players = 128;
 var gpl_number = 27;
+var max_players = 128;
+
+if(Number.isInteger(config.max_players))
+    max_players =  config.max_players;
 
 var chunk_data = [];
 var chunk_names = [];
@@ -108,6 +112,9 @@ function sendToAllClients(data) {
 String.prototype.replaceAll = function replaceAll(search, replace) {
   return this.split(search).join(replace);
 };
+String.prototype.replaceAt = function(index, replacement) {
+  return this.substring(0, index) + replacement + this.substring(index + replacement.length);
+}
 Array.prototype.remove = function (ind) {
   this.splice(ind, 1);
   return this;
@@ -563,15 +570,82 @@ function checkPlayer(idm, cn) {
   return true;
 }
 
-//RetPlayerUpdate
-setInterval(function () {
-  var i,lngt = plr.players.length;
-  var eff = "/RetPlayerUpdate " + max_players + " ";
+function intToRASCII(int)
+{
+  if(int>=0 && int<=30) return String.fromCharCode(int+1);
+  if(int>=31 && int<=123) return String.fromCharCode(int+4);
+  return String.fromCharCode(1);
+}
+function insertFloatToChar4(str,delta,float)
+{
+  var i,lngt=str.length;
+
+  var minus = (float<0);
+  if(minus) float = -float;
+  
+  float *= 124;
+  float = Math.round(float);
+
+  var bs = [1906624,15376,124,1];
+  for(i=0;i<4;i++)
+  {
+    var ii = lngt+delta+i;
+    var num = Math.floor(float/bs[i]);
+    float = float % bs[i];
+
+    if(i==0)
+    {
+      num = num%62;
+      if(minus) num+=62;
+    }
+    str = str.replaceAt(ii,intToRASCII(num));
+  }
+
+  return str;
+}
+function insertRotToChar1(str,delta,rot)
+{
+  var lngt=str.length;
+  
+  rot /= 360;
+  rot *= 124;
+  rot = Math.round(rot);
+  if(rot<0) rot+=124;
+  str = str.replaceAt(lngt+delta,intToRASCII(rot));
+
+  return str;
+}
+
+function GetRPU(players,lngt)
+{
+  var i,splitted,eff="";
   for(i=0;i<lngt;i++)
-    eff += plr.players[i] + "|" + plr.nicks[i] + "|" + plr.pingTemp[i] + " ";
-  eff += "X X"
+  {
+    if(players[i]=="0") eff+="\!";
+    else if(players[i]=="1") eff+="\"";
+    else
+    {
+      splitted = players[i].split(";");
+      eff+="XXXXXXXXX";
+      eff = insertFloatToChar4(eff,-9,parseFloatE(splitted[0]));
+      eff = insertFloatToChar4(eff,-5,parseFloatE(splitted[1]));
+      eff = insertRotToChar1(eff,-1,parseFloatE(splitted[4]));
+    }
+  }
+  return eff;
+}
+
+//RetPlayerUpdate (20 times per second by default)
+setInterval(function () {
+  //console.log("try_send" + randomInteger(0,100));
+  var i,lngt = plr.players.length;
+  var eff = "/RPU " + max_players + " ";
+
+  eff += GetRPU(plr.players,lngt);
+  eff += " X X"
   sendToAllClients(eff);
-}, 20);
+
+}, 50);
 
 //Grow functions
 setInterval(function () {
@@ -963,6 +1037,7 @@ wss.on("connection", function connection(ws) {
 
       plr.players[arg[1]] = arg[2];
       plr.pingTemp[arg[1]] = arg[3];
+      ws.send("P"+arg[3]); //Short type command
 
       if (arg[2] != "1") {
         plr.data[arg[1]] = arg[2];
