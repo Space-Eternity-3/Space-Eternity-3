@@ -18,6 +18,15 @@ var chunk_data = [];
 var chunk_names = [];
 var chunk_waiter = [];
 
+var memTemplate = {
+  nicks: "0",
+  health: "1",
+  others1: "0",
+  others2: "0",
+  rposX: "0",
+  rposY: "0",
+};
+
 var plr = {
   waiter: [0],
   players: ["0"],
@@ -31,13 +40,20 @@ var plr = {
   backpack: ["0"],
   upgrades: ["0"],
   pushInventory: ["0"],
+
+  mems: [Object.assign({},memTemplate)],
 };
 
 var ki, kj, kd = Object.keys(plr);
 var klngt = kd.length;
 for(ki=1;ki<max_players;ki++)
   for(kj=0;kj<klngt;kj++)
-    plr[kd[kj]].push(plr[kd[kj]][0]);
+  {
+    if(kd[kj]!="mems")
+      plr[kd[kj]].push(plr[kd[kj]][0]);
+    else
+      plr[kd[kj]].push(Object.assign({},plr[kd[kj]][0]));
+  }
 
 var growT = [];
 var growW = [];
@@ -114,6 +130,9 @@ String.prototype.replaceAll = function replaceAll(search, replace) {
 };
 String.prototype.replaceAt = function(index, replacement) {
   return this.substring(0, index) + replacement + this.substring(index + replacement.length);
+}
+String.prototype.insertAt = function(index, insertion) {
+  return this.substring(0, index) + insertion + this.substring(index);
 }
 Array.prototype.remove = function (ind) {
   this.splice(ind, 1);
@@ -456,12 +475,15 @@ function SaveAllNow() {
   for (i = 0; i < max_players; i++) if (checkPlayer(i, plr.conID[i])) savePlayer(i);
   for (i = 0; i < lngt; i++) chunkSave(i);
 }
-setInterval(function () {
-  //var dn1=Date.now();
+
+//Save all once per 5 seconds (or less if lags)
+setInterval(function () { // <interval #1>
   SaveAllNow();
+
+  //var dn1=Date.now();
   //var dn2=Date.now();
   //var dn3=dn2-dn1;
-  //console.log("Saved all in "+dn3+"ms");
+  //console.log("Time "+dn3+"ms");
 
   var i,
     lngt = chunk_waiter.length;
@@ -474,7 +496,130 @@ setInterval(function () {
       i--;
     }
   }
-}, 5000); //Save all once per 5 seconds
+}, 5000);
+
+//HUB INTERVAL <interval #0>
+var date_before = Date.now();
+setInterval(function () { // <interval #2>
+  while(Date.now() > date_before)
+  {
+    date_before++;
+    if(date_before % 20 == 0) //precisely 50 times per second
+    {
+      var i, lngt = bulletsT.length;
+      for(i=0;i<lngt;i++)
+      {
+        bulletsT[i].age++;
+        if(bulletsT[i].age>=bulletsT[i].max_age)
+        {
+          bulletsT.remove(i);
+          lngt--; i--; continue;
+        }
+        bulletsT[i].pos.x += bulletsT[i].vector.x;
+        bulletsT[i].pos.y += bulletsT[i].vector.y;
+      }
+    }
+    if(date_before % 50 == 0) //precisely 20 times per second
+    {
+      //NOTHING SO IMPORTANT
+    }
+    if(date_before % 100 == 0) //precisely 10 times per second
+    {
+      //[Grow]
+       var i,
+       lngt = growT.length;
+      for (i = 0; i < lngt; i++) {
+        growW[i]--;
+        if (growW[i] > 0) {
+         var ulam = growT[i].split("g")[0];
+          var place = growT[i].split("g")[1];
+         var det = asteroidIndex(ulam);
+          var tume = chunk_data[det[0]][det[1]][21 + 2 * parseInt(place)];
+          tume -= 5;
+
+         if (tume > 0) {
+            chunk_data[det[0]][det[1]][21 + 2 * parseInt(place)] = tume;
+          } else {
+           serverGrow(ulam, place);
+           growT.remove(i);
+            growW.remove(i);
+            lngt--;
+            i--;
+          }
+        } else {
+          growT.remove(i);
+          growW.remove(i);
+         lngt--;
+         i--;
+       }
+      }
+
+      //[Driller]
+      lngt = drillT.length;
+      for (i = 0; i < lngt; i++) {
+       drillW[i]--;
+        if (drillW[i] > 0) {
+           drillC[i] -= 5;
+        if (drillC[i] <= 0) {
+           var ulam = drillT[i].split("w")[0];
+           var place = drillT[i].split("w")[1];
+           serverDrill(ulam, place);
+
+           drillT.remove(i);
+           drillW.remove(i);
+           drillC.remove(i);
+           lngt--;
+           i--;
+         }
+        } else {
+          drillT.remove(i);
+          drillW.remove(i);
+          drillC.remove(i);
+          lngt--;
+          i--;
+        }
+      }
+
+      //[Chunks]
+      lngt = chunk_waiter.length;
+      for (i = 0; i < lngt; i++) {
+        if (chunk_waiter[i] > 0) chunk_waiter[i]--;
+      }
+    }
+  }
+}, 5);
+
+//RetPlayerUpdate (20 times per second by default)
+setInterval(function () {  // <interval #2>
+
+  var eff,lngt = plr.players.length;
+
+  //RPC - Static data
+  var gtt = GetRPC(plr.players,lngt,false);
+  if(gtt != "DONT SEND") //space important here
+  {
+    eff = "/RPC " + max_players + " " + gtt + " X X"; //must be two spaces
+    sendToAllClients(eff);
+  }
+
+  //RPU - Dynamic data
+  eff = "/RPU " + max_players + " ";
+  eff += GetRPU(plr.players,lngt);
+  eff += " X X"
+  sendToAllClients(eff);
+
+}, 50);
+
+//Waiter kicker (50 times per second by default)
+setInterval(function () { //<interval #3>
+  var i;
+  for (i = 0; i < max_players; i++) {
+    if (plr.waiter[i] > 0) {
+      plr.waiter[i]--;
+      if (plr.waiter[i] == 0) kick(i);
+    }
+  }
+}, 20);
 
 //Kick functions
 function kick(i) {
@@ -501,39 +646,6 @@ function kick(i) {
   plr.inventory[i] = "0";
   plr.pushInventory[i] = "0";
 }
-setInterval(function () {
-  var i;
-  for (i = 0; i < max_players; i++) {
-    if (plr.waiter[i] > 0) {
-      plr.waiter[i]--;
-      if (plr.waiter[i] == 0) kick(i);
-    }
-  }
-
-}, 20);
-
-//STERID UPDATE (optimalization important!)
-var date_before = Date.now();
-setInterval(function () {
-  while(Date.now() >= date_before + 20)
-  {
-    date_before += 20;
-    
-    //Approximately once per unity frame
-    var i, lngt = bulletsT.length;
-    for(i=0;i<lngt;i++)
-    {
-      bulletsT[i].age++;
-      if(bulletsT[i].age>=bulletsT[i].max_age)
-      {
-        bulletsT.remove(i);
-        lngt--; i--; continue;
-      }
-      bulletsT[i].pos.x += bulletsT[i].vector.x;
-      bulletsT[i].pos.y += bulletsT[i].vector.y;
-    }
-  }
-}, 1);
 
 //Bullet functions
 function spawnBullet(tpl,arg)
@@ -606,12 +718,37 @@ function insertFloatToChar4(str,delta,float)
 function insertRotToChar1(str,delta,rot)
 {
   var lngt=str.length;
-  
+  rot = 
+
   rot /= 360;
   rot *= 124;
   rot = Math.round(rot);
+  if(rot==124) rot=0;
   if(rot<0) rot+=124;
   str = str.replaceAt(lngt+delta,intToRASCII(rot));
+
+  return str;
+}
+
+function insertOthersToChar3(str,delta,others)
+{
+  var lngt=str.length;
+  var spt = others.split("&");
+  
+  str = str.replaceAt(lngt+delta+0,intToRASCII(spt[0] * 1));
+  str = str.replaceAt(lngt+delta+1,intToRASCII(spt[1] / 124));
+  str = str.replaceAt(lngt+delta+2,intToRASCII(spt[1] % 124));
+
+  return str;
+}
+
+function insertHealthToChar1(str,delta,health)
+{
+  var lngt=str.length;
+  
+  health *= 123;
+  health = Math.ceil(health);
+  str = str.replaceAt(lngt+delta,intToRASCII(health));
 
   return str;
 }
@@ -621,7 +758,7 @@ function GetRPU(players,lngt)
   var i,splitted,eff="";
   for(i=0;i<lngt;i++)
   {
-    if(players[i]=="0") eff+="\!";
+    if(players[i]=="0") eff+="!";
     else if(players[i]=="1") eff+="\"";
     else
     {
@@ -632,85 +769,150 @@ function GetRPU(players,lngt)
       eff = insertRotToChar1(eff,-1,parseFloatE(splitted[4]));
     }
   }
+
   return eff;
 }
 
-//RetPlayerUpdate (20 times per second by default)
-setInterval(function () {
-  //console.log("try_send" + randomInteger(0,100));
-  var i,lngt = plr.players.length;
-  var eff = "/RPU " + max_players + " ";
+function bool6ToChar1(array_what)
+{
+  var i,j=32,eff = 0;
+  for(i=0;i<6;i++)
+  {
+    eff += j*array_what[i];
+    j/=2;
+  }
+  return intToRASCII(eff);
+}
 
-  eff += GetRPU(plr.players,lngt);
-  eff += " X X"
-  sendToAllClients(eff);
+function GetRootByte(players,n)
+{
+  // [0] -> if have sth
+  // [1] -> array what
+  // [2] -> root byte
 
-}, 50);
+  // i0 - others
+  // i1 - health
+  // i2 - resp pos
+  // i3 - nick
 
-//Grow functions
-setInterval(function () {
-  //[Grow]
-  var i,
-    lngt = growT.length,
-    localData12;
-  for (i = 0; i < lngt; i++) {
-    growW[i]--;
-    if (growW[i] > 0) {
-      var ulam = growT[i].split("g")[0];
-      var place = growT[i].split("g")[1];
-      var det = asteroidIndex(ulam);
-      var tume = chunk_data[det[0]][det[1]][21 + 2 * parseInt(place)];
-      tume -= 5;
+  var ret = ["","",""];
+  var array_what = [0,0,0,0,0,0];
+  var splitted;
 
-      if (tume > 0) {
-        chunk_data[det[0]][det[1]][21 + 2 * parseInt(place)] = tume;
-      } else {
-        serverGrow(ulam, place);
-        growT.remove(i);
-        growW.remove(i);
-        lngt--;
-        i--;
+  if(players[n]=="0" || players[n]=="1") splitted = [0,0,0,0,0,"0&0","0","0","1"];
+  else splitted = players[n].split(";");
+
+  if(splitted[5] == (plr.mems[n].others1 + "&" + plr.mems[n].others2)) array_what[0] = 0;
+  else array_what[0] = 1;
+
+  if(splitted[8] == (plr.mems[n].health)) array_what[1] = 0;
+  else array_what[1] = 1;
+
+  if(splitted[6] == (plr.mems[n].rposX) &&
+     splitted[7] == (plr.mems[n].rposY) ) array_what[2] = 0;
+  else array_what[2] = 1;
+
+  if(plr.nicks[n] == (plr.mems[n].nicks)) array_what[3] = 0;
+  else array_what[3] = 1;
+
+  ret[0] = (!(array_what[0]==0 && array_what[1]==0 && array_what[2]==0 && array_what[3]==0 && array_what[4]==0 && array_what[5]==0))
+  ret[1] = array_what;
+  ret[2] = bool6ToChar1(array_what);
+
+  return ret;
+}
+
+function GetRPC(players,lngt,sendAll)
+{
+  var eff = "", not_empty = false;
+  var splitted;
+
+  for(i=0;i<lngt;i++)
+  {
+    if(players[i]=="0" || players[i]=="1") splitted = [0,0,0,0,0,"0&0","0","0","1"];
+    else splitted = players[i].split(";");
+
+    var rbt;
+    if(!sendAll) rbt = GetRootByte(players,i);
+    else rbt = [true, [1,1,1,1,1,1], bool6ToChar1([1,1,1,1,1,1])];
+
+    if(rbt[0])
+    {
+      //if(!sendAll) console.log(rbt[1]);
+      not_empty = true;
+
+      eff += rbt[2];
+
+      if(rbt[1][0]==1) //others
+      {
+        eff += "XXX";
+        eff = insertOthersToChar3(eff,-3,splitted[5]);
+        if(!sendAll) plr.mems[i].others1 = splitted[5].split("&")[0];
+        if(!sendAll) plr.mems[i].others2 = splitted[5].split("&")[1];
       }
-    } else {
-      growT.remove(i);
-      growW.remove(i);
+      if(rbt[1][1]==1) //health
+      {
+        eff += "X";
+        eff = insertHealthToChar1(eff,-1,parseFloatE(splitted[8]));
+        if(!sendAll) plr.mems[i].health = splitted[8];
+      }
+      if(rbt[1][2]==1) //resp pos
+      {
+        eff += "XXXXXXXX";
+        eff = insertFloatToChar4(eff,-8,parseFloatE(splitted[6]));
+        eff = insertFloatToChar4(eff,-4,parseFloatE(splitted[7]));
+        if(!sendAll) plr.mems[i].rposX = splitted[6];
+        if(!sendAll) plr.mems[i].rposY = splitted[7];
+      }
+      if(rbt[1][3]==1) //nick
+      {
+        eff += plr.nicks[i].replaceAll(" ","|"); eff += ":";
+        if(!sendAll) plr.mems[i].nicks = plr.nicks[i];
+      }
+    }
+    else eff += "!";
+  }
+
+  //Reducer of !!!
+  lngt = eff.length;
+  var in1,in2;
+  for(i=0;i<lngt;i++)
+  {
+    var amt = 0;
+    while(eff[i]=="!")
+    {
+      amt++;
+      eff = eff.replaceAt(i," ");
+      eff = eff.replaceAll(" ","");
       lngt--;
-      i--;
+    }
+
+    if(amt==1)
+    {
+      eff = eff.insertAt(i,"!");
+      i++;
+      lngt++;
+    }
+    else if(amt==2)
+    {
+      eff = eff.insertAt(i,"!!");
+      lngt+=2;
+      i+=2;
+    }
+    else if(amt>=3)
+    {
+      in1 = amt/124;
+      in2 = amt%124;
+      eff = eff.insertAt(i, "\"" + intToRASCII(in1) + intToRASCII(in2) );
+      lngt+=3;
+      i+=3;
     }
   }
 
-  //[Driller]
-  lngt = drillT.length;
-  for (i = 0; i < lngt; i++) {
-    drillW[i]--;
-    if (drillW[i] > 0) {
-      drillC[i] -= 5;
-      if (drillC[i] <= 0) {
-        var ulam = drillT[i].split("w")[0];
-        var place = drillT[i].split("w")[1];
-        serverDrill(ulam, place);
+  if(!not_empty) return "DONT SEND";
+  else return eff;
+}
 
-        drillT.remove(i);
-        drillW.remove(i);
-        drillC.remove(i);
-        lngt--;
-        i--;
-      }
-    } else {
-      drillT.remove(i);
-      drillW.remove(i);
-      drillC.remove(i);
-      lngt--;
-      i--;
-    }
-  }
-
-  //[Chunks]
-  lngt = chunk_waiter.length;
-  for (i = 0; i < lngt; i++) {
-    if (chunk_waiter[i] > 0) chunk_waiter[i]--;
-  }
-}, 100);
 function serverGrow(ulam, place) {
   var det = asteroidIndex(ulam);
   if (chunk_data[det[0]][det[1]][21 + 2 * parseInt(place)] != "") {
@@ -763,11 +965,9 @@ function drillGet(det) {
     if (rnd >= ltdt[i * 3 + 1] && rnd <= ltdt[i * 3 + 2]) return ltdt[i * 3];
   }
   return 0;
-
-  return 8;
 }
 function growActive(ulam) {
-  var i, block, localData11, tim, ind;
+  var i, block, tim, ind;
   var tab = [];
   var blockTab = [];
 
@@ -1547,6 +1747,12 @@ wss.on("connection", function connection(ws) {
             imkConID +
             " X X"
         );
+
+        //RPC send everything to new player
+        var eff,lngt = plr.players.length;
+        var gtt = GetRPC(plr.players,lngt,true);
+        eff = "/RPC " + max_players + " " + gtt + " X X"; //E - everything
+        ws.send(eff);
       }
     }
   });
