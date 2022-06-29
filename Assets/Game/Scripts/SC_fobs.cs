@@ -268,6 +268,13 @@ public class SC_fobs : MonoBehaviour
 
         if(IsEmpty) gameObject.GetComponent<Renderer>().enabled=false;
 		
+        if(!mother)
+		{
+			X=transform.parent.GetComponent<SC_asteroid>().X;
+			Y=transform.parent.GetComponent<SC_asteroid>().Y;
+			ID=transform.parent.GetComponent<SC_asteroid>().ID;
+		}
+
 		if(IsStorage)
 		{
 			SC_Fob21 = gameObject.GetComponent<SC_Fob21>();
@@ -276,14 +283,6 @@ public class SC_fobs : MonoBehaviour
 			SC_Fob21.ID=ID;
 			SC_Fob21.uID=index;
 			SC_Fob21.StartF();
-		}
-
-		if(!mother)
-		{
-			X=transform.parent.GetComponent<SC_asteroid>().X;
-			Y=transform.parent.GetComponent<SC_asteroid>().Y;
-			ID=transform.parent.GetComponent<SC_asteroid>().ID;
-			//index=(int)Mathf.Round(transform.position.z*100000f)-1;
 		}
 
         if(WindObject&&!mother)

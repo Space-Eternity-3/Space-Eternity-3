@@ -5,7 +5,6 @@ using UnityEngine;
 public class SC_players : MonoBehaviour
 {
     //Constants
-    public float dragS, dragM;
     public Material normal,active,turbo,brake;
     public Material M1,M2,M3,M4;
     public SC_snd_start SC_snd_start;
@@ -33,17 +32,23 @@ public class SC_players : MonoBehaviour
     //Gameplay variables
     public int OtherSource;
 	public int ArtSource;
-    public Vector3 sourcedPosition = new Vector3(0f,0f,0f);
-    public Quaternion sourcedRotation = Quaternion.identity;
+    public Vector3 sourcedPosition = new Vector3(0f,0f,300f);
+    public float sourcedRotation = 10000f;
     Vector3[] memSourced=new Vector3[20];
+    float[] rotSourced=new float[20];
 
-    public void B_Awake()
-    {	
+    void ResetArray()
+    {
         int i;
         for(i=0;i<20;i++){
             memSourced[i]=new Vector3(0f,0f,300f);
+            rotSourced[i]=10000f;
         }
-		
+    }
+    public void B_Awake()
+    {
+        ResetArray();
+
 		Aeffs = Instantiate(atS,atS.position,atS.rotation);
 		Aeffs.parent = atZ; Aeffs.name = "atS" + IDP;
 		Aeffs.GetComponent<SC_seeking>().seek = transform;
@@ -61,13 +66,15 @@ public class SC_players : MonoBehaviour
 	{
 		if(IDP==SC_fun.SC_control.connectionID) IDP=0;
 	}
-    void ArrayPusher(Vector3 new_push)
+    void ArrayPusher(Vector3 new_push, float new_rot)
     {
         int i;
         for(i=19;i>0;i--){
             memSourced[i]=memSourced[i-1];
+            rotSourced[i]=rotSourced[i-1];
         }
         memSourced[0]=new_push;
+        rotSourced[0]=new_rot;
     }
     Vector3 ArrayAvarge(int n)
     {
@@ -82,13 +89,59 @@ public class SC_players : MonoBehaviour
         if(m!=0) return sum/m;
         else return new Vector3(0f,0f,0f);
     }
+    float reduceAngle(float angle)
+    {
+        while(angle<0) angle+=360f;
+        while(angle>=360) angle-=360f;
+        return angle;
+    }
+    float rotAvg(int weight1, float angle1, float angle2)
+    {
+        float sr;
+        angle1 = reduceAngle(angle1);
+        angle2 = reduceAngle(angle2);
+
+        sr = (weight1*angle1 + angle2)/(weight1 + 1);
+        if(Mathf.Abs(angle2-angle1) <= 180f) return sr;
+
+        angle1 += 180f; angle1 = reduceAngle(angle1);
+        angle2 += 180f; angle2 = reduceAngle(angle2);
+
+        sr = (weight1*angle1 + angle2)/(weight1 + 1) - 180f;
+        return reduceAngle(sr);
+    }
+    float ArrayAvarge_rot(int n)
+    {
+        int i,m=0;
+        float currentAngle = 0f;
+
+        for(i=0;i<n;i++)
+        {
+            if(rotSourced[i]!=10000f)
+            {
+                currentAngle = rotAvg(m,currentAngle,rotSourced[i]);
+                m++;
+            }
+        }
+
+        return currentAngle;
+    }
     public void AfterFixedUpdate()
     {
-		ArrayPusher(sourcedPosition);
+		ArrayPusher(sourcedPosition, sourcedRotation);
         Vector3 avar=ArrayAvarge(SC_fun.smooth_size);
-        if(SC_fun.SC_control.NUL[IDP_phys]) transform.position=new Vector3(avar.x,avar.y,0f);
-		else transform.position=new Vector3(0f,0f,10000f+IDP*5f);
-        transform.rotation=sourcedRotation;
+        float avar_rot=ArrayAvarge_rot(SC_fun.smooth_size);
+
+        if(SC_fun.SC_control.NUL[IDP_phys])
+        {
+            transform.position = new Vector3(avar.x,avar.y,0f);
+            transform.eulerAngles = new Vector3(0f,0f,avar_rot);
+        }
+		else
+        {
+            ResetArray();
+            transform.position = new Vector3(0f,0f,10000f+IDP*5f);
+        }
 
 		int guitar=ArtSource;
         int bas=OtherSource;

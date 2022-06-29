@@ -36,6 +36,8 @@ public class SC_bullet : MonoBehaviour
     int looper = 0;
     int loopSndID = -1;
 
+    public string projectionOwner="";
+
     public SC_bullet Shot(Vector3 position, Vector3 vector, Vector3 delta, int typ)
     {
         SC_bullet gob = Instantiate(gameObject, position, Quaternion.identity).GetComponent<SC_bullet>();
@@ -50,7 +52,8 @@ public class SC_bullet : MonoBehaviour
             gob.st_vect,
             typ,
             "projection",
-            gob.ID
+            gob.ID,
+            SC_control.connectionID+""
         );
         bul.delta_age = -1000; //undefined very low
 
@@ -66,7 +69,7 @@ public class SC_bullet : MonoBehaviour
         
         return gob;
     }
-    public SC_bullet ShotProjection(Vector3 position, Vector3 vector, int typ, string mod, int idd)
+    public SC_bullet ShotProjection(Vector3 position, Vector3 vector, int typ, string mod, int idd, string pown)
     {
         SC_bullet gob = Instantiate(gameObject, position, Quaternion.identity).GetComponent<SC_bullet>();
         gob.type = typ;
@@ -74,6 +77,7 @@ public class SC_bullet : MonoBehaviour
         gob.controller = false;
         gob.st_vect = vector;
         gob.ID = idd;
+        gob.projectionOwner = pown;
 
         return gob;
     }
@@ -150,7 +154,7 @@ public class SC_bullet : MonoBehaviour
         else if(dev_bullets_show) bulletRE.material = BulletMaterials[0];
         else bulletRE.enabled = false;
     }
-    void FixedUpdate()
+    public void AfterFixedUpdate()
     {
         if(mode=="mother") return;
 
@@ -169,7 +173,7 @@ public class SC_bullet : MonoBehaviour
                 InstantMove(1);
             }
             else if(delta_age > 0)
-            {//Relict
+            {
                 InstantMove(2);
                 delta_age--;
             }

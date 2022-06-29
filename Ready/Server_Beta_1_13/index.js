@@ -107,6 +107,10 @@ var modifiedDrops = new Array(128);
 var translateFob = [];
 var translateAsteroid = [];
 
+var size_download = 0;
+var size_upload = 0;
+var size_updates = 0;
+
 drillLoot.fill(""); Object.seal(drillLoot);
 fobGenerate.fill(""); Object.seal(fobGenerate);
 biomeTags.fill(""); Object.seal(biomeTags);
@@ -120,9 +124,32 @@ const wss = new WebSocket.Server({
 });
 function sendToAllClients(data) {
   wss.clients.forEach(function (client) {
-    client.send(data);
+    sendTo(client,data);
   });
 }
+function sendTo(ws,data) {
+  size_upload += data.length;
+  ws.send(data);
+}
+
+//Funny functions
+/*function getRandomFunnyText()
+{
+  var rfn = randomInteger(0,19);
+  switch(rfn)
+  {
+    case 0: return "Eating a dinner..."; case 1: return "Breaking bones...";
+    case 2: return "Waiting for a waiter..."; case 3: return "Talking with somebody...";
+    case 4: return "Washing teeth..."; case 5: return "Installing a sowtware...";
+    case 6: return "Punching a giant..."; case 7: return "Uploading private videos...";
+    case 8: return "Lending money..."; case 9: return "Hacking SE3...";
+    case 10: return "Kicking players..."; case 11: return "Being behind you...";
+    case 12: return "Playing football..."; case 13: return "Watching Netflix...";
+    case 14: return "Calling Kamiloso..."; case 15: return "Removing your life...";
+    case 16: return "Playing SE3..."; case 17: return "Sending email...";
+    case 18: return "Hacking your computer..."; case 19: return "Searching for cheaters...";
+  }
+}*/
 
 //Variable functions
 String.prototype.replaceAll = function replaceAll(search, replace) {
@@ -417,7 +444,7 @@ function parseFloatP(str) {
 }
 
 //Data functions
-function nickCorrect(stam) {
+function nickWrong(stam) {
   if (
     stam.includes("\\") ||
     stam.includes("/") ||
@@ -500,11 +527,12 @@ setInterval(function () { // <interval #1>
 
 //HUB INTERVAL <interval #0>
 var date_before = Date.now();
+var date_start = Date.now();
 setInterval(function () { // <interval #2>
   while(Date.now() > date_before)
   {
     date_before++;
-    if(date_before % 20 == 0) //precisely 50 times per second
+    if((date_before-date_start) % 20 == 0) //precisely 50 times per second
     {
       var i, lngt = bulletsT.length;
       for(i=0;i<lngt;i++)
@@ -519,11 +547,11 @@ setInterval(function () { // <interval #2>
         bulletsT[i].pos.y += bulletsT[i].vector.y;
       }
     }
-    if(date_before % 50 == 0) //precisely 20 times per second
+    if((date_before-date_start) % 50 == 0) //precisely 20 times per second
     {
       //NOTHING SO IMPORTANT
     }
-    if(date_before % 100 == 0) //precisely 10 times per second
+    if((date_before-date_start) % 100 == 0) //precisely 10 times per second
     {
       //[Grow]
        var i,
@@ -586,12 +614,30 @@ setInterval(function () { // <interval #2>
         if (chunk_waiter[i] > 0) chunk_waiter[i]--;
       }
     }
+    if((date_before-date_start) % 1000 == 0) //precisely 1 times per second
+    {
+      setTerminalTitle("SE3 server | " + serverVersion +
+        " | Download: " + size_download/1000 + "KB/s" +
+        " | Upload: " + size_upload/1000 + "KB/s" +
+        " | Refresh: " + size_updates + "/s"
+      );
+      size_download = 0;
+      size_upload = 0;
+      size_updates = 0;
+    }
   }
 }, 5);
+function setTerminalTitle(title)
+{
+  process.stdout.write(
+    String.fromCharCode(27) + "]0;" + title + String.fromCharCode(7)
+  );
+}
 
-//RetPlayerUpdate (20 times per second by default)
+//RetPlayerUpdate (25 times per second by default)
 setInterval(function () {  // <interval #2>
 
+  size_updates++;
   var eff,lngt = plr.players.length;
 
   //RPC - Static data
@@ -608,7 +654,7 @@ setInterval(function () {  // <interval #2>
   eff += " X X"
   sendToAllClients(eff);
 
-}, 50);
+}, 40);
 
 //Waiter kicker (50 times per second by default)
 setInterval(function () { //<interval #3>
@@ -1229,6 +1275,8 @@ wss.on("connection", function connection(ws) {
       arg = (msg + "").split(" ");
     var msl = arg.length;
 
+    size_download += (msg+"").length;
+
     if (arg[0] == "/PlayerUpdate") {
       //PlayerUpdate 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[time]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
@@ -1237,7 +1285,7 @@ wss.on("connection", function connection(ws) {
 
       plr.players[arg[1]] = arg[2];
       plr.pingTemp[arg[1]] = arg[3];
-      ws.send("P"+arg[3]); //Short type command
+      sendTo(ws,"P"+arg[3]); //Short type command
 
       if (arg[2] != "1") {
         plr.data[arg[1]] = arg[2];
@@ -1258,9 +1306,10 @@ wss.on("connection", function connection(ws) {
           i == max_players ||
           arg[2] != serverRedVersion ||
           plr.nicks.includes(arg[1]) ||
-          nickCorrect(arg[1])
+          //arg[1] == "You" ||
+          nickWrong(arg[1])
         ) {
-          ws.send("/RetAllowConnection -1 X X");
+          sendTo(ws,"/RetAllowConnection -1 X X");
           console.log("Connection dennied");
           break;
         }
@@ -1280,7 +1329,7 @@ wss.on("connection", function connection(ws) {
 
           SaveAllNow();
           plr.conID[i] = arg[3];
-          ws.send(
+          sendTo(ws,
             "/RetAllowConnection " +
               i +
               " " +
@@ -1354,7 +1403,7 @@ wss.on("connection", function connection(ws) {
       }
       growActive(ulamID);
 
-      ws.send(
+      sendTo(ws,
         "/RetAsteroidData " +
           ulamID +
           " " +
@@ -1400,7 +1449,7 @@ wss.on("connection", function connection(ws) {
               fFob21TT +
               " X X"
           );
-          ws.send(
+          sendTo(ws,
             "/RetInventory " +
               fPlayerID +
               " " +
@@ -1417,7 +1466,7 @@ wss.on("connection", function connection(ws) {
       }
 
       //If failied
-      ws.send(
+      sendTo(ws,
         "/RetFobsChange " +
           fUlamID +
           " " +
@@ -1428,7 +1477,7 @@ wss.on("connection", function connection(ws) {
           fFob21TT +
           " X X"
       );
-      ws.send(
+      sendTo(ws,
         "/RetInventory " +
           fPlayerID +
           " " +
@@ -1455,6 +1504,9 @@ wss.on("connection", function connection(ws) {
       var gSlot = arg[6];
       var gID21 = arg[7];
 
+      console.log(arg.join(" "));;
+      console.log(checkFobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount, gID21));
+      
       if (checkFobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount, gID21)) {
         if (invChangeTry(gPlayerID, gItem, -gDeltaCount, gSlot)) {
           var gCountEnd = fobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount);
@@ -1475,7 +1527,7 @@ wss.on("connection", function connection(ws) {
               gID21 +
               " X X"
           );
-          ws.send(
+          sendTo(ws,
             "/RetInventory " +
               gPlayerID +
               " " +
@@ -1492,7 +1544,7 @@ wss.on("connection", function connection(ws) {
       }
 
       //If failied
-      ws.send(
+      sendTo(ws,
         "/RetFobsDataCorrection " +
           gUlamID +
           " " +
@@ -1507,7 +1559,7 @@ wss.on("connection", function connection(ws) {
           gID21 +
           " X X"
       );
-      ws.send(
+      sendTo(ws,
         "/RetInventory " +
           gPlayerID +
           " " +
@@ -1566,7 +1618,7 @@ wss.on("connection", function connection(ws) {
     if (arg[0] == "/FobsPing") {
       //FobsPing 1[id]
       var fpID = arg[1];
-      ws.send("/RetFobsPing " + fpID + " X X");
+      sendTo(ws,"/RetFobsPing " + fpID + " X X");
     }
     if (arg[0] == "/InventoryChange") {
       //InventoryChange 1[PlayerID] 2[Item] 3[Count] 4[Slot]
@@ -1596,7 +1648,7 @@ wss.on("connection", function connection(ws) {
           eff = ljTab[0];
         for (ij = 1; ij < 5; ij++) eff += ";" + ljTab[ij];
         plr.upgrades[ljPlaID] = eff;
-        ws.send(
+        sendTo(ws,
           "/RetUpgrade " + ljPlaID + " " + ljUpgID + " X " + plr.livID[ljPlaID]
         );
       } else kick(ljPlaID);
@@ -1735,7 +1787,7 @@ wss.on("connection", function connection(ws) {
       //ImNotKicked 1[PlayerID]
       var imkConID = arg[1];
       if (!checkPlayer(arg[1], arg[msl - 2]))
-        ws.send(
+        sendTo(ws,
           "/RetKickConnection " + imkConID + " " + plr.conID[imkConID] + " X"
         );
       else {
@@ -1752,7 +1804,7 @@ wss.on("connection", function connection(ws) {
         var eff,lngt = plr.players.length;
         var gtt = GetRPC(plr.players,lngt,true);
         eff = "/RPC " + max_players + " " + gtt + " X X"; //E - everything
-        ws.send(eff);
+        sendTo(ws,eff);
       }
     }
   });
@@ -2462,3 +2514,5 @@ console.log("Server started on version: [" + serverVersion + "]");
 console.log("Max players: [" + max_players + "]");
 console.log("Port: [27683]" + laggy_comment(max_players));
 console.log("-------------------------------");
+
+setTerminalTitle("SE3 server | "+serverVersion+" | Waiting for data...");

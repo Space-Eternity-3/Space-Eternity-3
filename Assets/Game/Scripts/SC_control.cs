@@ -34,9 +34,8 @@ public class SC_control : MonoBehaviour {
 	public Rigidbody playerR;
 	public Transform drill3T;
 	public Transform respawn_point;
-	public Transform Copper_bullet;
-	public Transform BodyProjection;
 	public Text servername,pingname;
+	public Text TextConstYou;
 	float mX,mY,mmX,mmY,X,Y,F=0.3f;
 	bool big_vel=false;
 
@@ -82,7 +81,7 @@ public class SC_control : MonoBehaviour {
 	int returnedPing=0;
 	string trping="0,00";
 	float truePing;
-	int intPing;
+	public int intPing=-1;
 	bool dont=false;
 	bool repeted=false;
 	bool repetedAF=false;
@@ -146,8 +145,8 @@ public class SC_control : MonoBehaviour {
 	public List<float> rposY_RPC = new List<float>();
 	public List<string> nick_RPC = new List<string>();
 
-	public string[] cmdArray = new string[2048];
-	int n=0; int fixup=0;
+	public List<string> cmdList = new List<string>();
+	int fixup=0;
 
 	public float health_V=1f, turbo_V=0f, power_V=0f;
 	public Text health_Text, turbo_Text, power_Text;
@@ -497,6 +496,8 @@ public class SC_control : MonoBehaviour {
 			transform.position=solidPos;
 			playerR.velocity=new Vector3(0f,0f,0f);
 		}
+
+		SC_projection.MuchLaterUpdate();
 
 		if(Input.GetKeyDown(KeyCode.F1)) f1 = !f1;
 		
@@ -851,15 +852,18 @@ public class SC_control : MonoBehaviour {
 		if(power.fillAmount<0.1f) power.fillAmount=0.1f;
 		if(power.fillAmount>0.9f) power.fillAmount=0.9f;
 
-		//Cmd array activator
-		string[] tempCmd = new string[2048];
-		int y;
-		for(y=0;(n>0&&y<2048);y++,n--)
+		//Cmd list activator
+		while(cmdList.Count > 0)
 		{
-			tempCmd[y]=cmdArray[n-1];
-			cmdArray[n-1]="0";
+			cmdDo(cmdList[0]);
+			cmdList.RemoveAt(0);
 		}
-		for(;y>0;y--) cmdDo(tempCmd[y-1]);
+
+		SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
+		foreach(SC_bullet bul in buls)
+		{
+			bul.AfterFixedUpdate();
+		}
 
 		//RPU converter
 		int h;
@@ -878,52 +882,55 @@ public class SC_control : MonoBehaviour {
 				int atf=0;
 				string ari = arh[k];
 
-				if(arh[k]=="0")
+				if(true)
 				{
-					//Player is not joined
-					NUL[i] = false;
-					PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
-					//[Rotation don't touch]
+					if(arh[k]=="0")
+					{
+						//Player is not joined
+						NUL[i] = false;
+						PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
+						PL[i].sourcedRotation = 10000f; //Rotation
 
-					NCT[i].text = "";
-					NCH[i].value = 1;
-					RU[i].position = new Vector3(0f,0f,300f);
-						atf = 0;
-					PL[i].ArtSource = atf;
-					PL[i].OtherSource = 0;
+						NCT[i].text = "";
+						NCH[i].value = 1;
+						RU[i].position = new Vector3(0f,0f,300f);
+							atf = 0;
+						PL[i].ArtSource = atf;
+						PL[i].OtherSource = 0;
+					}
+					else if(arh[k]=="1")
+					{
+						//Player is joined but not living
+						NUL[i] = false;
+						PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
+						PL[i].sourcedRotation = 10000f; //Rotation
+
+						NCT[i].text = nick_RPC[i];
+						NCH[i].value = 1;
+						RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],1f);
+							atf = 0;
+						PL[i].ArtSource = atf;
+						PL[i].OtherSource = 0;
+					}
+					else
+					{
+						//Player is playing normally
+						NUL[i] = true;
+						PL[i].sourcedPosition = new Vector3(Char4ToFloat(ari,0),Char4ToFloat(ari,4),0f); //Position
+						PL[i].sourcedRotation = Char1ToRot(ari,8); //Rotation
+
+						NCT[i].text = nick_RPC[i];
+						NCH[i].value = health_RPC[i];
+						RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],300f);
+							atf = others2_RPC[i];
+						PL[i].ArtSource = atf;
+						PL[i].OtherSource = others1_RPC[i];
+					}
+					
+					//Based on <atf> value
+					NC[i].enabled = !f1 && (atf%100!=1);
+					NCHOF[i].color = SC_artefacts.Color1N[atf/100];
 				}
-				else if(arh[k]=="1")
-				{
-					//Player is joined but not living
-					NUL[i] = false;
-					PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
-					//[Rotation don't touch]
-
-					NCT[i].text = nick_RPC[i];
-					NCH[i].value = 1;
-					RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],1f);
-						atf = 0;
-					PL[i].ArtSource = atf;
-					PL[i].OtherSource = 0;
-				}
-				else
-				{
-					//Player is playing normally
-					NUL[i] = true;
-					PL[i].sourcedPosition = new Vector3(Char4ToFloat(ari,0),Char4ToFloat(ari,4),0f); //Position
-					PL[i].sourcedRotation = Quaternion.Euler(0f,0f,Char1ToRot(ari,8)); //Rotation
-
-					NCT[i].text = nick_RPC[i];
-					NCH[i].value = health_RPC[i];
-					RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],300f);
-						atf = others2_RPC[i];
-					PL[i].ArtSource = atf;
-					PL[i].OtherSource = others1_RPC[i];
-				}
-
-				//Based on <atf> value
-				NC[i].enabled = !f1 && (atf%100!=1);
-				NCHOF[i].color = SC_artefacts.Color1N[atf/100];
 			}
 
 			fixup--;
@@ -1000,6 +1007,7 @@ public class SC_control : MonoBehaviour {
 
 		localPing++;
 		
+		SC_projection.AfterFixedUpdate();
 		for(int ij=1;ij<max_players;ij++)
 		{
 			PL[ij].AfterFixedUpdate();
@@ -1160,8 +1168,7 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RPC"||
 		(arg[0]=="/RetEmitParticles" && arg[1]!=connectionID+""))
 		{
-			cmdArray[n]=e.Data;
-			n++;
+			cmdList.Add(e.Data);
 		}
     }
 	void cmdDo(string cmdThis)
@@ -1226,7 +1233,8 @@ public class SC_control : MonoBehaviour {
 							else new_nick += str[i];
 							i++;
 						}
-						if(new_nick!="0") nick_RPC[I] = new_nick;
+						if(I==0) nick_RPC[I] = "You";
+						else if(new_nick!="0") nick_RPC[I] = new_nick;
 						else nick_RPC[I] = "";
 					}
 					N++;
@@ -1246,19 +1254,21 @@ public class SC_control : MonoBehaviour {
 				new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
 				int.Parse(arg[2]),
 				"server",
-				int.Parse(arg[7])
+				int.Parse(arg[7]),
+				arg[1]
 			);
+
 			if(connectionID+""==arg[1])
 			{
 				SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
 				foreach(SC_bullet bul in buls)
 				{
 					if(bul.ID+""==arg[7] && bul.mode=="projection")
-						bul.delta_age = -bul.age-1;
+						bul.delta_age = -bul.age - (SC_fun.smooth_size/2);
 				}
 			}
 
-			if(connectionID+""!=arg[1]){
+			/*if(connectionID+""!=arg[1]){
 				SC_bullet bul2 = SC_bullet.ShotProjection(
 					new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
 					new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
@@ -1267,7 +1277,7 @@ public class SC_control : MonoBehaviour {
 					int.Parse(arg[7])
 				);
 				bul2.InstantMove(intPing);
-			}
+			}*/
 
 			if(connectionID+""!=arg[1]){
 				SC_bullet bul3 = SC_bullet.ShotProjection(
@@ -1275,10 +1285,10 @@ public class SC_control : MonoBehaviour {
 					new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
 					int.Parse(arg[2]),
 					"projection",
-					int.Parse(arg[7])
+					int.Parse(arg[7]),
+					arg[1]
 				);
-				//if(intPing>=6) bul3.delta_age = 6; //intPing;
-				//else bul3.delta_age = intPing;
+				bul3.delta_age = (SC_fun.smooth_size/2);
 			}
 		}
 		if(arg[0]=="/RetNewBulletDestroy")
@@ -1417,11 +1427,8 @@ public class SC_control : MonoBehaviour {
 	public void AfterAwake()
 	{
 		int j;
-		for(j=0;j<2048;j++)
-		{
-			cmdArray[j]="0";
-			if(j<9) betterInvConverted[j]=new Vector3(0f,0f,0f);
-		}
+		for(j=0;j<9;j++)
+			betterInvConverted[j]=new Vector3(0f,0f,0f);
 		
 		Screen1.targetDisplay=0;
 		Screen2.targetDisplay=0;
@@ -1444,6 +1451,7 @@ public class SC_control : MonoBehaviour {
 			SC_data.DatapackMultiplayerLoad(SC_data.TempFileConID[9]);
 			conID=SC_data.TempFileConID[10];
 			MTP_InventoryLoad();
+			TextConstYou.text = nick;
 		}
 
 		Engines*=float.Parse(SC_data.Gameplay[15]);
@@ -1510,7 +1518,6 @@ public class SC_control : MonoBehaviour {
 		}
 		else
 		{
-			BodyProjection.position = new Vector3(0f,0f,10000f);
 			if(SC_data.data[0]!="")
 			{
 				tX=float.Parse(SC_data.data[0]);
