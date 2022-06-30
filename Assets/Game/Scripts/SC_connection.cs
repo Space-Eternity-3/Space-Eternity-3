@@ -161,7 +161,6 @@ public class SC_connection : MonoBehaviour
         {
             connectionState=0;
             trydisc=false;
-            SendMTP("/ImDisconnected "+connectionID);
             try
             {
                 ws.Close();
@@ -212,16 +211,10 @@ public class SC_connection : MonoBehaviour
                 connectionState=0;
             }
         }
-        if(e.Data=="/RetKickConnection "+connectionID)
-        {
-            Debug.Log("Kicked");
-            ws.Close();
-        }
     }
     void OnApplicationQuit()
     {
         mtpDataSave();
-        if(connectionID>=3) SendMTP("/RetKickConnection "+connectionID);
     }
     public void V_Connect()
     {
@@ -270,7 +263,7 @@ public class SC_connection : MonoBehaviour
         if(connectionState!=3||trydisc) return;
         connectionState=4;
 
-        SendMTP("/ImConnected "+connectionID+" 500");
+        SendMTP("/ImConnected "+connectionID+" 500 JOINING");
         try
         {
             ws.Close();

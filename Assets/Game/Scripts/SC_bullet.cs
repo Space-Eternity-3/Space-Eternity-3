@@ -30,7 +30,8 @@ public class SC_bullet : MonoBehaviour
     public int max_age = 100;
     public int delta_age = 0;
     public int float_age = 0;
-    bool controller = false;
+    public bool turn_used = false;
+    public bool controller = false;
     bool multiplayer = false;
     bool destroyed = false;
     int looper = 0;

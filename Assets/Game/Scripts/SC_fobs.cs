@@ -111,12 +111,6 @@ public class SC_fobs : MonoBehaviour
                 Replace(turEnd,true);
             }
         }
-        if(arg[0]=="/RetFobsTurn")
-        if((arg[1]!=SC_control.connectionID+"") && (arg[2]==ID+"") && (arg[3]==index+""))
-        {
-            int turEnd = int.Parse(arg[4]);
-            Replace(turEnd,true);
-        }
         if(arg[0]=="/RetFobsDataChange")
         if((arg[1]==ID+"") && (arg[2]==index+"") && (arg[5]!=SC_control.connectionID+""))
         {
@@ -149,6 +143,12 @@ public class SC_fobs : MonoBehaviour
                 if(SC_Fob21.count == 0) SC_Fob21.item = 0;
                 else SC_Fob21.item = itym;
             }
+        }
+        if(arg[0]=="/RetFobsTurn")
+        if((arg[2]==ID+"") && (arg[3]==index+"") && MTPblocker<=0)
+        {
+            int turEnd = int.Parse(arg[4]);
+            Replace(turEnd,true);
         }
         if(arg[0]=="/RetGrowNow")
         if((arg[1]==ID+"") && (arg[2]==index+"") && GrowTurn)
@@ -349,22 +349,24 @@ public class SC_fobs : MonoBehaviour
     }
 	public void AfterTriggerEnter(Collider collision)
 	{
-        /*
-		if((collision.gameObject.name=="Bullet1(Clone)")&&!collision.gameObject.GetComponent<SC_bullet1>().turn_used&&ShotTurn&&!mother)
-        {
-            SC_bullet1 bull = collision.gameObject.GetComponent<SC_bullet1>();
-			bull.turn_used = true; bull.MakeDestroy("TurnDestroy");
-            if(bull.mode==0 && (bull.type==BulletID || BulletID==0))
+		if(
+            collision.gameObject.name=="Bullet(Clone)" &&
+            !collision.gameObject.GetComponent<SC_bullet>().turn_used &&
+            collision.gameObject.GetComponent<SC_bullet>().controller &&
+            collision.gameObject.GetComponent<SC_bullet>().mode=="present" &&
+            ShotTurn &&
+            !mother
+        ){
+            SC_bullet bul = collision.gameObject.GetComponent<SC_bullet>();
+			bul.turn_used = true; bul.MakeDestroy(false);
+            if(bul.type==BulletID || BulletID==0)
             {
                 if(multiplayer)
-                {
-                    MTPblocker++;
                     SC_control.SendMTP("/FobsTurn "+SC_control.connectionID+" "+ID+" "+index+" "+ObjID+" "+ObjID2+" "+ShotID);
-                    SC_control.SendMTP("/FobsPing "+SC_control.connectionID+";"+ID+";"+index);
-                }
-                Replace(ShotID,multiplayer);
+                else
+                    Replace(ShotID,multiplayer);
             }
-        }*/
+        }
 	}
     void OnTriggerEnter(Collider collision)
     {

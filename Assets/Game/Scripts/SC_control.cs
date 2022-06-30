@@ -614,7 +614,7 @@ public class SC_control : MonoBehaviour {
 		Debug.Log("Quit");
 		if((int)Communtron4.position.y==100)
 		{
-			SendMTP("/ImDisconnected "+connectionID);
+			//SendMTP("/ImDisconnected "+connectionID);
 			try{
 				ws.Close();
 			}catch(Exception e){}
@@ -1146,11 +1146,6 @@ public class SC_control : MonoBehaviour {
 			RPU=e.Data;
 			return;
 		}
-		if(arg[0]=="/RetKickConnection"&&int.Parse(arg[1])==connectionID)
-		{
-			Debug.Log("Server kicked");
-			ws.Close();
-		}
 		if(arg[0]=="/RetUpgrade"||
 		arg[0]=="/RetFobsChange"||
 		arg[0]=="/RetFobsDataChange"||
@@ -1471,13 +1466,12 @@ public class SC_control : MonoBehaviour {
 		
 		if((int)Communtron4.position.y==100)
 		{
-			try
-			{
+			try{
 				ws = new WebSocket(CommuntronM1.name);
 			}
 			catch(Exception e)
 			{
-				Debug.LogWarning("Can't join to server E1");
+				Debug.LogWarning("Can't join to server (Can't set Websocket)");
 				MenuReturn();
 				return;
 			}
@@ -1485,13 +1479,12 @@ public class SC_control : MonoBehaviour {
 			ws.OnMessage += Ws_OnMessage;
 			ws.OnOpen += Ws_OnOpen;
         	
-			try
-			{
+			try{
 				ws.Connect();
 			}
 			catch(Exception e)
 			{
-				Debug.LogWarning("Can't join to server E2");
+				Debug.LogWarning("Can't join to server (Can't connect)");
 				MenuReturn();
 				return;
 			}

@@ -18,6 +18,11 @@ var chunk_data = [];
 var chunk_names = [];
 var chunk_waiter = [];
 
+var se3_ws = new Array(max_players);
+var se3_wsS = new Array(max_players);
+se3_ws.fill(""); Object.seal(se3_ws);
+se3_wsS.fill(""); Object.seal(se3_wsS);
+
 var memTemplate = {
   nicks: "0",
   health: "1",
@@ -133,7 +138,7 @@ function sendTo(ws,data) {
 }
 
 //Funny functions
-/*function getRandomFunnyText()
+function getRandomFunnyText()
 {
   var rfn = randomInteger(0,19);
   switch(rfn)
@@ -149,7 +154,7 @@ function sendTo(ws,data) {
     case 16: return "Playing SE3..."; case 17: return "Sending email...";
     case 18: return "Hacking your computer..."; case 19: return "Searching for cheaters...";
   }
-}*/
+}
 
 //Variable functions
 String.prototype.replaceAll = function replaceAll(search, replace) {
@@ -669,9 +674,15 @@ setInterval(function () { //<interval #3>
 
 //Kick functions
 function kick(i) {
-  SaveAllNow(i);
+  SaveAllNow();
   console.log(plr.nicks[i] + " disconnected [" + i + "]");
-  sendToAllClients("/RetKickConnection " + i + " X X");
+  var pom = se3_ws[i];
+  var pomS = se3_wsS[i];
+  se3_ws[i] = "";
+  se3_wsS[i] = "";
+  try{
+    pom.close();
+  }catch{}
   if (plr.players[i] != "0")
     sendToAllClients(
       "/RetInfoClient " +
@@ -1270,6 +1281,19 @@ function generateAsteroid(saze) {
 
 //Websocket brain
 wss.on("connection", function connection(ws) {
+  ws.on("close", (code, reason) => {
+    var i;
+    for(i=0;i<max_players;i++){
+      if(ws==se3_ws[i])
+      {
+        if(se3_wsS[i]=="joining"){
+          se3_ws[i]="";
+          se3_wsS[i]="";
+        }
+        if(se3_wsS[i]=="game" || se3_wsS[i]=="menu") kick(i);
+      }
+    }
+  });
   ws.on("message", (msg) => {
     var i,
       arg = (msg + "").split(" ");
@@ -1293,10 +1317,11 @@ wss.on("connection", function connection(ws) {
       return;
     }
     if (arg[0] == "/ImConnected") {
-      //ImConnected 1[PlayerID] 2[time]
+      //ImConnected 1[PlayerID] 2[time] 3[additional_info]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
       if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = arg[2];
+      if(arg[3]=="JOINING") se3_wsS[arg[1]] = "joining";
       return;
     }
     if (arg[0] == "/AllowConnection") {
@@ -1348,16 +1373,12 @@ wss.on("connection", function connection(ws) {
               seed +
               " X X"
           );
+          se3_ws[i] = ws;
+          se3_wsS[i] = "menu";
           console.log(plr.nicks[i] + " connected [" + i + "]");
           break;
         }
       }
-    }
-    if (arg[0] == "/ImDisconnected") {
-      //ImDisconnected 1[PlayerID]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
-
-      plr.waiter[arg[1]] = 1;
     }
     if (arg[0] == "/EmitParticles") {
       //EmitParticles 1[PlayerID] 2[type] 3[posX] 4[posY]
@@ -1787,11 +1808,13 @@ wss.on("connection", function connection(ws) {
       //ImNotKicked 1[PlayerID]
       var imkConID = arg[1];
       if (!checkPlayer(arg[1], arg[msl - 2]))
-        sendTo(ws,
-          "/RetKickConnection " + imkConID + " " + plr.conID[imkConID] + " X"
-        );
+        try{
+          ws.close();
+        }catch{}
       else {
         console.log(plr.nicks[imkConID] + " joined [" + imkConID + "]");
+        se3_ws[imkConID] = ws;
+        se3_wsS[imkConID] = "game";
         sendToAllClients(
           "/RetInfoClient " +
             (plr.nicks[imkConID] + " joined the game").replaceAll(" ", "`") +
@@ -2515,4 +2538,4 @@ console.log("Max players: [" + max_players + "]");
 console.log("Port: [27683]" + laggy_comment(max_players));
 console.log("-------------------------------");
 
-setTerminalTitle("SE3 server | "+serverVersion+" | Waiting for data...");
+setTerminalTitle("SE3 server | "+serverVersion+" | "+getRandomFunnyText());
