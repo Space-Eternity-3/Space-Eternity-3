@@ -2,6 +2,7 @@ const WebSocket = require("ws");
 const fs = require("fs");
 const path = require("path");
 const config = require("./config.json");
+const { runInNewContext } = require("vm");
 
 //Global variables
 var serverVersion = "Beta 1.13";
@@ -46,6 +47,7 @@ var plr = {
   upgrades: ["0"],
   pushInventory: ["0"],
 
+  actionList: [[]],
   mems: [Object.assign({},memTemplate)],
 };
 
@@ -54,10 +56,12 @@ var klngt = kd.length;
 for(ki=1;ki<max_players;ki++)
   for(kj=0;kj<klngt;kj++)
   {
-    if(kd[kj]!="mems")
-      plr[kd[kj]].push(plr[kd[kj]][0]);
-    else
+    if(kd[kj]=="mems")
       plr[kd[kj]].push(Object.assign({},plr[kd[kj]][0]));
+    else if(kd[kj]=="actionList")
+      plr[kd[kj]].push([]);
+    else
+      plr[kd[kj]].push(plr[kd[kj]][0]);
   }
 
 var growT = [];
@@ -133,8 +137,10 @@ function sendToAllClients(data) {
   });
 }
 function sendTo(ws,data) {
-  size_upload += data.length;
-  ws.send(data);
+  try{
+    ws.send(data);
+    size_upload += data.length;
+  }catch{return;}
 }
 
 //Funny functions
@@ -702,6 +708,47 @@ function kick(i) {
   plr.backpack[i] = "0";
   plr.inventory[i] = "0";
   plr.pushInventory[i] = "0";
+  plr.actionList[i] = [];
+}
+
+//Server action functions
+function UpdatePlayerByAction(player,action)
+{
+  return player;
+}
+function MakeAction(n,type,value)
+{
+  var rint = randomInteger(0,99999999);
+  var action = type+" "+value+" "+rint;
+  plr.actionList[n].push();
+  sendTo(se3_ws[n],"/RetAction "+n+" "+type+" "+value+" "+rint+" X "+plr.livID[n]);
+  plr.player[n] = UpdatePlayerByAction(plr.player[n],action);
+}
+function DamageRaw(n,dmg)
+{
+  if(plr.players[n]!="0" && plr.players[n]!="1")
+  {
+    var current_health = parseFloatE(plr.players[i].split(";")[8]);
+    var new_health = current_health - dmg;
+    if(new_health>0)
+    {
+      //Still living
+      MakeAction(n,"dmg",dmg);
+      //HERE SEND PARTICLES
+    }
+    else
+    {
+      //Killed by server
+      MakeAction(n,"kill","0");
+      //HERE SEND PARTICLES
+    }
+
+  }
+}
+function ServerDamageFLOAT(n,dmg)
+{
+  var max_health = 50; //TEMP
+  DamageRaw(n,dmg/max_health);
 }
 
 //Bullet functions
@@ -1288,7 +1335,6 @@ wss.on("connection", function connection(ws) {
       {
         if(se3_wsS[i]=="joining"){
           se3_ws[i]="";
-          se3_wsS[i]="";
         }
         if(se3_wsS[i]=="game" || se3_wsS[i]=="menu") kick(i);
       }
