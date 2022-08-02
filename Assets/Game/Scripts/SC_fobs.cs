@@ -173,7 +173,7 @@ public class SC_fobs : MonoBehaviour
         if(b>=25&&b<=38) return true; //39 -> red bullet
         if(b>=40&&b<=47) return true; //48 -> unstable bullet
 		if(b==48&&Input.GetKey(KeyCode.LeftControl)) return true;
-		if(b>=49&&b<=52) return true;
+		if(b>=49&&b<=53) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)

@@ -53,6 +53,9 @@ public class SC_control : MonoBehaviour {
 	public int enMode=0;
 	public string conID;
 	public string livID="0";
+	public string immID="0";
+	public string sr_livID="-1";
+	public string sr_immID="-1";
 
 	public Image rocket_fuel;
 	public Image health;
@@ -432,50 +435,6 @@ public class SC_control : MonoBehaviour {
 		
 		}
 
-		//KILL
-		if(health_V<=0f&&living)
-		{
-			if(SC_artefacts.GetArtefactID() != 4) //Accept death
-			{
-				solidPos=transform.position+new Vector3(0f,0f,2500f);
-				Communtron1.position+=new Vector3(0f,0f,75f);
-				SC_sounds.PlaySound(transform.position,2,2);
-				//for(int i=0;i<5;i++)
-				Instantiate(explosion,transform.position,transform.rotation);
-				living=false;
-				if((int)Communtron4.position.y==100)
-				{
-					livID=(int.Parse(livID)+1)+"";
-					float truX=Mathf.Round(transform.position.x*10000f)/10000f;
-					float truY=Mathf.Round(transform.position.y*10000f)/10000f;
-					SendMTP("/EmitParticles "+connectionID+" 1 "+truX+" "+truY);
-					SendMTP("/InventoryReset "+connectionID+" "+livID);
-				}
-				Debug.Log("Player died");
-				Screen1.targetDisplay=1;
-				Screen2.targetDisplay=1;
-				Screen3.targetDisplay=0;
-				
-				SC_invisibler.invisible = false;
-				RemoveImpulse();
-			}
-			else
-			{
-				health_V=1f;
-				SC_slots.BackpackY[15]--; //sureMTP
-				SC_slots.BackpackYA[15]--;
-				SC_slots.BackpackYB[15]--;
-				if((int)Communtron4.position.y==100)
-				{
-					SendMTP("/InventoryChange "+connectionID+" 45 -1 24");
-					float troX=Mathf.Round(transform.position.x*10000f)/10000f;
-					float troY=Mathf.Round(transform.position.y*10000f)/10000f;
-					SendMTP("/EmitParticles "+connectionID+" 5 "+troX+" "+troY);
-				}
-				Instantiate(ImmortalParticles,transform.position,transform.rotation);
-				Debug.Log("Player avoided death");
-			}
-		}
 		if(!living)
 		{
 			int y;
@@ -516,6 +475,38 @@ public class SC_control : MonoBehaviour {
 			Debug.LogWarning("Ping over 2.50s");
 			MenuReturn();
 		}
+	}
+	void KillMe()
+	{
+		solidPos=transform.position+new Vector3(0f,0f,2500f);
+		Communtron1.position+=new Vector3(0f,0f,75f);
+		SC_sounds.PlaySound(transform.position,2,2);
+		Instantiate(explosion,transform.position,transform.rotation);
+		living=false;
+		if((int)Communtron4.position.y==100)
+		{
+			livID=(int.Parse(livID)+1)+"";
+		}
+		Debug.Log("Player died");
+		Screen1.targetDisplay=1;
+		Screen2.targetDisplay=1;
+		Screen3.targetDisplay=0;
+				
+		SC_invisibler.invisible = false;
+		RemoveImpulse();
+	}
+	void ImmortalMe()
+	{
+		health_V=1f;
+		SC_slots.BackpackY[15]--; //sureMTP
+		SC_slots.BackpackYA[15]--;
+		SC_slots.BackpackYB[15]--;
+		if((int)Communtron4.position.y==100)
+		{
+			immID=(int.Parse(immID)+1)+"";
+		}
+		Instantiate(ImmortalParticles,transform.position,transform.rotation);
+		Debug.Log("Player avoided death");
 	}
 	public void esc_press(bool bo)
 	{
@@ -614,7 +605,6 @@ public class SC_control : MonoBehaviour {
 		Debug.Log("Quit");
 		if((int)Communtron4.position.y==100)
 		{
-			//SendMTP("/ImDisconnected "+connectionID);
 			try{
 				ws.Close();
 			}catch(Exception e){}
@@ -632,7 +622,7 @@ public class SC_control : MonoBehaviour {
 		float maxHr=Mathf.Ceil(maxH);
 		float curHr=Mathf.Ceil((curH*maxHr)/maxH);
 		if(curHr == (curH*maxHr)/maxH) curHr=maxHr+1f;
-		//if(health_V==1f) curHr=maxHr+1f;
+		if(curHr <= 0) curHr = 1;
 		health_Text.text="Health "+curHr+"/"+(maxHr+1f);
 
 		float curFr=Mathf.Floor(turbo_V*50f);
@@ -654,12 +644,6 @@ public class SC_control : MonoBehaviour {
 	}
 	void FixedUpdate()
 	{
-		if(timerH>0)
-		{
-			if(SC_artefacts.GetArtefactID() != 1) timerH--;
-			else timerH-=2;
-			if(timerH<0) timerH=0;
-		}
 		if(reg_wait>0) reg_wait--;
 		if(cooldown>0)
 		{
@@ -798,11 +782,19 @@ public class SC_control : MonoBehaviour {
 		}
 
 		//health regeneration
-		if(health_V>0f&&health_V<1f&&timerH==0)
+		if(health_V<1f&&timerH==0 && (int)Communtron4.position.y!=100)
 		{
 			float potHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
 			if(potHH<-50f) potHH = -50f; if(potHH>56.397f) potHH = 56.397f;
-			health_V+=unit*SC_artefacts.GetProtRegenMultiplier()*float.Parse(SC_data.Gameplay[5])/(Mathf.Ceil(50*Mathf.Pow(health_base,potHH))/50f);
+			float true_add = unit*SC_artefacts.GetProtRegenMultiplier()*float.Parse(SC_data.Gameplay[5])/(Mathf.Ceil(50*Mathf.Pow(health_base,potHH))/50f);
+			if(true_add>0) health_V += true_add;
+		}
+		//timer H
+		if(timerH>0)
+		{
+			if(SC_artefacts.GetArtefactID() != 1) timerH--;
+			else timerH-=2;
+			if(timerH<0) timerH=0;
 		}
 		//turbo regeneration
 		if(!turbo && !impulse_enabled)
@@ -988,21 +980,21 @@ public class SC_control : MonoBehaviour {
 				3[] - velY
 				4[] - rotation
 				5[] - others2
-				6/2 - respX
-				7/3 - respY
-				8/4 - healthBar
-				9/5 - fuelBar
-				10/6 - timerH
+				6/4 - respX
+				7/5 - respY
+				8x/2 - healthBar
+				9/3 - fuelBar
+				10x/6 - timerH
 				11/7 - powerBar
 					*/
 				SendMTP(
 					"/PlayerUpdate "+connectionID+" "+
 					trX+";"+trY+";"+rgX+";"+rgY+";"+
 					transform.rotation.eulerAngles.z+";"+sendOther+"&"+sendOtherParasite+";"+
-					rpX+";"+rpY+";"+heB+";"+fuB+";"+timerH+";"+poB+" "+localPing+" 250"
+					rpX+";"+rpY+";;"+fuB+";;"+poB+" "+localPing+" 250 "+livID+" "+immID
 				);
 			}
-			else SendMTP("/PlayerUpdate "+connectionID+" 1 "+localPing+" 250");
+			else SendMTP("/PlayerUpdate "+connectionID+" 1 "+localPing+" 250 "+livID+" "+immID);
 		}
 
 		localPing++;
@@ -1022,15 +1014,11 @@ public class SC_control : MonoBehaviour {
 		{
 			if(repetedAF) return;
 
-			msg=msg+" "+conID;
-			if(true) msg=msg+" X";
+			msg = msg+" "+conID+" "+livID;
 
-			try
-			{
+			try {
 				ws.Send(msg);
-			}
-			catch
-			{
+			} catch {
 				Debug.LogWarning("Failed sending message: "+msg);
 				MenuReturn();
 			}
@@ -1059,26 +1047,35 @@ public class SC_control : MonoBehaviour {
 		if(inpg%10==0) return pig+"0";
 		return pig+"";
 	}
-	public void DamageFLOAT(float dmgFLOAT) {if(dmgFLOAT!=0f) Damage(dmgFLOAT);}
+	public void DamageFLOAT(float dmgFLOAT) {if(dmgFLOAT>0f) Damage(dmgFLOAT);}
 	public void Damage(float dmg)
 	{
-		if(livTime<50 || impulse_enabled) return;
+		if(livTime<50 || impulse_enabled || !((livID==sr_livID && immID==sr_immID) || (int)Communtron4.position.y!=100)) return;
 		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
 		dmg=0.02f*dmg/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
-		health_V-=dmg;
-		if(Mathf.Round(health_V*10000f) == 0f) health_V = 0f;
-		//SC_sounds.PlaySound(transform.position,2,0);
-		if(health_V>0f) Instantiate(explosion2,transform.position,transform.rotation);
-		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
+		CookedDamage(dmg);
+
+		//KILL BY CLIENT
+		string info = "d";
+		if(health_V<=0f && living)
+		{
+			if(SC_artefacts.GetArtefactID() != 4) info = "K";
+			else info = "I";
+		}
 		
 		if((int)Communtron4.position.y==100)
-		{
-			float truX=Mathf.Round(transform.position.x*10000f)/10000f;
-			float truY=Mathf.Round(transform.position.y*10000f)/10000f;
-			if(health_V>0f) SendMTP("/EmitParticles "+connectionID+" 2 "+truX+" "+truY);
-			InvisiblityPulseSend("wait");
-		}
+			SendMTP("/ClientDamage "+connectionID+" "+dmg+" "+immID+" "+livID+" "+info);
+
+		if(info=="K") KillMe();
+		if(info=="I") ImmortalMe();
+	}
+	public void CookedDamage(float dmg)
+	{
+		health_V-=dmg;
+		if(Mathf.Round(health_V*10000f) == 0f) health_V = 0f;
+		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
+		Instantiate(explosion2,transform.position,transform.rotation);
 	}
 	void OnCollisionEnter(Collision collision)
     {
@@ -1133,6 +1130,22 @@ public class SC_control : MonoBehaviour {
 			for(i=1;i<lngt;i++) pggn+=pgg[i];
 			returnedPing = int.Parse(pggn);
 		}
+		if(arg[0]=="R")
+		{
+			//Medium health regenerate message
+			float fValue = float.Parse(arg[1]);
+			string fImmID = arg[2];
+			string fLivID = arg[3];
+
+			if(immID==fImmID && livID==fLivID)
+				health_V += fValue;
+		}
+		if(arg[0]=="I")
+		{
+			//Medium livID & immID update
+			sr_livID = arg[2];
+			sr_immID = arg[1];
+		}
 
 		int msl=arg.Length;
 		int blo=0;
@@ -1156,6 +1169,7 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RetGeyzerTurn"||
 		arg[0]=="/RetInventory"||
 		arg[0]=="/RetGrowNow"||
+		arg[0]=="/RetServerDamage"||
 		arg[0]=="/RetNewBulletSend"||
 		arg[0]=="/RetNewBulletDestroy"||
 		arg[0]=="/RetInfoClient"||
@@ -1237,6 +1251,40 @@ public class SC_control : MonoBehaviour {
 			}
 
 			return;
+		}
+		if(arg[0]=="/RetServerDamage")
+		{
+			//RetServerDamage 1[playerID] 2[dmg] 3[immID] 4[livID] 5[info]
+			if(arg[1]==connectionID+"")
+			{
+				string cis="";
+				if(livID==arg[4]) cis+="T"; else cis+="F";
+				if(immID==arg[3]) cis+="T"; else cis+="F";
+
+				if(cis=="TT")
+					CookedDamage(float.Parse(arg[2]));
+
+				if(arg[5]=="K") //server kill
+      			{
+			        switch(cis)
+			        {
+			        	case "TT": KillMe(); break;
+			        	case "TF": MenuReturn(); return;
+			        	case "FT": break;
+			        	case "FF": MenuReturn(); return;
+			        }
+			      }
+			      if(arg[5]=="I") //server immortal
+			      {
+        			switch(cis)
+        			{
+          				case "TT": ImmortalMe(); break;
+          				case "TF": break;
+          				case "FT": MenuReturn(); return;
+          				case "FF": MenuReturn(); return;
+        			}
+      			}
+			}
 		}
 		if(arg[0]=="/RetUpgrade")
 		{
@@ -1405,7 +1453,7 @@ public class SC_control : MonoBehaviour {
 	}
 	void Ws_OnOpen(object sender, System.EventArgs e)
     {
-		SendMTP("/ImNotKicked "+connectionID);
+		SendMTP("/ImJoined "+connectionID+" "+immID+" "+livID);
     }
 	void MTP_InventoryLoad()
 	{

@@ -99,7 +99,7 @@ public class SC_artefacts : MonoBehaviour
 	}
 	public float GetProtLevelAdd()
 	{
-		if(GetArtefactID()!=1 || SC_invisibler.invisible) return 0f;
+		if(GetArtefactID()!=1) return 0f;
 		else return ProtLevelAdd;
 	}
 	public float GetProtRegenMultiplier()

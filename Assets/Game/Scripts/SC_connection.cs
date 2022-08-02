@@ -55,10 +55,20 @@ public class SC_connection : MonoBehaviour
     string adressConvert(string ador)
     {
         int lngt=ador.Length;
-        if(lngt>4&&ador[0]=='w'&&ador[1]=='s'&&
-        ((ador[2]==':'&&ador[3]=='/'&&ador[4]=='/')||(lngt>5&&ador[2]=='s'&&ador[3]==':'&&ador[4]=='/'&&ador[5]=='/')))
+        if(!(lngt>4&&ador[0]=='w'&&ador[1]=='s'&&((ador[2]==':'&&ador[3]=='/'&&ador[4]=='/')||(lngt>5&&ador[2]=='s'&&ador[3]==':'&&ador[4]=='/'&&ador[5]=='/'))))
+            ador = "wss://"+ador;
+
+        lngt = ador.Length;
+        if(
+            ador[lngt-6]!=':' &&
+            ador[lngt-5]!=':' &&
+            ador[lngt-4]!=':' &&
+            ador[lngt-3]!=':' &&
+            ador[lngt-2]!=':' &&
+            ador[lngt-1]!=':'
+        ) ador += ":27683";
+
         return ador;
-        else return "wss://"+ador;
     }
     public void mtpDataLoad()
     {

@@ -4,6 +4,9 @@ const path = require("path");
 const config = require("./config.json");
 const { runInNewContext } = require("vm");
 
+const health_base = 1.0985;
+const unit = 0.0008;
+
 //Global variables
 var serverVersion = "Beta 1.13";
 var serverRedVersion = "Beta_1_13";
@@ -40,6 +43,14 @@ var plr = {
   pingTemp: ["0"],
   conID: ["0"],
   livID: ["0"],
+  immID: ["0"],
+
+  cl_livID: ["-1"],
+  cl_immID: ["-1"],
+
+  connectionTime: [0],
+  sHealth: [0],
+  sRegTimer: [-1],
 
   data: ["0"],
   inventory: ["0"],
@@ -47,7 +58,6 @@ var plr = {
   upgrades: ["0"],
   pushInventory: ["0"],
 
-  actionList: [[]],
   mems: [Object.assign({},memTemplate)],
 };
 
@@ -58,8 +68,6 @@ for(ki=1;ki<max_players;ki++)
   {
     if(kd[kj]=="mems")
       plr[kd[kj]].push(Object.assign({},plr[kd[kj]][0]));
-    else if(kd[kj]=="actionList")
-      plr[kd[kj]].push([]);
     else
       plr[kd[kj]].push(plr[kd[kj]][0]);
   }
@@ -128,9 +136,10 @@ gameplay.fill(""); Object.seal(gameplay);
 modifiedDrops.fill(""); Object.seal(modifiedDrops);
 
 //Websocket functions
-const wss = new WebSocket.Server({
+let connectionOptions = {
   port: 27683,
-});
+};
+const wss = new WebSocket.Server(connectionOptions);
 function sendToAllClients(data) {
   wss.clients.forEach(function (client) {
     sendTo(client,data);
@@ -151,8 +160,8 @@ function getRandomFunnyText()
   {
     case 0: return "Eating a dinner..."; case 1: return "Breaking bones...";
     case 2: return "Waiting for a waiter..."; case 3: return "Talking with somebody...";
-    case 4: return "Washing teeth..."; case 5: return "Installing a sowtware...";
-    case 6: return "Punching a giant..."; case 7: return "Uploading private videos...";
+    case 4: return "Washing teeth..."; case 5: return "Installing something...";
+    case 6: return "Breaking internet..."; case 7: return "Uploading private videos...";
     case 8: return "Lending money..."; case 9: return "Hacking SE3...";
     case 10: return "Kicking players..."; case 11: return "Being behind you...";
     case 12: return "Playing football..."; case 13: return "Watching Netflix...";
@@ -160,6 +169,7 @@ function getRandomFunnyText()
     case 16: return "Playing SE3..."; case 17: return "Sending email...";
     case 18: return "Hacking your computer..."; case 19: return "Searching for cheaters...";
   }
+  return "Something went wrong...";
 }
 
 //Variable functions
@@ -422,7 +432,7 @@ function asteroidIndex(ulam) {
 
 //ParseE functions
 function parseFloatE(str) {
-  str = parseFloatP(str);
+  str = parseFloatP(str+"");
   if (!isNaN(str)) return str;
   else return not_existing_variable;
 }
@@ -446,7 +456,7 @@ function parseFloatP(str) {
     lngt = str.length;
   for (i = 0; i < lngt; i++)
     if (
-      !["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "-"].includes(
+      !["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",", ".", "-"].includes(
         str[i]
       )
     )
@@ -536,6 +546,65 @@ setInterval(function () { // <interval #1>
   }
 }, 5000);
 
+function getProtLevelAdd(art)
+{
+	if(art!=1) return 0;
+	else return parseFloatE(gameplay[16]);
+}
+function getProtRegenMultiplier(art)
+{
+	if(art!=1) return 1;
+	else return parseFloatE(gameplay[17]);
+}
+
+function DamageFLOAT(pid,dmg)
+{
+  dmg = parseFloatE(dmg);
+  if(dmg>0 && plr.players[pid].split(";").length!=1 && (plr.livID[pid]==plr.cl_livID[pid] && plr.immID[pid]==plr.cl_immID[pid]) && plr.connectionTime[pid]>=50)
+  {
+    var artid = plr.backpack[pid].split(";")[30] - 41;
+    if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
+    if(parseFloatE(plr.players[pid].split(";")[5].split("&")[1])%100==2) return;
+    var potHHH = parseFloatE(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + parseFloatE(gameplay[26]);
+		if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
+		dmg=0.02*dmg/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
+		CookedDamage(pid,dmg);
+
+    var info = "d";
+    if(plr.sHealth[pid]<=0)
+    {
+      if(artid != 4) info = "K";
+      else info = "I";
+    }
+		sendTo(se3_ws[pid],"/RetServerDamage "+pid+" "+(dmg+"").replaceAll(".",",")+" "+plr.immID[pid]+" "+plr.livID[pid]+" "+info+" X X");
+
+    if(info=="K")
+    {
+      kill(pid);
+      plr.players[pid] = "1";
+    }
+    if(info=="I")
+    {
+      immortal(pid);
+      plr.players[pid] = Censure(plr.players[pid],pid,plr.livID[pid]);
+    }
+  }
+}
+function CookedDamage(pid,dmg)
+{
+  dmg = parseFloatE(dmg);
+  plr.sHealth[pid] -= dmg;
+  if(Math.round(plr.sHealth[pid]*10000) == 0) plr.sHealth[pid] = 0;
+  plr.sRegTimer[pid] = Math.floor(50*parseFloatE(gameplay[4]));
+
+  if(plr.players[pid]=="0" || plr.players[pid]=="1") return;
+
+  var xx = plr.players[pid].split(";")[0];
+  var yy = plr.players[pid].split(";")[1];
+  sendToAllClients("/RetEmitParticles "+pid+" 2 "+xx+" "+yy+" X X");
+  sendToAllClients("/RetInvisibilityPulse "+pid+" wait X X");
+}
+
 //HUB INTERVAL <interval #0>
 var date_before = Date.now();
 var date_start = Date.now();
@@ -545,6 +614,7 @@ setInterval(function () { // <interval #2>
     date_before++;
     if((date_before-date_start) % 20 == 0) //precisely 50 times per second
     {
+      //Bullet movement
       var i, lngt = bulletsT.length;
       for(i=0;i<lngt;i++)
       {
@@ -556,6 +626,43 @@ setInterval(function () { // <interval #2>
         }
         bulletsT[i].pos.x += bulletsT[i].vector.x;
         bulletsT[i].pos.y += bulletsT[i].vector.y;
+      }
+
+      //Health regeneration
+      for(i=0;i<max_players;i++)
+      {
+        if(plr.data[i]!="0" && plr.data[i]!="1" && se3_wsS[i]=="game")
+        {
+          var artid = plr.backpack[i].split(";")[15] - 41;
+          var sth1 = plr.sHealth[i];
+
+          if(plr.sHealth[i]<1 && plr.sRegTimer[i]==0 && (plr.livID[i]==plr.cl_livID[i] && plr.immID[i]==plr.cl_immID[i]))
+		      {
+			      var potHH = parseFloatE(plr.upgrades[i].split("")[0]) + getProtLevelAdd(artid) + parseFloatE(gameplay[26]);
+			      if(potHH<-50) potHH = -50; if(potHH>56.397) potHH = 56.397;
+            var true_add = unit * getProtRegenMultiplier(artid) * parseFloatE(gameplay[5]) / (Math.ceil(50*Math.pow(health_base,potHH))/50);
+			      if(true_add>0) plr.sHealth[i] += true_add;
+		      }
+          if(plr.sHealth[i]>1) plr.sHealth[i]=1;
+          var sth2 = plr.sHealth[i];
+
+          var del = ((sth2-sth1)+"").replaceAll(".",",");
+          sendTo(se3_ws[i],"R "+del+" "+plr.immID[i]+" "+plr.livID[i]); //Medium type message
+          
+          if(plr.sRegTimer[i]>0)
+	        {
+      			if(artid!=1) plr.sRegTimer[i]--;
+			      else plr.sRegTimer[i]-=2;
+			      if(plr.sRegTimer[i]<0) plr.sRegTimer[i]=0;
+		      }
+        }
+      }
+
+      //Connection time
+      for(i=0;i<max_players;i++)
+      {
+        if(plr.connectionTime[i]>=0)
+          plr.connectionTime[i]++;
       }
     }
     if((date_before-date_start) % 50 == 0) //precisely 20 times per second
@@ -655,15 +762,21 @@ setInterval(function () {  // <interval #2>
   var gtt = GetRPC(plr.players,lngt,false);
   if(gtt != "DONT SEND") //space important here
   {
-    eff = "/RPC " + max_players + " " + gtt + " X X"; //must be two spaces
+    eff = "/RPC " + max_players + " " + gtt + " X X";
     sendToAllClients(eff);
   }
 
-  //RPU - Dynamic data
+  // - Dynamic data
   eff = "/RPU " + max_players + " ";
   eff += GetRPU(plr.players,lngt);
   eff += " X X"
   sendToAllClients(eff);
+
+  for(i=0;i<max_players;i++)
+  {
+    if(se3_wsS[i]!="")
+      sendTo(se3_ws[i],"I "+plr.immID[i]+" "+plr.livID[i]+" X X"); //medium type message
+  }
 
 }, 40);
 
@@ -683,7 +796,6 @@ function kick(i) {
   SaveAllNow();
   console.log(plr.nicks[i] + " disconnected [" + i + "]");
   var pom = se3_ws[i];
-  var pomS = se3_wsS[i];
   se3_ws[i] = "";
   se3_wsS[i] = "";
   try{
@@ -703,53 +815,21 @@ function kick(i) {
   plr.data[i] = "0";
   plr.conID[i] = "0";
   plr.livID[i] = "0";
+  plr.immID[i] = "0";
+  plr.cl_livID[i] = "-1";
+  plr.cl_immID[i] = "-1";
+  plr.connectionTime[i] = -1;
+  plr.sHealth[i] = 0;
+  plr.sRegTimer[i] = -1;
   plr.pingTemp[i] = "0";
   plr.upgrades[i] = "0";
   plr.backpack[i] = "0";
   plr.inventory[i] = "0";
   plr.pushInventory[i] = "0";
-  plr.actionList[i] = [];
 }
 
-//Server action functions
-function UpdatePlayerByAction(player,action)
-{
-  return player;
-}
-function MakeAction(n,type,value)
-{
-  var rint = randomInteger(0,99999999);
-  var action = type+" "+value+" "+rint;
-  plr.actionList[n].push();
-  sendTo(se3_ws[n],"/RetAction "+n+" "+type+" "+value+" "+rint+" X "+plr.livID[n]);
-  plr.player[n] = UpdatePlayerByAction(plr.player[n],action);
-}
-function DamageRaw(n,dmg)
-{
-  if(plr.players[n]!="0" && plr.players[n]!="1")
-  {
-    var current_health = parseFloatE(plr.players[i].split(";")[8]);
-    var new_health = current_health - dmg;
-    if(new_health>0)
-    {
-      //Still living
-      MakeAction(n,"dmg",dmg);
-      //HERE SEND PARTICLES
-    }
-    else
-    {
-      //Killed by server
-      MakeAction(n,"kill","0");
-      //HERE SEND PARTICLES
-    }
+//Server health functions
 
-  }
-}
-function ServerDamageFLOAT(n,dmg)
-{
-  var max_health = 50; //TEMP
-  DamageRaw(n,dmg/max_health);
-}
 
 //Bullet functions
 function spawnBullet(tpl,arg)
@@ -1282,6 +1362,47 @@ function getBlockAt(ulam, place) {
   else return -1;
 }
 
+//Death functions
+function kill(pid)
+{
+  plr.livID[pid]++;
+
+  plr.data[pid] =
+  plr.data[pid].split(";")[6] + ";" +
+  plr.data[pid].split(";")[7] + ";0;0;0;0;" +
+  plr.data[pid].split(";")[6] + ";" +
+  plr.data[pid].split(";")[7] + ";1;0;0;0";
+  plr.inventory[pid] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+  plr.upgrades[pid] = "0;0;0;0;0";
+  plr.backpack[pid] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+
+  plr.sHealth[pid] = 1;
+  plr.sRegTimer[pid] = 0;
+
+  if(plr.players[pid]=="0" || plr.players[pid]=="1") return;
+
+  var xx = plr.players[pid].split(";")[0];
+  var yy = plr.players[pid].split(";")[1];
+  sendToAllClients("/RetEmitParticles "+pid+" 1 "+xx+" "+yy+" X X");
+}
+function immortal(pid)
+{
+  plr.immID[pid]++;
+
+  plr.sHealth[pid] = 1;
+  plr.sRegTimer[pid] = 0;
+
+  var bpck = plr.backpack[pid].split(";");
+  bpck[31] -= 1;
+  plr.backpack[pid] = bpck.join(";");
+
+  if(plr.players[pid]=="0" || plr.players[pid]=="1") return;
+
+  var xx = plr.players[pid].split(";")[0];
+  var yy = plr.players[pid].split(";")[1];
+  sendToAllClients("/RetEmitParticles "+pid+" 5 "+xx+" "+yy+" X X");
+}
+
 //Asteroid functions
 function sazeConvert(saze) {
   return parseIntE(saze.split("b")[1]) * 7 + parseIntE(saze.split("b")[0]) - 4;
@@ -1326,6 +1447,24 @@ function generateAsteroid(saze) {
   return td + strobj;
 }
 
+function Censure(pldata,pid,livID)
+{
+  if(pldata=="1" || plr.livID[pid]!=livID) return "1";
+  
+  var pldata = pldata.split(";");
+  pldata[8] = (plr.sHealth[pid]+"").replaceAll(".",",");
+  pldata[10] = plr.sRegTimer[pid];
+
+  var artid = plr.backpack[pid].split(";")[30] - 41;
+  if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
+  if(artid<1 || artid>6) artid=0;
+  var cl_martid = parseIntE(pldata[5].split("&")[1]) % 100;
+  artid = (100*artid + cl_martid);
+  pldata[5] = pldata[5].split("&")[0] + "&" + artid;
+
+  return pldata.join(";");
+}
+
 //Websocket brain
 wss.on("connection", function connection(ws) {
   ws.on("close", (code, reason) => {
@@ -1342,23 +1481,28 @@ wss.on("connection", function connection(ws) {
   });
   ws.on("message", (msg) => {
     var i,
-      arg = (msg + "").split(" ");
+      arg = (msg+"").split(" ");
     var msl = arg.length;
 
     size_download += (msg+"").length;
 
     if (arg[0] == "/PlayerUpdate") {
-      //PlayerUpdate 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[time]
+      //PlayerUpdate 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[time] 5[livID] 6[immID]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
       if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = arg[4];
 
-      plr.players[arg[1]] = arg[2];
+      var censured = Censure(arg[2],arg[1],arg[5]);
+      plr.players[arg[1]] = censured;
+
+      plr.cl_immID[arg[1]] = arg[6];
+      plr.cl_livID[arg[1]] = arg[5];
+
       plr.pingTemp[arg[1]] = arg[3];
       sendTo(ws,"P"+arg[3]); //Short type command
 
-      if (arg[2] != "1") {
-        plr.data[arg[1]] = arg[2];
+      if (censured != "1") {
+        plr.data[arg[1]] = censured;
       }
       return;
     }
@@ -1394,9 +1538,11 @@ wss.on("connection", function connection(ws) {
           if (plr.inventory[i] == "0")
             plr.inventory[i] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
           if (plr.backpack[i] == "0")
-            plr.backpack[i] =
-              "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+            plr.backpack[i] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
           if (plr.upgrades[i] == "0") plr.upgrades[i] = "0;0;0;0;0";
+
+          plr.sHealth[i] = parseFloatE(plr.data[i].split(";")[8]);
+          plr.sRegTimer[i] = parseFloatE(plr.data[i].split(";")[10]);
 
           SaveAllNow();
           plr.conID[i] = arg[3];
@@ -1484,6 +1630,8 @@ wss.on("connection", function connection(ws) {
       //FobsChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[startFob1] 5[startFob2] 6[EndFob] 7[DropID] 8[Count] 9[Slot] 10![CandyCount]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
+      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
+
       var fPlayerID = arg[1];
       var fUlamID = arg[2];
       var fPlaceID = arg[3];
@@ -1497,12 +1645,12 @@ wss.on("connection", function connection(ws) {
 
       var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
 
-      if (
-        checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) ||
-        (["13", "23", "25", "27"].includes(fStartFob1) &&
-          checkFobChange(fUlamID, fPlaceID, "40", "-1"))
-      ) {
-        if (invChangeTry(fPlayerID, fDropID, fCount, fSlot)) {
+      if ((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) ||
+         (["13", "23", "25", "27"].includes(fStartFob1) &&
+         checkFobChange(fUlamID, fPlaceID, "40", "-1"))) && !overolded)
+      {
+        if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
+        {
           fobChange(fUlamID, fPlaceID, fEndFob);
           fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
           sendToAllClients(
@@ -1529,7 +1677,8 @@ wss.on("connection", function connection(ws) {
               plr.livID[fPlayerID]
           );
           return;
-        } else kick(fPlayerID);
+        }
+        else kick(fPlayerID);
       }
 
       //If failied
@@ -1563,6 +1712,8 @@ wss.on("connection", function connection(ws) {
       //FobsDataChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[Item] 5[DeltaCount] 6[Slot] 7[Id21]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
+      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
+
       var gPlayerID = arg[1];
       var gUlamID = arg[2];
       var gPlaceID = arg[3];
@@ -1570,12 +1721,11 @@ wss.on("connection", function connection(ws) {
       var gDeltaCount = arg[5];
       var gSlot = arg[6];
       var gID21 = arg[7];
-
-      console.log(arg.join(" "));;
-      console.log(checkFobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount, gID21));
       
-      if (checkFobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount, gID21)) {
-        if (invChangeTry(gPlayerID, gItem, -gDeltaCount, gSlot)) {
+      if (checkFobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount, gID21) && !overolded)
+      {
+        if (invChangeTry(gPlayerID, gItem, -gDeltaCount, gSlot))
+        {
           var gCountEnd = fobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount);
           sendToAllClients(
             "/RetFobsDataChange " +
@@ -1607,7 +1757,8 @@ wss.on("connection", function connection(ws) {
               plr.livID[gPlayerID]
           );
           return;
-        } else kick(gPlayerID);
+        }
+        else kick(gPlayerID);
       }
 
       //If failied
@@ -1690,6 +1841,7 @@ wss.on("connection", function connection(ws) {
     if (arg[0] == "/InventoryChange") {
       //InventoryChange 1[PlayerID] 2[Item] 3[Count] 4[Slot]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if(arg[msl - 1] != plr.livID[arg[1]]) return;
 
       var liPlaID = arg[1];
       var liItem = arg[2];
@@ -1701,6 +1853,7 @@ wss.on("connection", function connection(ws) {
     if (arg[0] == "/Upgrade") {
       //Upgrade 1[PlayerID] 2[item] 3[count] 4[upgID] 5[slot]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if(arg[msl - 1] != plr.livID[arg[1]]) return;
 
       var ljPlaID = arg[1];
       var ljItem = arg[2];
@@ -1720,30 +1873,50 @@ wss.on("connection", function connection(ws) {
         );
       } else kick(ljPlaID);
     }
-    if (arg[0] == "/InventoryReset") {
-      //InventoryReset 1[PlayerID] 2[NewLivID]
+    if (arg[0] == "/ClientDamage") {
+      //ClientDamage 1[PlayerID] 2[dmg] 3[ImmID] 4[LivID] 5[info]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
-      plr.livID[arg[1]] = arg[2];
 
-      var iID = arg[1];
+      var serLivID = plr.livID[arg[1]];
+      var serImmID = plr.immID[arg[1]];
+      var cliLivID = arg[4];
+      var cliImmID = arg[3];
 
-      plr.data[iID] =
-        plr.data[iID].split(";")[6] +
-        ";" +
-        plr.data[iID].split(";")[7] +
-        ";0;0;0;0;" +
-        plr.data[iID].split(";")[6] +
-        ";" +
-        plr.data[iID].split(";")[7] +
-        ";1;0;0;0";
-      plr.inventory[iID] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-      plr.upgrades[iID] = "0;0;0;0;0";
-      plr.backpack[iID] =
-        "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+      var cis="";
+      if(serLivID==cliLivID) cis+="T"; else cis+="F";
+      if(serImmID==cliImmID) cis+="T"; else cis+="F";
+
+      if(cis=="TT")
+        CookedDamage(arg[1],arg[2]);
+
+      if(arg[5]=="K") //client kill
+      {
+        switch(cis)
+        {
+          case "TT": kill(arg[1]); break;
+          case "TF": kick(arg[1]); return;
+          case "FT": break;
+          case "FF": kick(arg[1]); return;
+        }
+      }
+      if(arg[5]=="I") //client immortal
+      {
+        switch(cis)
+        {
+          case "TT": immortal(arg[1]); break;
+          case "TF": break;
+          case "FT": kick(arg[1]); return;
+          case "FF": kick(arg[1]); return;
+        }
+      }
+
+      var censured = Censure(plr.players[arg[1]],arg[1],cliLivID);
+      plr.players[arg[1]] = censured;
     }
     if (arg[0] == "/Craft") {
       //Craft 1[PlaID] 2[Id1] 3[Co1] 4[Sl1] 5[Id2] 6[Co2] 7[Sl2] 8[IdE] 9[CoE] 10[SlE]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if(arg[msl - 1] != plr.livID[arg[1]]) return;
 
       var cPlaID = arg[1];
 
@@ -1833,6 +2006,7 @@ wss.on("connection", function connection(ws) {
     if (arg[0] == "/Backpack") {
       //Backpack 1[PlayerID] 2[Item] 3[Count] 4[Slot]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if(arg[msl - 1] != plr.livID[arg[1]]) return;
 
       var bpPlaID = arg[1];
       var bpItem = arg[2];
@@ -1850,8 +2024,8 @@ wss.on("connection", function connection(ws) {
       plr.backpack[bpPlaID] = safeCopyB;
       kick(bpPlaID);
     }
-    if (arg[0] == "/ImNotKicked") {
-      //ImNotKicked 1[PlayerID]
+    if (arg[0] == "/ImJoined") {
+      //ImJoined 1[PlayerID] 2[immID] 3[livID]
       var imkConID = arg[1];
       if (!checkPlayer(arg[1], arg[msl - 2]))
         try{
@@ -1859,8 +2033,14 @@ wss.on("connection", function connection(ws) {
         }catch{}
       else {
         console.log(plr.nicks[imkConID] + " joined [" + imkConID + "]");
+
         se3_ws[imkConID] = ws;
         se3_wsS[imkConID] = "game";
+
+        plr.cl_immID[imkConID] = arg[3];
+        plr.cl_livID[imkConID] = arg[4];
+        plr.connectionTime[imkConID] = 0;
+
         sendToAllClients(
           "/RetInfoClient " +
             (plr.nicks[imkConID] + " joined the game").replaceAll(" ", "`") +
@@ -1872,7 +2052,7 @@ wss.on("connection", function connection(ws) {
         //RPC send everything to new player
         var eff,lngt = plr.players.length;
         var gtt = GetRPC(plr.players,lngt,true);
-        eff = "/RPC " + max_players + " " + gtt + " X X"; //E - everything
+        eff = "/RPC " + max_players + " " + gtt + " X X";
         sendTo(ws,eff);
       }
     }
@@ -2581,7 +2761,7 @@ function laggy_comment(nn)
 
 console.log("Server started on version: [" + serverVersion + "]");
 console.log("Max players: [" + max_players + "]");
-console.log("Port: [27683]" + laggy_comment(max_players));
+console.log("Port: [" + connectionOptions.port + "]" + laggy_comment(max_players));
 console.log("-------------------------------");
 
 setTerminalTitle("SE3 server | "+serverVersion+" | "+getRandomFunnyText());
