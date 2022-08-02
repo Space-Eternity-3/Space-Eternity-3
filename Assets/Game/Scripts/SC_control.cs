@@ -899,7 +899,9 @@ public class SC_control : MonoBehaviour {
 
 						NCT[i].text = nick_RPC[i];
 						NCH[i].value = 1;
-						RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],1f);
+							float zzz = 1f;
+							if(rposX_RPC[i]==0f && rposY_RPC[i]==0f) zzz=300f;
+						RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],zzz);
 							atf = 0;
 						PL[i].ArtSource = atf;
 						PL[i].OtherSource = 0;
@@ -912,8 +914,12 @@ public class SC_control : MonoBehaviour {
 						PL[i].sourcedRotation = Char1ToRot(ari,8); //Rotation
 
 						NCT[i].text = nick_RPC[i];
-						NCH[i].value = health_RPC[i];
-						RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],300f);
+							float liv = health_RPC[i];
+							if(liv<0.04f) liv = 0.04f;
+						NCH[i].value = liv;
+							float zzz = 1f;
+							if(rposX_RPC[i]==0f && rposY_RPC[i]==0f) zzz=300f;
+						RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],zzz);
 							atf = others2_RPC[i];
 						PL[i].ArtSource = atf;
 						PL[i].OtherSource = others1_RPC[i];

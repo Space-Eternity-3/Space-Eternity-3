@@ -614,18 +614,51 @@ setInterval(function () { // <interval #2>
     date_before++;
     if((date_before-date_start) % 20 == 0) //precisely 50 times per second
     {
-      //Bullet movement
-      var i, lngt = bulletsT.length;
+      //Bullet movement && check player collision
+      var i, j, lngt = bulletsT.length;
       for(i=0;i<lngt;i++)
       {
+        var start_xa = bulletsT[i].pos.x;
+        var start_ya = bulletsT[i].pos.y;
+        var xv = bulletsT[i].vector.x;
+        var yv = bulletsT[i].vector.y;
+
+        var xa = start_xa - (xv/3);
+        var ya = start_ya - (yv/3);
+        var xb = start_xa + (4*xv/3);
+        var yb = start_ya + (4*yv/3);
+
+        var aab = (yb-ya)/(xb-xa);
+        var adc = -1/(aab);
+
+        for(j=0;j<max_players;j++)
+        {
+          if(plr.players[j]!="0" && plr.players[j]!="1" && bulletsT[i].owner!=j)
+          {
+            var plas = plr.players[j].split(";");
+            var xc = parseFloatE(plas[0]);
+            var yc = parseFloatE(plas[1]);
+            var xd = (yc-ya + (aab*xa)-(adc*xc))/(aab-adc);
+            var yd = aab*(xd-xa) + ya;
+            if((xd>xa && xd>xb) || (xd<xa && xd<xb)) continue;
+            if(((xd-xc)**2)+((yd-yc)**2) <= ((1)**2))
+            {
+              DamageFLOAT(j,5);
+              destroyBullet(i,["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age-1]);
+              break;
+            }
+          }
+        }
+
         bulletsT[i].age++;
         if(bulletsT[i].age>=bulletsT[i].max_age)
         {
           bulletsT.remove(i);
           lngt--; i--; continue;
         }
-        bulletsT[i].pos.x += bulletsT[i].vector.x;
-        bulletsT[i].pos.y += bulletsT[i].vector.y;
+
+        bulletsT[i].pos.x += xv;
+        bulletsT[i].pos.y += yv;
       }
 
       //Health regeneration
