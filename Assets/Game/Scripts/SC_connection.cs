@@ -59,14 +59,7 @@ public class SC_connection : MonoBehaviour
             ador = "wss://"+ador;
 
         lngt = ador.Length;
-        if(
-            ador[lngt-6]!=':' &&
-            ador[lngt-5]!=':' &&
-            ador[lngt-4]!=':' &&
-            ador[lngt-3]!=':' &&
-            ador[lngt-2]!=':' &&
-            ador[lngt-1]!=':'
-        ) ador += ":27683";
+        if(ador[lngt-1]==':') ador += "27683";
 
         return ador;
     }
