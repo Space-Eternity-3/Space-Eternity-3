@@ -7,7 +7,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 1.13'; <Don't change>
-name: 'Spike Damage 1'; <Rename it>
+name: 'Example 1.13'; <Rename it>
 craftings
 {
 	<Category>1
@@ -86,8 +86,8 @@ craftings
 		title_image: storage;
 		1: stone(4) + copper(2) -> storage;
 		2: stone_with_crystals(3) + stone_drill -> driller;
-		3: stone(5) + death_alien -> stone_tomb;
-		4: stone_tomb -> death_alien;
+		3: stone(5) + dead_alien -> stone_tomb;
+		4: stone_tomb -> dead_alien;
 	}
 	<Category>11
 	{
@@ -98,10 +98,17 @@ craftings
 	<Category>12
 	{
 		title_image: alien;
-		1: death_alien + bush(3) -> alien;
-		2: death_alien + magnetic_stone(3) -> magnetic_alien;
-		3: death_alien + red_stone(3) -> red_alien;
-		4: death_alien -> stone(5);
+		1: dead_alien + bush(3) -> alien;
+		2: dead_alien + magnetic_stone(3) -> magnetic_alien;
+		3: dead_alien + red_stone(3) -> red_alien;
+		4: dead_alien -> stone(5);
+	}
+	<Category>13
+	{
+		title_image: useless_artefact;
+		1: stone -> useless_artefact;
+		2: stone -> useless_thing_1;
+		3: stone -> useless_thing_2;
 	}
 	<Max 512 categories>
 }
@@ -130,7 +137,7 @@ modified_drops
 }
 gameplay
 {
-	health_level_add: -20;
+	health_level_add: 0;
 	drill_level_add: 0;
 	bullet_level_add: 0;
 	
@@ -140,7 +147,7 @@ gameplay
 	turbo_use_multiplier: 2;
 	crash_minimum_energy: 5;
 	crash_damage_multiplier: 1;
-	spike_damage: 0,01;
+	spike_damage: 10;
 	vacuum_drag_multiplier: 1;
 	
 	all_speed_multiplier: 1;
@@ -305,17 +312,19 @@ game_translate <advanced settings>
 		37: treasure;					<not used>
 		38: geyzer;
 		39: red_bullet;					<only item>
-		40: death_alien;
+		40: dead_alien;
 		41: gray_artefact;
 		42: protection_artefact;
 		43: impulse_artefact;
 		44: illusion_artefact;
 		45: immortality_artefact;
-		46: frozen_artefact;			<comming soon>
+		46: useless_artefact;
 		47: unstable_artefact;
 		48: unstable_matter;
 		49: packed_bedrock;				<only object>
 		50: bedrock_stone;				<only object>
 		51: metal_piece;
+		52: useless_thing_1;			<sth soon>
+		53: useless_thing_2;			<sth soon>
 	}
 }

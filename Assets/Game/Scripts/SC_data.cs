@@ -29,7 +29,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion="Beta 1.6",clientRedVersion="Beta_1_6";
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 27;
+	int gpl_number = 30;
     
 	bool lockData = false;
 	bool remember = false;
@@ -986,7 +986,11 @@ public class SC_data : MonoBehaviour
             {
                 if(psPath[0]=="gameplay")
                 {
-                    try{
+                    try{ //3, 27, 28, 29, 30, 31
+                    //copper_bullet_damage <- bullet_level_add
+                    //red_bullet_damage
+                    //unstable_matter_damage
+                    //at_impulse_damage
 
 					//Normal gameplay
                     if(psPath[1]=="turbo_regenerate_multiplier") Gameplay[0]=float.Parse(value[i])+"";
@@ -994,13 +998,16 @@ public class SC_data : MonoBehaviour
 
 					if(psPath[1]=="health_level_add") Gameplay[26]=float.Parse(value[i])+"";
                     if(psPath[1]=="drill_level_add") Gameplay[2]=float.Parse(value[i])+"";
-                    if(psPath[1]=="bullet_level_add") Gameplay[3]=float.Parse(value[i])+"";
 
                     if(psPath[1]=="health_regenerate_cooldown") Gameplay[4]=float.Parse(value[i])+"";
                     if(psPath[1]=="health_regenerate_multiplier") Gameplay[5]=float.Parse(value[i])+"";
                     if(psPath[1]=="crash_minimum_energy") Gameplay[6]=float.Parse(value[i])+"";
                     if(psPath[1]=="crash_damage_multiplier") Gameplay[7]=float.Parse(value[i])+"";
+                    
                     if(psPath[1]=="spike_damage") Gameplay[8]=float.Parse(value[i])+"";
+                    if(psPath[1]=="unstable_matter_damage") Gameplay[28]=float.Parse(value[i])+"";
+                    if(psPath[1]=="copper_bullet_damage") Gameplay[3]=float.Parse(value[i])+"";
+                    if(psPath[1]=="red_bullet_damage") Gameplay[27]=float.Parse(value[i])+"";
 
                     if(psPath[1]=="player_normal_speed") Gameplay[9]=float.Parse(value[i])+"";
                     if(psPath[1]=="player_brake_speed") Gameplay[10]=float.Parse(value[i])+"";
@@ -1018,6 +1025,7 @@ public class SC_data : MonoBehaviour
 					if(psPath[1]=="at_impulse_power_regenerate_multiplier") Gameplay[18]=float.Parse(value[i])+"";
 					if(psPath[1]=="at_impulse_time") Gameplay[19]=float.Parse(value[i])+"";
 					if(psPath[1]=="at_impulse_speed") Gameplay[20]=float.Parse(value[i])+"";
+                    if(psPath[1]=="at_impulse_damage") Gameplay[29]=float.Parse(value[i])+"";
 					
 					if(psPath[1]=="at_illusion_power_regenerate_multiplier") Gameplay[21]=float.Parse(value[i])+"";
 					if(psPath[1]=="at_illusion_power_use_multiplier") Gameplay[22]=float.Parse(value[i])+"";

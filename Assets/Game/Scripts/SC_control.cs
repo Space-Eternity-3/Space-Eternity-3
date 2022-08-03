@@ -915,7 +915,7 @@ public class SC_control : MonoBehaviour {
 
 						NCT[i].text = nick_RPC[i];
 							float liv = health_RPC[i];
-							if(liv<0.04f) liv = 0.04f;
+							if(liv<0f) liv = 0f; //relict
 						NCH[i].value = liv;
 							float zzz = 1f;
 							if(rposX_RPC[i]==0f && rposY_RPC[i]==0f) zzz=300f;
@@ -1103,8 +1103,11 @@ public class SC_control : MonoBehaviour {
 			if(licznikD==0) licznikD=5;
 			else if(licznikD<=5)
 			{
+				string neme = collision.gameObject.name;
 				licznikD=25;
-				float dmgg = float.Parse(SC_data.Gameplay[8]);
+				float dmgg = 0f;
+				if(neme=="damager2") dmgg = float.Parse(SC_data.Gameplay[8]); //spikes
+				if(neme=="damager3") dmgg = float.Parse(SC_data.Gameplay[28]); //unstable matter
 				if(dmgg!=0f) DamageFLOAT(dmgg);
 			}
 		}
@@ -1348,6 +1351,7 @@ public class SC_control : MonoBehaviour {
 				if(bul.mode!="mother" && bul.ID+""==arg[2])
 				{
 					bul.max_age = int.Parse(arg[3]);
+					bul.destroy_mode = arg[4];
 					bul.CheckAge();
 				}
 			}

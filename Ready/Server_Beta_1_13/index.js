@@ -12,11 +12,11 @@ var serverVersion = "Beta 1.13";
 var serverRedVersion = "Beta_1_13";
 var clientDatapacksVar = "";
 var seed;
-var gpl_number = 27;
+var gpl_number = 30;
 var max_players = 128;
 
 if(Number.isInteger(config.max_players))
-    max_players =  config.max_players;
+  max_players = config.max_players;
 
 var chunk_data = [];
 var chunk_names = [];
@@ -97,7 +97,9 @@ const bulletTemplate = {
   pos: {
     x: 0,
     y: 0
-  }
+  },
+
+  damaged: []
 };
 
 var bulletsT = [];
@@ -139,7 +141,11 @@ modifiedDrops.fill(""); Object.seal(modifiedDrops);
 let connectionOptions = {
   port: 27683,
 };
+if(Number.isInteger(config.port))
+  connectionOptions.port = config.port;
+
 const wss = new WebSocket.Server(connectionOptions);
+
 function sendToAllClients(data) {
   wss.clients.forEach(function (client) {
     sendTo(client,data);
@@ -604,6 +610,23 @@ function CookedDamage(pid,dmg)
   sendToAllClients("/RetEmitParticles "+pid+" 2 "+xx+" "+yy+" X X");
   sendToAllClients("/RetInvisibilityPulse "+pid+" wait X X");
 }
+function getBulletDamage(type,owner,pid)
+{
+  var artid = plr.backpack[pid].split(";")[30] - 41;
+  if(plr.backpack[pid].split(";")[31]==0) artid = -41;
+
+  if(artid==6 && type==3) return 0;
+
+  var dmg = 0;
+  if(type==1) dmg = parseFloatE(gameplay[3]);
+  if(type==2) dmg = parseFloatE(gameplay[27]);
+  if(type==3) dmg = parseFloatE(gameplay[28]);
+
+  if(type!=3 && plr.players[owner]!="0")
+    dmg *= Math.pow(1.08,parseIntE(plr.upgrades[owner].split(";")[3]));
+
+  return dmg;
+}
 
 //HUB INTERVAL <interval #0>
 var date_before = Date.now();
@@ -623,10 +646,10 @@ setInterval(function () { // <interval #2>
         var xv = bulletsT[i].vector.x;
         var yv = bulletsT[i].vector.y;
 
-        var xa = start_xa - (xv/3);
-        var ya = start_ya - (yv/3);
-        var xb = start_xa + (4*xv/3);
-        var yb = start_ya + (4*yv/3);
+        var xa = start_xa - 1;
+        var ya = start_ya - 1;
+        var xb = start_xa + (xv) + 1;
+        var yb = start_ya + (yv) + 1;
 
         var aab = (yb-ya)/(xb-xa);
         var adc = -1/(aab);
@@ -643,9 +666,15 @@ setInterval(function () { // <interval #2>
             if((xd>xa && xd>xb) || (xd<xa && xd<xb)) continue;
             if(((xd-xc)**2)+((yd-yc)**2) <= ((1)**2))
             {
-              DamageFLOAT(j,5);
-              destroyBullet(i,["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age-1]);
-              break;
+              if(bulletsT[i].type!=3) {
+                DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j) );
+                destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], false);
+                break;
+              }
+              else if(!bulletsT[i].damaged.includes(j)) {
+                DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j) );
+                bulletsT[i].damaged.push(j);
+              }
             }
           }
         }
@@ -666,7 +695,9 @@ setInterval(function () { // <interval #2>
       {
         if(plr.data[i]!="0" && plr.data[i]!="1" && se3_wsS[i]=="game")
         {
-          var artid = plr.backpack[i].split(";")[15] - 41;
+          var artid = plr.backpack[i].split(";")[30] - 41;
+          if(plr.backpack[i].split(";")[31]==0) artid = -41;
+
           var sth1 = plr.sHealth[i];
 
           if(plr.sHealth[i]<1 && plr.sRegTimer[i]==0 && (plr.livID[i]==plr.cl_livID[i] && plr.immID[i]==plr.cl_immID[i]))
@@ -880,7 +911,7 @@ function spawnBullet(tpl,arg)
       " X X"
   );
 }
-function destroyBullet(n,arg)
+function destroyBullet(n,arg,noise)
 {
   bulletsT[n].max_age = parseIntP(arg[3]);
   sendToAllClients(
@@ -888,6 +919,7 @@ function destroyBullet(n,arg)
     arg[1]+" "+
     arg[2]+" "+
     arg[3]+" "+
+    noise +" "+
     " X X"
   );
 }
@@ -2001,6 +2033,7 @@ wss.on("connection", function connection(ws) {
       tpl.start = Object.assign({},bulletTemplate.start);
       tpl.vector = Object.assign({},bulletTemplate.vector);
       tpl.pos = Object.assign({},bulletTemplate.pos);
+      tpl.damaged = [];
 
       tpl.ID = parseIntP(arg[7]);
       tpl.owner = parseIntP(arg[1]);
@@ -2011,6 +2044,9 @@ wss.on("connection", function connection(ws) {
       tpl.vector.y = parseFloatP(arg[6]);
       tpl.pos = tpl.start;
 
+      if(tpl.vector.x==0) tpl.vector.x = 0.00001;
+      if(tpl.vector.y==0) tpl.vector.y = 0.00001;
+
       spawnBullet(tpl,arg);
     }
     if (arg[0] == "/NewBulletRemove") {
@@ -2020,7 +2056,7 @@ wss.on("connection", function connection(ws) {
       var lngt = bulletsT.length;
       for(i=0;i<lngt;i++)
         if(bulletsT[i].owner==arg[1] && bulletsT[i].ID==arg[2])
-          destroyBullet(i,arg);
+          destroyBullet(i,arg,true);
     }
     if (arg[0] == "/InfoUp") {
       //InfoUp 1[info] 2[PlayerID]
@@ -2311,8 +2347,6 @@ function finalTranslate(varN) {
             gameplay[26] = parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "drill_level_add")
             gameplay[2] = parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "bullet_level_add")
-            gameplay[3] = parseFloatE(jse3Dat[i]) + "";
 
           if (psPath[1] == "health_regenerate_cooldown")
             gameplay[4] = parseFloatE(jse3Dat[i]) + "";
@@ -2322,8 +2356,15 @@ function finalTranslate(varN) {
             gameplay[6] = parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "crash_damage_multiplier")
             gameplay[7] = parseFloatE(jse3Dat[i]) + "";
+          
           if (psPath[1] == "spike_damage")
             gameplay[8] = parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "unstable_matter_damage")
+            gameplay[28] = parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "copper_bullet_damage")
+            gameplay[3] = parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "red_bullet_damage")
+            gameplay[27] = parseFloatE(jse3Dat[i]) + "";
 
           if (psPath[1] == "player_normal_speed")
             gameplay[9] = parseFloatE(jse3Dat[i]) + "";
@@ -2353,6 +2394,8 @@ function finalTranslate(varN) {
             gameplay[19] = parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "at_impulse_speed")
             gameplay[20] = parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "at_impulse_damage")
+            gameplay[29] = parseFloatE(jse3Dat[i]) + "";
 
           if (psPath[1] == "at_illusion_power_regenerate_multiplier")
             gameplay[21] = parseFloatE(jse3Dat[i]) + "";

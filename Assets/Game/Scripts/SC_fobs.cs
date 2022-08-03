@@ -462,7 +462,9 @@ public class SC_fobs : MonoBehaviour
 
 		if(SC_control.impulse_enabled) return;
 
-        if(IsEmpty&&Communtron3.position.y==0f&&distance<15f&&topDistance(safeDistance(SC_slots.SelectedItem()))&&!Input.GetMouseButton(0)&&Communtron2.position.x==0f&&
+        float sdst = safeDistance(SC_slots.SelectedItem());
+
+        if(IsEmpty&&Communtron3.position.y==0f&&distance<15f&&distance>=sdst&&topDistance(sdst)&&!Input.GetMouseButton(0)&&Communtron2.position.x==0f&&
         HasPhysicalVersion(SC_slots.SelectedItem())&&MTPblocker<=0)
         {
             if(!Input.GetMouseButton(1)&&emptyShow)

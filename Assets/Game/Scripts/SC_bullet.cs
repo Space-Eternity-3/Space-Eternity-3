@@ -32,6 +32,7 @@ public class SC_bullet : MonoBehaviour
     public int float_age = 0;
     public bool turn_used = false;
     public bool controller = false;
+    public string destroy_mode = "";
     bool multiplayer = false;
     bool destroyed = false;
     int looper = 0;
@@ -128,7 +129,7 @@ public class SC_bullet : MonoBehaviour
         }
         Destroy(gameObject);
 
-        if(!graphics) return;
+        if(!graphics || destroy_mode=="false") return;
         if(type==1 || type==2) SC_sounds.PlaySound(transform.position, 2, 1);
         if(type==3) SC_sounds.PlaySound(transform.position, 2, 15);
 

@@ -1,3 +1,4 @@
 {
-	"max_players": 128
+	"max_players": 128,
+	"port": 27683
 }
