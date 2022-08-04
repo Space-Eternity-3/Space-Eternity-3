@@ -55,9 +55,7 @@ craftings
 		title_image: red_stone;
 		1: red_stone(5) -> packed_red;
 		2: packed_red -> red_stone(5);
-		3: red_stone(2) -> red_spikes;
-		4: red_spikes -> red_stone(2);
-		5: red_stone -> red_bullet(3);
+		3: red_stone -> red_bullet(3);
 	}
 	<Category>7
 	{
@@ -125,7 +123,6 @@ modified_drops
 	medium_amethyst: small_amethyst(2);
 	large_amethyst: small_amethyst(3);
 	big_bush: bush(3);
-	red_spikes: red_stone(2);
 	medium_diamond: small_diamond(2);
 }
 gameplay

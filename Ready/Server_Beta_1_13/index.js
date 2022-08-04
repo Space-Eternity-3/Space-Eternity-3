@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const config = require("./config.json");
 const { runInNewContext } = require("vm");
+const { parse } = require("path");
 
 const health_base = 1.0985;
 const unit = 0.0008;
@@ -17,6 +18,9 @@ var max_players = 128;
 
 if(Number.isInteger(config.max_players))
   max_players = config.max_players;
+
+var pvp = true;
+if(config.pvp==false) pvp = false;
 
 var chunk_data = [];
 var chunk_names = [];
@@ -59,6 +63,7 @@ var plr = {
   pushInventory: ["0"],
 
   mems: [Object.assign({},memTemplate)],
+  impulsed: [[]],
 };
 
 var ki, kj, kd = Object.keys(plr);
@@ -68,6 +73,8 @@ for(ki=1;ki<max_players;ki++)
   {
     if(kd[kj]=="mems")
       plr[kd[kj]].push(Object.assign({},plr[kd[kj]][0]));
+    else if(kd[kj]=="impulsed")
+      plr[kd[kj]].push([]);
     else
       plr[kd[kj]].push(plr[kd[kj]][0]);
   }
@@ -646,14 +653,18 @@ setInterval(function () { // <interval #2>
         var xv = bulletsT[i].vector.x;
         var yv = bulletsT[i].vector.y;
 
-        var xa = start_xa - 1;
-        var ya = start_ya - 1;
-        var xb = start_xa + (xv) + 1;
-        var yb = start_ya + (yv) + 1;
+        var xn = (xv/Math.sqrt(xv*xv + yv*yv))
+        var yn = (yv/Math.sqrt(xv*xv + yv*yv))
+
+        var xa = start_xa - xn;
+        var ya = start_ya - yn;
+        var xb = start_xa + (xv) + xn;
+        var yb = start_ya + (yv) + yn;
 
         var aab = (yb-ya)/(xb-xa);
         var adc = -1/(aab);
 
+        if(pvp)
         for(j=0;j<max_players;j++)
         {
           if(plr.players[j]!="0" && plr.players[j]!="1" && bulletsT[i].owner!=j)
@@ -1552,7 +1563,7 @@ wss.on("connection", function connection(ws) {
     size_download += (msg+"").length;
 
     if (arg[0] == "/PlayerUpdate") {
-      //PlayerUpdate 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[time] 5[livID] 6[immID]
+      //PlayerUpdate 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[time] 5[livID] 6[immID] 7[isImpulse] *8[memX] *9[memY]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
       if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = arg[4];
@@ -1568,6 +1579,51 @@ wss.on("connection", function connection(ws) {
 
       if (censured != "1") {
         plr.data[arg[1]] = censured;
+      }
+
+      //impulse player damage
+      var j, caray = censured.split(";");
+      if(caray.length>1 && pvp && arg[7]=="T")
+      {
+        var rr = 2;
+
+        var xa = parseFloatE(caray[0]);
+        var ya = parseFloatE(caray[1]);
+        var xb = parseFloatE(arg[8]);
+        var yb = parseFloatE(arg[9]);
+
+        if(xb==xa) xb+=0.00001;
+        if(yb==ya) yb+=0.00001;
+
+        var xv = xb-xa;
+        var yv = yb-ya;
+
+        var xn = (rr*xv/Math.sqrt(xv*xv + yv*yv))
+        var yn = (rr*yv/Math.sqrt(xv*xv + yv*yv))
+
+        xa = xa - xn; ya = ya - yn;
+        xb = xb + xn; yb = yb + yn;
+
+        var aab = (yb-ya)/(xb-xa);
+        var adc = -1/(aab);
+
+        for(j=0;j<max_players;j++)
+        {
+          if(plr.players[j]!="0" && plr.players[j]!="1" && arg[1]!=j && !plr.impulsed[arg[1]].includes(j))
+          {
+            var plas = plr.players[j].split(";");
+            var xc = parseFloatE(plas[0]);
+            var yc = parseFloatE(plas[1]);
+            var xd = (yc-ya + (aab*xa)-(adc*xc))/(aab-adc);
+            var yd = aab*(xd-xa) + ya;
+            if((xd>xa && xd>xb) || (xd<xa && xd<xb)) continue;
+            if(((xd-xc)**2)+((yd-yc)**2) <= ((rr)**2))
+            {
+              DamageFLOAT(j,parseFloatE(gameplay[29]))
+              plr.impulsed[arg[1]].push(j);
+            }
+          }
+        }
       }
       return;
     }
@@ -1902,6 +1958,11 @@ wss.on("connection", function connection(ws) {
       //FobsPing 1[id]
       var fpID = arg[1];
       sendTo(ws,"/RetFobsPing " + fpID + " X X");
+    }
+    if (arg[0] == "/ImpulseStart") {
+      //ImpulseStart 1[PlayerID]
+      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      plr.impulsed[arg[1]] = [];
     }
     if (arg[0] == "/InventoryChange") {
       //InventoryChange 1[PlayerID] 2[Item] 3[Count] 4[Slot]

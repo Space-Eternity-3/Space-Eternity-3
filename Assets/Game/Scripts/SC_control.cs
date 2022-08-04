@@ -168,6 +168,7 @@ public class SC_control : MonoBehaviour {
 	string RPU = "XXX";
 	int MTPloadedCounter=5;
 	Quaternion lock_rot = new Quaternion(0f,0f,0f,0f);
+	Vector3 memPosition = new Vector3(0f,0f,0f);
 	
 	public bool impulse_enabled;
 	public int impulse_time;
@@ -965,7 +966,9 @@ public class SC_control : MonoBehaviour {
 		//Websocket sends
 		if((int)Communtron4.position.y==100)
 		{
-			float trX,trY,rgX,rgY,rpX,rpY,heB,fuB,poB;
+			float trX,trY,rgX,rgY,rpX,rpY,heB,fuB,poB,mPPx,mPPy;
+			string isImpulse = "F";
+			if(impulse_enabled) isImpulse = "T";
 			trX=Mathf.Round(transform.position.x*10000f)/10000f;
 			trY=Mathf.Round(transform.position.y*10000f)/10000f;
 			rgX=Mathf.Round(playerR.velocity.x*10000f)/10000f;
@@ -975,6 +978,8 @@ public class SC_control : MonoBehaviour {
 			heB=Mathf.Round(health_V*10000f)/10000f;
 			fuB=Mathf.Round(turbo_V*10000f)/10000f;
 			poB=Mathf.Round(power_V*10000f)/10000f;
+			mPPx=Mathf.Round(memPosition.x*10000f)/10000f;
+			mPPy=Mathf.Round(memPosition.y*10000f)/10000f;
 			int sendOther=enMode*16+(int)Communtron5.position.x*4+(int)Communtron2.position.x*2+(int)CommuntronM1.transform.position.x*1;
 			int sendOtherParasite=ArtSource;
 			
@@ -997,11 +1002,15 @@ public class SC_control : MonoBehaviour {
 					"/PlayerUpdate "+connectionID+" "+
 					trX+";"+trY+";"+rgX+";"+rgY+";"+
 					transform.rotation.eulerAngles.z+";"+sendOther+"&"+sendOtherParasite+";"+
-					rpX+";"+rpY+";;"+fuB+";;"+poB+" "+localPing+" 250 "+livID+" "+immID
+					rpX+";"+rpY+";;"+fuB+";;"+poB+" "+localPing+" 250 "+livID+" "+immID+" "+isImpulse
+					//---optional---
+					+" "+mPPx+" "+mPPy
 				);
 			}
-			else SendMTP("/PlayerUpdate "+connectionID+" 1 "+localPing+" 250 "+livID+" "+immID);
+			else SendMTP("/PlayerUpdate "+connectionID+" 1 "+localPing+" 250 "+livID+" "+immID+" F");
 		}
+
+		memPosition = new Vector3(transform.position.x,transform.position.y,0f);
 
 		localPing++;
 		
@@ -1593,6 +1602,8 @@ public class SC_control : MonoBehaviour {
                 SC_slots.BackpackY[i]=int.Parse(SC_data.backpack[i,1]);
             }
 		}
+
+		memPosition = transform.position;
 
 		servername.text=CommuntronM1.name;
 

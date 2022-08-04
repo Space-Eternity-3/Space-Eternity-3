@@ -159,6 +159,7 @@ public class SC_artefacts : MonoBehaviour
 				trn.GetComponent<SC_seeking>().enabled = true;
 				if((int)SC_control.Communtron4.position.y == 100)
 				{
+					SC_control.SendMTP("/ImpulseStart "+SC_control.connectionID);
 					SC_control.SendMTP("/EmitParticles "+SC_control.connectionID+" 8 0 0");
 				}
 			}
