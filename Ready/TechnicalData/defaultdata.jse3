@@ -2,11 +2,11 @@
 
 <
 Datapack documentation:
-https://se3.website/docs/Beta-1.13/
+https://se3.website/docs/Beta-1.14/
 Edit file and select it in your SE3 browser.
 >
 
-version: 'Beta 1.13'; <Don't change>
+version: 'Beta 1.14'; <Don't change>
 name: 'DEFAULT'; <Rename it>
 craftings
 {
