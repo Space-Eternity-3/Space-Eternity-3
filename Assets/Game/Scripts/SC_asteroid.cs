@@ -290,7 +290,7 @@ public class SC_asteroid : MonoBehaviour {
 					objectData[i]=arg[3+i];
 				}catch(Exception)
 				{
-					if(objectID[i]==21||objectID[i]==2) objectData[i] = "0;0";
+					if(objectID[i]==21||objectID[i]==2||objectID[i]==52) objectData[i] = "0;0";
 				}
 			}
 			UUTC(saze);
@@ -344,7 +344,7 @@ public class SC_asteroid : MonoBehaviour {
 
 				if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50&&tid!=51)
 				{
-					if(tid==21||tid==2) GenPlaceT[tid].name=objectData[ii]+";";
+					if(tid==21||tid==2||tid==52) GenPlaceT[tid].name=objectData[ii]+";";
 					try{gobT=Instantiate(GenPlaceT[tid],rotation_place,quat_angle);}catch(Exception)
 					{
 						gobT=Instantiate(GenPlaceT[0],rotation_place,quat_angle);

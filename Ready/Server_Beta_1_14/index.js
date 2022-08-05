@@ -1354,12 +1354,14 @@ function checkFobDataChange(ulam, place, item, deltaCount, id21) {
     return false;
   }
 
-  var max_count;
+  var max_count = -1;
   if (id21 == 21) max_count = 35;
   if (id21 == 2) max_count = 5;
+  if (id21 == 52) max_count = 10;
 
   if (
     chunk_data[det[0]][det[1]][21 + 2 * parseInt(place)] == "" ||
+    chunk_data[det[0]][det[1]][21 + 2 * parseInt(place)] == 0 ||
     chunk_data[det[0]][det[1]][21 + 2 * parseInt(place)] == item
   ) {
     var countEnd = parseInt(

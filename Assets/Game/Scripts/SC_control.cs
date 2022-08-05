@@ -79,6 +79,7 @@ public class SC_control : MonoBehaviour {
 	public float VacuumDrag,Engines;
 	public float unit=0.0008f;
 	public float health_base;
+	public float mushroom_force;
 
 	int localPing=0;
 	int returnedPing=0;
@@ -1092,18 +1093,27 @@ public class SC_control : MonoBehaviour {
 		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
 		Instantiate(explosion2,transform.position,transform.rotation);
 	}
+	public Vector3 Skop(float F, Vector3 vec3)
+	{
+		float sqrt = Mathf.Sqrt(vec3.x*vec3.x + vec3.y*vec3.y + vec3.z*vec3.z);
+		return vec3*F/sqrt;
+	}
 	void OnCollisionEnter(Collision collision)
     {
 		float CME=float.Parse(SC_data.Gameplay[6]); 
 
-		if(dmLicz<=0)
-       	if(collision.impulse.magnitude>CME&&collision.relativeVelocity.magnitude>CME)
+		if(collision.gameObject.name!="mini_crown")
 		{
-			dmLicz=20;
-			float head_ache=collision.impulse.magnitude-CME + 3f;
-			float hai=float.Parse(SC_data.Gameplay[7])*head_ache*1.2f;
-			DamageFLOAT(hai);
+			if(dmLicz<=0)
+       		if(collision.impulse.magnitude>CME&&collision.relativeVelocity.magnitude>CME)
+			{
+				dmLicz=20;
+				float head_ache=collision.impulse.magnitude-CME + 3f;
+				float hai=float.Parse(SC_data.Gameplay[7])*head_ache*1.2f;
+				DamageFLOAT(hai);
+			}
 		}
+		else if(Pitagoras(playerR.velocity)<=50f) playerR.velocity += Skop(mushroom_force,playerR.velocity);
     }
 	void OnTriggerStay(Collider collision)
 	{

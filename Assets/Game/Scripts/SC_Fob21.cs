@@ -22,6 +22,7 @@ public class SC_Fob21 : MonoBehaviour {
 	public SC_slots SC_slots;
 	public SC_fobs SC_fobs;
 	public int max_count;
+	public int item_allow;
 	
 	public int ID=0,uID=0,X,Y;
 	public int ASAC_cooldown;
@@ -98,7 +99,7 @@ public class SC_Fob21 : MonoBehaviour {
 				}
 			}
 		}
-		if((using_1>=ASAC_cooldown || using_1==1 || inst==1) && SC_fobs.ObjID!=2)
+		if((using_1>=ASAC_cooldown || using_1==1 || inst==1) && SC_fobs.ObjID!=2 && (item_allow==0 || item_allow==SC_slots.SelectedItem()))
 		{
 			if(inst==1) using_1 = 1;
 

@@ -23,6 +23,7 @@ public class SC_fobs : MonoBehaviour
     public bool IsEmpty, IsStorage, IsTreasure;
     public bool CandySource;
     public bool WindObject;
+    public bool StaticStorage;
 
     public int ShotID, BulletID, GrowID, GeyzerID, ObjID, ObjID2;
     public int GrowTimeMin, GrowTimeMax;
@@ -487,7 +488,7 @@ public class SC_fobs : MonoBehaviour
                 Replace(hId,multiplayer);
             }
         }
-        if(IsStorage&&distance<15f&&Communtron1.position.z==0f&&MTPblocker<=0)
+        if(IsStorage&&!StaticStorage&&distance<15f&&Communtron1.position.z==0f&&MTPblocker<=0)
         {
             if(Input.GetMouseButtonDown(0)&&!ReplaceReserved&&
             Communtron2.position.x==0f&&Communtron3.position.y==0f&&SC_Fob21.pub_count==0)
