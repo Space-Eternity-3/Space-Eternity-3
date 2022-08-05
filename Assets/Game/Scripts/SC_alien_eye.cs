@@ -5,7 +5,8 @@ using UnityEngine;
 public class SC_alien_eye : MonoBehaviour {
 
 	Transform eye;
-	int rand, Mn=0, counter;
+	public Transform[] eyes;
+	int rand, Mn=0, counter, eyeslength;
 	float Fn;
 	public int min_time;
 	public int max_time;
@@ -13,9 +14,11 @@ public class SC_alien_eye : MonoBehaviour {
 	void Start()
 	{
 		eye=gameObject.GetComponent<Transform>();
+		eyeslength = eyes.Length;
 	}
 	void FixedUpdate()
 	{
+		int i;
 		if(counter==0) counter=Random.Range(min_time,max_time);
 		if(counter>0) counter--;
 		if(counter==0)
@@ -29,7 +32,8 @@ public class SC_alien_eye : MonoBehaviour {
 			if(rand==1&&Mn==1) Mn=0;
 			Fn=Mn*0.2f;
 			eye.localPosition=new Vector3(Fn,0.18f,0f);
-			//Debug.Log("Mn"+Mn);
+			for(i=0;i<eyeslength;i++)
+				eyes[i].localPosition=new Vector3(Fn,0.18f,0f);
 		}
 	}
 }

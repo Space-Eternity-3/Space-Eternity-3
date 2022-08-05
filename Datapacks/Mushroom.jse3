@@ -141,7 +141,7 @@ gameplay
 	turbo_regenerate_multiplier: 1;
 	turbo_use_multiplier: 2;
 	crash_minimum_energy: 5;
-	crash_damage_multiplier: 1;
+	crash_damage_multiplier: 0;
 	vacuum_drag_multiplier: 1;
 	
 	all_speed_multiplier: 1;
@@ -149,7 +149,7 @@ gameplay
 	player_brake_speed: -7;
 	player_turbo_speed: 18; <Only if turbo level is 0>
 	drill_normal_speed: 8;
-	drill_brake_speed: -5;
+	drill_brake_speed: 50;
 	
 	spike_damage: 10;
 	unstable_matter_damage: 10;
