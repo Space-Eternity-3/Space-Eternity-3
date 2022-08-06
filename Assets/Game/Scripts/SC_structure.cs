@@ -17,18 +17,44 @@ public class SC_structure : MonoBehaviour
     public int X=0,Y=0,ID=1;
 	public float c_multiplier, zwalnum;
 	public string[] st_commands = new string[50];
-	public Transform[] st_structs = new Transform[50];
+	[TextArea(15,20)]
+	public string SeonField = "";
+	public Transform[] st_structs = new Transform[1024];
 
 	int counter_to_destroy = 200;
 	bool mother = true;
 	
+	string TxtToSeonArray(string str)
+	{
+		int i,lngt=str.Length;
+		string effect = "";
+		for(i=0;i<lngt;i++)
+		{
+			if(str[i]!='\t' && str[i]!='\r' && str[i]!='\n')
+				effect += str[i];
+			else
+				effect += ' ';
+		}
+		str = effect+"x"; effect="";
+		for(i=0;i<lngt;i++)
+		{
+			if((str[i]==' ' && str[i+1]!=' ') || str[i]!=' ')
+				effect += str[i];
+		}
+		return effect;
+	}
 	void Start()
 	{
 		if(transform.position.z<=100f) mother = false; else return;
 		transform.position += SC_fun.GetBiomeMove(ID);
 		
+		//OLD SEON
 		int i,lngt=st_commands.Length;
 		for(i=0;i<lngt;i++) CommandDo((ConvCmd(st_commands[i])+"          ").Split(' '),i);
+
+		//SEON
+		string final_seon = TxtToSeonArray(SeonField);
+		SeonGenerate(final_seon);
 	}
 	void FixedUpdate()
 	{
@@ -54,9 +80,15 @@ public class SC_structure : MonoBehaviour
 	}
 	string uzup20(string str)
 	{
+		if(str=="x"||str=="X") str=";";
+		int junk;
 		string[] strs = str.Split(';');
 		int i,lngt=strs.Length;
-		for(i=lngt;i<20;i++) str+=";";
+		for(i=0;i<lngt;i++)
+			if(strs[i]!="")
+				junk = int.Parse(strs[i]);
+		for(i=lngt;i<20;i++)
+			str+=";";
 		return str;
 	}
 	string ConvCmd(string cmd)
@@ -96,8 +128,291 @@ public class SC_structure : MonoBehaviour
 		
 		return retu;
 	}
+	int HashConvert(string str)
+	{
+		int i,lngt=str.Length;
+		string effect="";
+		if(str[0]=='#')
+		for(i=1;i<lngt;i++)
+			effect+=str[i];
+		return int.Parse(effect);
+	}
+	int DollarConvert(string str)
+	{
+		int i,lngt=str.Length;
+		string effect="";
+		if(str[0]=='$')
+		for(i=1;i<lngt;i++)
+			effect+=str[i];
+		return int.Parse(effect);
+	}
+	void SeonGenerate(string seon_string)
+	{
+		string[] arg = seon_string.Split(' ');
+		int i,lngt=arg.Length;
+		int current=-1, findex=-1;
+		for(i=0;i<lngt;i++)
+		{
+			try {
+
+				//Catching commands
+				if(arg[i]=="summon")
+				{
+					i++;
+					current = HashConvert(arg[i]);
+
+					i++;
+					if(arg[i]=="asteroid")
+					{
+						i++;
+						int prsize = int.Parse(arg[i]);
+						if(prsize<4 || prsize>10) prsize = 4;
+
+						i++;
+						int prtype = int.Parse(arg[i]);
+
+						i++;
+						string prfobs = uzup20(arg[i]);
+
+						SC_asteroid ast = Instantiate(asteroid,transform.position,Quaternion.identity).GetComponent<SC_asteroid>();
+						ast.GetComponent<Transform>().parent = transform;
+						st_structs[current] = ast.GetComponent<Transform>();
+				
+						int[] sXY = BuildXY(current);
+						ast.proto = true; ast.X=sXY[0]; ast.Y=sXY[1]; ast.ID=SC_fun.CheckID(ast.X,ast.Y);
+						ast.protsize = prsize;
+						ast.prottype = prtype;
+						ast.fobCode = prfobs;
+					}
+					else if(arg[i]=="wall")
+					{
+						i++;
+						int prmaterial = int.Parse(arg[i]);
+						if(prmaterial<0 || prmaterial>15) prmaterial = 0;
+				
+						Transform wal = Instantiate(stwall,transform.position,Quaternion.identity);
+						wal.parent = transform;
+						st_structs[current] = wal;
+
+						wal.GetComponent<Renderer>().material = SC_fun.st_materials[prmaterial];
+					}
+					else if(arg[i]=="piston")
+					{
+						Transform gat = Instantiate(gatepart,transform.position,Quaternion.identity);
+						gat.parent = transform;
+						st_structs[current] = gat;
+					}
+					else if(arg[i]=="respblock")
+					{
+						i++;
+						float prradius = float.Parse(arg[i]);
+
+						Transform arc = Instantiate(arcen,transform.position,Quaternion.identity);
+						arc.parent = transform;
+						st_structs[current] = arc;
+
+						arc.GetComponent<SC_resp_blocker>().radius = prradius;
+					}
+					else throw(new Exception());
+				}
+				else if(arg[i]=="catch")
+				{
+					i++;
+					if(arg[i]=="child")
+					{
+						i++;
+						findex = DollarConvert(arg[i]);
+					}
+					else
+					{
+						current = HashConvert(arg[i]);
+					}
+				}
+
+				//Transform commands
+				else if(arg[i]=="move")
+				{
+					i++;
+					if(arg[i]=="child")
+					{
+						i++;
+						float dX = float.Parse(arg[i]);
+
+						i++;
+						float dY = float.Parse(arg[i]);
+
+						SC_asteroid ast = st_structs[current].GetComponent<SC_asteroid>();
+
+						float angle = -ast.fobInfoRot[findex];
+						angle *= 3.14159f/180f;
+
+						if(!ast.fobCenPos[findex])
+						{
+							ast.fobInfoPos[findex] = st_structs[current].position;
+							ast.fobCenPos[findex] = true;
+						}
+						ast.fobInfoPos[findex] += new Vector3(
+							Mathf.Cos(angle)*dX + Mathf.Cos(angle+3.14159f/2)*dY,
+							Mathf.Sin(angle)*dX + Mathf.Sin(angle+3.14159f/2)*dY,
+							0f
+						);
+					}
+					else
+					{
+						float dX = float.Parse(arg[i]);
+
+						i++;
+						float dY = float.Parse(arg[i]);
+
+						float angle = st_structs[current].eulerAngles.z;
+						angle *= 3.14159f/180f;
+						st_structs[current].position += new Vector3(
+							Mathf.Cos(angle)*dX + Mathf.Cos(angle+3.14159f/2)*dY,
+							Mathf.Sin(angle)*dX + Mathf.Sin(angle+3.14159f/2)*dY,
+							0f
+						);
+					}
+				}
+				else if(arg[i]=="rotate")
+				{
+					i++;
+					if(arg[i]=="child")
+					{
+						i++;
+						float dA = float.Parse(arg[i]);
+
+						SC_asteroid ast = st_structs[current].GetComponent<SC_asteroid>();
+						
+						if(!ast.fobCenRot[findex])
+						{
+							ast.fobInfoRot[findex] = 0f;
+							ast.fobCenRot[findex] = true;
+						}
+						ast.fobInfoRot[findex] -= dA;
+					}
+					else
+					{
+						float dA = float.Parse(arg[i]);
+
+						float angle = st_structs[current].eulerAngles.z;
+						st_structs[current].rotation = Quaternion.Euler(0f,0f,dA+angle);
+					}
+				}
+				else if(arg[i]=="scale")
+				{
+					i++;
+					if(arg[i]=="child")
+					{
+						i++;
+						float nX = float.Parse(arg[i]);
+
+						i++;
+						float nY = float.Parse(arg[i]);
+
+						i++;
+						float nZ = float.Parse(arg[i]);
+
+						SC_asteroid ast = st_structs[current].GetComponent<SC_asteroid>();
+
+						if(!ast.fobCenScale[findex])
+						{
+							ast.fobCenScale[findex] = true;
+						}
+						ast.fobInfoScale[findex] = new Vector3(nX,nY,nZ);
+					}
+					else
+					{
+						float nX = float.Parse(arg[i]);
+
+						i++;
+						float nY = float.Parse(arg[i]);
+
+						i++;
+						float nZ = float.Parse(arg[i]);
+
+						st_structs[current].localScale = new Vector3(nX,nY,nZ);
+					}
+				}
+				else if(arg[i]=="layer")
+				{
+					i++;
+					if(arg[i]=="child")
+					{
+						i++;
+						float nZ = float.Parse(arg[i]);
+						st_structs[current].GetComponent<SC_asteroid>().fobInfoPosZ[findex] = new Vector3(0f,0f,nZ);
+					}
+					else
+					{
+						float nZ = float.Parse(arg[i]);
+						st_structs[current].position += new Vector3(0f,0f,nZ);
+					}
+				}
+				else if(arg[i]=="reset")
+				{
+					i++;
+					if(arg[i]=="child")
+					{
+						i++;
+						SC_asteroid ast = st_structs[current].GetComponent<SC_asteroid>();
+						if(arg[i]=="position")
+						{
+							ast.fobCenPos[findex] = true;
+							ast.fobInfoPos[findex] = transform.position;
+						}
+						else if(arg[i]=="rotation")
+						{
+							ast.fobCenRot[findex] = true;
+							ast.fobInfoRot[findex] = 0f;
+						}
+						else if(arg[i]=="localpos")
+						{
+							ast.fobCenPos[findex] = true;
+							ast.fobInfoPos[findex] = st_structs[current].position;
+						}
+						else throw(new Exception());
+					}
+					else if(arg[i]=="position")
+					{
+						st_structs[current].position = transform.position;
+					}
+					else if(arg[i]=="rotation")
+					{
+						st_structs[current].rotation = Quaternion.identity;
+					}
+					else if(arg[i]=="localpos")
+					{
+						st_structs[current].localPosition = new Vector3(0f,0f,0f);
+					}
+					else throw(new Exception());
+				}
+				else if(arg[i]=="parent")
+				{
+					i++;
+					if(arg[i]=="set")
+					{
+						i++;
+						int prparent = HashConvert(arg[i]);
+						st_structs[current].parent = st_structs[prparent];
+					}
+					else if(arg[i]=="remove")
+					{
+						st_structs[current].parent = transform;
+					}
+					else throw(new Exception());
+				}
+			}
+			catch(Exception) {
+				i--;
+				continue;
+			}
+		}
+	}
+	//-------------------------
+	//RELICT BUT STILL WORKING AND REQUIRED
+	//-------------------------
 	void CommandDo(string[] cmds, int index)
-	{	
+	{
 		//gen [pX;pY;pZ] [rZ] [sX;sY;sZ] -> (...)
 			// (...) ast/asr [size;type] [fobCode?] <cmdn>
 			// (...) wal [material] - <cmdn>

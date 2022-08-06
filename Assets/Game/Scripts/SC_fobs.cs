@@ -33,6 +33,7 @@ public class SC_fobs : MonoBehaviour
     int GrowTimeLeft=100;
     public int GeyzerTime=0;
     public int inGeyzer=0;
+    public Vector3 transportScale = new Vector3(1f,1f,1f);
 
     public SC_control SC_control;
     public SC_asteroid SC_asteroid;
@@ -248,6 +249,7 @@ public class SC_fobs : MonoBehaviour
             transform.position = new Vector3(0f,0f,10000f);
         }
 		gobT.GetComponent<SC_fobs>().index = index;
+        gobT.GetComponent<SC_fobs>().transportScale = transportScale;
         gobT.GetComponent<SC_fobs>().StartM();
     }
     public void StartM()
@@ -258,6 +260,12 @@ public class SC_fobs : MonoBehaviour
     {
         if(started) return;
         else started = true;
+
+        transform.localScale = new Vector3(
+			transform.localScale.x * transportScale.x,
+			transform.localScale.y * transportScale.y,
+			transform.localScale.z * transportScale.z
+		);
 
         if(transform.position.z<100f) {mother=false; true_mother=false;}
         if((int)Communtron4.position.y==100)

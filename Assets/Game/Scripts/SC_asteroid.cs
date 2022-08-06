@@ -42,9 +42,6 @@ public class SC_asteroid : MonoBehaviour {
 	string[] objectGrow = new string[32];
 
 	bool Mining=false;
-	bool AD_FuelRich=false;
-	float AD_fuelAmount=0.00065f;
-	int AD_particleID=0;
 	int AD_loottableID=0;
 	int counter=-1;
 	int counter_to_destroy = 200;
@@ -64,42 +61,17 @@ public class SC_asteroid : MonoBehaviour {
 	
 	public bool[] fobCenPos = new bool[20];
 	public bool[] fobCenRot = new bool[20];
+	public bool[] fobCenScale = new bool[20];
 	public Vector3[] fobInfoPos = new Vector3[20];
+	public Vector3[] fobInfoPosZ = new Vector3[20];
 	public Vector3[] fobInfoPosrel = new Vector3[20];
+	public Vector3[] fobInfoScale = new Vector3[20];
 	public float[] fobInfoRot = new float[20];
 
 	string worldDIR="";
 	int worldID=1;
 	string datapackDIR="./Datapacks/";
 
-	public int SetLoot(int typp, bool only_one)
-	{
-		int i,rand,lngt;
-		int[] idn = new int[2048];
-		int[] min = new int[2048];
-		int[] max = new int[2048];
-		
-		string[] dGet = SC_data.DrillLoot[typp].Split(';');
-		lngt=dGet.Length/3;
-
-		for(i=0;i<lngt&&i<2048;i++)
-		{
-			idn[i]=int.Parse(dGet[i*3]);
-			min[i]=int.Parse(dGet[i*3+1]);
-			max[i]=int.Parse(dGet[i*3+2]);
-		}
-		
-		rand=UnityEngine.Random.Range(0,1000);
-		for(i=0;i<lngt;i++)
-		{
-			if(rand>=min[i]&&rand<=max[i])
-			{
-				if(!only_one || i==0) return idn[i];
-				else return 0;
-			}
-		}
-		return 0;
-	}
 	void settings(int typpe)
 	{
 		if(typpe<=1) AD_loottableID=1;
@@ -304,6 +276,10 @@ public class SC_asteroid : MonoBehaviour {
 		if(ID!=1)
 		{
 			//UNIVERSAL Unity translate code (UUTC)
+			try{
+				transform.GetComponent<SC_drill>().type = type;
+			}catch(Exception){}
+
 			int S=(int)size;
 			float alpha=180f/S;
 			int times=2*S;
@@ -337,8 +313,10 @@ public class SC_asteroid : MonoBehaviour {
 				quat_angle.eulerAngles=new Vector3(0f,0f,gamma);
 				Vector3 modvec = new Vector3(uuX,uuY,0f);
 				Vector3 rotation_place=transform.position+modvec+fobInfoPos[ii];
-				if(fobCenRot[ii]) quat_angle.eulerAngles=new Vector3(0f,0f,-fobInfoRot[ii]);
-				if(fobCenPos[ii]) rotation_place=fobInfoPos[ii];
+
+				if(fobCenRot[ii]) quat_angle.eulerAngles = new Vector3(0f,0f,-fobInfoRot[ii]);
+				if(fobCenPos[ii]) rotation_place = fobInfoPos[ii];
+				rotation_place += fobInfoPosZ[ii];
 
 				int tid=objectID[ii]; //tid -> Physical ID
 
@@ -367,36 +345,41 @@ public class SC_asteroid : MonoBehaviour {
 				}
 				gobT.transform.parent = gameObject.transform;
 				gobT.GetComponent<SC_fobs>().index = ii;
+				if(fobCenScale[ii])
+					gobT.GetComponent<SC_fobs>().transportScale = fobInfoScale[ii];
 			}
 		}
 	}
-	void OnTriggerEnter(Collider collision)
+	public int SetLoot(int typp, bool only_one)
 	{
-		if(collision.gameObject.name=="Drill3")
+		int i,rand,lngt;
+		int[] idn = new int[2048];
+		int[] min = new int[2048];
+		int[] max = new int[2048];
+		
+		string[] dGet = SC_data.DrillLoot[typp].Split(';');
+		lngt=dGet.Length/3;
+
+		for(i=0;i<lngt&&i<2048;i++)
 		{
-			Mining=true;
+			idn[i]=int.Parse(dGet[i*3]);
+			min[i]=int.Parse(dGet[i*3+1]);
+			max[i]=int.Parse(dGet[i*3+2]);
 		}
-	}
-	void OnTriggerExit(Collider collision)
-	{
-		if(collision.gameObject.name=="Drill3")
+		
+		rand=UnityEngine.Random.Range(0,1000);
+		for(i=0;i<lngt;i++)
 		{
-			Mining=false;
+			if(rand>=min[i]&&rand<=max[i])
+			{
+				if(!only_one || i==0) return idn[i];
+				else return 0;
+			}
 		}
-	}
-	int GetTimeDrill()
-	{
-		int down=(int)(upg3down/Mathf.Pow(upg3hugity,SC_upgrades.MTP_levels[2]+float.Parse(SC_data.Gameplay[2])));
-		int up=(int)(upg3up/Mathf.Pow(upg3hugity,SC_upgrades.MTP_levels[2]+float.Parse(SC_data.Gameplay[2])));
-		return UnityEngine.Random.Range(down,up);
+		return 0;
 	}
 	void FixedUpdate()
 	{
-		int mined;
-		if(!Input.GetMouseButton(0)) counter=0;
-		counter++;
-		if(counter==1) counter=-GetTimeDrill();
-
 		if(!mother&&UUTCed&&!proto)
 		{	
 			//Optimalize
@@ -415,31 +398,6 @@ public class SC_asteroid : MonoBehaviour {
 				else counter_to_destroy--;
 			}
 			else counter_to_destroy = 200;
-		}
-		
-		//Particles
-		if(Communtron1.localScale==new Vector3(2f,2f,2f)&&Mining&&Communtron1.position.z==0f&&(Communtron3.position.y==0f||CommuntronM1.position.x==1f)&&Input.GetMouseButton(0))
-		{
-			if(AD_particleID==0)
-			{
-				rHydrogenParticles.localPosition=new Vector3(0f,1.9f,0f);
-				CommuntronM1.position=new Vector3(1f,0f,0f);
-			}
-			mined=0;
-			if(counter==0) mined=SetLoot(type,false);			
-			if(mined>0 && SC_slots.InvHaveB(mined,1,true,true,true,0))
-			{
-				int slot = SC_slots.InvChange(mined,1,true,true,true);
-				if((int)Communtron4.position.y == 100) SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" "+mined+" 1 "+slot);
-			}
-		}
-		if((!(Communtron1.localScale==new Vector3(2f,2f,2f) && Input.GetMouseButton(0)))&&Communtron1.position.z==0f)
-		{
-			if(AD_particleID==0)
-			{
-				rHydrogenParticles.localPosition=new Vector3(0f,1.9f,-1000f);
-				CommuntronM1.position=new Vector3(0f,0f,0f);
-			}
 		}
 	}
 }
