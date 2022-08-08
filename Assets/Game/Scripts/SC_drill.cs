@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class SC_drill : MonoBehaviour
 {
+	//WARNING! PUBLIC VARIABLES REQUIRED TO SET IN SC_structure
+
     bool Mining=false;
     int counter=-1;
     public int type=-1;
+	public bool freeze = false;
 
     public Transform rHydrogenParticles;
 
@@ -45,8 +48,6 @@ public class SC_drill : MonoBehaviour
 	}
     void FixedUpdate()
     {
-        if(type==-1) return;
-
         if(!Input.GetMouseButton(0)) counter=0;
 		counter++;
 		if(counter==1) counter=-GetTimeDrill();

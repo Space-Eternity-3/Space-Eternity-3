@@ -54,6 +54,11 @@ public class SC_asteroid : MonoBehaviour {
 	public string generation_code="";
 	public float upg3down, upg3up, upg3hugity;
 	
+	public Vector3 asteroidScale = new Vector3(1f,1f,1f);
+	public Vector3 normalScale = new Vector3(1f,1f,1f);
+	public bool permanent_blocker = false;
+	public bool temporary_blocker = false;
+	
 	public bool proto = false;
 	public float protsize = 4;
 	public int prottype = 0;
@@ -196,7 +201,14 @@ public class SC_asteroid : MonoBehaviour {
 		saze=size;
 		string Mg=SC_fun.GetMove(X,Y);
 		if(!proto) Move(size,Mg);
-		transform.localScale=new Vector3(size,size,size*0.75f);
+
+		normalScale = transform.localScale;
+		asteroidScale = new Vector3(1f,1f,0.75f)*size;
+		if(ID!=1) transform.localScale = new Vector3(
+			normalScale.x * asteroidScale.x,
+			normalScale.y * asteroidScale.y,
+			normalScale.z * asteroidScale.z
+		);
 		SC_resp_blocker.radius = size/2f + 3f;
 		if(!proto) generation_code = suze + biome;
 		else generation_code = suze + "t" + prottype + "t" + fobCode;
@@ -276,9 +288,9 @@ public class SC_asteroid : MonoBehaviour {
 		if(ID!=1)
 		{
 			//UNIVERSAL Unity translate code (UUTC)
-			try{
-				transform.GetComponent<SC_drill>().type = type;
-			}catch(Exception){}
+			if(transform.GetComponent<SC_drill>() != null)
+				if(!transform.GetComponent<SC_drill>().freeze)
+					transform.GetComponent<SC_drill>().type = type;
 
 			int S=(int)size;
 			float alpha=180f/S;
@@ -298,6 +310,8 @@ public class SC_asteroid : MonoBehaviour {
 			int rand,ii;
 			for(ii=0;ii<times;ii++)
 			{
+				transform.localScale = asteroidScale;
+
 				float beta = ii*alpha-transform.rotation.eulerAngles.z;
 				float gamma = -beta-fobInfoRot[ii];
 				float gammaR = gamma*(3.14159f/180f);
@@ -345,13 +359,33 @@ public class SC_asteroid : MonoBehaviour {
 				}
 				gobT.transform.parent = gameObject.transform;
 				gobT.GetComponent<SC_fobs>().index = ii;
-				if(fobCenScale[ii])
-					gobT.GetComponent<SC_fobs>().transportScale = fobInfoScale[ii];
+
+				transform.localScale = new Vector3(
+					normalScale.x * asteroidScale.x,
+					normalScale.y * asteroidScale.y,
+					normalScale.z * asteroidScale.z
+				);
+
+				if(!fobCenScale[ii])
+					fobInfoScale[ii] = new Vector3(1f,1f,1f);
+
+				gobT.transform.localScale = new Vector3(
+					gobT.transform.localScale.x / normalScale.x,
+					gobT.transform.localScale.y / normalScale.y,
+					gobT.transform.localScale.z / normalScale.z
+				);			
+				gobT.GetComponent<SC_fobs>().transportScale = new Vector3(
+					fobInfoScale[ii].x * normalScale.x,
+					fobInfoScale[ii].y * normalScale.y,
+					fobInfoScale[ii].z * normalScale.z
+				);
 			}
 		}
 	}
 	public int SetLoot(int typp, bool only_one)
 	{
+		if(typp<0 || typp>15) return 0;
+
 		int i,rand,lngt;
 		int[] idn = new int[2048];
 		int[] min = new int[2048];

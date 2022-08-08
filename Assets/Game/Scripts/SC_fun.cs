@@ -139,8 +139,7 @@ public class SC_fun : MonoBehaviour
 		string tags = GetBiomeTag(ulam);
 		if(!TagContains(tags,"structural")) return 0;
 		if(TagContains(tags,"arena")) return 1;
-		//if(TagContains(tags,"black.hole")) return 1;
-		//if(TagContains(tags,"star")) return 1;
+		//if(TagContains(tags,"struct=1")) return 2;
 		return 0;
 	}
     public bool AsteroidCheck(int ID)

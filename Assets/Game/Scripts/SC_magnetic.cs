@@ -27,7 +27,8 @@ public class SC_magnetic : MonoBehaviour {
 	}
 	void FixedUpdate()
 	{
-		if(transform.position.z>100f) return;
+		//Magnetic double check
+		if(transform.position.z>100f || transform.position.z<-100f) return;
 
 		float range;
 		float dX=player.position.x-transform.position.x;

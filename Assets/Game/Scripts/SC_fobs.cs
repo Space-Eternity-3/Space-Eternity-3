@@ -249,6 +249,7 @@ public class SC_fobs : MonoBehaviour
             transform.position = new Vector3(0f,0f,10000f);
         }
 		gobT.GetComponent<SC_fobs>().index = index;
+        gobT.transform.localScale *= gobT.transform.parent.localScale.x/(gobT.transform.parent.GetComponent<SC_asteroid>().normalScale.x*gobT.transform.parent.GetComponent<SC_asteroid>().asteroidScale.x);
         gobT.GetComponent<SC_fobs>().transportScale = transportScale;
         gobT.GetComponent<SC_fobs>().StartM();
     }
@@ -261,13 +262,15 @@ public class SC_fobs : MonoBehaviour
         if(started) return;
         else started = true;
 
+        if(transform.position.z<100f) {mother=false; true_mother=false;}
+
+        if(!mother)
         transform.localScale = new Vector3(
-			transform.localScale.x * transportScale.x,
-			transform.localScale.y * transportScale.y,
-			transform.localScale.z * transportScale.z
+			transform.localScale.x * transportScale.x, /// transform.parent.localScale.x,
+			transform.localScale.y * transportScale.y, /// transform.parent.localScale.y,
+			transform.localScale.z * transportScale.z /// transform.parent.localScale.z
 		);
 
-        if(transform.position.z<100f) {mother=false; true_mother=false;}
         if((int)Communtron4.position.y==100)
         {
             multiplayer=true;
@@ -464,6 +467,10 @@ public class SC_fobs : MonoBehaviour
     }
     void OnMouseOver()
     {
+        if(mother) return;
+		SC_asteroid asst = transform.parent.GetComponent<SC_asteroid>();
+		if(asst.permanent_blocker || asst.temporary_blocker) return;
+
         int slot;
         float oX=transform.position.x, oY=transform.position.y;
 		float pX=player.position.x, pY=player.position.y;
