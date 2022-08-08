@@ -127,6 +127,7 @@ var biomeChances = "";
 var drillLoot = new Array(16);
 var fobGenerate = new Array(16);
 var biomeTags = new Array(32);
+var customStructures = new Array(32);
 var typeSet = new Array(224);
 var gameplay = new Array(32);
 var modifiedDrops = new Array(128);
@@ -140,6 +141,7 @@ var size_updates = 0;
 drillLoot.fill(""); Object.seal(drillLoot);
 fobGenerate.fill(""); Object.seal(fobGenerate);
 biomeTags.fill(""); Object.seal(biomeTags);
+customStructures.fill(""); Object.seal(customStructures);
 typeSet.fill(""); Object.seal(typeSet);
 gameplay.fill(""); Object.seal(gameplay);
 modifiedDrops.fill(""); Object.seal(modifiedDrops);
@@ -506,8 +508,9 @@ function clientDatapacks() {
     typeSet.join("'"),
     gameplay.join("'").replaceAll(".", ","),
     modifiedDrops.join("'"),
-    biomeTags.join("'"),
+    biomeTags.join("'").replaceAll(" ", "_"),
     biomeChances,
+    customStructures.join("'").replaceAll(" ", "^"),
   ].join("~");
 }
 
@@ -2320,18 +2323,12 @@ function datapackTranslate(dataSource) {
   for (i = 0; i < lngt; i++) {
     c = dataSource[i];
     if (c == "<") comment = true;
-    if (c == "'" && !comment) {
-      catch_all = !catch_all;
-      continue;
+    if (c == "'" && !comment) { catch_all = !catch_all; continue; }
+    if((catch_all || (c!=" " && c!="\r" && c!="\n" && c!="\t")) && !comment)
+    {
+      if(c=="\r" || c=="\n") raw = raw + " ";
+      else raw = raw + c;
     }
-    if (
-      (c != " " || catch_all) &&
-      c != "\t" &&
-      c != "\r" &&
-      c != "\n" &&
-      !comment
-    )
-      raw = raw + c;
     if (c == ">") comment = false;
   }
 
@@ -2474,6 +2471,15 @@ function finalTranslate(varN) {
         } catch {
           datapackError("Error in variable: " + jse3Var[i]);
         }
+      }
+      else if(psPath[0]=="custom_structures")
+      {
+          try{
+
+          mID=parseIntE(psPath[1]);
+          customStructures[mID]=jse3Dat[i].replaceAll('^',' ');
+
+          }catch{datapackError("Error in variable: " + jse3Var[i]);}
       }
     } else if (lgt == 3) {
       if (psPath[0] == "game_translate") {
@@ -2828,8 +2834,8 @@ function datapackPaste(splitTab) {
       else gameplay[i] = parseFloatE(raws[5].split("'")[i]) + "";
     }
     for (i = 0; i < 128; i++) modifiedDrops[i] = raws[6].split("'")[i];
-    for (i = 0; i < 32; i++)
-      biomeTags[i] = raws[7].replaceAll(" ", "_").split("'")[i];
+    for (i = 0; i < 32; i++) biomeTags[i] = raws[7].replaceAll(" ", "_").split("'")[i];
+    for (i = 0; i < 32; i++) customStructures[i] = raws[9].replaceAll("^"," ").split("'")[i];
 
     checkDatapackGoodE();
   } catch {

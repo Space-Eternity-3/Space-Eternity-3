@@ -31,7 +31,7 @@ public class SC_structure : MonoBehaviour
 		string effect = "";
 		for(i=0;i<lngt;i++)
 		{
-			if(str[i]!='\t' && str[i]!='\r' && str[i]!='\n')
+			if(str[i]!='\t' && str[i]!='\r' && str[i]!='\n' && str[i]!='[' && str[i]!=']')
 				effect += str[i];
 			else
 				effect += ' ';

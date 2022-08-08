@@ -217,7 +217,7 @@ generator_settings
 	
 	<Arena structure> 4
 	{
-		chance: 4%;
+		chance: 5%;
 		settings: [
 			structural, arena,
 			ring.inner.change -> 0, ring.inner.change -> 50,
@@ -246,7 +246,7 @@ objects_generate
 	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
 	artefact_randomizer: protection_artefact(20%) + impulse_artefact(20%) + illusion_artefact(20%) + immortality_artefact(20%) + unstable_artefact(20%);
 }
-game_translate <advanced settings>
+game_translate <low-level settings>
 {
 	Asteroids
 	{
@@ -318,7 +318,16 @@ game_translate <advanced settings>
 		49: packed_bedrock;				<only object>
 		50: bedrock_stone;				<only object>
 		51: metal_piece;
-		52: useless_thing_1;			<sth soon>
-		53: useless_thing_2;			<sth soon>
+		52: bedrock_storage;
+		53: bedrock_alien;
 	}
+}
+custom_structures <advanced settings>
+{
+	1: '[
+		summon #0 wall 0
+		move 2 2 rotate 45
+		summon #1 asteroid 4 4 x
+		scale 0.5 0.5 0.5
+	]';
 }

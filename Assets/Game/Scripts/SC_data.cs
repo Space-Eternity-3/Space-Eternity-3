@@ -26,7 +26,7 @@ public class SC_data : MonoBehaviour
     public bool crashed;
     string bin;
     public string example=""; //Default datapack
-    public string clientVersion="Beta 1.6",clientRedVersion="Beta_1_6";
+    public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
 	int gpl_number = 30;
@@ -80,6 +80,7 @@ public class SC_data : MonoBehaviour
     public string[] DrillLoot = new string[16];
     public string[] FobGenerate = new string[16];
 	public string[] BiomeTags = new string[32];
+    public string[] CustomStructures = new string[32];
     public string[] TypeSet = new string[224];
     public string[] Gameplay = new string[32];
     public string[] ModifiedDrops = new string[128];
@@ -395,7 +396,7 @@ public class SC_data : MonoBehaviour
             file=CustomDataPath;
             OpenRead(file);
             dataSource="";
-            for(i=0;!sr.EndOfStream;i++) dataSource=dataSource+sr.ReadLine();
+            for(i=0;!sr.EndOfStream;i++) dataSource=dataSource+sr.ReadLine()+" ";
             CloseRead();
             DatapackTranslate();
 
@@ -854,7 +855,7 @@ public class SC_data : MonoBehaviour
             c=dataSource[i];
             if(c=='<') comment=true;
             if(c=='\''&&!comment) {catch_all=!catch_all; continue;}
-            if((c!=' '||catch_all)&&c!='\t'&&!comment) raw=raw+c;
+            if((catch_all || (c!=' ' && c!='\r' && c!='\n' && c!='\t')) && !comment) raw=raw+c;
             if(c=='>') comment=false;
         }
 
@@ -986,11 +987,7 @@ public class SC_data : MonoBehaviour
             {
                 if(psPath[0]=="gameplay")
                 {
-                    try{ //3, 27, 28, 29, 30, 31
-                    //copper_bullet_damage <- bullet_level_add
-                    //red_bullet_damage
-                    //unstable_matter_damage
-                    //at_impulse_damage
+                    try{
 
 					//Normal gameplay
                     if(psPath[1]=="turbo_regenerate_multiplier") Gameplay[0]=float.Parse(value[i])+"";
@@ -1033,6 +1030,15 @@ public class SC_data : MonoBehaviour
 					if(psPath[1]=="at_unstable_normal_avarage_time") Gameplay[23]=float.Parse(value[i])+"";
 					if(psPath[1]=="at_unstable_special_avarage_time") Gameplay[24]=float.Parse(value[i])+"";
 					if(psPath[1]=="at_unstable_force") Gameplay[25]=float.Parse(value[i])+"";
+
+                    }catch(Exception){DatapackError("Error in variable: "+variable[i]); return;}
+                }
+                else if(psPath[0]=="custom_structures")
+                {
+                    try{
+
+                    mID=int.Parse(psPath[1]);
+                    CustomStructures[mID]=value[i].Replace('^',' ');
 
                     }catch(Exception){DatapackError("Error in variable: "+variable[i]); return;}
                 }
@@ -1362,6 +1368,7 @@ public class SC_data : MonoBehaviour
             }
             for(i=0;i<128;i++) ModifiedDrops[i] = raws[6].Split('\'')[i];
 			for(i=0;i<32;i++) BiomeTags[i] = raws[7].Replace(' ','_').Split('\'')[i];
+            for(i=0;i<32;i++) CustomStructures[i] = raws[9].Replace('^',' ').Split('\'')[i];
 
 			checkDatapackGoodE();
         
@@ -1385,9 +1392,9 @@ public class SC_data : MonoBehaviour
 		eff+="~"+string.Join("\'",TypeSet);
 		eff+="~"+string.Join("\'",Gameplay);
 		eff+="~"+string.Join("\'",ModifiedDrops);
-		eff+="~"+string.Join("\'",BiomeTags);
-		
+		eff+="~"+string.Join("\'",BiomeTags).Replace(' ','_');
 		eff+="~"+biomeChances;
+        eff+="~"+string.Join("\'",CustomStructures).Replace(' ','^');
 		
 		return eff;
 	}

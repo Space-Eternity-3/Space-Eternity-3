@@ -26,6 +26,7 @@ public class SC_fun : MonoBehaviour
 	public int[] bMA = new int[32];
 	public int[] bD = new int[32];
 	public int[] bP = new int[32];
+	public int[] bC = new int[32];
 	
 	public bool[,] bbW = new bool[32,81];
 	public bool[,] bbH = new bool[32,81];
@@ -137,10 +138,9 @@ public class SC_fun : MonoBehaviour
 	{
 		if(GenListContains(ulam,1) || GetBiomeSize(ulam)==-1f) return 0;
 		string tags = GetBiomeTag(ulam);
+		int bint=int.Parse(GetBiomeString(ulam).Split('b')[1]);
 		if(!TagContains(tags,"structural")) return 0;
-		if(TagContains(tags,"arena")) return 1;
-		//if(TagContains(tags,"struct=1")) return 2;
-		return 0;
+		return bC[bint];
 	}
     public bool AsteroidCheck(int ID)
     {
@@ -474,6 +474,7 @@ public class SC_fun : MonoBehaviour
 			bMA[i] = 80; //max size
 			bD[i] = 60; //denity [%]
 			bP[i] = 16; //priority
+			bC[i] = 0; //structure ID
 			
 			for(j=0;j<=80;j++) bbW[i,j] = false;
 			for(j=0;j<=80;j++) bbH[i,j] = false;
@@ -520,8 +521,11 @@ public class SC_fun : MonoBehaviour
 				if(TagContains(tags,"density="+j+"%")) bD[i]=j;
 			for(j=1;j<=31;j++)
 				if(TagContains(tags,"priority="+j)) bP[i]=j;
+			for(j=1;j<=31;j++)
+				if(TagContains(tags,"struct="+j)) bC[i]=-j;
 			
 			if(TagContains(tags,"structural")) bP[i]=32;
+			if(TagContains(tags,"arena")) bC[i]=1;
 		}
 		
 		bP[0] = 0;
