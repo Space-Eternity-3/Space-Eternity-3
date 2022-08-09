@@ -396,7 +396,7 @@ public class SC_data : MonoBehaviour
             file=CustomDataPath;
             OpenRead(file);
             dataSource="";
-            for(i=0;!sr.EndOfStream;i++) dataSource=dataSource+sr.ReadLine()+" ";
+            for(i=0;!sr.EndOfStream;i++) dataSource=dataSource+(sr.ReadLine()).Replace('\r',' ').Replace('\n',' ')+" ";
             CloseRead();
             DatapackTranslate();
 
@@ -855,7 +855,11 @@ public class SC_data : MonoBehaviour
             c=dataSource[i];
             if(c=='<') comment=true;
             if(c=='\''&&!comment) {catch_all=!catch_all; continue;}
-            if((catch_all || (c!=' ' && c!='\r' && c!='\n' && c!='\t')) && !comment) raw=raw+c;
+            if((catch_all || (c!=' ' && c!='\r' && c!='\n' && c!='\t')) && !comment)
+            {
+                if(c=='\r' || c=='\n') raw = raw + " ";
+                else raw = raw + c;
+            }
             if(c=='>') comment=false;
         }
 

@@ -15,7 +15,7 @@ public class SC_structure : MonoBehaviour
 	public Transform gatepart;
 	public Transform emptyobject;
 	
-    public int X=0,Y=0,ID=1;
+    public int X=0,Y=0,ID=1,overrand=0;
 	public string actual_state = "default";
 	[TextArea(15,20)]
 	public string SeonField = "";
@@ -64,6 +64,7 @@ public class SC_structure : MonoBehaviour
 		transform.position += SC_fun.GetBiomeMove(ID);
 
 		//SEON
+		overrand = SC_fun.pseudoRandom10e5(ID+SC_fun.seed);
 		string final_seon = TxtToSeonArray(SeonField);
 		SeonGenerate(final_seon);
 	}
@@ -124,6 +125,15 @@ public class SC_structure : MonoBehaviour
 		
 		return retu;
 	}
+	int PercConvert(string str)
+	{
+		int i,lngt=str.Length;
+		string effect="";
+		if(str[0]=='%')
+		for(i=1;i<lngt;i++)
+			effect+=str[i];
+		return int.Parse(effect);
+	}
 	int HashConvert(string str)
 	{
 		int i,lngt=str.Length;
@@ -146,8 +156,9 @@ public class SC_structure : MonoBehaviour
 	{
 		string[] arg = (seon_string+" ").Split(' ');
 		int i,lngt=arg.Length;
-		int current=-1, findex=-1;
 		int pr1=-1, pr2=-3, lockedI=-1, preCurrent=-1;
+		int setrandom=-1, ifrandom=-1;
+		int current=-1, findex=-1;
 		int min_findex=0, max_findex=19;
 		for(i=0;i<lngt;i++)
 		{
@@ -167,7 +178,32 @@ public class SC_structure : MonoBehaviour
 			try {
 
 				//Technical commands
-				if(arg[i]=="from")
+				if(arg[i]=="setrandom")
+				{
+					i++;
+					int prper = PercConvert(arg[i]);
+
+					setrandom = overrand % prper;
+				}
+				else if(arg[i]=="ifrandom")
+				{
+					i++;
+					if(arg[i]=="break")
+					{
+						ifrandom = -1;
+					}
+					else
+					{
+						int prran = int.Parse(arg[i]);
+						ifrandom = prran;
+					}
+				}
+				else if(!(ifrandom==-1||ifrandom==setrandom))
+				{
+					i++;
+					throw(new Exception());
+				}
+				else if(arg[i]=="from")
 				{
 					i++;
 					int prr1 = HashConvert(arg[i]);
@@ -235,6 +271,8 @@ public class SC_structure : MonoBehaviour
 						Transform wal = Instantiate(stwall,transform.position,Quaternion.identity);
 						wal.parent = transform;
 						st_structs[current] = wal;
+						if(wal.GetComponent<SC_drill>()!=null)
+							wal.GetComponent<SC_drill>().type=prmaterial;
 
 						wal.GetChild(0).GetComponent<Renderer>().material = SC_fun.st_materials[prmaterial];
 					}
@@ -519,45 +557,40 @@ public class SC_structure : MonoBehaviour
 				}
 
 				//Script commands
-				else if(arg[i]=="script")
+				else if(arg[i]=="drill")
 				{
 					i++;
-					if(arg[i]=="drill")
+					if(arg[i]=="remove")
+					{
+						Destroy(st_structs[current].GetComponent<SC_drill>());
+					}
+					else if(arg[i]=="set")
 					{
 						i++;
-						if(arg[i]=="remove")
+						int prdrill = int.Parse(arg[i]);
+
+						SC_drill drl;
+						if(st_structs[current].GetComponent<SC_drill>() == null)
 						{
-							Destroy(st_structs[current].GetComponent<SC_drill>());
+							drl = st_structs[current].gameObject.AddComponent<SC_drill>();
+							SC_drill dst = asteroid.GetComponent<SC_drill>();
+
+							//Required public variables
+							drl.rHydrogenParticles = dst.rHydrogenParticles;
+							drl.Communtron1 = dst.Communtron1;
+							drl.Communtron3 = dst.Communtron3;
+							drl.Communtron4 = dst.Communtron4;
+							drl.CommuntronM1 = dst.CommuntronM1;
+							drl.SC_slots = dst.SC_slots;
+							drl.SC_control = dst.SC_control;
+							drl.SC_upgrades = dst.SC_upgrades;
+							drl.SC_data = dst.SC_data;
+							drl.SC_asteroid = dst.SC_asteroid;
 						}
-						else if(arg[i]=="set")
-						{
-							i++;
-							int prdrill = int.Parse(arg[i]);
+						else drl = st_structs[current].GetComponent<SC_drill>();
 
-							SC_drill drl;
-							if(st_structs[current].GetComponent<SC_drill>() == null)
-							{
-								drl = st_structs[current].gameObject.AddComponent<SC_drill>();
-								SC_drill dst = asteroid.GetComponent<SC_drill>();
-
-								//Required public variables
-								drl.rHydrogenParticles = dst.rHydrogenParticles;
-								drl.Communtron1 = dst.Communtron1;
-								drl.Communtron3 = dst.Communtron3;
-								drl.Communtron4 = dst.Communtron4;
-								drl.CommuntronM1 = dst.CommuntronM1;
-								drl.SC_slots = dst.SC_slots;
-								drl.SC_control = dst.SC_control;
-								drl.SC_upgrades = dst.SC_upgrades;
-								drl.SC_data = dst.SC_data;
-								drl.SC_asteroid = dst.SC_asteroid;
-							}
-							else drl = st_structs[current].GetComponent<SC_drill>();
-
-							drl.type = prdrill;
-							drl.freeze = true;
-						}
-						else throw(new Exception());
+						drl.type = prdrill;
+						drl.freeze = true;
 					}
 					else throw(new Exception());
 				}
@@ -695,6 +728,80 @@ public class SC_structure : MonoBehaviour
 					else if(arg[i]=="disable")
 					{
 						ast.permanent_blocker = false;
+					}
+					else throw(new Exception());
+				}
+				else if(arg[i]=="steal")
+				{
+					i++;
+					int pramount = int.Parse(arg[i]);
+					if(pramount > 10) pramount = 10;
+
+					i++;
+					if(arg[i]=="from")
+					{
+						i++;
+						int prsteal;
+						if(arg[i]=="delta")
+						{
+							i++;
+							prsteal = current + int.Parse(arg[i]);
+						}
+						else
+						{
+							prsteal = HashConvert(arg[i]);
+						}
+
+						st_structs[prsteal].position = st_structs[current].position + new Vector3(0f,0f,500f);
+						st_structs[prsteal].eulerAngles = st_structs[current].eulerAngles + new Vector3(0f,0f,-90f);
+
+						float ddY = st_structs[current].localScale.x;
+						float ddX = st_structs[current].localScale.y;
+						float angle = st_structs[prsteal].eulerAngles.z;
+
+						SC_asteroid ast = st_structs[prsteal].GetComponent<SC_asteroid>();
+
+						int j;
+						float dxom = -0.85f*(pramount-1);
+						for(j=0;j<pramount;j++)
+						{
+							ast.fobCenPos[2*j+0] = true;
+							ast.fobCenPos[2*j+1] = true;
+							ast.fobInfoPos[2*j+0] = ast.transform.position + new Vector3(0f,0f,-500f);
+							ast.fobInfoPos[2*j+1] = ast.transform.position + new Vector3(0f,0f,-500f);
+
+							ast.fobCenRot[2*j+0] = true;
+							ast.fobCenRot[2*j+1] = true;
+							ast.fobInfoRot[2*j+0] = -angle;
+							ast.fobInfoRot[2*j+1] = -angle + 180f;
+
+							float dX,dY,ankle;
+							
+							ankle = angle * 3.14159f/180f;
+							dX = (dxom + 2f*0.85f*j);
+							dY = ddY*1.5f;
+							ast.fobInfoPos[2*j+0] += new Vector3(
+								Mathf.Cos(ankle)*dX + Mathf.Cos(ankle+3.14159f/2)*dY,
+								Mathf.Sin(ankle)*dX + Mathf.Sin(ankle+3.14159f/2)*dY,
+								0f
+							);
+
+							ankle = angle * 3.14159f/180f;
+							dX = (dxom + 2f*0.85f*j);
+							dY = -ddY*1.5f;
+							ast.fobInfoPos[2*j+1] += new Vector3(
+								Mathf.Cos(ankle)*dX + Mathf.Cos(ankle+3.14159f/2)*dY,
+								Mathf.Sin(ankle)*dX + Mathf.Sin(ankle+3.14159f/2)*dY,
+								0f
+							);
+						}
+						for(j=pramount;j<10;j++)
+						{
+							ast.fobCenPos[2*j+0] = true;
+							ast.fobCenPos[2*j+1] = true;
+							ast.fobInfoPos[2*j+0] = ast.transform.position;
+							ast.fobInfoPos[2*j+1] = ast.transform.position;
+						}
 					}
 					else throw(new Exception());
 				}

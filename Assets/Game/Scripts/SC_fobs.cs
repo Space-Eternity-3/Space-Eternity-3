@@ -43,7 +43,6 @@ public class SC_fobs : MonoBehaviour
     public SC_sounds SC_sounds;
     public SC_push SC_push;
     public SC_slots SC_slots;
-    public SC_halloween SC_halloween;
     public SC_snd_loop SC_snd_loop;
     SC_Fob21 SC_Fob21;
 

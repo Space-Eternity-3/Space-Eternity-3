@@ -125,7 +125,6 @@ public class SC_control : MonoBehaviour {
 	public SC_sounds SC_sounds;
 	public SC_snd_start SC_snd_start;
 	public SC_slots SC_slots;
-	public SC_halloween SC_halloween;
 	public SC_artefacts SC_artefacts;
 	public SC_invisibler SC_invisibler;
 	public SC_bullet SC_bullet;

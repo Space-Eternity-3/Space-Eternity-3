@@ -325,6 +325,12 @@ public class SC_fun : MonoBehaviour
 		string psInt = (SC_long_strings.BiomeNewBase[4*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+2]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+3]+"");
 		return int.Parse(psInt);
 	}
+	public int pseudoRandom10e5(int prSeed)
+	{
+		prSeed = prSeed % 6000;
+		string psInt = (SC_long_strings.BiomeNewBase[5*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+2]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+3]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+4]+"");
+		return int.Parse(psInt);
+	}
     public string GetBiomeString(int ulam)
     {
 		if(ulam>=1 && ulam<=9) return "b0";
