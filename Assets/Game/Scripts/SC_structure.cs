@@ -752,8 +752,11 @@ public class SC_structure : MonoBehaviour
 							prsteal = HashConvert(arg[i]);
 						}
 
-						st_structs[prsteal].position = st_structs[current].position + new Vector3(0f,0f,500f);
+						st_structs[prsteal].position = st_structs[current].position + new Vector3(0f,0f,0f);
 						st_structs[prsteal].eulerAngles = st_structs[current].eulerAngles + new Vector3(0f,0f,-90f);
+
+						st_structs[prsteal].GetComponent<Renderer>().enabled = false;
+						st_structs[prsteal].GetComponent<SphereCollider>().enabled = false;
 
 						float ddY = st_structs[current].localScale.x;
 						float ddX = st_structs[current].localScale.y;
@@ -767,8 +770,8 @@ public class SC_structure : MonoBehaviour
 						{
 							ast.fobCenPos[2*j+0] = true;
 							ast.fobCenPos[2*j+1] = true;
-							ast.fobInfoPos[2*j+0] = ast.transform.position + new Vector3(0f,0f,-500f);
-							ast.fobInfoPos[2*j+1] = ast.transform.position + new Vector3(0f,0f,-500f);
+							ast.fobInfoPos[2*j+0] = ast.transform.position + new Vector3(0f,0f,0f);
+							ast.fobInfoPos[2*j+1] = ast.transform.position + new Vector3(0f,0f,0f);
 
 							ast.fobCenRot[2*j+0] = true;
 							ast.fobCenRot[2*j+1] = true;
@@ -779,7 +782,7 @@ public class SC_structure : MonoBehaviour
 							
 							ankle = angle * 3.14159f/180f;
 							dX = (dxom + 2f*0.85f*j);
-							dY = ddY*1.5f;
+							dY = ddY*1.5f/st_structs[prsteal].localScale.y;
 							ast.fobInfoPos[2*j+0] += new Vector3(
 								Mathf.Cos(ankle)*dX + Mathf.Cos(ankle+3.14159f/2)*dY,
 								Mathf.Sin(ankle)*dX + Mathf.Sin(ankle+3.14159f/2)*dY,
@@ -788,7 +791,7 @@ public class SC_structure : MonoBehaviour
 
 							ankle = angle * 3.14159f/180f;
 							dX = (dxom + 2f*0.85f*j);
-							dY = -ddY*1.5f;
+							dY = -ddY*1.5f/st_structs[prsteal].localScale.y;
 							ast.fobInfoPos[2*j+1] += new Vector3(
 								Mathf.Cos(ankle)*dX + Mathf.Cos(ankle+3.14159f/2)*dY,
 								Mathf.Sin(ankle)*dX + Mathf.Sin(ankle+3.14159f/2)*dY,
@@ -799,8 +802,8 @@ public class SC_structure : MonoBehaviour
 						{
 							ast.fobCenPos[2*j+0] = true;
 							ast.fobCenPos[2*j+1] = true;
-							ast.fobInfoPos[2*j+0] = ast.transform.position;
-							ast.fobInfoPos[2*j+1] = ast.transform.position;
+							ast.fobInfoPos[2*j+0] = ast.transform.position + new Vector3(0f,0f,-500f);
+							ast.fobInfoPos[2*j+1] = ast.transform.position + new Vector3(0f,0f,-500f);
 						}
 					}
 					else throw(new Exception());

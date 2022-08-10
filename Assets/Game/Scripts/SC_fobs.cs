@@ -249,6 +249,11 @@ public class SC_fobs : MonoBehaviour
         }
 		gobT.GetComponent<SC_fobs>().index = index;
         gobT.transform.localScale *= gobT.transform.parent.localScale.x/(gobT.transform.parent.GetComponent<SC_asteroid>().normalScale.x*gobT.transform.parent.GetComponent<SC_asteroid>().asteroidScale.x);
+        if(gobT.transform.parent.GetComponent<SC_asteroid>().proto) gobT.transform.localScale = new Vector3(
+            gobT.transform.localScale.x * gobT.transform.parent.parent.localScale.x,
+            gobT.transform.localScale.y * gobT.transform.parent.parent.localScale.y,
+            gobT.transform.localScale.z * gobT.transform.parent.parent.localScale.z
+        );
         gobT.GetComponent<SC_fobs>().transportScale = transportScale;
         gobT.GetComponent<SC_fobs>().StartM();
     }

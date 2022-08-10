@@ -109,6 +109,13 @@ public class SC_seon_remote : MonoBehaviour
         int modeH = GetMode("hidden");
         int modeE = GetMode("extended");
 
+        if(transform.GetComponent<SC_asteroid>()!=null)
+            if(!transform.GetComponent<SC_asteroid>().UUTCed)
+            {
+                if(modeE==1) modeE=0; if(modeE==3) modeE=2;
+                if(modeH==1) modeH=0; if(modeH==3) modeH=2;
+            }
+
         transform.localPosition = localDefault;
         transform.localScale = normalScale;
 
@@ -131,6 +138,6 @@ public class SC_seon_remote : MonoBehaviour
         if(fraction_hide!=1f) transform.localPosition += fraction_hide * localHide;
         else transform.localPosition += localHidden;
         transform.localPosition += fraction_extension * localExtended;
-        transform.localScale = (1f-fraction_hide) * normalScale;
+        if(fraction_hide!=1f) transform.localScale = (1f-fraction_hide) * normalScale;
     }
 }

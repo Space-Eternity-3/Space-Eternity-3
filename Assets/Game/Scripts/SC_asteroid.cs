@@ -26,7 +26,7 @@ public class SC_asteroid : MonoBehaviour {
 	public GameObject[] GenPlaceT = new GameObject[128];
 	public GameObject[] GenPlaceM = new GameObject[18];
 	
-	public SC_resp_blocker SC_resp_blocker;
+	//public SC_resp_blocker SC_resp_blocker;
 	public SC_control SC_control;
 	public SC_fun SC_fun;
 	public SC_upgrades SC_upgrades;
@@ -47,7 +47,7 @@ public class SC_asteroid : MonoBehaviour {
 	int counter_to_destroy = 200;
 	int suze;
 	bool stille=false;
-	bool UUTCed=false;
+	public bool UUTCed=false;
 	float saze;
 	bool pseudoF1=false;
 	string biome="";
@@ -209,7 +209,7 @@ public class SC_asteroid : MonoBehaviour {
 			normalScale.y * asteroidScale.y,
 			normalScale.z * asteroidScale.z
 		);
-		SC_resp_blocker.radius = size/2f + 3f;
+		//SC_resp_blocker.radius = size/2f + 3f;
 		if(!proto) generation_code = suze + biome;
 		else generation_code = suze + "t" + prottype + "t" + fobCode;
 		
