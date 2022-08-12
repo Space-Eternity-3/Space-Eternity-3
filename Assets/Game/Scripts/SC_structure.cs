@@ -13,10 +13,12 @@ public class SC_structure : MonoBehaviour
 	public Transform stwall;
 	public Transform arcen;
 	public Transform gatepart;
+	public Transform stsphere;
 	public Transform emptyobject;
 	
     public int X=0,Y=0,ID=1,overrand=0;
 	public string actual_state = "default";
+	public int scaling_blocker = 0;
 	[TextArea(15,20)]
 	public string SeonField = "";
 	public Transform[] st_structs = new Transform[1024];
@@ -207,6 +209,7 @@ public class SC_structure : MonoBehaviour
 				{
 					i++;
 					int prr1 = HashConvert(arg[i]);
+					if(prr1<0) prr1=0;
 
 					i++;
 					if(arg[i]!="to") throw(new Exception());
@@ -214,6 +217,12 @@ public class SC_structure : MonoBehaviour
 					i++;
 					int prr2 = HashConvert(arg[i]);
 					if(prr2>=1024) prr2=1023;
+
+					if(prr2<prr1) {
+						int pprr = prr1;
+						prr1 = prr2;
+						prr2 = pprr;
+					}
 
 					pr1 = prr1;
 					pr2 = prr2;
@@ -255,6 +264,8 @@ public class SC_structure : MonoBehaviour
 						SC_asteroid ast = Instantiate(asteroid,transform.position,Quaternion.identity).GetComponent<SC_asteroid>();
 						ast.GetComponent<Transform>().parent = transform;
 						st_structs[current] = ast.GetComponent<Transform>();
+						ast.strucutral_parent = transform;
+						scaling_blocker++;
 				
 						int[] sXY = BuildXY(current);
 						ast.proto = true; ast.X=sXY[0]; ast.Y=sXY[1]; ast.ID=SC_fun.CheckID(ast.X,ast.Y);
@@ -274,7 +285,27 @@ public class SC_structure : MonoBehaviour
 						if(wal.GetComponent<SC_drill>()!=null)
 							wal.GetComponent<SC_drill>().type=prmaterial;
 
-						wal.GetChild(0).GetComponent<Renderer>().material = SC_fun.st_materials[prmaterial];
+						wal.GetChild(0).GetComponent<Renderer>().material = wal.GetComponent<SC_material>().Materials[prmaterial];
+					}
+					else if(arg[i]=="sphere")
+					{
+						i++;
+						float prsize = float.Parse(arg[i]);
+
+						i++;
+						int prmaterial = int.Parse(arg[i]);
+						if(prmaterial<0 || prmaterial>15) prmaterial = 0;
+				
+						Transform ras = Instantiate(stsphere,transform.position,Quaternion.identity);
+						ras.parent = transform;
+						st_structs[current] = ras;
+						if(ras.GetComponent<SC_drill>()!=null)
+							ras.GetComponent<SC_drill>().type=prmaterial;
+
+						ras.localScale = new Vector3(prsize,prsize,0.75f*prsize);
+
+						if(prmaterial==0 || prmaterial==1) ras.GetChild(0).GetComponent<Renderer>().material = ras.GetComponent<SC_material>().Materials2[UnityEngine.Random.Range(0,3)];
+						else ras.GetChild(0).GetComponent<Renderer>().material = ras.GetComponent<SC_material>().Materials[prmaterial];
 					}
 					else if(arg[i]=="piston")
 					{
@@ -716,21 +747,6 @@ public class SC_structure : MonoBehaviour
 					ssr.hiding_time = dT;
 					ssr.hidevector = new Vector3(0f,0f,dZ);
 				}
-				else if(arg[i]=="blocker")
-				{
-					i++;
-					SC_asteroid ast = st_structs[current].GetComponent<SC_asteroid>();
-
-					if(arg[i]=="enable")
-					{
-						ast.permanent_blocker = true;
-					}
-					else if(arg[i]=="disable")
-					{
-						ast.permanent_blocker = false;
-					}
-					else throw(new Exception());
-				}
 				else if(arg[i]=="steal")
 				{
 					i++;
@@ -752,7 +768,7 @@ public class SC_structure : MonoBehaviour
 							prsteal = HashConvert(arg[i]);
 						}
 
-						st_structs[prsteal].position = st_structs[current].position + new Vector3(0f,0f,0f);
+						st_structs[prsteal].position = st_structs[current].position;
 						st_structs[prsteal].eulerAngles = st_structs[current].eulerAngles + new Vector3(0f,0f,-90f);
 
 						st_structs[prsteal].GetComponent<Renderer>().enabled = false;
@@ -805,6 +821,36 @@ public class SC_structure : MonoBehaviour
 							ast.fobInfoPos[2*j+0] = ast.transform.position + new Vector3(0f,0f,-500f);
 							ast.fobInfoPos[2*j+1] = ast.transform.position + new Vector3(0f,0f,-500f);
 						}
+					}
+					else throw(new Exception());
+				}
+				else if(arg[i]=="asteroid")
+				{
+					i++;
+					if(arg[i]=="hide")
+					{
+						st_structs[current].GetComponent<Renderer>().enabled = false;
+						st_structs[current].GetComponent<SphereCollider>().enabled = false;
+					}
+					else if(arg[i]=="show")
+					{
+						st_structs[current].GetComponent<Renderer>().enabled = true;
+						st_structs[current].GetComponent<SphereCollider>().enabled = true;
+					}
+					else if(arg[i]=="blocker")
+					{
+						i++;
+						SC_asteroid ast = st_structs[current].GetComponent<SC_asteroid>();
+
+						if(arg[i]=="enable")
+						{
+							ast.permanent_blocker = true;
+						}
+						else if(arg[i]=="disable")
+						{
+							ast.permanent_blocker = false;
+						}
+						else throw(new Exception());
 					}
 					else throw(new Exception());
 				}

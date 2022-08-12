@@ -365,13 +365,14 @@ public class SC_fobs : MonoBehaviour
     }
 	public void AfterTriggerEnter(Collider collision)
 	{
+        if(mother) return;
+        SC_asteroid asst = transform.parent.GetComponent<SC_asteroid>();
 		if(
             collision.gameObject.name=="Bullet(Clone)" &&
             !collision.gameObject.GetComponent<SC_bullet>().turn_used &&
             collision.gameObject.GetComponent<SC_bullet>().controller &&
             collision.gameObject.GetComponent<SC_bullet>().mode=="present" &&
-            ShotTurn &&
-            !mother
+            ShotTurn && (!(asst.permanent_blocker || asst.temporary_blocker))
         ){
             SC_bullet bul = collision.gameObject.GetComponent<SC_bullet>();
 			bul.turn_used = true; bul.MakeDestroy(false);
@@ -415,7 +416,12 @@ public class SC_fobs : MonoBehaviour
         {
             SC_snd_loop.sound_pos[loopSndID] = transform.position;
         }
-        if(inGeyzer>0&&GeyzerTurn&&!mother)
+
+        if(IsEmpty) gameObject.GetComponent<Renderer>().enabled=false;
+
+        if(mother) return;
+        SC_asteroid asst = transform.parent.GetComponent<SC_asteroid>();
+        if(inGeyzer>0&&(GeyzerTurn && (!(asst.permanent_blocker || asst.temporary_blocker))))
         {
             GeyzerTime++;
             if(GeyzerTime>=140)
@@ -430,7 +436,7 @@ public class SC_fobs : MonoBehaviour
                 }
             }
         }
-        if(GrowTurn&&!mother&&!multiplayer)
+        if(GrowTurn&&!multiplayer)
         {
             if(GrowTimeLeft==0) Replace(GrowID,multiplayer);
             GrowTimeLeft--;
@@ -443,7 +449,6 @@ public class SC_fobs : MonoBehaviour
                 if(uAst[2]=="T") SC_data.SaveAsteroid(c);
             }
         }
-        if(IsEmpty) gameObject.GetComponent<Renderer>().enabled=false;
     }
     bool topDistance(float minDis)
     {

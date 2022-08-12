@@ -19,6 +19,7 @@ public class SC_asteroid : MonoBehaviour {
 	public Transform player;
 	public Image FuelBar;
 	public Renderer asteroidR;
+	public Transform strucutral_parent;
 	public int asteroid_lim = 16;
 	public Material[] texture = new Material[16];
 	public Material[] textureStone;
@@ -381,6 +382,8 @@ public class SC_asteroid : MonoBehaviour {
 				);
 			}
 		}
+		if(strucutral_parent!=null)
+			strucutral_parent.GetComponent<SC_structure>().scaling_blocker--;
 	}
 	public int SetLoot(int typp, bool only_one)
 	{

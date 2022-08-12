@@ -10,7 +10,6 @@ public class SC_fun : MonoBehaviour
     public Material[] M = new Material[128];
     public Texture[] Item = new Texture[128];
     public Texture Item20u;
-	public Material[] st_materials = new Material[16];
 	
     public float volume;
     public int seed;
@@ -283,10 +282,10 @@ public class SC_fun : MonoBehaviour
     {
 		string bstr=GetBiomeString(ulam);
         float size=GetBiomeSize(ulam);
-		if(size==900f) return new Vector3(0f,0f,0f);
+		string tags=GetBiomeTag(ulam);
+		if(size==900f || TagContains(tags,"centred")) return new Vector3(0f,0f,0f);
 		
 		int bint=int.Parse(GetBiomeString(ulam).Split('b')[1]);
-		string tags=GetBiomeTag(ulam);
         string red=LocalMove(ulam);
         float dX=0f, dY=0f;
 		float maxD=(biome_sector_size*2-20f)/2f;
@@ -333,13 +332,21 @@ public class SC_fun : MonoBehaviour
 	}
     public string GetBiomeString(int ulam)
     {
+		int i;
+		if(ulam==1)
+		for(i=1;i<=31;i++)
+		{
+			string tags = SC_data.BiomeTags[i];
+			if(TagContains(tags,"spawn")) return ("b"+i);
+		}
+
 		if(ulam>=1 && ulam<=9) return "b0";
 		if(ulam%2==0) return "b0";
 		
         int IDm=ulam+seed;
 		int pr=pseudoRandom1000(IDm);
 		string[] bcSourced = SC_data.biomeChances.Split(';');
-		int i,lngt=bcSourced.Length/3;
+		int lngt=bcSourced.Length/3;
 		
 		for(i=0;i<lngt;i++)
 		{

@@ -109,12 +109,11 @@ public class SC_seon_remote : MonoBehaviour
         int modeH = GetMode("hidden");
         int modeE = GetMode("extended");
 
-        if(transform.GetComponent<SC_asteroid>()!=null)
-            if(!transform.GetComponent<SC_asteroid>().UUTCed)
-            {
-                if(modeE==1) modeE=0; if(modeE==3) modeE=2;
-                if(modeH==1) modeH=0; if(modeH==3) modeH=2;
-            }
+        if(SC_structure.scaling_blocker!=0)
+        {
+            if(modeE==1) modeE=2; if(modeE==3) modeE=0;
+            if(modeH==1) modeH=2; if(modeH==3) modeH=0;
+        }
 
         transform.localPosition = localDefault;
         transform.localScale = normalScale;
@@ -130,7 +129,15 @@ public class SC_seon_remote : MonoBehaviour
         if(modeE==3 && current_extension > 0) current_extension--;
 
         if(transform.GetComponent<SC_asteroid>()!=null)
-            transform.GetComponent<SC_asteroid>().temporary_blocker = (current_hide > 0 && current_hide < hiding_time);
+        {
+            bool bpar,bcur = (current_hide > 0 && current_hide < hiding_time);
+            if(transform.parent.GetComponent<SC_seon_remote>()==null) bpar = false;
+            else {
+                SC_seon_remote ssr = transform.parent.GetComponent<SC_seon_remote>();
+                bpar = (ssr.current_hide > 0 && ssr.current_hide < ssr.hiding_time);
+            }
+            transform.GetComponent<SC_asteroid>().temporary_blocker = (bpar||bcur);
+        }
 
         float fraction_hide = current_hide; fraction_hide /= hiding_time;
         float fraction_extension = current_extension; fraction_extension /= extending_time;

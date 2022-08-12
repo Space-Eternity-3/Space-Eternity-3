@@ -244,7 +244,6 @@ objects_generate
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	metalic: stone(35%) + metal_piece(25%);
 	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
-	artefact_randomizer: protection_artefact(20%) + impulse_artefact(20%) + illusion_artefact(20%) + immortality_artefact(20%) + unstable_artefact(20%);
 }
 game_translate <low-level settings>
 {
@@ -263,7 +262,6 @@ game_translate <low-level settings>
 		10: diamond;
 		11: metalic;
 		12: bedrock;
-		13: artefact_randomizer;
 	}
 	Items_and_objects
 	{
@@ -325,9 +323,8 @@ game_translate <low-level settings>
 custom_structures <advanced settings>
 {
 	1: '[
-		summon #0 wall 0
-		move 2 2 rotate 45
-		summon #1 asteroid 4 4 x
-		scale 0.5 0.5 0.5
+	
+		<seon code here>
+	
 	]';
 }
