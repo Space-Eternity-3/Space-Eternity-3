@@ -14,6 +14,7 @@ public class SC_structure : MonoBehaviour
 	public Transform arcen;
 	public Transform gatepart;
 	public Transform stsphere;
+	public Transform stboss;
 	public Transform emptyobject;
 	
     public int X=0,Y=0,ID=1,overrand=0;
@@ -313,6 +314,22 @@ public class SC_structure : MonoBehaviour
 						gat.parent = transform;
 						st_structs[current] = gat;
 					}
+					else if(arg[i]=="boss")
+					{
+						if(current!=0)
+						{
+							current = pre_current;
+							throw(new Exception());
+						}
+
+						i++;
+						int prboss = int.Parse(arg[i]);
+						if(prboss<0 || prboss>5) prboss=0;
+
+						Transform gat = Instantiate(stboss,transform.position,Quaternion.identity);
+						gat.parent = transform;
+						st_structs[current] = gat;
+					}
 					else if(arg[i]=="empty")
 					{
 						Transform emp = Instantiate(emptyobject,transform.position,Quaternion.identity);
@@ -563,7 +580,7 @@ public class SC_structure : MonoBehaviour
 					}
 					else if(arg[i]=="rotation")
 					{
-						st_structs[current].rotation = Quaternion.identity;
+						st_structs[current].rotation = st_structs[current].parent.rotation;
 					}
 					else if(arg[i]=="localpos")
 					{

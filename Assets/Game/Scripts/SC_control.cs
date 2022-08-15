@@ -1101,18 +1101,18 @@ public class SC_control : MonoBehaviour {
     {
 		float CME=float.Parse(SC_data.Gameplay[6]); 
 
-		if(collision.gameObject.name!="mini_crown")
+		if(collision.gameObject.name!="mini_crown" && collision.gameObject.name!="aBossScaled0")
 		{
 			if(dmLicz<=0)
        		if(collision.impulse.magnitude>CME&&collision.relativeVelocity.magnitude>CME)
 			{
 				dmLicz=20;
-				float head_ache=collision.impulse.magnitude-CME + 3f;
+				float head_ache = head_ache=collision.impulse.magnitude-CME + 3f;
 				float hai=float.Parse(SC_data.Gameplay[7])*head_ache*1.2f;
 				DamageFLOAT(hai);
 			}
 		}
-		else if(Pitagoras(playerR.velocity)<=50f) playerR.velocity += Skop(mushroom_force,playerR.velocity);
+		//else if(Pitagoras(playerR.velocity)<=50f) playerR.velocity += Skop(mushroom_force,playerR.velocity);
     }
 	void OnTriggerStay(Collider collision)
 	{

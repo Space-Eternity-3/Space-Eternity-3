@@ -205,7 +205,7 @@ public class SC_bullet : MonoBehaviour
             Array.IndexOf(SafeNames, neme) == -1 &&
             controller
         ) || (
-            (neme == "Asteroid(Clone)" || neme == "StWall(Clone)") &&
+            (neme == "Asteroid(Clone)" || neme == "aWallScaled(Clone)") &&
             !controller
         ))
         {
