@@ -109,7 +109,18 @@ const bulletTemplate = {
   damaged: []
 };
 
+const scrTemplate = {
+  generalData: [],
+  additionalData: [],
+  bID: -1,
+  type: 0,
+  posCX: 0,
+  posCY: 0,
+  timeToDisappear: 500,
+};
+
 var bulletsT = [];
+var scrs = [];
 
 var growSolid = [];
 growSolid[5] = "4500;12000;6";
@@ -809,6 +820,17 @@ setInterval(function () { // <interval #2>
       for (i = 0; i < lngt; i++) {
         if (chunk_waiter[i] > 0) chunk_waiter[i]--;
       }
+
+      //[Scrs]
+      lngt = scrs.length;
+      for(i=0;i<lngt;i++) {
+        scrs[i].timeToDisappear[i]-=5;
+        if(scrs[i].timeToDisappear<=0)
+        {
+          scrs.remove(i);
+          lngt--; i--;
+        }
+      }
     }
     if((date_before-date_start) % 1000 == 0) //precisely 1 times per second
     {
@@ -844,11 +866,25 @@ setInterval(function () {  // <interval #2>
     sendToAllClients(eff);
   }
 
-  // - Dynamic data
+  //RPU - Dynamic data
   eff = "/RPU " + max_players + " ";
   eff += GetRPU(plr.players,lngt);
   eff += " X X"
   sendToAllClients(eff);
+
+  for(i=0;i<scrs.length;i++)
+  {
+    var lc3 = scrs[i].generalData.join(";") + ";" + scrs[i].additionalData.join(";");
+    
+    //RSD - Boss data
+    sendToAllClients(
+        "/RSD " +
+        scrs[i].bID +
+        " " +
+        lc3 +
+        " 1024 X X"
+    );
+  }
 
   for(i=0;i<max_players;i++)
   {
@@ -1751,6 +1787,77 @@ wss.on("connection", function connection(ws) {
           nbts(ulamID, "n", "0;0") +
           " X X"
       );
+    }
+    if (arg[0] == "/ScrData") {
+      //ScrData 1[PlayerID] 2[bID] 3[scrID] 4[bossType] 5[bossPosX] 6[bossPosY]
+      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+
+      var bID = arg[2];
+      var scrID = arg[3];
+      var bossType = arg[4];
+      var bossPosX = arg[5];
+      var bossPosY = arg[6];
+
+      var lc3T, lc3, inds=-1, lngts=scrs.length;
+
+      for(i=0;i<lngts;i++)
+      {
+        if(scrs[i].bID==bID) {
+          inds = i;
+          break;
+        }
+      }
+
+      if(inds==-1)
+      {
+        if(scrID=="1024")
+        {
+          var det = asteroidIndex(bID);
+          if (chunk_data[det[0]][det[1]][0]!=scrID)
+          {
+            //Not exists
+            lc3 = scrID+";0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+            lc3T = lc3.split(";");
+            for(i=0;i<=20;i++) chunk_data[det[0]][det[1]][i] = lc3T[i];
+          }
+          else
+          {
+            //Exists
+            lc3 = chunk_data[det[0]][det[1]][0]+";"+chunk_data[det[0]][det[1]][1];
+            for(i=2;i<=20;i++) lc3 += ";0";
+            lc3T = lc3.split(";");
+            for(i=0;i<=20;i++) chunk_data[det[0]][det[1]][i] = lc3T[i];
+          }
+
+          var tpl = Object.assign({},scrTemplate);
+          tpl.bID = bID;
+          tpl.type = bossType;
+          tpl.posCX = bossPosX;
+          tpl.posCY = bossPosY;
+          tpl.generalData = [];
+          tpl.additionalData = [];
+          tpl.generalData = [lc3T[0],lc3T[1]];
+          for(i=2;i<=20;i++) tpl.additionalData[i-2] = "0";
+          scrs.push(tpl);
+        }
+        else return;
+      }
+    }
+    if(arg[0] == "/ScrRefresh")
+    {
+      //ScrRefresh 1[PlayerID] 2[bID]
+      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+
+      var bID = arg[2];
+
+      var lngts = scrs.length;
+      for(i=0;i<lngts;i++)
+      {
+        if(scrs[i].bID==bID) {
+          scrs[i].timeToDisappear = 500;
+          break;
+        }
+      }
     }
     if (arg[0] == "/FobsChange") {
       //FobsChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[startFob1] 5[startFob2] 6[EndFob] 7[DropID] 8[Count] 9[Slot] 10![CandyCount]

@@ -26,6 +26,8 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public SC_data SC_data;
     public SC_craft3 SC_craft3;
 	public SC_resume SC_resume;
+    public SC_Fob21 SC_Fob21;
+    public SC_control SC_control;
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -78,6 +80,28 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
 				}
 				if(index==2) SC_resume.Quit();
 			}
+            if(ID==11)
+            {
+                SC_structure rts = transform.root.GetComponent<SC_structure>();
+                if(rts!=null)
+                    if(rts.st_structs[0]!=null)
+                    {
+                        SC_boss bts = rts.st_structs[0].GetComponent<SC_boss>();
+                        if(bts!=null)
+                        {
+                            if(!bts.multiplayer)
+                            {
+                                //REMOVE AMETHYST HERE
+                                bts.dataID[2] = "1";
+                                bts.StateUpdate();
+                            }
+                            else
+                            {
+                                SC_control.SendMTP("/TryBattleStart xxxxx");
+                            }
+                        }
+                    }
+            }
         }
         if(mode==1)
         {

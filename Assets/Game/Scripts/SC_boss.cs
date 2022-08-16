@@ -15,11 +15,11 @@ public class SC_boss : MonoBehaviour
     const string scrID = "1024";
 
     bool mother = true;
-    bool multiplayer = false;
+    public bool multiplayer = false;
 
     public int bX=0,bY=0,bID=1,sID=1;
 
-    string[] dataID = new string[21];
+    public string[] dataID = new string[21];
     /*
     p0 -> DataType (1024)
     p1 -> GeneralState (1,2,3,4)
@@ -29,9 +29,13 @@ public class SC_boss : MonoBehaviour
     (...)
     */
 
+    public int timer_bar_value = 180;
+    public bool timer_bar_enabled = false;
+
     public SC_data SC_data;
     public SC_control SC_control;
     public SC_structure SC_structure;
+    public SC_bars SC_bars;
 
     string GetState(int general, int additional)
     {
@@ -63,6 +67,21 @@ public class SC_boss : MonoBehaviour
         if(general==3) return "R";
 
         return "default";
+    }
+    public void onMSG(string cmdThis)
+    {
+        if(mother) return;
+
+        string[] arg = cmdThis.Split(' ');
+        if(arg[0]=="/RSD" && arg[1]==bID+"")
+        {
+            int i;
+            string[] dataIDs = arg[2].Split(';');
+            for(i=0;i<=20;i++)
+                dataID[i] = dataIDs[i];
+
+            StateUpdate();
+        }
     }
     public void StartFromStructure()
     {
@@ -108,15 +127,52 @@ public class SC_boss : MonoBehaviour
                     if(dataID[i+1]=="") dataID[i+1] = "0";
 				}
 			}
-			UUTC();
+			StateUpdate();
         }
         else //If multiplayer
         {
-            SC_control.SendMTP("/ScrData "+SC_control.connectionID+" "+sID+" "+bID+" "+scrID);
+            SC_control.SendMTP(
+                "/ScrData "+
+                SC_control.connectionID+" "+
+                bID+" "+
+                scrID+" "+
+                type+" "+
+                transform.position.x+" "+
+                transform.position.y
+            );
         }
+
+        FixedUpdate();
+        SC_bars.LateUpdate();
     }
-    void UUTC()
+    public void StateUpdate()
     {
         SC_structure.actual_state = GetState(int.Parse(dataID[1]),int.Parse(dataID[2]));
+        if(!multiplayer) SaveSGP();
+    }
+    void SaveSGP()
+	{
+		string[] uAst = SC_data.GetAsteroid(bX,bY).Split(';');
+        int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]),i;
+		for(i=0;i<=20;i++) SC_data.World[a,i,c]=dataID[i];
+		if(uAst[2]=="T") SC_data.SaveAsteroid(c);
+	}
+    void FixedUpdate()
+    {
+        if(mother) return;
+
+        if(SC_control.livTime%10==0) SC_control.SendMTP("/ScrRefresh "+SC_control.connectionID+" "+bID);
+        
+        string ass = SC_structure.actual_state;
+        if(
+            SC_control.Pitagoras(
+            (transform.position-new Vector3(0f,0f,transform.position.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
+            )<=80f &&
+            (ass=="B1"||ass=="B2"||ass=="B3"||ass=="a1b1"||ass=="a2b2"||ass=="a3b3")
+        ){
+            timer_bar_value = 180;
+            timer_bar_enabled = true;
+        }
+        else timer_bar_enabled = false;
     }
 }

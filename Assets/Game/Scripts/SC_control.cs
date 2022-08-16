@@ -1192,6 +1192,7 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RetFobsDataCorrection"||
 		arg[0]=="/RetFobsTurn"||
 		arg[0]=="/RetAsteroidData"||
+		arg[0]=="/RSD"||
 		arg[0]=="/RetFobsPing"||
 		arg[0]=="/RetGeyzerTurn"||
 		arg[0]=="/RetInventory"||
@@ -1462,6 +1463,17 @@ public class SC_control : MonoBehaviour {
 			foreach(SC_asteroid aul in SCT_asteroid)
 			{
 				aul.onMSG(cmdThis);
+			}
+		}
+		if(arg[0]=="/RSD")
+		{
+			if(arg[3]=="1024")
+			{
+				SC_boss[] SCT_boss = Component.FindObjectsOfType<SC_boss>();
+				foreach(SC_boss aul in SCT_boss)
+				{
+					aul.onMSG(cmdThis);
+				}
 			}
 		}
 		if(arg[0]=="/RetFobsChange"||

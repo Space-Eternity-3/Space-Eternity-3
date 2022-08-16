@@ -24,9 +24,23 @@ public class SC_bars : MonoBehaviour
 	public bool double_right;
 	public bool swap_left;
 	public bool swap_right;
+
+	int left_value = 0;
 	
 	public void LateUpdate()
 	{
+		double_left = false;
+		SC_boss[] boses = FindObjectsOfType<SC_boss>();
+		foreach(SC_boss bos in boses)
+		{
+			if(bos.timer_bar_enabled)
+			{
+				left_value = bos.timer_bar_value;
+				double_left = true;
+				break;
+			}
+		}
+
 		if(double_left)
 		{
 			if(!swap_left)
