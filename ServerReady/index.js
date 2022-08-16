@@ -1732,7 +1732,7 @@ wss.on("connection", function connection(ws) {
 
       var lc3T, lc3;
       var det = asteroidIndex(ulamID);
-      if (chunk_data[det[0]][det[1]][0] == "") {
+      if (chunk_data[det[0]][det[1]][0] == "" || parseInt(chunk_data[det[0]][det[1]][0]) >= 1024) {
         lc3 = generateAsteroid(localSize);
         lc3T = lc3.split(";");
         for (i = 0; i <= 20; i++) chunk_data[det[0]][det[1]][i] = lc3T[i];

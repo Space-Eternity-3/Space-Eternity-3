@@ -222,7 +222,7 @@ public class SC_asteroid : MonoBehaviour {
 				string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
 				int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]),i;
 				
-				if(SC_data.World[a,0,c]=="")
+				if(SC_data.World[a,0,c]=="" || int.Parse(SC_data.World[a,0,c])>=1024)
 				{
 					//Not exists
 					TypeSet(size);

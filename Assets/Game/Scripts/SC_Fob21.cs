@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
 using System;
 
@@ -23,6 +24,10 @@ public class SC_Fob21 : MonoBehaviour {
 	public SC_fobs SC_fobs;
 	public int max_count;
 	public int item_allow;
+	
+	public bool has_screen;
+	public Button screen_button;
+	public Text screen_text;
 	
 	public int ID=0,uID=0,X,Y;
 	public int ASAC_cooldown;
@@ -52,6 +57,26 @@ public class SC_Fob21 : MonoBehaviour {
 		for(i=0;i<max_count;i++){
 			if(count>i) oSim[i].material=On;
 			else oSim[i].material=Off;
+		}
+
+		if(has_screen)
+		{
+			int ccount = count;
+			if(ccount<0) ccount=0;
+			if(ccount>10) ccount=10;
+			
+			if(ccount==10)
+			{
+				screen_button.interactable = true;
+				screen_text.fontSize = 40;
+				screen_text.text = "BATTLE";
+			}
+			else
+			{
+				screen_button.interactable = false;
+				screen_text.fontSize = 45;
+				screen_text.text = ccount+" / 10";
+			}
 		}
 	}
 	void Update()

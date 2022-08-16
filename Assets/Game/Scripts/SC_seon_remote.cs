@@ -86,6 +86,8 @@ public class SC_seon_remote : MonoBehaviour
 
     void Start()
     {
+        if(SC_structure==null) return;
+
         localDefault = transform.localPosition;
         
         transform.position += extension;
@@ -102,14 +104,20 @@ public class SC_seon_remote : MonoBehaviour
 
         normalScale = transform.localScale;
 
-        FixedUpdate();
+        FixedUpdateM(true);
     }
     void FixedUpdate()
     {
+        FixedUpdateM(false);
+    }
+    void FixedUpdateM(bool starting)
+    {
+        if(SC_structure==null) return;
+
         int modeH = GetMode("hidden");
         int modeE = GetMode("extended");
 
-        if(SC_structure.scaling_blocker!=0)
+        if(SC_structure.scaling_blocker!=0 || starting)
         {
             if(modeE==1) modeE=2; if(modeE==3) modeE=0;
             if(modeH==1) modeH=2; if(modeH==3) modeH=0;

@@ -267,6 +267,8 @@ public class SC_structure : MonoBehaviour
 						st_structs[current] = ast.GetComponent<Transform>();
 						ast.strucutral_parent = transform;
 						scaling_blocker++;
+
+						st_structs[current].GetComponent<SC_seon_remote>().SC_structure = transform.GetComponent<SC_structure>();
 				
 						int[] sXY = BuildXY(current);
 						ast.proto = true; ast.X=sXY[0]; ast.Y=sXY[1]; ast.ID=SC_fun.CheckID(ast.X,ast.Y);
@@ -324,11 +326,19 @@ public class SC_structure : MonoBehaviour
 
 						i++;
 						int prboss = int.Parse(arg[i]);
-						if(prboss<0 || prboss>5) prboss=0;
+						if(prboss<0 || prboss>6) prboss=0;
 
-						Transform gat = Instantiate(stboss,transform.position,Quaternion.identity);
-						gat.parent = transform;
-						st_structs[current] = gat;
+						SC_boss bos = Instantiate(stboss,transform.position,Quaternion.identity).GetComponent<SC_boss>();
+						bos.GetComponent<Transform>().parent = transform;
+						st_structs[current] = bos.GetComponent<Transform>();
+
+						bos.SC_structure = transform.GetComponent<SC_structure>();
+
+						int[] sXY = BuildXY(current);
+						bos.bX=sXY[0]; bos.bY=sXY[1]; bos.bID=SC_fun.CheckID(bos.bX,bos.bY); bos.sID=ID;
+						bos.type = prboss;
+
+						bos.StartFromStructure();
 					}
 					else if(arg[i]=="empty")
 					{
