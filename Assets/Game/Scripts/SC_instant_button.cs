@@ -96,7 +96,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
                                 SC_Fob21.SaveSGP();
 
                                 bts.dataID[2] = "1";
-                                bts.StateUpdate();
+                                bts.resetScr();
                             }
                             else
                             {

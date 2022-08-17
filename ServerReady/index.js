@@ -117,6 +117,7 @@ const scrTemplate = {
   posCX: 0,
   posCY: 0,
   timeToDisappear: 500,
+  timeToLose: 500,
 };
 
 var bulletsT = [];
@@ -825,10 +826,33 @@ setInterval(function () { // <interval #2>
       lngt = scrs.length;
       for(i=0;i<lngt;i++) {
         scrs[i].timeToDisappear-=5;
+        scrs[i].timeToLose-=5;
         if(scrs[i].timeToDisappear<=0)
         {
           scrs.remove(i);
           lngt--; i--;
+          continue;
+        }
+
+        if(scrs[i].timeToLose<=0 && scrs[i].additionalData[2-2]=="2")
+        {
+          scrs[i].additionalData[2-2] = "3";
+          resetScr(i);
+        }
+
+        var sta = scrs[i].additionalData[2-2];
+        scrs[i].additionalData[3-2] = (parseInt(scrs[i].additionalData[3-2])+1)+"";
+        if(sta=="2") scrs[i].additionalData[4-2] = (parseInt(scrs[i].additionalData[4-2])-1)+"";
+        if((sta=="1" || sta=="3" || sta=="4") && parseInt(scrs[i].additionalData[3-2])>=10)
+        {
+          if(sta=="1") scrs[i].additionalData[2-2] = "2";
+          else if(sta=="3" || sta=="4") scrs[i].additionalData[2-2] = "0";
+          resetScr(i);
+        }
+        else if(sta=="2" && parseInt(scrs[i].additionalData[4-2])<=0)
+        {
+          scrs[i].additionalData[2-2] = "3";
+          resetScr(i);
         }
       }
     }
@@ -850,6 +874,43 @@ function setTerminalTitle(title)
   process.stdout.write(
     String.fromCharCode(27) + "]0;" + title + String.fromCharCode(7)
   );
+}
+function getTimeSize(n)
+{
+  if(n=="0") return "1800";
+  if(n=="1") return "2400";
+  if(n=="2") return "3000";
+  return "600";
+}
+function resetScr(i)
+{
+  var sta = scrs[i].additionalData[2-2];
+
+  scrs[i].timeToLose = 500;
+  scrs[i].additionalData[3-2] = "0"; //TempTime
+
+  if(sta=="0")
+  {
+    
+  }
+  else if(sta=="1")
+  {
+    scrs[i].additionalData[5-2] = getTimeSize(scrs[i].generalData[1]);
+    scrs[i].additionalData[4-2] = scrs[i].additionalData[5-2];
+  }
+  else if(sta=="2")
+  {
+    scrs[i].additionalData[5-2] = getTimeSize(scrs[i].generalData[1]);
+    scrs[i].additionalData[4-2] = scrs[i].additionalData[5-2];
+  }
+  else if(sta=="3")
+  {
+    
+  }
+  else if(sta=="4")
+  {
+    
+  }
 }
 
 //RetPlayerUpdate (25 times per second by default)
@@ -1849,12 +1910,14 @@ wss.on("connection", function connection(ws) {
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
       var bID = arg[2];
+      var inArena = (arg[3]=="T");
 
       var lngts = scrs.length;
       for(i=0;i<lngts;i++)
       {
         if(scrs[i].bID==bID) {
           scrs[i].timeToDisappear = 500;
+          if(inArena) scrs[i].timeToLose = 500;
           break;
         }
       }
@@ -1877,6 +1940,7 @@ wss.on("connection", function connection(ws) {
           {
             var gCountEnd = fobDataChange(fobID, fobIndex, "5", "-10");
             scrs[i].additionalData[2-2] = "1";
+            resetScr(i);
             sendToAllClients(
               "/RetFobsDataChange " +
                 fobID + " " +

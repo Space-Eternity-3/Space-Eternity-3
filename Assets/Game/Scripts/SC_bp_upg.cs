@@ -27,18 +27,33 @@ public class SC_bp_upg : MonoBehaviour
         {
             upper.text = "Upgrades";
             upg.localPosition = upgS;
-            bp.localPosition = hidden;
-        }
+        }else upg.localPosition = hidden;
+        
         if(state==1)
         {
             upper.text = "Backpack";
-            upg.localPosition = hidden;
             bp.localPosition = bpS;
-        }
+        }else bp.localPosition = hidden;
+
+        if(state==2)
+        {
+            upper.text = "Manager";
+            //bp.localPosition = bpS;
+        }//else bp.localPosition = hidden;
+
+        if(state==3)
+        {
+            upper.text = "Chat";
+            //bp.localPosition = bpS;
+        }//else bp.localPosition = hidden;
     }
     public void change_state()
     {
         if(state==0) state=1;
         else if(state==1) state=0;
+    }
+    public void set_state(int st)
+    {
+        state = st;
     }
 }

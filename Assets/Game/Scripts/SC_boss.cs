@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,8 +27,8 @@ public class SC_boss : MonoBehaviour
     ---
     K2 -> AdditionalState
     K3 -> TempTimer
-    K4 -> AbsoluteTimer
-    K5 -> BossHealth
+    K4 -> BattleTime
+    K5 -> MaxBattleTime
     (...)
     */
 
@@ -81,7 +82,13 @@ public class SC_boss : MonoBehaviour
             int i;
             string[] dataIDs = arg[2].Split(';');
             for(i=0;i<=20;i++)
-                dataID[i] = dataIDs[i];
+            {
+                try{
+                    dataID[i] = int.Parse(dataIDs[i])+"";
+                }catch(Exception){
+                    dataID[i] = "0";
+                }
+            }
 
             StateUpdate();
         }
@@ -148,7 +155,7 @@ public class SC_boss : MonoBehaviour
         FixedUpdate();
         SC_bars.LateUpdate();
     }
-    public void StateUpdate()
+    void StateUpdate()
     {
         if(SC_structure.actual_state=="default")
         {
@@ -160,7 +167,6 @@ public class SC_boss : MonoBehaviour
                         SC_structure.st_structs[i].GetComponent<SC_seon_remote>().jump = true;
         }
         SC_structure.actual_state = GetState(int.Parse(dataID[1]),int.Parse(dataID[2]));
-        if(!multiplayer) SaveSGP();
     }
     void SaveSGP()
 	{
@@ -178,11 +184,83 @@ public class SC_boss : MonoBehaviour
         );
         bool in_arena_range = (fcr<=35f);
         bool in_arena_vision = (fcr<=80f);
+        string iar="F"; if(in_arena_range) iar="T";
 
-        if(SC_control.livTime%10==0) SC_control.SendMTP("/ScrRefresh "+SC_control.connectionID+" "+bID+" "+in_arena_range);
+        if(SC_control.livTime%5==0) //Precisely 10 times per second
+        {
+            if(multiplayer) SC_control.SendMTP("/ScrRefresh "+SC_control.connectionID+" "+bID+" "+iar);
+            if(!multiplayer)
+            {
+                var sta = dataID[2];
+                dataID[3] = (int.Parse(dataID[3])+1)+"";
+                if(sta=="2") dataID[4] = (int.Parse(dataID[4])-1)+"";
+                if((sta=="1" || sta=="3" || sta=="4") && int.Parse(dataID[3])>=10)
+                {
+                    if(sta=="1") dataID[2] = "2";
+                    else if(sta=="3" || sta=="4") dataID[2] = "0";
+                    resetScr();
+                }
+                else if(sta=="2" && int.Parse(dataID[4])<=0)
+                {
+                    dataID[2] = "3";
+                    resetScr();
+                }
+                SaveSGP();
+            }
+        }
 
         string ass = SC_structure.actual_state;
-        if(in_arena_vision && (ass=="B1"||ass=="B2"||ass=="B3"||ass=="a1b1"||ass=="a2b2"||ass=="a3b3")) timer_bar_enabled = true;
+        if(in_arena_vision && (ass=="B1"||ass=="B2"||ass=="B3"))
+        {
+            timer_bar_value = int.Parse(dataID[4]);
+            timer_bar_max = int.Parse(dataID[5]);
+            timer_bar_enabled = true;
+        }
+        else if(in_arena_vision && (ass=="a1b1"||ass=="a2b2"||ass=="a3b3"))
+        {
+            string gts = getTimeSize(dataID[1]);
+            timer_bar_value = int.Parse(gts);
+            timer_bar_max = int.Parse(gts);
+            timer_bar_enabled = true;
+        }
         else timer_bar_enabled = false;
+    }
+    string getTimeSize(string n)
+    {
+        if(n=="0") return "1800";
+        if(n=="1") return "2400";
+        if(n=="2") return "3000";
+        return "600";
+    }
+    public void resetScr()
+    {
+        var sta = dataID[2];
+
+        dataID[3] = "0"; //TempTime
+
+        if(sta=="0")
+        {
+    
+        }
+        else if(sta=="1")
+        {
+            dataID[5] = getTimeSize(dataID[1]);
+            dataID[4] = dataID[5];
+        }
+        else if(sta=="2")
+        {
+            dataID[5] = getTimeSize(dataID[1]);
+            dataID[4] = dataID[5];
+        }
+        else if(sta=="3")
+        {
+
+        }
+        else if(sta=="4")
+        {
+    
+        }
+
+        StateUpdate();
     }
 }
