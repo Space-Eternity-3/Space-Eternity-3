@@ -21,15 +21,18 @@ public class SC_boss : MonoBehaviour
 
     public string[] dataID = new string[21];
     /*
-    p0 -> DataType (1024)
-    p1 -> GeneralState (1,2,3,4)
+    K0 -> DataType (1024)
+    K1 -> GeneralState
     ---
-    p2 -> AdditionalState
-    p3 -> cld_2
+    K2 -> AdditionalState
+    K3 -> TempTimer
+    K4 -> AbsoluteTimer
+    K5 -> BossHealth
     (...)
     */
 
-    public int timer_bar_value = 180;
+    public int timer_bar_value = 113;
+    public int timer_bar_max = 180;
     public bool timer_bar_enabled = false;
 
     public SC_data SC_data;
@@ -147,6 +150,15 @@ public class SC_boss : MonoBehaviour
     }
     public void StateUpdate()
     {
+        if(SC_structure.actual_state=="default")
+        {
+            //If not initialized, jump true by default
+            int i,lngt=SC_structure.st_structs.Length;
+            for(i=0;i<lngt;i++)
+                if(SC_structure.st_structs[i]!=null)
+                    if(SC_structure.st_structs[i].GetComponent<SC_seon_remote>()!=null)
+                        SC_structure.st_structs[i].GetComponent<SC_seon_remote>().jump = true;
+        }
         SC_structure.actual_state = GetState(int.Parse(dataID[1]),int.Parse(dataID[2]));
         if(!multiplayer) SaveSGP();
     }
@@ -161,18 +173,16 @@ public class SC_boss : MonoBehaviour
     {
         if(mother) return;
 
-        if(SC_control.livTime%10==0) SC_control.SendMTP("/ScrRefresh "+SC_control.connectionID+" "+bID);
-        
+        float fcr = SC_control.Pitagoras(
+            (SC_structure.transform.position-new Vector3(0f,0f,SC_structure.transform.position.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
+        );
+        bool in_arena_range = (fcr<=35f);
+        bool in_arena_vision = (fcr<=80f);
+
+        if(SC_control.livTime%10==0) SC_control.SendMTP("/ScrRefresh "+SC_control.connectionID+" "+bID+" "+in_arena_range);
+
         string ass = SC_structure.actual_state;
-        if(
-            SC_control.Pitagoras(
-            (transform.position-new Vector3(0f,0f,transform.position.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
-            )<=80f &&
-            (ass=="B1"||ass=="B2"||ass=="B3"||ass=="a1b1"||ass=="a2b2"||ass=="a3b3")
-        ){
-            timer_bar_value = 180;
-            timer_bar_enabled = true;
-        }
+        if(in_arena_vision && (ass=="B1"||ass=="B2"||ass=="B3"||ass=="a1b1"||ass=="a2b2"||ass=="a3b3")) timer_bar_enabled = true;
         else timer_bar_enabled = false;
     }
 }

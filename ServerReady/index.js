@@ -824,7 +824,7 @@ setInterval(function () { // <interval #2>
       //[Scrs]
       lngt = scrs.length;
       for(i=0;i<lngt;i++) {
-        scrs[i].timeToDisappear[i]-=5;
+        scrs[i].timeToDisappear-=5;
         if(scrs[i].timeToDisappear<=0)
         {
           scrs.remove(i);
@@ -1845,7 +1845,7 @@ wss.on("connection", function connection(ws) {
     }
     if(arg[0] == "/ScrRefresh")
     {
-      //ScrRefresh 1[PlayerID] 2[bID]
+      //ScrRefresh 1[PlayerID] 2[bID] 3[inArena]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
       var bID = arg[2];
@@ -1856,6 +1856,35 @@ wss.on("connection", function connection(ws) {
         if(scrs[i].bID==bID) {
           scrs[i].timeToDisappear = 500;
           break;
+        }
+      }
+    }
+    if(arg[0] == "/TryBattleStart")
+    {
+      //TryBattleStart 1[PlayerID] 2[bID] 3[fobID] 4[fobIndex]
+      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+
+      var bID = arg[2];
+      var fobID = arg[3];
+      var fobIndex = arg[4];
+
+      var lngts = scrs.length;
+      for(i=0;i<lngts;i++)
+      {
+        if(scrs[i].bID==bID)
+        {
+          if(scrs[i].additionalData[2-2]=="0" && checkFobDataChange(fobID, fobIndex, "5", "-10", "52"))
+          {
+            var gCountEnd = fobDataChange(fobID, fobIndex, "5", "-10");
+            scrs[i].additionalData[2-2] = "1";
+            sendToAllClients(
+              "/RetFobsDataChange " +
+                fobID + " " +
+                fobIndex + " 5 -10 -1 " + //itemID, deltaCount, playerID
+                gCountEnd + " 52 X X" //fob21ID
+            );
+          }
+          return;
         }
       }
     }

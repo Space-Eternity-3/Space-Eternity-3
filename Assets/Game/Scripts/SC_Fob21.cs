@@ -28,6 +28,9 @@ public class SC_Fob21 : MonoBehaviour {
 	public bool has_screen;
 	public Button screen_button;
 	public Text screen_text;
+	public Image screen_image;
+	public Color32 screen_color_disabled;
+	public int screen_button_cooldown=0;
 	
 	public int ID=0,uID=0,X,Y;
 	public int ASAC_cooldown;
@@ -64,10 +67,10 @@ public class SC_Fob21 : MonoBehaviour {
 			int ccount = count;
 			if(ccount<0) ccount=0;
 			if(ccount>10) ccount=10;
-			
+
 			if(ccount==10)
 			{
-				screen_button.interactable = true;
+				screen_button.interactable = (screen_button_cooldown==0);
 				screen_text.fontSize = 40;
 				screen_text.text = "BATTLE";
 			}
@@ -77,6 +80,18 @@ public class SC_Fob21 : MonoBehaviour {
 				screen_text.fontSize = 45;
 				screen_text.text = ccount+" / 10";
 			}
+
+			ColorBlock cb = screen_button.colors;
+			if(!screen_button.interactable || InDistance(15f,new Vector3(0f,-2.25f,0f)))
+			{
+				cb.disabledColor = screen_color_disabled;
+			}
+			else
+			{
+				cb.disabledColor = cb.normalColor;
+				screen_button.interactable = false;
+			}
+			screen_button.colors = cb;
 		}
 	}
 	void Update()
@@ -86,6 +101,7 @@ public class SC_Fob21 : MonoBehaviour {
 	void FixedUpdate()
 	{
 		if(transform.position.z>100f) return;
+		if(screen_button_cooldown>0) screen_button_cooldown--;
 		if(count<=0) item=0;
 		pub_item=item;
 		pub_count=count;
@@ -145,14 +161,14 @@ public class SC_Fob21 : MonoBehaviour {
 			}
 		}
 	}
-	bool InDistance(float dist)
+	bool InDistance(float dist, Vector3 deltapos)
 	{
-		float dX=player.position.x-transform.position.x;
-		float dY=player.position.y-transform.position.y;
+		float dX=player.position.x-(transform.position.x+deltapos.x);
+		float dY=player.position.y-(transform.position.y+deltapos.y);
 		if(Mathf.Sqrt(dX*dX+dY*dY)<dist) return true;
 		else return false;
 	}
-	void SaveSGP()
+	public void SaveSGP()
 	{
 		string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
         int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]);
@@ -162,7 +178,7 @@ public class SC_Fob21 : MonoBehaviour {
 	}
 	bool Req(int mode)
 	{
-		if((int)Communtron1.position.z==0&&(int)Communtron3.position.y==0&&InDistance(15f)&&Communtron3.position.y==0)
+		if((int)Communtron1.position.z==0&&(int)Communtron3.position.y==0&&InDistance(15f,new Vector3(0f,0f,0f))&&Communtron3.position.y==0)
 		if(mode==0)
 		{
 			if(count>0)

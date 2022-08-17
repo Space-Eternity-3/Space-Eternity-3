@@ -25,8 +25,24 @@ public class SC_bars : MonoBehaviour
 	public bool swap_left;
 	public bool swap_right;
 
+	public Image left_slider;
+	public Text left_text;
+	int left_max = 0;
 	int left_value = 0;
 	
+	string ConvertToTime(int seconds)
+	{
+		int minutes = seconds/60;
+		seconds = seconds % 60;
+		if(seconds<10)
+		{
+			return minutes+":0"+seconds;
+		}
+		else
+		{
+			return minutes+":"+seconds;
+		}
+	}
 	public void LateUpdate()
 	{
 		double_left = false;
@@ -35,8 +51,13 @@ public class SC_bars : MonoBehaviour
 		{
 			if(bos.timer_bar_enabled)
 			{
-				left_value = bos.timer_bar_value;
 				double_left = true;
+				left_value = bos.timer_bar_value;
+				left_max = bos.timer_bar_max;
+				left_text.text = "Time " + ConvertToTime(left_value);
+				if(left_max==0) left_max=1;
+				left_slider.fillAmount = 0.116f + (left_value*0.784f/left_max);
+				if(left_value==0) left_slider.fillAmount = 0f;
 				break;
 			}
 		}

@@ -80,24 +80,28 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
 				}
 				if(index==2) SC_resume.Quit();
 			}
-            if(ID==11)
+            if(ID==11) if(button.interactable && button.enabled)
             {
                 SC_structure rts = transform.root.GetComponent<SC_structure>();
                 if(rts!=null)
                     if(rts.st_structs[0]!=null)
                     {
                         SC_boss bts = rts.st_structs[0].GetComponent<SC_boss>();
-                        if(bts!=null)
+                        if(bts!=null && SC_Fob21.item==5 && SC_Fob21.count>=10)
                         {
                             if(!bts.multiplayer)
                             {
-                                //REMOVE AMETHYST HERE
+                                SC_Fob21.count -= 10;
+                                if(SC_Fob21.count==0) SC_Fob21.item = 0;
+                                SC_Fob21.SaveSGP();
+
                                 bts.dataID[2] = "1";
                                 bts.StateUpdate();
                             }
                             else
                             {
-                                SC_control.SendMTP("/TryBattleStart xxxxx");
+                                SC_control.SendMTP("/TryBattleStart "+SC_control.connectionID+" "+bts.bID+" "+SC_Fob21.ID+" "+SC_Fob21.uID);
+                                SC_Fob21.screen_button_cooldown = 125;
                             }
                         }
                     }

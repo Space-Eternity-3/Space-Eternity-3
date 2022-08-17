@@ -21,6 +21,8 @@ public class SC_seon_remote : MonoBehaviour
     3 - undoing
     */
 
+    public bool jump = true;
+
     int current_extension = 0;
     int current_hide = 0;
 
@@ -104,11 +106,12 @@ public class SC_seon_remote : MonoBehaviour
 
         normalScale = transform.localScale;
 
-        FixedUpdateM(true);
+        FixedUpdate();
     }
     void FixedUpdate()
     {
-        FixedUpdateM(false);
+        FixedUpdateM(jump);
+        jump = false;
     }
     void FixedUpdateM(bool starting)
     {
