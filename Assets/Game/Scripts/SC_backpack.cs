@@ -30,7 +30,7 @@ public class SC_backpack : MonoBehaviour
 
         if(yy>0&&!all) yy=1;
         
-		if(n!=15)
+		if(!(n>=15 && n!=17))
 		{
 			if(yy!=0&&SC_slots.InvHaveB(xx,1,true,false,true,0)&&SC_slots.InvHaveB(xx,-yy,false,true,true,0))
 			{
@@ -43,17 +43,17 @@ public class SC_backpack : MonoBehaviour
 		}
 		else
 		{
-			if(yy!=0&&SC_slots.InvHaveB(xx,1,true,false,true,0)&&SC_slots.BackpackX[15]==xx&&SC_slots.BackpackYA[15]>0)
+			if(yy!=0&&SC_slots.InvHaveB(xx,1,true,false,true,0)&&SC_slots.BackpackX[n]==xx&&SC_slots.BackpackYA[n]>0)
 			{
 				int slI = SC_slots.InvChange(xx,yy,true,false,true);
-				int slB = 15+9;
+				int slB = n+9;
 				
-				SC_slots.BackpackX[15] = xx;
-				SC_slots.BackpackY[15] -= yy; //sureMTP
-				SC_slots.BackpackYA[15] -= yy;
-				SC_slots.BackpackYB[15] -= yy;
-				SC_slots.PopInv(15+9,-1);
-				SC_control.power_V = 0f;
+				SC_slots.BackpackX[n] = xx;
+				SC_slots.BackpackY[n] -= yy; //sureMTP
+				SC_slots.BackpackYA[n] -= yy;
+				SC_slots.BackpackYB[n] -= yy;
+				SC_slots.PopInv(n+9,-1);
+				if(n==15) SC_control.power_V = 0f;
 				
 				if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+yy+" "+slI+" "+slB);
 			}
@@ -106,10 +106,10 @@ public class SC_backpack : MonoBehaviour
         for(i=0;i<21;i++)
         {
 			//virtual mode: one "if part" deleted to simplify code
-            if((i<lim||i==15)&&SC_slots.BackpackY[i]!=0&&SC_slots.InvHaveB(SC_slots.BackpackX[i],1,true,false,false,0)) buttons[i].interactable=true;
+            if((i<lim||(i>=15 && i!=17))&&SC_slots.BackpackY[i]!=0&&SC_slots.InvHaveB(SC_slots.BackpackX[i],1,true,false,false,0)) buttons[i].interactable=true;
             else buttons[i].interactable=false;
 
-            if(i<lim||i==15) darknero[i].localPosition=new Vector3(10000f,0f,0f);
+            if(i<lim||(i>=15 && i!=17)) darknero[i].localPosition=new Vector3(10000f,0f,0f);
             else darknero[i].localPosition=darkPos[i];
         }
     }

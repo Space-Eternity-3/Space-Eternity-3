@@ -6,8 +6,9 @@ using UnityEngine.UI;
 public class SC_bp_upg : MonoBehaviour
 {
     public int state = 0;
-    public Transform upg,bp;
-    public Text upper, star;
+    public Transform upg,bp,mng,ch;
+    public Text upper;
+    public Button B,U,M,C;
     Vector3 upgS,bpS,hidden;
     bool wysuned = false;
     public SC_inv_mover SC_inv_mover;
@@ -21,31 +22,38 @@ public class SC_bp_upg : MonoBehaviour
     }
     void Update()
     {
-        if(SC_inv_mover.active && Input.GetKeyDown(KeyCode.D)) change_state();
+        if(SC_inv_mover.active && Input.GetKeyDown(KeyCode.U)) set_state(0);
+        if(SC_inv_mover.active && Input.GetKeyDown(KeyCode.B)) set_state(1);
+        if(SC_inv_mover.active && Input.GetKeyDown(KeyCode.M)) set_state(2);
+        if(SC_inv_mover.active && Input.GetKeyDown(KeyCode.C)) set_state(3);
 
         if(state==0)
         {
             upper.text = "Upgrades";
             upg.localPosition = upgS;
-        }else upg.localPosition = hidden;
+            U.interactable = false;
+        }else {upg.localPosition = hidden; U.interactable = true;}
         
         if(state==1)
         {
             upper.text = "Backpack";
             bp.localPosition = bpS;
-        }else bp.localPosition = hidden;
+            B.interactable = false;
+        }else {bp.localPosition = hidden; B.interactable = true;}
 
         if(state==2)
         {
             upper.text = "Manager";
-            //bp.localPosition = bpS;
-        }//else bp.localPosition = hidden;
+            mng.localPosition = bpS;
+            M.interactable = false;
+        }else {mng.localPosition = hidden; M.interactable = true;}
 
         if(state==3)
         {
             upper.text = "Chat";
-            //bp.localPosition = bpS;
-        }//else bp.localPosition = hidden;
+            ch.localPosition = bpS;
+            C.interactable = false;
+        }else {ch.localPosition = hidden; C.interactable = true;}
     }
     public void change_state()
     {
