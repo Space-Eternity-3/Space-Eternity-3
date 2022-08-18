@@ -13,7 +13,7 @@ var serverVersion = "Beta 1.14";
 var serverRedVersion = "Beta_1_14";
 var clientDatapacksVar = "";
 var seed;
-var gpl_number = 30;
+var gpl_number = 31;
 var max_players = 128;
 
 if(Number.isInteger(config.max_players))
@@ -116,8 +116,8 @@ const scrTemplate = {
   type: 0,
   posCX: 0,
   posCY: 0,
-  timeToDisappear: 500,
-  timeToLose: 500,
+  timeToDisappear: 1000,
+  timeToLose: 1000,
 };
 
 var bulletsT = [];
@@ -878,16 +878,29 @@ function setTerminalTitle(title)
 function getTimeSize(n)
 {
   if(n=="0") return "1800";
-  if(n=="1") return "2400";
-  if(n=="2") return "3000";
+  if(n=="1") return "2100";
+  if(n=="2") return "2400";
   return "600";
+}
+function getBossHealth(n,typ)
+{
+  if(typ==0)
+  {
+    if(n=="0") return "160000";
+    if(n=="1") return "180000";
+    if(n=="2") return "200000";
+  }
+  return "40000";
 }
 function resetScr(i)
 {
+  var mem6 = scrs[i].additionalData[6-2];
+
+  var j;
+  for(j=3;j<=20;j++) scrs[i].additionalData[j-2] = "0";
   var sta = scrs[i].additionalData[2-2];
 
-  scrs[i].timeToLose = 500;
-  scrs[i].additionalData[3-2] = "0"; //TempTime
+  scrs[i].timeToLose = 1000;
 
   if(sta=="0")
   {
@@ -895,17 +908,22 @@ function resetScr(i)
   }
   else if(sta=="1")
   {
-    scrs[i].additionalData[5-2] = getTimeSize(scrs[i].generalData[1]);
-    scrs[i].additionalData[4-2] = scrs[i].additionalData[5-2];
+    scrs[i].additionalData[5-2] = getTimeSize(scrs[i].generalData[1]); //Max time
+    scrs[i].additionalData[4-2] = scrs[i].additionalData[5-2]; //Time left
+    scrs[i].additionalData[7-2] = getBossHealth(scrs[i].generalData[1],scrs[i].type); //Max health
+    scrs[i].additionalData[6-2] = scrs[i].additionalData[7-2]; //Health left
   }
   else if(sta=="2")
   {
-    scrs[i].additionalData[5-2] = getTimeSize(scrs[i].generalData[1]);
-    scrs[i].additionalData[4-2] = scrs[i].additionalData[5-2];
+    scrs[i].additionalData[5-2] = getTimeSize(scrs[i].generalData[1]); //Max time
+    scrs[i].additionalData[4-2] = scrs[i].additionalData[5-2]; //Time left
+    scrs[i].additionalData[7-2] = getBossHealth(scrs[i].generalData[1],scrs[i].type); //Max health
+    scrs[i].additionalData[6-2] = scrs[i].additionalData[7-2]; //Health left
   }
   else if(sta=="3")
   {
-    
+    scrs[i].additionalData[7-2] = getBossHealth(scrs[i].generalData[1],scrs[i].type); //Max health
+    scrs[i].additionalData[6-2] = mem6; //Health left
   }
   else if(sta=="4")
   {
@@ -1916,8 +1934,8 @@ wss.on("connection", function connection(ws) {
       for(i=0;i<lngts;i++)
       {
         if(scrs[i].bID==bID) {
-          scrs[i].timeToDisappear = 500;
-          if(inArena) scrs[i].timeToLose = 500;
+          scrs[i].timeToDisappear = 1000;
+          if(inArena) scrs[i].timeToLose = 1000;
           break;
         }
       }
@@ -2625,6 +2643,8 @@ function finalTranslate(varN) {
             gameplay[3] = parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "red_bullet_damage")
             gameplay[27] = parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "bullet_owner_push")
+            gameplay[30] = parseFloatE(jse3Dat[i]) + "";
 
           if (psPath[1] == "player_normal_speed")
             gameplay[9] = parseFloatE(jse3Dat[i]) + "";

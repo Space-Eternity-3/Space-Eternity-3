@@ -9,10 +9,12 @@ public class SC_boss : MonoBehaviour
     public Transform TestBossNick;
     public Transform CanvPS;
     public Transform Communtron4;
-    Transform CanvP,CanvNick;
+    Transform CanvP,CanvNick,CanvBar;
     public int type;
+    public int smallest_boss_health = 140000;
 
     public string[] BossNames = new string[7];
+    public Color32[] arenaColors = new Color32[7];
     const string scrID = "1024";
 
     bool mother = true;
@@ -29,12 +31,16 @@ public class SC_boss : MonoBehaviour
     K3 -> TempTimer
     K4 -> BattleTime
     K5 -> MaxBattleTime
+    K6 -> IntHealth
+    K7 -> MaxIntHealth
     (...)
     */
 
-    public int timer_bar_value = 113;
+    public int timer_bar_value = 0;
     public int timer_bar_max = 180;
     public bool timer_bar_enabled = false;
+    public int int_health = 140000;
+    public int int_health_max = 220000;
 
     public SC_data SC_data;
     public SC_control SC_control;
@@ -105,11 +111,14 @@ public class SC_boss : MonoBehaviour
 
         foreach(Transform nck in CanvP)
         {
-            if(nck.GetComponent<Text>()!=null)
-            {
-                nck.GetComponent<Text>().text = BossNames[type];
-            }
+            if(nck.name=="Nickname")
+                CanvNick = nck;
+
+            if(nck.name=="HPBar")
+                CanvBar = nck;
         }
+
+        CanvNick.GetComponent<Text>().text = BossNames[type];
 
         if(!multiplayer) //If singleplayer
         {
@@ -168,6 +177,12 @@ public class SC_boss : MonoBehaviour
         }
         SC_structure.actual_state = GetState(int.Parse(dataID[1]),int.Parse(dataID[2]));
     }
+    void SetBarLength(int current, int max)
+    {
+        if(max==0) max=40000;
+        CanvBar.GetComponent<RectTransform>().sizeDelta = new Vector2(120f*max/smallest_boss_health,26f); /* 120 - 190 */
+        CanvBar.GetComponent<Slider>().value = (current*1f/max);
+    }
     void SaveSGP()
 	{
 		string[] uAst = SC_data.GetAsteroid(bX,bY).Split(';');
@@ -224,37 +239,56 @@ public class SC_boss : MonoBehaviour
             timer_bar_enabled = true;
         }
         else timer_bar_enabled = false;
+
+        SetBarLength(int.Parse(dataID[6]),int.Parse(dataID[7]));
     }
     string getTimeSize(string n)
     {
         if(n=="0") return "1800";
-        if(n=="1") return "2400";
-        if(n=="2") return "3000";
+        if(n=="1") return "2100";
+        if(n=="2") return "2400";
         return "600";
+    }
+    string getBossHealth(string n, int typ)
+    {
+        if(typ==0)
+        {
+            if(n=="0") return "160000";
+            if(n=="1") return "180000";
+            if(n=="2") return "200000";
+        }
+        return "40000";
     }
     public void resetScr()
     {
-        var sta = dataID[2];
+        string mem6 = dataID[6];
 
-        dataID[3] = "0"; //TempTime
+        int i;
+        for(i=3;i<=20;i++) dataID[i] = "0";
+        string sta = dataID[2];
 
         if(sta=="0")
         {
-    
+            
         }
         else if(sta=="1")
         {
-            dataID[5] = getTimeSize(dataID[1]);
-            dataID[4] = dataID[5];
+            dataID[5] = getTimeSize(dataID[1]); //Max time
+            dataID[4] = dataID[5]; //Time left
+            dataID[7] = getBossHealth(dataID[1],type); //Max health
+            dataID[6] = dataID[7]; //Boss health
         }
         else if(sta=="2")
         {
-            dataID[5] = getTimeSize(dataID[1]);
-            dataID[4] = dataID[5];
+            dataID[5] = getTimeSize(dataID[1]); //Max time
+            dataID[4] = dataID[5]; //Time left
+            dataID[7] = getBossHealth(dataID[1],type); //Max health
+            dataID[6] = dataID[7]; //Boss health
         }
         else if(sta=="3")
         {
-
+            dataID[7] = getBossHealth(dataID[1],type); //Max health
+            dataID[6] = mem6; //Boss health
         }
         else if(sta=="4")
         {

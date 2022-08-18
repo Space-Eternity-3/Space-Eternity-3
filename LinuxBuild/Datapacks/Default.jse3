@@ -149,6 +149,7 @@ gameplay
 	unstable_matter_damage: 10;
 	copper_bullet_damage: 3;
 	red_bullet_damage: 4;
+	bullet_owner_push: 1;
 	
 	at_protection_health_level_add: 2,272;
 	at_protection_health_regenerate_multiplier: 1,5;	<relative variable>

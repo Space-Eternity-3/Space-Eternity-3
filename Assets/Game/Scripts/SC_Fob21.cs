@@ -29,6 +29,8 @@ public class SC_Fob21 : MonoBehaviour {
 	public Button screen_button;
 	public Text screen_text;
 	public Image screen_image;
+	public Text screen_description;
+	public Image screen_description_image;
 	public Color32 screen_color_disabled;
 	public int screen_button_cooldown=0;
 	
@@ -92,6 +94,18 @@ public class SC_Fob21 : MonoBehaviour {
 				screen_button.interactable = false;
 			}
 			screen_button.colors = cb;
+
+			SC_structure rts = transform.root.GetComponent<SC_structure>();
+            if(rts!=null)
+                if(rts.st_structs[0]!=null)
+                {
+                    SC_boss bts = rts.st_structs[0].GetComponent<SC_boss>();
+                    if(bts!=null)
+                    {
+						screen_description.text = bts.BossNames[bts.type]+" "+(int.Parse(bts.dataID[1])+1)+"/3";
+						screen_description_image.color = bts.arenaColors[bts.type];
+					}
+                }
 		}
 	}
 	void Update()

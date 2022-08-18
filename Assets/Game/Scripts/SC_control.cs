@@ -235,9 +235,12 @@ public class SC_control : MonoBehaviour {
 				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 48 -1 "+slot);
 			}
 
+			float xpo = Input.mousePosition.x-Screen.width/2, ypo=Input.mousePosition.y-Screen.height/2;
+			playerR.velocity += Skop(float.Parse(SC_data.Gameplay[30]),new Vector3(-xpo,-ypo,0f));
+
 			SC_bullet.Shot(
 				transform.position,
-				new Vector3(Input.mousePosition.x-Screen.width/2,Input.mousePosition.y-Screen.height/2,0f),
+				new Vector3(xpo,ypo,0f),
 				playerR.velocity*0.02f,
 				typ
 			);
