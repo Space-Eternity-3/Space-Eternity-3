@@ -5,6 +5,7 @@ using UnityEngine;
 public class SC_seeking : MonoBehaviour
 {
 	public bool enabled = true;
+    public bool localpos = false;
 	public string idWord = "";
     public Transform seek;
     public Vector3 offset;
@@ -12,6 +13,9 @@ public class SC_seeking : MonoBehaviour
     public void Update()
     {
 		if(enabled)
-        transform.position=seek.position+offset;
+        {
+            if(!localpos) transform.position=seek.position+offset;
+            else transform.localPosition=seek.localPosition+offset;
+        }
     }
 }

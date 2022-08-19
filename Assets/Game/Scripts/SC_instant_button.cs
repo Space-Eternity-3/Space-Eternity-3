@@ -80,6 +80,18 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
 				}
 				if(index==2) SC_resume.Quit();
 			}
+        }
+        if(mode==1)
+        {
+            if(ID==4) SC_backpack.Select(index,false);
+            if(ID==5)
+			{
+				if(!special) SC_backpack.Import(index,false);
+				else SC_backpack.ImportArt(index);
+			}
+        }
+        if(mode==0 || mode==1)
+        {
             if(ID==11) if(button.interactable && button.enabled)
             {
                 SC_structure rts = transform.root.GetComponent<SC_structure>();
@@ -106,15 +118,6 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
                         }
                     }
             }
-        }
-        if(mode==1)
-        {
-            if(ID==4) SC_backpack.Select(index,false);
-            if(ID==5)
-			{
-				if(!special) SC_backpack.Import(index,false);
-				else SC_backpack.ImportArt(index);
-			}
         }
     }
 }

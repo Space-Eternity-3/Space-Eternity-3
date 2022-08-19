@@ -236,7 +236,7 @@ public class SC_control : MonoBehaviour {
 			}
 
 			float xpo = Input.mousePosition.x-Screen.width/2, ypo=Input.mousePosition.y-Screen.height/2;
-			playerR.velocity += Skop(float.Parse(SC_data.Gameplay[30]),new Vector3(-xpo,-ypo,0f));
+			if(typ!=3) playerR.velocity += Skop(float.Parse(SC_data.Gameplay[30]),new Vector3(-xpo,-ypo,0f));
 
 			SC_bullet.Shot(
 				transform.position,

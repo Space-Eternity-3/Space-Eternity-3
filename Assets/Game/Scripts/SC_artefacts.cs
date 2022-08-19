@@ -154,6 +154,11 @@ public class SC_artefacts : MonoBehaviour
 				SC_control.power_V -= SC_control.IM_barrier;
 				SC_control.impulse_reset = true;
 				SC_control.turbo = false;
+
+				SC_colboss[] cbss = FindObjectsOfType<SC_colboss>();
+				foreach(SC_colboss cbs in cbss) {
+					cbs.impulse_used = false;
+				}
 				
 				Transform trn = Instantiate(SC_control.impulseHidden,SC_control.transform.position,new Quaternion(0f,0f,0f,0f));
 				trn.GetComponent<SC_seeking>().enabled = true;

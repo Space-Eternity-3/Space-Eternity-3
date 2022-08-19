@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class SC_boss : MonoBehaviour
 {
     public Transform TestBossNick;
+    public Transform Boss;
     public Transform CanvPS;
     public Transform Communtron4;
     Transform CanvP,CanvNick,CanvBar;
@@ -19,6 +20,7 @@ public class SC_boss : MonoBehaviour
 
     bool mother = true;
     public bool multiplayer = false;
+    Vector3 solidPosition = new Vector3(0f,0f,0f);
 
     public int bX=0,bY=0,bID=1,sID=1;
 
@@ -33,6 +35,9 @@ public class SC_boss : MonoBehaviour
     K5 -> MaxBattleTime
     K6 -> IntHealth
     K7 -> MaxIntHealth
+    K8 -> delta position X (converted)
+    K9 -> delta position Y (converted)
+    K10 -> rotation (converted)
     (...)
     */
 
@@ -102,8 +107,8 @@ public class SC_boss : MonoBehaviour
     public void StartFromStructure()
     {
         mother = false;
-
         multiplayer = ((int)Communtron4.position.y==100);
+        solidPosition = transform.position;
 
         CanvP = Instantiate(CanvPS,new Vector3(0f,0f,0f),Quaternion.identity);
         CanvP.SetParent(TestBossNick,false); CanvP.name = "CanvBS";
@@ -156,8 +161,8 @@ public class SC_boss : MonoBehaviour
                 bID+" "+
                 scrID+" "+
                 type+" "+
-                transform.position.x+" "+
-                transform.position.y
+                solidPosition.x+" "+
+                solidPosition.y
             );
         }
 
@@ -183,6 +188,13 @@ public class SC_boss : MonoBehaviour
         CanvBar.GetComponent<RectTransform>().sizeDelta = new Vector2(120f*max/smallest_boss_health,26f); /* 120 - 190 */
         CanvBar.GetComponent<Slider>().value = (current*1f/max);
     }
+    public void DamageSGP(float dmg)
+    {
+        if(dataID[2]!="2") return;
+        float actualHealth = int.Parse(dataID[6])/100f;
+        actualHealth -= dmg;
+        dataID[6] = (int)(actualHealth*100)+"";
+    }
     void SaveSGP()
 	{
 		string[] uAst = SC_data.GetAsteroid(bX,bY).Split(';');
@@ -194,8 +206,17 @@ public class SC_boss : MonoBehaviour
     {
         if(mother) return;
 
+        solidPosition = new Vector3(solidPosition.x,solidPosition.y,transform.position.z);
+        transform.position = solidPosition;
+        Boss.position = solidPosition + new Vector3(
+            ScrdToFloat(dataID[8]),
+            ScrdToFloat(dataID[9]),
+            0f
+        );
+        Boss.eulerAngles = new Vector3(0f,0f,ScrdToFloat(dataID[10]));
+
         float fcr = SC_control.Pitagoras(
-            (SC_structure.transform.position-new Vector3(0f,0f,SC_structure.transform.position.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
+            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
         );
         bool in_arena_range = (fcr<=35f);
         bool in_arena_vision = (fcr<=80f);
@@ -262,6 +283,9 @@ public class SC_boss : MonoBehaviour
     public void resetScr()
     {
         string mem6 = dataID[6];
+        string mem8 = dataID[8];
+        string mem9 = dataID[9];
+        string mem10 = dataID[10];
 
         int i;
         for(i=3;i<=20;i++) dataID[i] = "0";
@@ -289,12 +313,19 @@ public class SC_boss : MonoBehaviour
         {
             dataID[7] = getBossHealth(dataID[1],type); //Max health
             dataID[6] = mem6; //Boss health
+            dataID[8] = mem8; dataID[9] = mem9; dataID[10] = mem10; //Position & Rotation
         }
         else if(sta=="4")
         {
-    
+            
         }
 
         StateUpdate();
+    }
+    string FloatToScrd(float src) {
+        return ((int)(src*100000))+"";
+    }
+    float ScrdToFloat(string src) {
+        return int.Parse(src)/100000f;
     }
 }

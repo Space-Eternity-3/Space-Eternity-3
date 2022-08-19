@@ -634,8 +634,14 @@ function CookedDamage(pid,dmg)
 }
 function getBulletDamage(type,owner,pid)
 {
-  var artid = plr.backpack[pid].split(";")[30] - 41;
-  if(plr.backpack[pid].split(";")[31]==0) artid = -41;
+  var artid=-41;
+  if(pid!=-1 && pid!=-2)
+  {
+    artid = plr.backpack[pid].split(";")[30] - 41;
+    if(plr.backpack[pid].split(";")[31]==0) artid = -41;
+  }
+  else if(pid==-1) artid=-41;
+  else if(pid==-2) artid=6;
 
   if(artid==6 && type==3) return 0;
 
@@ -700,6 +706,35 @@ setInterval(function () { // <interval #2>
               else if(!bulletsT[i].damaged.includes(j)) {
                 DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j) );
                 bulletsT[i].damaged.push(j);
+              }
+            }
+          }
+        }
+
+        var rr = 7.58;
+        xb = start_xa + (xv);
+        yb = start_ya + (yv);
+        var lngts = scrs.length;
+        for(j=0;j<lngts;j++)
+        {
+          var l = scrs[j].bID;
+          if(scrs[j].additionalData[2-2]=="2")
+          {
+            var xc = scrs[j].posCX + ScrdToFloat(scrs[j].additionalData[8-2]);
+            var yc = scrs[j].posCY + ScrdToFloat(scrs[j].additionalData[9-2]);
+            if(((xb-xc)**2)+((yb-yc)**2) <= ((rr)**2))
+            {
+              if(bulletsT[i].type!=3) {
+                DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1) );
+                destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
+                break;
+              }
+              else if(!bulletsT[i].damaged.includes(-l)) {
+                if(scrs[j].type!=6) DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1) );
+                else DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -2) );
+                bulletsT[i].damaged.push(-l);
+                destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
+                break;
               }
             }
           }
@@ -895,6 +930,9 @@ function getBossHealth(n,typ)
 function resetScr(i)
 {
   var mem6 = scrs[i].additionalData[6-2];
+  var mem8 = scrs[i].additionalData[8-2];
+  var mem9 = scrs[i].additionalData[9-2];
+  var mem10 = scrs[i].additionalData[10-2];
 
   var j;
   for(j=3;j<=20;j++) scrs[i].additionalData[j-2] = "0";
@@ -924,11 +962,25 @@ function resetScr(i)
   {
     scrs[i].additionalData[7-2] = getBossHealth(scrs[i].generalData[1],scrs[i].type); //Max health
     scrs[i].additionalData[6-2] = mem6; //Health left
+    scrs[i].additionalData[8-2] = mem8; scrs[i].additionalData[9-2] = mem9; scrs[i].additionalData[10-2] = mem10; //Position & Rotation
   }
   else if(sta=="4")
   {
     
   }
+}
+function DamageBoss(i,dmg)
+{
+  if(scrs[i].additionalData[2-2]!="2") return;
+  var actualHealth = parseInt(scrs[i].additionalData[6-2])/100;
+  actualHealth -= dmg;
+  scrs[i].additionalData[6-2] = Math.floor(actualHealth*100)+"";
+}
+function FloatToScrd(src) {
+  return Math.floor(src*100000)+"";
+}
+function ScrdToFloat(src) {
+  return parseInt(src)/100000;
 }
 
 //RetPlayerUpdate (25 times per second by default)
@@ -1703,7 +1755,7 @@ wss.on("connection", function connection(ws) {
 
       //impulse player damage
       var j, caray = censured.split(";");
-      if(caray.length>1 && pvp && arg[7]=="T")
+      if(caray.length>1 && arg[7]=="T")
       {
         var rr = 2;
 
@@ -1727,6 +1779,7 @@ wss.on("connection", function connection(ws) {
         var aab = (yb-ya)/(xb-xa);
         var adc = -1/(aab);
 
+        if(pvp)
         for(j=0;j<max_players;j++)
         {
           if(plr.players[j]!="0" && plr.players[j]!="1" && arg[1]!=j && !plr.impulsed[arg[1]].includes(j))
@@ -1741,6 +1794,25 @@ wss.on("connection", function connection(ws) {
             {
               DamageFLOAT(j,parseFloatE(gameplay[29]))
               plr.impulsed[arg[1]].push(j);
+            }
+          }
+        }
+
+        rr = 8.9;
+        xb = parseFloatE(arg[8]);
+        yb = parseFloatE(arg[9]);
+        var lngts = scrs.length;
+        for(j=0;j<lngts;j++)
+        {
+          var l = scrs[j].bID;
+          if(scrs[j].additionalData[2-2]=="2" && !plr.impulsed[arg[1]].includes(-l))
+          {
+            var xc = scrs[j].posCX + ScrdToFloat(scrs[j].additionalData[8-2]);
+            var yc = scrs[j].posCY + ScrdToFloat(scrs[j].additionalData[9-2]);
+            if(((xb-xc)**2)+((yb-yc)**2) <= ((rr)**2))
+            {
+              DamageBoss(j,parseFloatE(gameplay[29]))
+              plr.impulsed[arg[1]].push(-l);
             }
           }
         }
@@ -1911,8 +1983,8 @@ wss.on("connection", function connection(ws) {
           var tpl = Object.assign({},scrTemplate);
           tpl.bID = bID;
           tpl.type = bossType;
-          tpl.posCX = bossPosX;
-          tpl.posCY = bossPosY;
+          tpl.posCX = parseFloat(bossPosX);
+          tpl.posCY = parseFloat(bossPosY);
           tpl.generalData = [];
           tpl.additionalData = [];
           tpl.generalData = [lc3T[0],lc3T[1]];

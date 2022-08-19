@@ -202,6 +202,7 @@ public class SC_bullet : MonoBehaviour
         if ((
             neme[0] != 'S' &&
             nume[0] != 'P' &&
+            (!(multiplayer && neme=="aBossScaled0")) &&
             Array.IndexOf(SafeNames, neme) == -1 &&
             controller
         ) || (
