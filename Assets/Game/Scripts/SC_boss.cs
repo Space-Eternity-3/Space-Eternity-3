@@ -24,8 +24,10 @@ public class SC_boss : MonoBehaviour
 
     public int bX=0,bY=0,bID=1,sID=1;
 
+    string memory2 = "-1";
     public bool bosnumed = false;
     public string[] dataID = new string[21];
+
     /*
     K0 -> DataType (1024)
     K1 -> GeneralState
@@ -180,6 +182,19 @@ public class SC_boss : MonoBehaviour
                         SC_structure.st_structs[i].GetComponent<SC_seon_remote>().jump = true;
         }
         SC_structure.actual_state = GetState(int.Parse(dataID[1]),int.Parse(dataID[2]));
+        
+        float fcr = SC_control.Pitagoras(
+            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
+        );
+        bool in_arena_vision = (fcr<=80f);
+
+        if(memory2!=dataID[2] && in_arena_vision)
+        {
+            if(memory2=="1" && dataID[2]=="2") SC_control.InfoUp("Battle started!",500);
+            if(memory2=="2" && dataID[2]=="3") SC_control.InfoUp("Boss wins!",500);
+            if(memory2=="2" && dataID[2]=="4") SC_control.InfoUp("Boss defeated!",500);
+        }
+        memory2 = dataID[2];
     }
     void SetBarLength(int current, int max)
     {
@@ -206,6 +221,16 @@ public class SC_boss : MonoBehaviour
     {
         if(mother) return;
 
+        float fcr = SC_control.Pitagoras(
+            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
+        );
+        bool in_arena_range = (fcr<=35f);
+        bool in_arena_vision = (fcr<=80f);
+        string iar="F"; if(in_arena_range) iar="T";
+
+        if(!multiplayer && !in_arena_range)
+            GiveUpSGP();
+
         solidPosition = new Vector3(solidPosition.x,solidPosition.y,transform.position.z);
         transform.position = solidPosition;
         Boss.position = solidPosition + new Vector3(
@@ -214,13 +239,6 @@ public class SC_boss : MonoBehaviour
             0f
         );
         Boss.eulerAngles = new Vector3(0f,0f,ScrdToFloat(dataID[10]));
-
-        float fcr = SC_control.Pitagoras(
-            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
-        );
-        bool in_arena_range = (fcr<=35f);
-        bool in_arena_vision = (fcr<=80f);
-        string iar="F"; if(in_arena_range) iar="T";
 
         if((in_arena_range && (dataID[2]=="2")) && !bosnumed)
         {
