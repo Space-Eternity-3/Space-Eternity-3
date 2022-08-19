@@ -79,6 +79,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
 					SC_resume.Resume();
 				}
 				if(index==2) SC_resume.Quit();
+                if(index==3) SC_resume.GiveUp();
 			}
         }
         if(mode==1)

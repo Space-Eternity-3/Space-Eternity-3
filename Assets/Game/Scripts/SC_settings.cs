@@ -34,7 +34,7 @@ public class SC_settings : MonoBehaviour
     }
     void Update()
     {
-		if(namte=="camera_zoom" && !SC_data.menu) valueRead();
+		if(/*namte=="camera_zoom" && */!SC_data.menu) valueRead();
         if(namte=="music" && SC_data.menu)
 		{
 			music.volume=(slider.value*a+b)*music_natural_volume;

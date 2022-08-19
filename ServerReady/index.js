@@ -889,6 +889,11 @@ setInterval(function () { // <interval #2>
           scrs[i].additionalData[2-2] = "3";
           resetScr(i);
         }
+        else if(sta=="2" && parseInt(scrs[i].additionalData[6-2])<=0)
+        {
+          scrs[i].additionalData[2-2] = "4";
+          resetScr(i);
+        }
       }
     }
     if((date_before-date_start) % 1000 == 0) //precisely 1 times per second
@@ -966,7 +971,16 @@ function resetScr(i)
   }
   else if(sta=="4")
   {
-    
+    //Add 1 to wave number
+    scrs[i].generalData[1] = (parseInt(scrs[i].generalData[1])+1)+"";
+    var det = asteroidIndex(scrs[i].bID);
+    chunk_data[det[0]][det[1]][1] = scrs[i].generalData[1];
+    sendToAllClients(
+      "/RetEmitParticles -1 10 "+
+      ((ScrdToFloat(mem8)+scrs[i].posCX)+"").replaceAll(".",",")+" "+
+      ((ScrdToFloat(mem9)+scrs[i].posCY)+"").replaceAll(".",",")+
+      " X X"
+    );
   }
 }
 function DamageBoss(i,dmg)
@@ -975,6 +989,12 @@ function DamageBoss(i,dmg)
   var actualHealth = parseInt(scrs[i].additionalData[6-2])/100;
   actualHealth -= dmg;
   scrs[i].additionalData[6-2] = Math.floor(actualHealth*100)+"";
+  sendToAllClients(
+    "/RetEmitParticles -1 9 "+
+    ((ScrdToFloat(scrs[i].additionalData[8-2])+scrs[i].posCX)+"").replaceAll(".",",")+" "+
+    ((ScrdToFloat(scrs[i].additionalData[9-2])+scrs[i].posCY)+"").replaceAll(".",",")+
+    " X X"
+  );
 }
 function FloatToScrd(src) {
   return Math.floor(src*100000)+"";
@@ -2008,6 +2028,23 @@ wss.on("connection", function connection(ws) {
         if(scrs[i].bID==bID) {
           scrs[i].timeToDisappear = 1000;
           if(inArena) scrs[i].timeToLose = 1000;
+          break;
+        }
+      }
+    }
+    if(arg[0] == "/ScrSabotage")
+    {
+      //ScrSabotage 1[PlayerID] 2[bID]
+      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+
+      var bID = arg[2];
+
+      var lngts = scrs.length;
+      for(i=0;i<lngts;i++)
+      {
+        if(scrs[i].bID==bID) {
+          if(scrs[i].additionalData[2-2]=="2")
+          scrs[i].additionalData[4-2] = "1";
           break;
         }
       }

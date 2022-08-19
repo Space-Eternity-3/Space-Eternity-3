@@ -165,6 +165,16 @@ public class SC_structure : MonoBehaviour
 		int min_findex=0, max_findex=19;
 		for(i=0;i<lngt;i++)
 		{
+			//Force resetting scr position
+			if(st_structs[0]!=null)
+				if(st_structs[0].GetComponent<SC_boss>()!=null)
+				{
+					st_structs[0].position = transform.position;
+					st_structs[0].rotation = Quaternion.identity;
+					st_structs[0].parent = transform;
+					st_structs[0].localScale = new Vector3(1f,1f,1f);
+				}
+
 			//From #A to #B segment
 			if(pr1<=pr2)
 			{

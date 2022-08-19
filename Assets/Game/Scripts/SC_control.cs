@@ -31,6 +31,10 @@ public class SC_control : MonoBehaviour {
 	public Transform ImmortalParticles;
 	public Transform unstablePart;
 	public Transform impulseHidden;
+	public Transform particlesBossDamage;
+	public Transform particlesBossDamageM;
+	public Transform particlesBossExplosion;
+	public Transform particlesBossExplosionM;
 	public Rigidbody playerR;
 	public Transform drill3T;
 	public Transform respawn_point;
@@ -90,6 +94,7 @@ public class SC_control : MonoBehaviour {
 	bool repeted=false;
 	bool repetedAF=false;
 	public bool gtm1 = false;
+	public int bos_num = 0;
 
 	public Color32 HealthNormal;
 
@@ -200,6 +205,10 @@ public class SC_control : MonoBehaviour {
 		Screen2.enabled = !f1;
 		for(int ji=1;ji<max_players;ji++){
 			NC[ji].enabled = !f1 && (PL[ji].ArtSource % 100!=1);
+		}
+		SC_pulse_bar[] spbs = FindObjectsOfType<SC_pulse_bar>();
+		foreach(SC_pulse_bar spb in spbs) {
+			spb.canvas.enabled = !f1;
 		}
 		
 		if(!timeStop){
@@ -498,6 +507,18 @@ public class SC_control : MonoBehaviour {
 				
 		SC_invisibler.invisible = false;
 		RemoveImpulse();
+
+		SC_boss[] boses = FindObjectsOfType<SC_boss>();
+		foreach(SC_boss bos in boses)
+		{
+			if(bos.bosnumed)
+			{
+				if((int)Communtron4.position.y!=100)
+					bos.GiveUpSGP();
+				else
+					bos.GiveUpMTP(true);
+			}
+		}
 	}
 	void ImmortalMe()
 	{
@@ -1442,6 +1463,12 @@ public class SC_control : MonoBehaviour {
 					Transform trn8 = Instantiate(impulseHidden,particlePos,quat_foo);
 					trn8.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
 					trn8.GetComponent<SC_seeking>().enabled = true;
+					break;
+				case 9:
+					Instantiate(particlesBossDamageM,particlePos,new Quaternion(0f,0f,0f,0f));
+					break;
+				case 10:
+					Instantiate(particlesBossExplosionM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				default:
 					Debug.LogWarning("Unknown particles ID: "+put);

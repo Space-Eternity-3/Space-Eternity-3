@@ -24,6 +24,7 @@ public class SC_boss : MonoBehaviour
 
     public int bX=0,bY=0,bID=1,sID=1;
 
+    public bool bosnumed = false;
     public string[] dataID = new string[21];
     /*
     K0 -> DataType (1024)
@@ -123,8 +124,6 @@ public class SC_boss : MonoBehaviour
                 CanvBar = nck;
         }
 
-        CanvNick.GetComponent<Text>().text = BossNames[type];
-
         if(!multiplayer) //If singleplayer
         {
             string[] uAst = SC_data.GetAsteroid(bX,bY).Split(';');
@@ -194,6 +193,7 @@ public class SC_boss : MonoBehaviour
         float actualHealth = int.Parse(dataID[6])/100f;
         actualHealth -= dmg;
         dataID[6] = (int)(actualHealth*100)+"";
+        Instantiate(SC_control.particlesBossDamage,Boss.position-new Vector3(0f,0f,Boss.position.z),Quaternion.identity);
     }
     void SaveSGP()
 	{
@@ -222,27 +222,21 @@ public class SC_boss : MonoBehaviour
         bool in_arena_vision = (fcr<=80f);
         string iar="F"; if(in_arena_range) iar="T";
 
+        if((in_arena_range && (dataID[2]=="2")) && !bosnumed)
+        {
+            SC_control.bos_num++;
+            bosnumed = true;
+        }
+        if(!(in_arena_range && (dataID[2]=="2")) && bosnumed)
+        {
+            SC_control.bos_num--;
+            bosnumed = false;
+        }
+
         if(SC_control.livTime%5==0) //Precisely 10 times per second
         {
             if(multiplayer) SC_control.SendMTP("/ScrRefresh "+SC_control.connectionID+" "+bID+" "+iar);
-            if(!multiplayer)
-            {
-                var sta = dataID[2];
-                dataID[3] = (int.Parse(dataID[3])+1)+"";
-                if(sta=="2") dataID[4] = (int.Parse(dataID[4])-1)+"";
-                if((sta=="1" || sta=="3" || sta=="4") && int.Parse(dataID[3])>=10)
-                {
-                    if(sta=="1") dataID[2] = "2";
-                    else if(sta=="3" || sta=="4") dataID[2] = "0";
-                    resetScr();
-                }
-                else if(sta=="2" && int.Parse(dataID[4])<=0)
-                {
-                    dataID[2] = "3";
-                    resetScr();
-                }
-                SaveSGP();
-            }
+            if(!multiplayer) Fixed10Broken();
         }
 
         string ass = SC_structure.actual_state;
@@ -252,16 +246,40 @@ public class SC_boss : MonoBehaviour
             timer_bar_max = int.Parse(dataID[5]);
             timer_bar_enabled = true;
         }
-        else if(in_arena_vision && (ass=="a1b1"||ass=="a2b2"||ass=="a3b3"))
-        {
-            string gts = getTimeSize(dataID[1]);
-            timer_bar_value = int.Parse(gts);
-            timer_bar_max = int.Parse(gts);
-            timer_bar_enabled = true;
-        }
         else timer_bar_enabled = false;
 
+        CanvNick.GetComponent<Text>().text = BossNames[type] + " " + romeNumber(int.Parse(dataID[1])+1);
         SetBarLength(int.Parse(dataID[6]),int.Parse(dataID[7]));
+    }
+    void Fixed10Broken()
+    {
+        var sta = dataID[2];
+        dataID[3] = (int.Parse(dataID[3])+1)+"";
+        if(sta=="2") dataID[4] = (int.Parse(dataID[4])-1)+"";
+        if((sta=="1" || sta=="3" || sta=="4") && int.Parse(dataID[3])>=10)
+        {
+            if(sta=="1") dataID[2] = "2";
+            else if(sta=="3" || sta=="4") dataID[2] = "0";
+            resetScr();
+        }
+        else if(sta=="2" && int.Parse(dataID[4])<=0)
+        {
+            dataID[2] = "3";
+            resetScr();
+        }
+        else if(sta=="2" && int.Parse(dataID[6])<=0)
+        {
+            dataID[2] = "4";
+            resetScr();
+        }
+        SaveSGP();
+    }
+    string romeNumber(int num)
+    {
+        if(num==1) return "I";
+        if(num==2) return "II";
+        if(num==3) return "III";
+        return "IV";
     }
     string getTimeSize(string n)
     {
@@ -317,15 +335,75 @@ public class SC_boss : MonoBehaviour
         }
         else if(sta=="4")
         {
-            
+            dataID[1] = (int.Parse(dataID[1])+1)+"";
+            Instantiate(SC_control.particlesBossExplosion,Boss.position-new Vector3(0f,0f,Boss.position.z),Quaternion.identity);
         }
 
         StateUpdate();
+    }
+    public void GiveUpSGP()
+    {
+        if(dataID[2]!="2") return;
+
+        dataID[4] = "1";
+        Fixed10Broken();
+    }
+    public void GiveUpMTP(bool killed)
+    {
+        if(dataID[2]!="2") return;
+
+        if(fightingPlayers()<=1) //Only you on arena
+        {
+            SC_control.SendMTP("/ScrSabotage "+SC_control.connectionID+" "+bID);
+        }
+        else if(!killed) //More players on arena
+        {
+            SC_control.transform.position = NextToRandomGate();
+            SC_control.playerR.velocity = new Vector3(0f,0f,0f);
+        }
+    }
+    Vector3 NextToRandomGate()
+    {
+        Vector3 posit = solidPosition - new Vector3(0f,0f,solidPosition.z);
+        int rand = UnityEngine.Random.Range(0,4);
+        if(rand==0) posit += new Vector3(41.5f,0f,0f);
+        if(rand==1) posit += new Vector3(-41.5f,0f,0f);
+        if(rand==2) posit += new Vector3(0f,41.5f,0f);
+        if(rand==3) posit += new Vector3(0f,-41.5f,0f);
+        return posit;
+    }
+    int fightingPlayers()
+    {
+        int i,amount = 0;
+        float fcr = SC_control.Pitagoras(
+            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
+        ); bool in_arena_range = (fcr<=35f);
+        if(in_arena_range) amount++;
+
+        if(multiplayer)
+        for(i=1;i<SC_control.max_players;i++)
+        {
+            if(SC_control.NUL[i])
+            {
+                Vector3 sps = SC_control.PL[i].sourcedPosition;
+                
+                fcr = SC_control.Pitagoras(
+                    (solidPosition-new Vector3(0f,0f,solidPosition.z))-(sps-new Vector3(0f,0f,sps.z))
+                ); in_arena_range = (fcr<=35f);
+
+                if(in_arena_range) amount++;
+            }
+        }
+        return amount;
     }
     string FloatToScrd(float src) {
         return ((int)(src*100000))+"";
     }
     float ScrdToFloat(string src) {
         return int.Parse(src)/100000f;
+    }
+    void OnDestroy()
+    {
+        if(bosnumed) SC_control.bos_num--;
     }
 }

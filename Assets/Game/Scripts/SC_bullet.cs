@@ -35,6 +35,7 @@ public class SC_bullet : MonoBehaviour
     public string destroy_mode = "";
     bool multiplayer = false;
     bool destroyed = false;
+    public bool boss_damaged = false;
     int looper = 0;
     int loopSndID = -1;
 
