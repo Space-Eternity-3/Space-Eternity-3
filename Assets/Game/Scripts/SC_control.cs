@@ -1468,6 +1468,7 @@ public class SC_control : MonoBehaviour {
 					Instantiate(particlesBossDamageM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 10:
+					SC_sounds.PlaySound(particlePos,2,2);
 					Instantiate(particlesBossExplosionM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				default:

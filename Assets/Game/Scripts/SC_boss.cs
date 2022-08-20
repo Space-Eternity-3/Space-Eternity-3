@@ -20,6 +20,7 @@ public class SC_boss : MonoBehaviour
 
     bool mother = true;
     public bool multiplayer = false;
+    public int force_give_up_counter = 0;
     Vector3 solidPosition = new Vector3(0f,0f,0f);
 
     public int bX=0,bY=0,bID=1,sID=1;
@@ -167,7 +168,7 @@ public class SC_boss : MonoBehaviour
             );
         }
 
-        FixedUpdate();
+        FixedUpdateT();
         SC_bars.LateUpdate();
     }
     void StateUpdate()
@@ -219,6 +220,15 @@ public class SC_boss : MonoBehaviour
 	}
     void FixedUpdate()
     {
+        if(transform.GetComponent<SC_seon_remote>()==null)
+            FixedUpdateT();
+
+        if(transform.GetComponent<SC_seon_remote>()!=null)
+            if(transform.GetComponent<SC_seon_remote>().SC_structure==null)
+                FixedUpdateT();
+    }
+    public void FixedUpdateT()
+    {
         if(mother) return;
 
         float fcr = SC_control.Pitagoras(
@@ -228,8 +238,9 @@ public class SC_boss : MonoBehaviour
         bool in_arena_vision = (fcr<=80f);
         string iar="F"; if(in_arena_range) iar="T";
 
-        if(!multiplayer && !in_arena_range)
-            GiveUpSGP();
+        if(!multiplayer && !in_arena_range && dataID[2]=="2") force_give_up_counter++;
+        else force_give_up_counter = 0;
+        if(force_give_up_counter>=50) GiveUpSGP();
 
         solidPosition = new Vector3(solidPosition.x,solidPosition.y,transform.position.z);
         transform.position = solidPosition;

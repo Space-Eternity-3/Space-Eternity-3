@@ -22,6 +22,7 @@ public class SC_seon_remote : MonoBehaviour
     */
 
     public bool jump = true;
+    public bool started_already = false;
 
     int current_extension = 0;
     int current_hide = 0;
@@ -157,5 +158,10 @@ public class SC_seon_remote : MonoBehaviour
         else transform.localPosition += localHidden;
         transform.localPosition += fraction_extension * localExtended;
         if(fraction_hide!=1f) transform.localScale = (1f-fraction_hide) * normalScale;
+
+        if(transform.GetComponent<SC_boss>()!=null && started_already)
+            transform.GetComponent<SC_boss>().FixedUpdateT();
+
+        started_already = true;
     }
 }
