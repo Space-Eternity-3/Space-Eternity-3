@@ -18,8 +18,6 @@ public class SC_data : MonoBehaviour
     public string gameDIR="./";
     public TextAsset SourcePackJse3;
 
-    public string currentPlatform;
-
     public string worldDIR,asteroidDIR;
     int worldID=0;
     bool worlded=false;
@@ -160,14 +158,14 @@ public class SC_data : MonoBehaviour
 		System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("pl-PL");
         Screen.orientation = ScreenOrientation.LandscapeLeft;
 
-        if(currentPlatform=="android" || currentPlatform=="ios")
+        if(Application.platform==RuntimePlatform.Android || Application.platform==RuntimePlatform.IPhonePlayer)
         {
             gameDIR = Application.persistentDataPath+"/"+clientRedVersion+"/game/"; // "./";
             settingsDIR = Application.persistentDataPath+"/"+clientRedVersion+"/settings/"; //"./Settings/";
             savesDIR = Application.persistentDataPath+"/saves/"; // "../../saves/";
         }
 
-        example = SourcePackJse3.text;
+        example = SourcePackJse3.text.Replace('\r',' ').Replace('\n',' ');
 		
 		int i,j,k;
 		PreData=example;
