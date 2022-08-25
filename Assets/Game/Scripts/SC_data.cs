@@ -669,7 +669,13 @@ public class SC_data : MonoBehaviour
             new ExtensionFilter("Jse3 files", "jse3", "txt"),
         };
         DirQ(datapacksDIR);
-        var paths = StandaloneFileBrowser.OpenFilePanel("Open File", "./Datapacks/", extensions, true);
+
+        var paths;
+        try{
+            paths = StandaloneFileBrowser.OpenFilePanel("Open File", "./Datapacks/", extensions, true);
+        }catch(Exception) {
+            return;
+        }
 
         if(paths.Length==0) return;
 
