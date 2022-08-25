@@ -41,7 +41,7 @@ public class SC_fun : MonoBehaviour
     {
         if(world!=100)
         {
-            if(!Directory.Exists("../../saves/Universe"+world+"/"))
+            if(!Directory.Exists(SC_data.worldDIR))
             {
                 UnityEngine.Debug.LogError("Not existing universe is openned.");
                 SC_control.MenuReturn();
