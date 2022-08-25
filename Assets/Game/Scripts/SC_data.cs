@@ -664,19 +664,20 @@ public class SC_data : MonoBehaviour
         warning_text4.text="";
         warning_field4.localPosition=new Vector3(10000f,0f,0f);
 
+        if(Application.platform==RuntimePlatform.Android || Application.platform==RuntimePlatform.IPhonePlayer)
+        {
+            return;
+        }
+
         var extensions = new []
         {
             new ExtensionFilter("Jse3 files", "jse3", "txt"),
         };
         DirQ(datapacksDIR);
 
-        try{
-        
-            var paths = StandaloneFileBrowser.OpenFilePanel("Open File", "./Datapacks/", extensions, true);
-            if(paths.Length==0) return;
-            CustomDataPath = paths[0];
-
-        }catch(Exception) { return; }
+        var paths = StandaloneFileBrowser.OpenFilePanel("Open File", "./Datapacks/", extensions, true);
+        if(paths.Length==0) return;
+        CustomDataPath = paths[0];
 
         PreData=dataSource;
         CollectUpdateDatapack();
