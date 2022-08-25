@@ -670,16 +670,14 @@ public class SC_data : MonoBehaviour
         };
         DirQ(datapacksDIR);
 
-        var paths;
         try{
-            paths = StandaloneFileBrowser.OpenFilePanel("Open File", "./Datapacks/", extensions, true);
-        }catch(Exception) {
-            return;
-        }
+        
+            var paths = StandaloneFileBrowser.OpenFilePanel("Open File", "./Datapacks/", extensions, true);
+            if(paths.Length==0) return;
+            CustomDataPath = paths[0];
 
-        if(paths.Length==0) return;
+        }catch(Exception) { return; }
 
-        CustomDataPath = paths[0];
         PreData=dataSource;
         CollectUpdateDatapack();
         Save("settings");
