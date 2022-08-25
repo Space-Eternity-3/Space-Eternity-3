@@ -68,7 +68,7 @@ public class SC_universe : MonoBehaviour
         pl=BT_play.localPosition;
         co=BT_confirm.localPosition;
 
-	    if(Directory.Exists("../../saves/Universe"+WorldID+"/"))
+	    if(Directory.Exists(SC_data.savesDIR+"Universe"+WorldID+"/"))
     	{
             timeF=SC_data.UniverseX[WorldID-1,0];
             if(timeF=="") timeF="0";
@@ -141,7 +141,7 @@ public class SC_universe : MonoBehaviour
 		SC_data.TempFile=WorldID+"";
         SC_data.Save("temp");
 
-        string dir="../../saves/Universe"+WorldID+"/";
+        string dir=SC_data.savesDIR+"Universe"+WorldID+"/";
         if(!Directory.Exists(dir))
         {
 		    SC_data.UniverseX[WorldID-1,0]="0";
@@ -167,7 +167,7 @@ public class SC_universe : MonoBehaviour
         SC_data.UniverseX[WorldID-1,1]="";
         SC_data.UniverseX[WorldID-1,2]="";
 
-        string drs="../../saves/Universe"+WorldID+"/";
+        string drs=SC_data.savesDIR+"Universe"+WorldID+"/";
         if(Directory.Exists(drs))
         Directory.Delete(drs,true);
     }

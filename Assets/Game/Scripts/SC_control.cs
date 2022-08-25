@@ -1549,7 +1549,7 @@ public class SC_control : MonoBehaviour {
 		Screen3.enabled = false;
 
 		worldID=(int)Communtron4.position.y;
-		worldDIR="../../saves/UniverseData"+worldID+"/";
+		worldDIR=SC_data.savesDIR+"UniverseData"+worldID+"/";
 		darknerV=darkner.localPosition;
 
 		if((int)Communtron4.position.y==100)

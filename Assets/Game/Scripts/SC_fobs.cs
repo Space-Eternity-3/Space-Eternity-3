@@ -46,8 +46,6 @@ public class SC_fobs : MonoBehaviour
     public SC_snd_loop SC_snd_loop;
     SC_Fob21 SC_Fob21;
 
-    string worldDIR="";
-	int worldID=1;
     public int ID,index,X,Y;
     int i, rand;
     bool ReplaceReserved=false;
@@ -279,8 +277,6 @@ public class SC_fobs : MonoBehaviour
         {
             multiplayer=true;
         }
-		worldID=(int)Communtron4.position.y;
-		worldDIR="../../saves/UniverseData"+worldID+"/WorldData/";
 
         if(IsEmpty) gameObject.GetComponent<Renderer>().enabled=false;
 		

@@ -12,15 +12,15 @@ using SFB;
 
 public class SC_data : MonoBehaviour
 {
-    string settingsDIR="./Settings/";
-    string savesDIR="../../saves/";
-    string datapacksDIR="./Datapacks/";
-    string gameDIR="./";
+    public string settingsDIR="./Settings/";
+    public string savesDIR="../../saves/";
+    public string datapacksDIR="./Datapacks/";
+    public string gameDIR="./";
     public TextAsset SourcePackJse3;
 
     public string currentPlatform;
 
-    string worldDIR,asteroidDIR;
+    public string worldDIR,asteroidDIR;
     int worldID=0;
     bool worlded=false;
     bool multiplayer;

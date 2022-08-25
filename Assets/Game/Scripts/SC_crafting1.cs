@@ -15,8 +15,6 @@ public class SC_crafting1 : MonoBehaviour {
 
 	public SC_backpack SC_backpack;
 	public SC_data SC_data;
-
-	string datapackDIR="./Datapacks/";
 	
 	public void Clicked()
 	{

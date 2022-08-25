@@ -76,7 +76,6 @@ public class SC_asteroid : MonoBehaviour {
 
 	string worldDIR="";
 	int worldID=1;
-	string datapackDIR="./Datapacks/";
 
 	void settings(int typpe)
 	{
