@@ -1180,6 +1180,8 @@ public class SC_control : MonoBehaviour {
 			int i,lngt=pgg.Length;
 			for(i=1;i<lngt;i++) pggn+=pgg[i];
 			returnedPing = int.Parse(pggn);
+			
+			return;
 		}
 		if(arg[0]=="R")
 		{
@@ -1190,12 +1192,16 @@ public class SC_control : MonoBehaviour {
 
 			if(immID==fImmID && livID==fLivID)
 				health_V += fValue;
+
+			return;
 		}
 		if(arg[0]=="I")
 		{
 			//Medium livID & immID update
 			sr_livID = arg[2];
 			sr_immID = arg[1];
+
+			return;
 		}
 
 		int msl=arg.Length;
