@@ -1323,6 +1323,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc37e2eb8e74a2940a8fc6a83f326ebd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SourcePackJse3: {fileID: 4900000, guid: ae4e7a41aed1a0b408b3ef6156da7716, type: 3}
+  currentPlatform: android
   menu: 1
   crashed: 0
   example: 

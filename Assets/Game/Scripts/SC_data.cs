@@ -15,9 +15,11 @@ public class SC_data : MonoBehaviour
     string settingsDIR="./Settings/";
     string savesDIR="../../saves/";
     string datapacksDIR="./Datapacks/";
-    string unityDataDIR="./TechnicalData/";
-
     string gameDIR="./";
+    public TextAsset SourcePackJse3;
+
+    public string currentPlatform;
+
     string worldDIR,asteroidDIR;
     int worldID=0;
     bool worlded=false;
@@ -156,22 +158,15 @@ public class SC_data : MonoBehaviour
     {
 		//Culture set to comma (India converter)
 		System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("pl-PL");
-	
-        string file="";
-        try{
-            
-            file=GetFile("defaultdata");
-            OpenRead(file);
-            example = "";
-            while(!sr.EndOfStream) example += sr.ReadLine();
-            CloseRead();
 
-        }catch(Exception)
+        if(currentPlatform=="android" || currentPlatform=="ios")
         {
-            UnityEngine.Debug.LogError("Default data doesn't exists");
-            Application.Quit();
-            throw;
+            gameDIR = Application.persistentDataPath+"/"+clientRedVersion+"/game/"; // "./";
+            settingsDIR = Application.persistentDataPath+"/"+clientRedVersion+"/settings/"; //"./Settings/";
+            savesDIR = Application.persistentDataPath+"/saves/"; // "../../saves/";
         }
+
+        example = SourcePackJse3.text;
 		
 		int i,j,k;
 		PreData=example;
@@ -209,7 +204,6 @@ public class SC_data : MonoBehaviour
             case "Seed": return worldDIR;
             case "PlayerData": return worldDIR;
             case "generated": return asteroidDIR;
-            case "defaultdata": return unityDataDIR;
             default: return "./ERROR/";
         }
     }
@@ -218,7 +212,6 @@ public class SC_data : MonoBehaviour
         string P=GetPath(D);
         if(D=="generated") return P+"Generated";
         if(D=="Temp") return P+D+".se3";
-        if(D=="defaultdata") return P+D+".jse3";
         return P+D+".se3";
     }
     public void CollectAwakeUniversal()

@@ -23,6 +23,8 @@ namespace SFB {
             _platformWrapper = new StandaloneFileBrowserLinux();
 #elif UNITY_EDITOR
             _platformWrapper = new StandaloneFileBrowserEditor();
+#else
+            _platformWrapper = new StandaloneFileBrowserDisabled();
 #endif
         }
 

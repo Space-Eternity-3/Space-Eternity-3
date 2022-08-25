@@ -365,7 +365,9 @@ public class SC_boss : MonoBehaviour
         else if(sta=="4")
         {
             dataID[1] = (int.Parse(dataID[1])+1)+"";
-            Instantiate(SC_control.particlesBossExplosion,Boss.position-new Vector3(0f,0f,Boss.position.z),Quaternion.identity);
+            Vector3 poss = Boss.position - new Vector3(0f,0f,Boss.position.z);
+            SC_control.SC_sounds.PlaySound(poss,2,2);
+            Instantiate(SC_control.particlesBossExplosion,poss,Quaternion.identity);
         }
 
         StateUpdate();
