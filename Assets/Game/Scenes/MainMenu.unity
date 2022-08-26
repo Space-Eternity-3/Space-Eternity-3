@@ -1323,8 +1323,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc37e2eb8e74a2940a8fc6a83f326ebd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  settingsDIR: ./Settings/
+  savesDIR: ../../saves/
+  datapacksDIR: ./Datapacks/
+  gameDIR: ./
   SourcePackJse3: {fileID: 4900000, guid: ae4e7a41aed1a0b408b3ef6156da7716, type: 3}
-  currentPlatform: android
+  worldDIR: 
+  asteroidDIR: 
   menu: 1
   crashed: 0
   example: 
@@ -12287,6 +12292,7 @@ GameObject:
   - component: {fileID: 613791061}
   - component: {fileID: 613791060}
   - component: {fileID: 613791059}
+  - component: {fileID: 613791063}
   m_Layer: 5
   m_Name: Screen5
   m_TagString: Untagged
@@ -12326,7 +12332,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 800, y: 450}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -12375,6 +12381,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &613791063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 613791058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ef121fbf546c949979d132a2353569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 35467490}
+  CanvasScaler: {fileID: 613791060}
+  menu: 1
+  zoomMultiplier: -6
 --- !u!1 &626400008
 GameObject:
   m_ObjectHideFlags: 0
@@ -13084,6 +13106,7 @@ GameObject:
   - component: {fileID: 666567933}
   - component: {fileID: 666567932}
   - component: {fileID: 666567931}
+  - component: {fileID: 666567935}
   m_Layer: 5
   m_Name: Screen1
   m_TagString: Untagged
@@ -13123,7 +13146,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 800, y: 450}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -13172,6 +13195,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &666567935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666567930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ef121fbf546c949979d132a2353569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 35467490}
+  CanvasScaler: {fileID: 666567932}
+  menu: 1
+  zoomMultiplier: -6
 --- !u!1 &671094412
 GameObject:
   m_ObjectHideFlags: 0
@@ -30262,6 +30301,7 @@ GameObject:
   - component: {fileID: 1581822064}
   - component: {fileID: 1581822063}
   - component: {fileID: 1581822062}
+  - component: {fileID: 1581822066}
   m_Layer: 5
   m_Name: Screen0
   m_TagString: Untagged
@@ -30301,7 +30341,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 800, y: 450}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -30355,6 +30395,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1581822066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581822061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ef121fbf546c949979d132a2353569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 35467490}
+  CanvasScaler: {fileID: 1581822063}
+  menu: 1
+  zoomMultiplier: -6
 --- !u!1 &1587153961
 GameObject:
   m_ObjectHideFlags: 0
@@ -31609,6 +31665,7 @@ GameObject:
   - component: {fileID: 1706223728}
   - component: {fileID: 1706223727}
   - component: {fileID: 1706223726}
+  - component: {fileID: 1706223730}
   m_Layer: 5
   m_Name: Screen4
   m_TagString: Untagged
@@ -31648,7 +31705,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 800, y: 450}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -31700,6 +31757,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1706223730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706223725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ef121fbf546c949979d132a2353569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 35467490}
+  CanvasScaler: {fileID: 1706223727}
+  menu: 1
+  zoomMultiplier: -6
 --- !u!1 &1716559732
 GameObject:
   m_ObjectHideFlags: 0
@@ -32057,6 +32130,7 @@ GameObject:
   - component: {fileID: 1738348583}
   - component: {fileID: 1738348582}
   - component: {fileID: 1738348581}
+  - component: {fileID: 1738348585}
   m_Layer: 5
   m_Name: Screen3
   m_TagString: Untagged
@@ -32096,7 +32170,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 800, y: 450}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -32147,6 +32221,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1738348585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738348580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ef121fbf546c949979d132a2353569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 35467490}
+  CanvasScaler: {fileID: 1738348582}
+  menu: 1
+  zoomMultiplier: -6
 --- !u!1 &1740165803
 GameObject:
   m_ObjectHideFlags: 0
@@ -33716,6 +33806,7 @@ GameObject:
   - component: {fileID: 1973185342}
   - component: {fileID: 1973185341}
   - component: {fileID: 1973185340}
+  - component: {fileID: 1973185344}
   m_Layer: 5
   m_Name: Screen2
   m_TagString: Untagged
@@ -33755,7 +33846,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 800, y: 450}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -33804,6 +33895,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1973185344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1973185339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ef121fbf546c949979d132a2353569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 35467490}
+  CanvasScaler: {fileID: 1973185341}
+  menu: 1
+  zoomMultiplier: -6
 --- !u!1 &1974211855
 GameObject:
   m_ObjectHideFlags: 0

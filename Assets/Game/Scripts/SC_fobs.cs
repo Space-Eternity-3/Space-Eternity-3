@@ -66,6 +66,9 @@ public class SC_fobs : MonoBehaviour
     bool started = false;
 	bool colied = false;
 
+    Renderer localRenderer;
+    SC_asteroid asst;
+
     public bool GetRespond()
     {
         try{
@@ -264,6 +267,9 @@ public class SC_fobs : MonoBehaviour
         if(started) return;
         else started = true;
 
+        localRenderer = gameObject.GetComponent<Renderer>();
+        asst = transform.parent.GetComponent<SC_asteroid>();
+
         if(transform.position.z<100f) {mother=false; true_mother=false;}
 
         if(!mother)
@@ -278,7 +284,7 @@ public class SC_fobs : MonoBehaviour
             multiplayer=true;
         }
 
-        if(IsEmpty) gameObject.GetComponent<Renderer>().enabled=false;
+        if(IsEmpty) localRenderer.enabled=false;
 		
         if(!mother)
 		{
@@ -362,7 +368,6 @@ public class SC_fobs : MonoBehaviour
 	public void AfterTriggerEnter(Collider collision)
 	{
         if(mother) return;
-        SC_asteroid asst = transform.parent.GetComponent<SC_asteroid>();
 		if(
             collision.gameObject.name=="Bullet(Clone)" &&
             !collision.gameObject.GetComponent<SC_bullet>().turn_used &&
@@ -409,27 +414,18 @@ public class SC_fobs : MonoBehaviour
         if(destroyTime==0) Destroy(gameObject);
 
         if(lsb && !true_mother)
-        {
             SC_snd_loop.sound_pos[loopSndID] = transform.position;
-        }
 
-        if(IsEmpty) gameObject.GetComponent<Renderer>().enabled=false;
+        if(IsEmpty) localRenderer.enabled=false;
 
         if(mother) return;
-        SC_asteroid asst = transform.parent.GetComponent<SC_asteroid>();
         if(inGeyzer>0&&(GeyzerTurn && (!(asst.permanent_blocker || asst.temporary_blocker))))
         {
             GeyzerTime++;
             if(GeyzerTime>=140)
             {
-                if(!multiplayer)
-                {
-                    Replace(GeyzerID,multiplayer);
-                }
-                else
-                {
-                    SC_control.SendMTP("/GeyzerTurnTry "+SC_control.connectionID+" "+ID+" "+index);
-                }
+                if(!multiplayer) Replace(GeyzerID,multiplayer);
+                else SC_control.SendMTP("/GeyzerTurnTry "+SC_control.connectionID+" "+ID+" "+index);
             }
         }
         if(GrowTurn&&!multiplayer)
@@ -473,7 +469,6 @@ public class SC_fobs : MonoBehaviour
     void OnMouseOver()
     {
         if(mother) return;
-		SC_asteroid asst = transform.parent.GetComponent<SC_asteroid>();
 		if(asst.permanent_blocker || asst.temporary_blocker) return;
 
         int slot;
@@ -489,7 +484,7 @@ public class SC_fobs : MonoBehaviour
         HasPhysicalVersion(SC_slots.SelectedItem())&&MTPblocker<=0)
         {
             if(!Input.GetMouseButton(1)&&emptyShow)
-            gameObject.GetComponent<Renderer>().enabled=true;
+            localRenderer.enabled=true;
 
             if(Input.GetMouseButtonDown(1)&&!ReR)
             {

@@ -28,6 +28,7 @@ public class SC_players : MonoBehaviour
 	Transform Aeffs, Beefs;
     Transform CanvP;
     public int IDP, IDP_phys;
+    SC_seeking obj, obj2;
 
     //Gameplay variables
     public int OtherSource;
@@ -65,6 +66,9 @@ public class SC_players : MonoBehaviour
 	public void B_Start()
 	{
 		if(IDP==SC_fun.SC_control.connectionID) IDP=0;
+
+        obj = Aeffs.GetComponent<SC_seeking>();
+		obj2 = Beefs.GetComponent<SC_seeking>();
 	}
     void ArrayPusher(Vector3 new_push, float new_rot)
     {
@@ -131,11 +135,13 @@ public class SC_players : MonoBehaviour
 		ArrayPusher(sourcedPosition, sourcedRotation);
         Vector3 avar=ArrayAvarge(SC_fun.smooth_size);
         float avar_rot=ArrayAvarge_rot(SC_fun.smooth_size);
+        bool removal = true;
 
         if(SC_fun.SC_control.NUL[IDP_phys])
         {
             transform.position = new Vector3(avar.x,avar.y,0f);
             transform.eulerAngles = new Vector3(0f,0f,avar_rot);
+            removal = false;
         }
 		else
         {
@@ -149,14 +155,11 @@ public class SC_players : MonoBehaviour
 		int A=guitar/100;
 		int B=guitar%100;
 		
-		SC_seeking obj = Aeffs.GetComponent<SC_seeking>();
-		SC_seeking obj2 = Beefs.GetComponent<SC_seeking>();
-		
 		obj2.offset = new Vector3(0f,0f,-450f*B);
 		if(B % 2 == 0) Beefs.rotation = transform.rotation;
 		else Beefs.rotation = new Quaternion(0f,0f,0f,0f);
 		
-		if(B==1)
+		if(B==1 && !removal)
 		{
 			if(SC_fun.SC_control.ramvis[IDP]>0 && SC_fun.SC_control.ramvis[IDP]<=SC_fun.SC_control.timeInvisiblePulse)
 			{
@@ -178,15 +181,11 @@ public class SC_players : MonoBehaviour
 			Aeffs.rotation = new Quaternion(0f,0f,0f,0f);
 			SC_invisibler.invisible = false;
 		}
+
+        if(!removal) {
 		
         int M=bas/16;
         if(M>3) M=0;
-        if(SC_snd_start.enMode!=M)
-        {
-            SC_snd_start.enMode=M;
-            if(M!=0) SC_snd_start.ManualStartLoop(M-1);
-            else SC_snd_start.ManualEndLoop();
-        }
         switch(M)
         {
             case 0:
@@ -235,6 +234,8 @@ public class SC_players : MonoBehaviour
 	    }
 		
 		if(SC_invisibler.invisible) drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
+
+        } else drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
 		
 		SC_invisibler.LaterUpdate();
 		obj.Update();

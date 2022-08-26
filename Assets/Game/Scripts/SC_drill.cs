@@ -11,6 +11,8 @@ public class SC_drill : MonoBehaviour
     public int type=-1;
 	public bool freeze = false;
 
+	int down=10, up=20;
+
     public Transform rHydrogenParticles;
 
     public Transform Communtron1;
@@ -40,16 +42,18 @@ public class SC_drill : MonoBehaviour
 			Mining=false;
 		}
 	}
-	int GetTimeDrill()
+	void Start()
 	{
-		int down=(int)(SC_asteroid.upg3down/Mathf.Pow(SC_asteroid.upg3hugity,SC_upgrades.MTP_levels[2]+float.Parse(SC_data.Gameplay[2])));
-		int up=(int)(SC_asteroid.upg3up/Mathf.Pow(SC_asteroid.upg3hugity,SC_upgrades.MTP_levels[2]+float.Parse(SC_data.Gameplay[2])));
+		down = (int)(SC_asteroid.upg3down/Mathf.Pow(SC_asteroid.upg3hugity,SC_upgrades.MTP_levels[2]+float.Parse(SC_data.Gameplay[2])));
+		up = (int)(SC_asteroid.upg3up/Mathf.Pow(SC_asteroid.upg3hugity,SC_upgrades.MTP_levels[2]+float.Parse(SC_data.Gameplay[2])));
+	}
+	int GetTimeDrill() {
 		return UnityEngine.Random.Range(down,up);
 	}
     void FixedUpdate()
     {
-        if(!Input.GetMouseButton(0)) counter=0;
 		counter++;
+        if(!Input.GetMouseButton(0)) counter=1;
 		if(counter==1) counter=-GetTimeDrill();
 		int mined;
 

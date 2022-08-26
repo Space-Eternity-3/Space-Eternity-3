@@ -15,10 +15,11 @@ public class SC_invisibler : MonoBehaviour
     public void LaterUpdate()
 	{
 		int i, lngt = parts.Length;
+		bool eft = !(invisible||invisible_or);
+
+		if(lngt>=0) if(parts[0].enabled != eft)
 		for(i=0;i<lngt;i++)
-		{
-			parts[i].enabled = !(invisible||invisible_or);
-		}
+			parts[i].enabled = eft;
 		
 		if(!this_main)
 		if(invisible && !visible) nick.color = dis;
