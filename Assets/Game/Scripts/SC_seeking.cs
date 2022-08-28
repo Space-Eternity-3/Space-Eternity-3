@@ -10,6 +10,8 @@ public class SC_seeking : MonoBehaviour
     public Transform seek;
     public Vector3 offset;
 
+    public SC_control SC_control;
+
     public void Update()
     {
 		if(enabled)
@@ -17,5 +19,11 @@ public class SC_seeking : MonoBehaviour
             if(!localpos) transform.position=seek.position+offset;
             else transform.localPosition=seek.localPosition+offset;
         }
+    }
+    void Start() {
+        SC_control.SC_lists.AddTo_SC_seeking(this);
+    }
+    void OnDestroy() {
+        SC_control.SC_lists.RemoveFrom_SC_seeking(this);
     }
 }

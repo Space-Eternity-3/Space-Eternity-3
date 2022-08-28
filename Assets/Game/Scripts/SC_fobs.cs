@@ -66,6 +66,9 @@ public class SC_fobs : MonoBehaviour
     bool started = false;
 	bool colied = false;
 
+    bool localRendererMem = true; //Local temp variable
+    bool localRendererMem2 = true; //Memory of renderer state
+
     Renderer localRenderer;
     SC_asteroid asst;
 
@@ -98,9 +101,9 @@ public class SC_fobs : MonoBehaviour
         int cc=0;
         SC_control.SendMTP("/FobsChange "+SC_control.connectionID+" "+ID+" "+index+" "+st1+" "+st2+" "+ed+" "+di+" "+dc+" "+sl+" "+cc);
     }
-    public void onMSG(string eData)
+    public bool onMSG(string eData)
     {
-        if(mother) return;
+        if(mother) return false;
         string[] arg = eData.Split(' ');
 
         if(arg[0]=="/RetFobsChange")
@@ -112,6 +115,7 @@ public class SC_fobs : MonoBehaviour
                 potFob21Name = arg[4]+";";
                 Replace(turEnd,true);
             }
+            return true;
         }
         if(arg[0]=="/RetFobsDataChange")
         if((arg[1]==ID+"") && (arg[2]==index+"") && (arg[5]!=SC_control.connectionID+""))
@@ -131,6 +135,7 @@ public class SC_fobs : MonoBehaviour
                 potFob21Name=itym+";"+coynt+";";
                 Replace(id21,true);
             }
+            return true;
         }
         if(arg[0]=="/RetFobsDataCorrection")
         if((arg[1]==ID+"") && (arg[2]==index+"") && (arg[4]==SC_control.connectionID+""))
@@ -145,28 +150,34 @@ public class SC_fobs : MonoBehaviour
                 if(SC_Fob21.count == 0) SC_Fob21.item = 0;
                 else SC_Fob21.item = itym;
             }
+            return true;
         }
         if(arg[0]=="/RetFobsTurn")
         if((arg[2]==ID+"") && (arg[3]==index+"") && MTPblocker<=0)
         {
             int turEnd = int.Parse(arg[4]);
             Replace(turEnd,true);
+            return true;
         }
         if(arg[0]=="/RetGrowNow")
         if((arg[1]==ID+"") && (arg[2]==index+"") && GrowTurn)
         {
             Replace(GrowID,true);
+            return true;
         }
         if(arg[0]=="/RetGeyzerTurn")
         if((arg[1]==ID+"") && (arg[2]==index+"") && GeyzerTurn)
         {
             Replace(GeyzerID,true);
+            return true;
         }
         if(arg[0]=="/RetFobsPing")
         if(arg[1]==(SC_control.connectionID+";"+ID+";"+index))
         {
             MTPblocker--;
+            return true;
         }
+        return false;
     }
     bool HasPhysicalVersion(int b)
     {
@@ -198,7 +209,6 @@ public class SC_fobs : MonoBehaviour
             SC_data.World[a,index+1,c]=id+"";
             SC_data.World[a,21+index*2,c]="";
             SC_data.World[a,22+index*2,c]="";
-            if(uAst[2]=="T") SC_data.SaveAsteroid(c);
         }
 
         //In game replace
@@ -256,6 +266,7 @@ public class SC_fobs : MonoBehaviour
             gobT.transform.localScale.z * gobT.transform.parent.parent.localScale.z
         );
         gobT.GetComponent<SC_fobs>().transportScale = transportScale;
+        index = -1;
         gobT.GetComponent<SC_fobs>().StartM();
     }
     public void StartM()
@@ -266,6 +277,8 @@ public class SC_fobs : MonoBehaviour
     {
         if(started) return;
         else started = true;
+
+        SC_control.SC_lists.AddTo_SC_fobs(this);
 
         localRenderer = gameObject.GetComponent<Renderer>();
         asst = transform.parent.GetComponent<SC_asteroid>();
@@ -284,7 +297,12 @@ public class SC_fobs : MonoBehaviour
             multiplayer=true;
         }
 
-        if(IsEmpty) localRenderer.enabled=false;
+        if(IsEmpty)
+        {
+            localRendererMem = false;
+            localRendererMem2 = false;
+            localRenderer.enabled=false;
+        }
 		
         if(!mother)
 		{
@@ -343,7 +361,6 @@ public class SC_fobs : MonoBehaviour
                     {
                         GrowTimeLeft=UnityEngine.Random.Range(GrowTimeMin,GrowTimeMax+1);
                         SC_data.World[a,21+index*2,c]=GrowTimeLeft+"";
-                        if(uAst[2]=="T") SC_data.SaveAsteroid(c);
                     }
                 }
             }
@@ -352,6 +369,15 @@ public class SC_fobs : MonoBehaviour
     }
     void Update()
     {
+        if(IsEmpty)
+        {
+            if(localRendererMem2 != localRendererMem) {
+                localRendererMem2 = localRendererMem;
+                localRenderer.enabled = localRendererMem;
+            }
+            localRendererMem=false;
+        }
+
         if(onu>0) onu--;
         if(!mother)
         {
@@ -393,6 +419,8 @@ public class SC_fobs : MonoBehaviour
     }
     void OnDestroy()
     {
+        SC_control.SC_lists.RemoveFrom_SC_fobs(this);
+
         if(lsb && !true_mother)
         {
             try{
@@ -416,8 +444,6 @@ public class SC_fobs : MonoBehaviour
         if(lsb && !true_mother)
             SC_snd_loop.sound_pos[loopSndID] = transform.position;
 
-        if(IsEmpty) localRenderer.enabled=false;
-
         if(mother) return;
         if(inGeyzer>0&&(GeyzerTurn && (!(asst.permanent_blocker || asst.temporary_blocker))))
         {
@@ -438,7 +464,6 @@ public class SC_fobs : MonoBehaviour
                 string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
                 int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]);
                 SC_data.World[a,21+index*2,c]=GrowTimeLeft+"";
-                if(uAst[2]=="T") SC_data.SaveAsteroid(c);
             }
         }
     }
@@ -484,7 +509,7 @@ public class SC_fobs : MonoBehaviour
         HasPhysicalVersion(SC_slots.SelectedItem())&&MTPblocker<=0)
         {
             if(!Input.GetMouseButton(1)&&emptyShow)
-            localRenderer.enabled=true;
+                localRendererMem=true;
 
             if(Input.GetMouseButtonDown(1)&&!ReR)
             {

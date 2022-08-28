@@ -277,8 +277,6 @@ public class SC_structure : MonoBehaviour
 						st_structs[current] = ast.GetComponent<Transform>();
 						ast.strucutral_parent = transform;
 						scaling_blocker++;
-
-						st_structs[current].GetComponent<SC_seon_remote>().SC_structure = transform.GetComponent<SC_structure>();
 				
 						int[] sXY = BuildXY(current);
 						ast.proto = true; ast.X=sXY[0]; ast.Y=sXY[1]; ast.ID=SC_fun.CheckID(ast.X,ast.Y);
@@ -896,6 +894,18 @@ public class SC_structure : MonoBehaviour
 				i--;
 				continue;
 			}
+		}
+		for(i=0;i<1024;i++)
+		{
+			if(st_structs[i]!=null)
+				if(
+					st_structs[i].GetComponent<SC_asteroid>()!=null &&
+					st_structs[i].GetComponent<SC_seon_remote>()==null &&
+					st_structs[i].parent.GetComponent<SC_seon_remote>()!=null
+				){
+					SC_seon_remote ssr = st_structs[i].gameObject.AddComponent<SC_seon_remote>();
+					ssr.SC_structure = transform.GetComponent<SC_structure>();
+				}
 		}
 	}
 }

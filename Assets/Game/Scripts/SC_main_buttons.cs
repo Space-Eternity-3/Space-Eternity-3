@@ -54,6 +54,7 @@ public class SC_main_buttons : MonoBehaviour {
 		if(n==2) SC_connection.mtpDataLoad();
 		if(n==3)
 		{
+			//MAIN MENU, CAN BE HERE
 			SC_settings[] SC_settings = FindObjectsOfType<SC_settings>();
 			foreach(SC_settings ss in SC_settings)
 			{

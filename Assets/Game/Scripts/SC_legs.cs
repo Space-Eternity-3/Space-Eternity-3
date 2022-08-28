@@ -8,12 +8,13 @@ public class SC_legs : MonoBehaviour {
 	public Transform respawn;
 	public Transform Communtron1;
 	public Transform always_on_player;
+	public SC_control SC_control;
 	public float jumpSize;
 	public int legsID;
 
 	void ChildGenerate()
 	{
-		SC_point_expand[] SC_point_expand=FindObjectsOfType<SC_point_expand>();
+		List<SC_point_expand> SC_point_expand = SC_control.SC_lists.SC_point_expand;
 		foreach(SC_point_expand pet in SC_point_expand)
 		{
 			if(pet.mode==legsID) pet.PointGenerate(jumpSize);

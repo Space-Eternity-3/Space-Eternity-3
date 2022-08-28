@@ -4,33 +4,41 @@ using UnityEngine;
 
 public class SC_struct2 : MonoBehaviour
 {
-    int ID=1;
+    public int X=0,Y=0,ID=1;
+    int counter_to_destroy = 200;
+    bool mother=true;
     public SC_fun SC_fun;
     public Transform legs;
     public Transform Communtron1;
 
+    void OnDestroy()
+    {
+        SC_fun.GenListRemove(ID,0);
+    }
     void Start()
     {
-        if(transform.position.z<100)
-        {
-            ID=SC_fun.CheckID((int)(transform.position.x/10f),(int)(transform.position.y/10f));
-        }
+        if(transform.position.z<100f) mother=false;
     }
-    void Update()
+    void FixedUpdate()
     {
-        if(transform.position.z<100)
+        if(!mother)
 		{	
 			//Optimalize
-			float ssX=Mathf.Round(transform.position.x/10f);
-			float ssY=Mathf.Round(transform.position.y/10f);
+			float ssX=X;
+			float ssY=Y;
 			float llX=Mathf.Round(legs.position.x/10f);
 			float llY=Mathf.Round(legs.position.y/10f);
 			float distance=Mathf.Sqrt((ssX-llX)*(ssX-llX)+(ssY-llY)*(ssY-llY));
-			if(distance>10f&&Communtron1.position.z==0f)
+			if(distance>7f&&Communtron1.position.z==0f)
 			{
-				SC_fun.GenListRemove(ID,0);
-				Destroy(gameObject);
+				if(counter_to_destroy==0)
+				{
+					SC_fun.GenListRemove(ID,0);
+					Destroy(gameObject);
+				}
+				else counter_to_destroy--;
 			}
+			else counter_to_destroy = 200;
 		}
     }
 }

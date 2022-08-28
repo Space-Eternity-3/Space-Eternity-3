@@ -15,6 +15,8 @@ public class SC_pulse_bar : MonoBehaviour
 
     float memory=1;
 
+    public SC_control SC_control;
+
     void FixedUpdate()
     {
         if(bar.value < memory) actual_lerp = max_lerp;
@@ -23,5 +25,11 @@ public class SC_pulse_bar : MonoBehaviour
         image.color = Color.Lerp(normal,pulsed,actual_lerp*1f/max_lerp);
 
         if(actual_lerp > 0) actual_lerp--;
+    }
+    void Start() {
+        SC_control.SC_lists.AddTo_SC_pulse_bar(this);
+    }
+    void OnDestroy() {
+        SC_control.SC_lists.RemoveFrom_SC_pulse_bar(this);
     }
 }

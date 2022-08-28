@@ -20,7 +20,7 @@ public class SC_camera : MonoBehaviour {
 	public Transform respawn;
 
 	int sCounter=50;
-	int TotalTime=0;
+	public int TotalTime=0;
 	bool fullS;
 
 	int worldID=0;
@@ -84,11 +84,6 @@ public class SC_camera : MonoBehaviour {
 		if(sCounter==0)
 		{
 			TotalTime++;
-			if((int)Communtron4.position.y!=100)
-			{
-				SC_data.UniverseX[worldID-1,0]=TotalTime+"";
-				SC_data.Save("universeX");
-			}
 			sCounter=50;
 		}
 		sCounter--;

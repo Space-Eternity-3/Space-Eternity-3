@@ -18,6 +18,7 @@ public class SC_resume : MonoBehaviour
 	}
 	public void GiveUp()
 	{
+		//NOT UPDATE, CAN BE HERE
 		SC_control.esc_press(false);
 		SC_boss[] boses = FindObjectsOfType<SC_boss>();
 		foreach(SC_boss bos in boses)

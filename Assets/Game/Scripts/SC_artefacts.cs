@@ -155,6 +155,7 @@ public class SC_artefacts : MonoBehaviour
 				SC_control.impulse_reset = true;
 				SC_control.turbo = false;
 
+				//NOT UPDATE, CAN BE HERE
 				SC_colboss[] cbss = FindObjectsOfType<SC_colboss>();
 				foreach(SC_colboss cbs in cbss) {
 					cbs.impulse_used = false;

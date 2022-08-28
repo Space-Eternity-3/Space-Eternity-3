@@ -16,7 +16,6 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
     bool ASAC_pressed=false;
     int press_time=0;
 
-
     public SC_arrow_rot SC_arrow_rot;
     public SC_selected SC_selected;
     public SC_upgrades SC_upgrades;
@@ -82,7 +81,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
                 if(index==3) SC_resume.GiveUp();
 			}
         }
-        if(mode==1)
+        else if(mode==1)
         {
             if(ID==4) SC_backpack.Select(index,false);
             if(ID==5)

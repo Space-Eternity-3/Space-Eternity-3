@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SC_point_expand : MonoBehaviour {
 
-	public Transform asteroid;
+	public Transform asteroid, struct2empty;
 	public SC_fun SC_fun;
 	public int mode;
 
@@ -21,11 +21,19 @@ public class SC_point_expand : MonoBehaviour {
 		{
 			if(mode==0)
 			{
-				if(SC_fun.AsteroidCheck(ID))
+				if(!SC_fun.GenListContains(ID,0) && ID%2!=0)
 				{
 					SC_fun.GenListAdd(ID,mode);
-					SC_asteroid sca = Instantiate(asteroid, transform.position, Quaternion.identity).GetComponent<SC_asteroid>();
-					sca.X = tX; sca.Y = tY; sca.ID = ID;
+					if(SC_fun.AsteroidCheck(ID))
+					{
+						SC_asteroid sca = Instantiate(asteroid, transform.position, Quaternion.identity).GetComponent<SC_asteroid>();
+						sca.X = tX; sca.Y = tY; sca.ID = ID;
+					}
+					else
+					{
+						SC_struct2 sca = Instantiate(struct2empty, transform.position, Quaternion.identity).GetComponent<SC_struct2>();
+						sca.X = tX; sca.Y = tY; sca.ID = ID;
+					}
 				}
 			}
 			if(mode==1)
@@ -50,5 +58,11 @@ public class SC_point_expand : MonoBehaviour {
 				}
 			}
 		}
+	}
+	void Awake() {
+		SC_fun.SC_control.SC_lists.AddTo_SC_point_expand(this);
+	}
+	void Destroy() {
+		SC_fun.SC_control.SC_lists.RemoveFrom_SC_point_expand(this);
 	}
 }

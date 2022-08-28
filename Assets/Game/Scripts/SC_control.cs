@@ -134,6 +134,8 @@ public class SC_control : MonoBehaviour {
 	public SC_invisibler SC_invisibler;
 	public SC_bullet SC_bullet;
 	public SC_projection SC_projection;
+	public SC_lists SC_lists;
+	public SC_camera SC_camera;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -206,7 +208,7 @@ public class SC_control : MonoBehaviour {
 		for(int ji=1;ji<max_players;ji++){
 			NC[ji].enabled = !f1 && (PL[ji].ArtSource % 100!=1);
 		}
-		SC_pulse_bar[] spbs = FindObjectsOfType<SC_pulse_bar>();
+		List<SC_pulse_bar> spbs = SC_lists.SC_pulse_bar;
 		foreach(SC_pulse_bar spb in spbs) {
 			spb.canvas.enabled = !f1;
 		}
@@ -318,7 +320,7 @@ public class SC_control : MonoBehaviour {
 		
 		SC_artefacts.SC_seeking.Update();
 		SC_artefacts.SC_seeking2.Update();
-		SC_seeking[] scs = FindObjectsOfType<SC_seeking>();
+		List<SC_seeking> scs = SC_lists.SC_seeking;
 		foreach(SC_seeking sc in scs)
 		{
 			if(sc.idWord=="inv_part") sc.Update();
@@ -343,7 +345,7 @@ public class SC_control : MonoBehaviour {
 			//engine.material=E1;
 		}
 		//ENGINE
-		if(Input.GetKey(KeyCode.Space)&&living&&!pause)
+		if((Input.GetKey(KeyCode.Space))&&living&&!pause)
 		{
 			engineON=true;
 			if(!turbo)
@@ -508,7 +510,7 @@ public class SC_control : MonoBehaviour {
 		SC_invisibler.invisible = false;
 		RemoveImpulse();
 
-		SC_boss[] boses = FindObjectsOfType<SC_boss>();
+		List<SC_boss> boses = SC_lists.SC_boss;
 		foreach(SC_boss bos in boses)
 		{
 			if(bos.bosnumed)
@@ -601,6 +603,9 @@ public class SC_control : MonoBehaviour {
 		}
 		SC_data.Save("player_data");
 
+		SC_data.UniverseX[worldID-1,0]=SC_camera.TotalTime+"";
+		SC_data.Save("universeX");
+
 		for(z=0;z<16;z++) SC_data.SaveAsteroid(z);
 	}
 	void OnApplicationQuit()
@@ -613,7 +618,7 @@ public class SC_control : MonoBehaviour {
 		if(repeted) return;
 		repeted=true;
 
-		SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
+		List<SC_bullet> buls = SC_lists.SC_bullet;
 		foreach(SC_bullet bul in buls)
 		{
 			if(bul.mode!="mother")
@@ -689,26 +694,16 @@ public class SC_control : MonoBehaviour {
 		if((int)Communtron4.position.y!=100)
 		if(saveCo==0)
 		{
-			saveCo=500; //10 seconds
+			saveCo=750; //15 seconds
 			MainSaveData();
 		}
 
 		//Grow Loaded
 		if((int)Communtron4.position.y==100)
 		{
-			if(MTPloadedCounter==5) SendMTP("/GrowLoaded "+SC_fun.GenLists[0]+" "+connectionID);
+			if(MTPloadedCounter==5) SendMTP("/GrowLoaded "+string.Join(";",SC_fun.GenListsB0)+"; "+connectionID);
 			MTPloadedCounter--;
 			if(MTPloadedCounter==0) MTPloadedCounter=5;
-		}
-		
-		//rigidbody disable
-		if(impulse_enabled)
-		{
-			//playerR.detectCollisions = false;
-		}
-		else
-		{
-			//playerR.detectCollisions = true;
 		}
 
 		//something engine
@@ -876,7 +871,7 @@ public class SC_control : MonoBehaviour {
 			cmdList.RemoveAt(0);
 		}
 
-		SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
+		List<SC_bullet> buls = SC_lists.SC_bullet;
 		foreach(SC_bullet bul in buls)
 		{
 			bul.AfterFixedUpdate();
@@ -885,87 +880,7 @@ public class SC_control : MonoBehaviour {
 		//RPU converter
 		int h;
 		if(Communtron4.position.y==100f && RPU!="XXX")
-		{
-			string[] arg = RPU.Split(' ');
-			int i,lngt = int.Parse(arg[1]);
-			string[] arh = splitChars(arg[2],lngt);
-
-			for(i=1;i<lngt;i++)
-			{
-				// i -> Projection ID
-				// k -> Place in msg
-
-				int k=i; if(i==connectionID) k=0;
-				int atf=0;
-				string ari = arh[k];
-
-				if(true)
-				{
-					if(arh[k]=="0")
-					{
-						//Player is not joined
-						NUL[i] = false;
-						PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
-						PL[i].sourcedRotation = 10000f; //Rotation
-
-						NCT[i].text = "";
-						NCH[i].value = 1;
-						RU[i].position = new Vector3(0f,0f,300f);
-							atf = 0;
-						PL[i].ArtSource = atf;
-						PL[i].OtherSource = 0;
-					}
-					else if(arh[k]=="1")
-					{
-						//Player is joined but not living
-						NUL[i] = false;
-						PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
-						PL[i].sourcedRotation = 10000f; //Rotation
-
-						NCT[i].text = nick_RPC[i];
-						NCH[i].value = 1;
-							float zzz = 1f;
-							if(rposX_RPC[i]==0f && rposY_RPC[i]==0f) zzz=300f;
-						RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],zzz);
-							atf = 0;
-						PL[i].ArtSource = atf;
-						PL[i].OtherSource = 0;
-					}
-					else
-					{
-						//Player is playing normally
-						NUL[i] = true;
-						PL[i].sourcedPosition = new Vector3(Char4ToFloat(ari,0),Char4ToFloat(ari,4),0f); //Position
-						PL[i].sourcedRotation = Char1ToRot(ari,8); //Rotation
-
-						NCT[i].text = nick_RPC[i];
-							float liv = health_RPC[i];
-							if(liv<0f) liv = 0f; //relict
-						NCH[i].value = liv;
-							float zzz = 1f;
-							if(rposX_RPC[i]==0f && rposY_RPC[i]==0f) zzz=300f;
-						RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],zzz);
-							atf = others2_RPC[i];
-						PL[i].ArtSource = atf;
-						PL[i].OtherSource = others1_RPC[i];
-					}
-					
-					//Based on <atf> value
-					NC[i].enabled = !f1 && (atf%100!=1);
-					NCHOF[i].color = SC_artefacts.Color1N[atf/100];
-				}
-			}
-
-			fixup--;
-			if(fixup<=0)
-			{
-				intPing = (localPing-returnedPing);
-				truePing = intPing/50f;
-				trping = retping(truePing);
-				pingname.text = "Ping: "+trping+"s";
-				fixup = 10;
-			}
-		}
+			TranslateRPU();
 
 		//drill fixed update
 		if(drill3B&&drill3T.localPosition.y<1.44f)
@@ -1040,12 +955,92 @@ public class SC_control : MonoBehaviour {
 		
 		SC_projection.AfterFixedUpdate();
 		for(int ij=1;ij<max_players;ij++)
-		{
 			PL[ij].AfterFixedUpdate();
-		}
 		
 		if(!Input.GetMouseButton(1)) public_placed = false;
 		gtm1 = false;
+	}
+	void TranslateRPU()
+	{
+		string[] arg = RPU.Split(' ');
+		int i,lngt = int.Parse(arg[1]);
+		string[] arh = splitChars(arg[2],lngt);
+
+		for(i=1;i<lngt;i++)
+		{
+			// i -> Projection ID
+			// k -> Place in msg
+
+			int k=i; if(i==connectionID) k=0;
+			int atf=0;
+			string ari = arh[k];
+
+			if(true)
+			{
+				if(arh[k]=="0")
+				{
+					//Player is not joined
+					NUL[i] = false;
+					PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
+					PL[i].sourcedRotation = 10000f; //Rotation
+
+					NCT[i].text = "";
+					NCH[i].value = 1;
+					RU[i].position = new Vector3(0f,0f,300f);
+						atf = 0;
+					PL[i].ArtSource = atf;
+					PL[i].OtherSource = 0;
+				}
+				else if(arh[k]=="1")
+				{
+					//Player is joined but not living
+					NUL[i] = false;
+					PL[i].sourcedPosition = new Vector3(0f,0f,300f); //Position
+					PL[i].sourcedRotation = 10000f; //Rotation
+
+					NCT[i].text = nick_RPC[i];
+					NCH[i].value = 1;
+						float zzz = 1f;
+						if(rposX_RPC[i]==0f && rposY_RPC[i]==0f) zzz=300f;
+					RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],zzz);
+						atf = 0;
+					PL[i].ArtSource = atf;
+					PL[i].OtherSource = 0;
+				}
+				else
+				{
+					//Player is playing normally
+					NUL[i] = true;
+					PL[i].sourcedPosition = new Vector3(Char4ToFloat(ari,0),Char4ToFloat(ari,4),0f); //Position
+					PL[i].sourcedRotation = Char1ToRot(ari,8); //Rotation
+
+					NCT[i].text = nick_RPC[i];
+						float liv = health_RPC[i];
+						if(liv<0f) liv = 0f; //relict
+					NCH[i].value = liv;
+						float zzz = 1f;
+						if(rposX_RPC[i]==0f && rposY_RPC[i]==0f) zzz=300f;
+					RU[i].position = new Vector3(rposX_RPC[i],rposY_RPC[i],zzz);
+						atf = others2_RPC[i];
+					PL[i].ArtSource = atf;
+					PL[i].OtherSource = others1_RPC[i];
+				}
+					
+				//Based on <atf> value
+				NC[i].enabled = !f1 && (atf%100!=1);
+				NCHOF[i].color = SC_artefacts.Color1N[atf/100];
+			}
+		}
+
+		fixup--;
+		if(fixup<=0)
+		{
+			intPing = (localPing-returnedPing);
+			truePing = intPing/50f;
+			trping = retping(truePing);
+			pingname.text = "Ping: "+trping+"s";
+			fixup = 10;
+		}
 	}
 	public void SendMTP(string msg)
 	{
@@ -1361,7 +1356,7 @@ public class SC_control : MonoBehaviour {
 
 			if(connectionID+""==arg[1])
 			{
-				SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
+				List<SC_bullet> buls = SC_lists.SC_bullet;
 				foreach(SC_bullet bul in buls)
 				{
 					if(bul.ID+""==arg[7] && bul.mode=="projection")
@@ -1394,7 +1389,7 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetNewBulletDestroy")
 		{
-			SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
+			List<SC_bullet> buls = SC_lists.SC_bullet;
 			foreach(SC_bullet bul in buls)
 			{
 				if(bul.mode!="mother" && bul.ID+""==arg[2])
@@ -1496,7 +1491,8 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetAsteroidData")
 		{
-			SC_asteroid[] SCT_asteroid = Component.FindObjectsOfType<SC_asteroid>();
+			//REBUILD IT
+			List<SC_asteroid> SCT_asteroid = SC_lists.SC_asteroid;
 			foreach(SC_asteroid aul in SCT_asteroid)
 			{
 				aul.onMSG(cmdThis);
@@ -1506,7 +1502,8 @@ public class SC_control : MonoBehaviour {
 		{
 			if(arg[3]=="1024")
 			{
-				SC_boss[] SCT_boss = Component.FindObjectsOfType<SC_boss>();
+				//REBUILD IT
+				List<SC_boss> SCT_boss = SC_lists.SC_boss;
 				foreach(SC_boss aul in SCT_boss)
 				{
 					aul.onMSG(cmdThis);
@@ -1521,10 +1518,11 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RetGeyzerTurn"||
 		arg[0]=="/RetGrowNow")
 		{
-			SC_fobs[] SCT_fobs = Component.FindObjectsOfType<SC_fobs>();
+			//REBUILD IT
+			List<SC_fobs> SCT_fobs = SC_lists.SC_fobs;
 			foreach(SC_fobs ful in SCT_fobs)
 			{
-				ful.onMSG(cmdThis);
+				if(ful.onMSG(cmdThis)) break;
 			}
 		}
 	}

@@ -30,6 +30,10 @@ public class SC_seon_remote : MonoBehaviour
     public int hiding_time = 1;
     public int extending_time = 1;
 
+    public string memState = "default";
+    public int memHide = -1;
+    public int memExtended = -1;
+
     //absolute
     Vector3 localDefault = new Vector3(0f,0f,0f);
 
@@ -74,6 +78,11 @@ public class SC_seon_remote : MonoBehaviour
 
     int GetMode(string variant)
     {
+        if(memState==SC_structure.actual_state) {
+            if(variant=="hidden" && memHide!=-1) return memHide;
+            if(variant=="extended" && memExtended!=-1) return memExtended;
+        }
+
         int i,lngt=states.Count;
         for(i=0;i<lngt;i++)
         {
@@ -121,6 +130,9 @@ public class SC_seon_remote : MonoBehaviour
         int modeH = GetMode("hidden");
         int modeE = GetMode("extended");
 
+        memState = SC_structure.actual_state;
+        memHide = modeH; memExtended = modeE;
+
         if(SC_structure.scaling_blocker!=0 || starting)
         {
             if(modeE==1) modeE=2; if(modeE==3) modeE=0;
@@ -129,7 +141,18 @@ public class SC_seon_remote : MonoBehaviour
 
         transform.localPosition = localDefault;
         transform.localScale = normalScale;
+        
+        VariableChanging(modeH,modeE);
+        TemporaryBlocking();
+        PhysicalChanging();
 
+        if(transform.GetComponent<SC_boss>()!=null && started_already)
+            transform.GetComponent<SC_boss>().FixedUpdateT();
+
+        started_already = true;
+    }
+    void VariableChanging(int modeH, int modeE)
+    {
         if(modeH==0) current_hide = 0;
         if(modeH==2) current_hide = hiding_time;
         if(modeH==1 && current_hide < hiding_time) current_hide++;
@@ -139,7 +162,9 @@ public class SC_seon_remote : MonoBehaviour
         if(modeE==2) current_extension = extending_time;
         if(modeE==1 && current_extension < extending_time) current_extension++;
         if(modeE==3 && current_extension > 0) current_extension--;
-
+    }
+    void TemporaryBlocking()
+    {
         if(transform.GetComponent<SC_asteroid>()!=null)
         {
             bool bpar,bcur = (current_hide > 0 && current_hide < hiding_time);
@@ -150,7 +175,9 @@ public class SC_seon_remote : MonoBehaviour
             }
             transform.GetComponent<SC_asteroid>().temporary_blocker = (bpar||bcur);
         }
-
+    }
+    void PhysicalChanging()
+    {
         float fraction_hide = current_hide; fraction_hide /= hiding_time;
         float fraction_extension = current_extension; fraction_extension /= extending_time;
 
@@ -158,10 +185,5 @@ public class SC_seon_remote : MonoBehaviour
         else transform.localPosition += localHidden;
         transform.localPosition += fraction_extension * localExtended;
         if(fraction_hide!=1f) transform.localScale = (1f-fraction_hide) * normalScale;
-
-        if(transform.GetComponent<SC_boss>()!=null && started_already)
-            transform.GetComponent<SC_boss>().FixedUpdateT();
-
-        started_already = true;
     }
 }

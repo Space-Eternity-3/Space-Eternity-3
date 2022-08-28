@@ -10,19 +10,21 @@ public class SC_resp_blocker : MonoBehaviour
 	public bool blocking;
 	public SC_control SC_control;
 	
-	void Update()
+	void Start()
 	{
-		Vector3 pomv = transform.position-player.position;
-		pomv -= new Vector3(0f,0f,pomv.z);
-		if(SC_control.Pitagoras(pomv) < radius) blocking = true;
-		else blocking = false;
+		SC_control.SC_lists.AddTo_SC_resp_blocker(this);
+	}
+	void OnDestroy()
+	{
+		SC_control.SC_lists.RemoveFrom_SC_resp_blocker(this);
 	}
 	public bool IsAllowing()
 	{
-		SC_resp_blocker[] rbs = FindObjectsOfType<SC_resp_blocker>();
-		foreach(SC_resp_blocker rb in rbs)
+		Vector3 plapos = player.position;
+		foreach(SC_resp_blocker rpb in SC_control.SC_lists.SC_resp_blocker)
 		{
-			if(rb.blocking) return false;
+			if(SC_control.Pitagoras(plapos - rpb.transform.position) < rpb.radius)
+				return false;
 		}
 		return true;
 	}

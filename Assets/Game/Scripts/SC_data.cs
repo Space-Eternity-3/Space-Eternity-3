@@ -545,7 +545,7 @@ public class SC_data : MonoBehaviour
             if(WorldSector[i]==gX+";"+gY) return i+";"+rSS+";F";
         }
 
-        SC_control.MainSaveData();
+        SaveAsteroid(asteroidCounter);
 
         string path,file,filePre;
         path=GetPath("generated");

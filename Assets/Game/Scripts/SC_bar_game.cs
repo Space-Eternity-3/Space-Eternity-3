@@ -8,7 +8,7 @@ public class SC_bar_game : MonoBehaviour
     public Slider healthUp, healthRe;
     int licznikC = 0;
 
-    void FixedUpdate()
+    public void AfterFixedUpdate()
     {
         if(healthUp.value < healthRe.value)
 		{

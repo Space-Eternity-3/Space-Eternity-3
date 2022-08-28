@@ -29,6 +29,8 @@ public class SC_bars : MonoBehaviour
 	public Text left_text;
 	int left_max = 0;
 	int left_value = 0;
+
+	public SC_boss bos;
 	
 	string ConvertToTime(int seconds)
 	{
@@ -46,20 +48,17 @@ public class SC_bars : MonoBehaviour
 	public void LateUpdate()
 	{
 		double_left = false;
-		SC_boss[] boses = FindObjectsOfType<SC_boss>();
-		foreach(SC_boss bos in boses)
+		
+		if(bos!=null)
+		if(bos.timer_bar_enabled)
 		{
-			if(bos.timer_bar_enabled)
-			{
-				double_left = true;
-				left_value = bos.timer_bar_value;
-				left_max = bos.timer_bar_max;
-				left_text.text = "Time " + ConvertToTime((left_value+9)/10);
-				if(left_max==0) left_max=1;
-				left_slider.fillAmount = 0.112f + (left_value*0.788f/left_max);
-				if(left_value==0) left_slider.fillAmount = 0f;
-				break;
-			}
+			double_left = true;
+			left_value = bos.timer_bar_value;
+			left_max = bos.timer_bar_max;
+			left_text.text = "Time " + ConvertToTime((left_value+9)/10);
+			if(left_max==0) left_max=1;
+			left_slider.fillAmount = 0.112f + (left_value*0.788f/left_max);
+			if(left_value==0) left_slider.fillAmount = 0f;
 		}
 
 		if(double_left)

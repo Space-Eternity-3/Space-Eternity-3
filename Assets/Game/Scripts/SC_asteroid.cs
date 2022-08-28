@@ -187,10 +187,17 @@ public class SC_asteroid : MonoBehaviour {
 		Debug.Log(ID+" replaced to: "+st);
 		Destroy(gameObject);
 	}
+	void OnDestroy()
+	{
+		SC_control.SC_lists.RemoveFrom_SC_asteroid(this);
+	}
 	void Start()
 	{
 		if(transform.position.z<100f || proto)
 			mother = false;
+
+		SC_control.SC_lists.AddTo_SC_asteroid(this);
+		if(proto) SC_fun.GenListAdd(ID,0);
 		
 		//UNIVERSAL asteroid generator (UAG)
 		if(ID!=1) GetBiome();
@@ -230,7 +237,6 @@ public class SC_asteroid : MonoBehaviour {
 					for(i=0;i<longg(size);i++){
 						SC_data.World[a,i+1,c]=objectID[i]+"";
 					}
-					if(uAst[2]=="T") SC_data.SaveAsteroid(c);
 				}
 				else
 				{

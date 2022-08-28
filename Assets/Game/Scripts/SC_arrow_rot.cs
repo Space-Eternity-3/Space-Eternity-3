@@ -53,11 +53,6 @@ public class SC_arrow_rot : MonoBehaviour {
 			transform.localPosition=sPosNN;
 		}
 		transform.eulerAngles=new Vector3(0f,0f,alpha);
-
-		if(Input.GetKeyDown(KeyCode.F))
-		{
-			//ChangePosVisible();
-		}
 	}
 	public void ChangePosVisible()
 	{

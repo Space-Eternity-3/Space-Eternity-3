@@ -29,6 +29,7 @@ public class SC_players : MonoBehaviour
     Transform CanvP;
     public int IDP, IDP_phys;
     SC_seeking obj, obj2;
+    SC_bar_game SC_bar_game;
 
     //Gameplay variables
     public int OtherSource;
@@ -37,6 +38,7 @@ public class SC_players : MonoBehaviour
     public float sourcedRotation = 10000f;
     Vector3[] memSourced=new Vector3[20];
     float[] rotSourced=new float[20];
+    bool sleeping = false;
 
     void ResetArray()
     {
@@ -60,6 +62,10 @@ public class SC_players : MonoBehaviour
 
         CanvP = Instantiate(CanvPS,new Vector3(0f,0f,0f),Quaternion.identity);
         CanvP.SetParent(TestNick,false); CanvP.name = "CanvP" + IDP;
+
+        foreach(Transform trn in CanvP) {
+            if(trn.name=="HPBar") SC_bar_game = trn.GetComponent<SC_bar_game>();
+        }
 		
 		IDP_phys = IDP;
     }
@@ -132,21 +138,54 @@ public class SC_players : MonoBehaviour
     }
     public void AfterFixedUpdate()
     {
-		ArrayPusher(sourcedPosition, sourcedRotation);
-        Vector3 avar=ArrayAvarge(SC_fun.smooth_size);
-        float avar_rot=ArrayAvarge_rot(SC_fun.smooth_size);
-        bool removal = true;
-
-        if(SC_fun.SC_control.NUL[IDP_phys])
+        bool actual = SC_fun.SC_control.NUL[IDP_phys];
+        bool inrange = (SC_fun.SC_control.Pitagoras(sourcedPosition-SC_fun.SC_control.transform.position)<100f);
+        if(actual)
         {
-            transform.position = new Vector3(avar.x,avar.y,0f);
-            transform.eulerAngles = new Vector3(0f,0f,avar_rot);
-            removal = false;
+            sleeping = false;
+            if(inrange)
+            {
+                ArrayPusher(sourcedPosition, sourcedRotation);
+                Vector3 avar=ArrayAvarge(SC_fun.smooth_size);
+                float avar_rot=ArrayAvarge_rot(SC_fun.smooth_size);
+
+                transform.position = new Vector3(avar.x,avar.y,0f);
+                transform.eulerAngles = new Vector3(0f,0f,avar_rot);
+            }
+            else
+            {
+                transform.position = sourcedPosition;
+                obj.offset = new Vector3(0f,0f,0f);
+                obj2.offset = new Vector3(0f,0f,0f);
+
+                if(ArtSource%100==1) {
+			        SC_invisibler.visible = (SC_fun.SC_control.ramvis[IDP]>0 && SC_fun.SC_control.ramvis[IDP]<=SC_fun.SC_control.timeInvisiblePulse);
+			        SC_invisibler.invisible = true;
+		        }
+		        else {
+			        SC_fun.SC_control.ramvis[IDP]=0;
+			        SC_invisibler.invisible = false;
+		        }
+                SC_invisibler.LaterUpdate();
+                return;
+            }
         }
 		else
         {
-            ResetArray();
-            transform.position = new Vector3(0f,0f,10000f+IDP*5f);
+            if(!sleeping)
+            {
+                ResetArray();
+                transform.position = new Vector3(0f,0f,10000f+IDP*5f);
+
+                SC_fun.SC_control.ramvis[IDP]=0;
+			    obj.offset = new Vector3(0f,0f,0f);
+                obj2.offset = new Vector3(0f,0f,0f);
+			    SC_invisibler.invisible = false;
+
+                drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
+                sleeping = true;
+            }
+            return;
         }
 
 		int guitar=ArtSource;
@@ -159,7 +198,7 @@ public class SC_players : MonoBehaviour
 		if(B % 2 == 0) Beefs.rotation = transform.rotation;
 		else Beefs.rotation = new Quaternion(0f,0f,0f,0f);
 		
-		if(B==1 && !removal)
+		if(B==1)
 		{
 			if(SC_fun.SC_control.ramvis[IDP]>0 && SC_fun.SC_control.ramvis[IDP]<=SC_fun.SC_control.timeInvisiblePulse)
 			{
@@ -181,8 +220,6 @@ public class SC_players : MonoBehaviour
 			Aeffs.rotation = new Quaternion(0f,0f,0f,0f);
 			SC_invisibler.invisible = false;
 		}
-
-        if(!removal) {
 		
         int M=bas/16;
         if(M>3) M=0;
@@ -234,11 +271,8 @@ public class SC_players : MonoBehaviour
 	    }
 		
 		if(SC_invisibler.invisible) drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
-
-        } else drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
 		
-		SC_invisibler.LaterUpdate();
-		obj.Update();
-		obj2.Update();
+        SC_bar_game.AfterFixedUpdate();
+        SC_invisibler.LaterUpdate();
     }
 }

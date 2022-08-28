@@ -53,7 +53,7 @@ public class SC_projection : MonoBehaviour
         {
             if(devShow) return true;
 
-            SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
+            List<SC_bullet> buls = SC_control.SC_lists.SC_bullet;
             foreach(SC_bullet bul in buls)
                 if(bul.mode=="projection" && bul.projectionOwner!=SC_control.connectionID+"")
                 {

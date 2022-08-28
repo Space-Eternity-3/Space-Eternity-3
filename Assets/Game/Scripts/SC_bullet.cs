@@ -118,7 +118,7 @@ public class SC_bullet : MonoBehaviour
             );
         if(controller)
         {
-            SC_bullet[] buls = FindObjectsOfType<SC_bullet>();
+            List<SC_bullet> buls = SC_control.SC_lists.SC_bullet;
             foreach(SC_bullet bul in buls)
             {
                 if(bul.ID==ID && bul.mode!="mother" && !bul.controller)
@@ -140,6 +140,8 @@ public class SC_bullet : MonoBehaviour
     {
         multiplayer = (int)Communtron4.position.y==100;
         if (mode == "mother") return;
+
+        SC_control.SC_lists.AddTo_SC_bullet(this);
 
         if(mode=="projection")
         {
@@ -214,5 +216,9 @@ public class SC_bullet : MonoBehaviour
             MakeDestroy(mode=="projection");
         }
 
+    }
+    void OnDestroy()
+    {
+        SC_control.SC_lists.RemoveFrom_SC_bullet(this);
     }
 }

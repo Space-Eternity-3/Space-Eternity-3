@@ -188,7 +188,6 @@ public class SC_Fob21 : MonoBehaviour {
         int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]);
 		SC_data.World[a,21+uID*2,c]=item+"";
 		SC_data.World[a,22+uID*2,c]=count+"";
-		if(uAst[2]=="T") SC_data.SaveAsteroid(c);
 	}
 	bool Req(int mode)
 	{

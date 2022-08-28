@@ -110,6 +110,8 @@ public class SC_boss : MonoBehaviour
     }
     public void StartFromStructure()
     {
+        SC_control.SC_lists.AddTo_SC_boss(this);
+
         mother = false;
         multiplayer = ((int)Communtron4.position.y==100);
         solidPosition = transform.position;
@@ -143,7 +145,6 @@ public class SC_boss : MonoBehaviour
 				for(i=0;i<20;i++){
 					SC_data.World[a,i+1,c]=dataID[i+1]+"";
 				}
-				if(uAst[2]=="T") SC_data.SaveAsteroid(c);
 			}
 			else
 			{
@@ -216,7 +217,6 @@ public class SC_boss : MonoBehaviour
 		string[] uAst = SC_data.GetAsteroid(bX,bY).Split(';');
         int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]),i;
 		for(i=0;i<=20;i++) SC_data.World[a,i,c]=dataID[i];
-		if(uAst[2]=="T") SC_data.SaveAsteroid(c);
 	}
     void FixedUpdate()
     {
@@ -274,8 +274,13 @@ public class SC_boss : MonoBehaviour
             timer_bar_value = int.Parse(dataID[4]);
             timer_bar_max = int.Parse(dataID[5]);
             timer_bar_enabled = true;
+            SC_bars.bos = this;
         }
-        else timer_bar_enabled = false;
+        else
+        {
+            timer_bar_enabled = false;
+            SC_bars.bos = null;
+        }
 
         CanvNick.GetComponent<Text>().text = BossNames[type] + " " + romeNumber(int.Parse(dataID[1])+1);
         SetBarLength(int.Parse(dataID[6]),int.Parse(dataID[7]));
@@ -435,6 +440,8 @@ public class SC_boss : MonoBehaviour
     }
     void OnDestroy()
     {
+        SC_control.SC_lists.RemoveFrom_SC_boss(this);
         if(bosnumed) SC_control.bos_num--;
+        if(SC_bars.bos==this) SC_bars.bos = null;
     }
 }

@@ -552,7 +552,7 @@ function SaveAllNow() {
   for (i = 0; i < lngt; i++) chunkSave(i);
 }
 
-//Save all once per 5 seconds (or less if lags)
+//Save all once per 15 seconds (or less if lags)
 setInterval(function () { // <interval #1>
   SaveAllNow();
 
@@ -572,7 +572,7 @@ setInterval(function () { // <interval #1>
       i--;
     }
   }
-}, 5000);
+}, 15000);
 
 function getProtLevelAdd(art)
 {
@@ -3228,9 +3228,10 @@ if (!existsF("ServerUniverse/Seed.se3")) {
 function laggy_comment(nn)
 {
   if(nn<=0) return "\nWarning: Can't join to server with "+max_players+" max players.";
-  if(nn>=1 && nn<=128) return "";
-  if(nn>=129 && nn<=512) return "\nWarning: It is recommended to set max players to 128 or less";
-  if(nn>=513) return "\nWarning: Too many players! Shut it down! Your device might explode, but of course you can try joining ;)";
+  if(nn>=1 && nn<=25) return "";
+  if(nn>=26 && nn<=150) return "\nWarning: Over 25 max players can cause lags on some weaker devices";
+  if(nn>=151 && nn<=500) return "\nWarning: Over 150 max players can cause lags on most devices";
+  if(nn>=501) return "\nWarning: Too many players! Shut it down! Your device might explode, but of course you can try joining ;)";
 }
 
 console.log("Server started on version: [" + serverVersion + "]");

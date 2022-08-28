@@ -4,6 +4,17 @@ using UnityEngine;
 using System.IO;
 using System;
 
+public struct BiomeOfUlam
+{
+	public int ulam;
+	public string memories;
+
+	public Vector3 Move;
+	public float Size;
+	public string Tag;
+	public string String;
+}
+
 public class SC_fun : MonoBehaviour
 {
     public Transform Communtron1;
@@ -15,7 +26,11 @@ public class SC_fun : MonoBehaviour
     public int seed;
     public bool halloween_theme;
     public int smooth_size;
-    public string[] GenLists = new string[2];
+	public List<int> GenListsB0 = new List<int>();
+	public List<int> GenListsB1 = new List<int>();
+	public List<int> GenListsB2 = new List<int>();
+	BiomeOfUlam[] mems = new BiomeOfUlam[36];
+	int currentBOU=0;
     public float biome_sector_size;
     public bool[] pushed_markers = new bool[9];
 	
@@ -37,6 +52,14 @@ public class SC_fun : MonoBehaviour
     public SC_data SC_data;
     public SC_long_strings SC_long_strings;
 
+	void Awake()
+	{
+		int i;
+		for(i=0;i<36;i++) {
+			mems[i].memories="0000";
+			mems[i].ulam=-1;
+		}
+	}
     public void SeedSet(int world)
     {
         if(world!=100)
@@ -103,35 +126,62 @@ public class SC_fun : MonoBehaviour
 		}
         return ID;
     }
+	public int LogListSearch(int search,List<int> list)
+	{
+		int i,smin=0,smax=list.Count-1;
+		while(true)
+		{
+			i = smin + (smax-smin)/2;
+			
+			if(search < list[i]) smax = i-1;
+			else if(search > list[i]) smin = i+1;
+			else return i;
+
+			if(smin>smax) return -smin;
+		}
+	}
     public void GenListAdd(int ID,int legsID)
     {
-        GenLists[legsID]=GenLists[legsID]+ID+";";
+		if(legsID==0) {
+			int searched = LogListSearch(ID,GenListsB0);
+			if(searched>=0) return;
+			GenListsB0.Insert(-searched,ID);
+		}
+		else if(legsID==1) {
+			int searched = LogListSearch(ID,GenListsB1);
+			if(searched>=0) return;
+			GenListsB1.Insert(-searched,ID);
+		}
+		else if(legsID==2) {
+			int searched = LogListSearch(ID,GenListsB2);
+			if(searched>=0) return;
+			GenListsB2.Insert(-searched,ID);
+		}
     }
     public void GenListRemove(int ID,int legsID)
     {
-        if(GenListContains(ID,legsID))
-        {
-            string[] list = GenLists[legsID].Split(';');
-            int i,lngt=list.Length-1;
-            string newString=""; bool found=false;
-            for(i=0;i<lngt;i++)
-            {
-                if(int.Parse(list[i])!=ID) newString=newString+list[i]+";";
-                else found=true;
-            }
-            if(!found) UnityEngine.Debug.Log("Game crashed! Element not found.");
-            else GenLists[legsID]=newString;
-        }
+		if(legsID==0) {
+			int searched = LogListSearch(ID,GenListsB0);
+			if(searched<0) return;
+			GenListsB0.RemoveAt(searched);
+		}
+		else if(legsID==1) {
+			int searched = LogListSearch(ID,GenListsB1);
+			if(searched<0) return;
+			GenListsB1.RemoveAt(searched);
+		}
+		else if(legsID==2) {
+			int searched = LogListSearch(ID,GenListsB2);
+			if(searched<0) return;
+			GenListsB2.RemoveAt(searched);
+		}
     }
     public bool GenListContains(int ID,int legsID)
     {
-        string[] list = GenLists[legsID].Split(';');
-        int i,lngt=list.Length-1;
-        for(i=0;i<lngt;i++)
-        {
-            if(int.Parse(list[i])==ID) return true;
-        }
-        return false;
+		if(legsID==0) return (LogListSearch(ID,GenListsB0)>=0);
+		if(legsID==1) return (LogListSearch(ID,GenListsB1)>=0);
+		if(legsID==2) return (LogListSearch(ID,GenListsB2)>=0);
+		return false;
     }
 	public int StructureCheck(int ulam)
 	{
@@ -143,7 +193,6 @@ public class SC_fun : MonoBehaviour
 	}
     public bool AsteroidCheck(int ID)
     {
-        if(GenListContains(ID,0)) return false;
         int IDm=MakeID(ID,seed);
         if(ID==1) return false;
         if(IDm%2==0) return false;
@@ -251,34 +300,151 @@ public class SC_fun : MonoBehaviour
 
 //-----------------------------------------------------------------------------------------------
 
-	public float GetBiomeSize(int ulam)
-    {
-        string typ=GetBiomeString(ulam);
-		string tags=GetBiomeTag(ulam);
-		
-		if(TagContains(tags,"full")) return 900f;
-		
-		int[] ulXY = UlamToXY(ulam);
-        if(typ=="b0") return -1f;
-		if(TagContains(tags,"structural") && !(ulXY[0]%2==0 && ulXY[1]%2==0)) return -1f;
-		
-		int i,j;
-		float min, max;
-		
-		min = bMI[int.Parse(typ.Split('b')[1])];
-		max = bMA[int.Parse(typ.Split('b')[1])];
-		
-		if(min>max)
-		{
-			float pom=min;
-			min=max; max=pom;
+	public int pseudoRandom100(int prSeed)
+	{
+		prSeed = prSeed % 15000;
+		string psInt = (SC_long_strings.BiomeNewBase[2*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[2*prSeed+1]+"");
+		return int.Parse(psInt);
+	}
+	public int pseudoRandom1000(int prSeed)
+	{
+		prSeed = prSeed % 10000;
+		string psInt = (SC_long_strings.BiomeNewBase[3*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[3*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[3*prSeed+2]+"");
+		return int.Parse(psInt);
+	}
+	public int pseudoRandom10e4(int prSeed)
+	{
+		prSeed = prSeed % 7500;
+		string psInt = (SC_long_strings.BiomeNewBase[4*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+2]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+3]+"");
+		return int.Parse(psInt);
+	}
+	public int pseudoRandom10e5(int prSeed)
+	{
+		prSeed = prSeed % 6000;
+		string psInt = (SC_long_strings.BiomeNewBase[5*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+2]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+3]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+4]+"");
+		return int.Parse(psInt);
+	}
+	public Vector3 GetBiomeMove(int ulam)
+	{
+		Vector3 got_now;
+		int i;
+		for(i=0;i<36;i++) {
+			if(mems[i].ulam==ulam)
+			{
+				if(mems[i].memories[0]=='1') {
+					return mems[i].Move;
+				}
+				else {
+					string str = mems[i].memories;
+					mems[i].memories="1"+str[1]+str[2]+str[3];
+					got_now = GetBiomeMoveR(ulam);
+					mems[i].Move = got_now;
+					return got_now;
+				}
+			}
 		}
-		
-		int ps_rand = pseudoRandom10e4(ulam+seed) % (((int)max-(int)min)+1);
-		float ret = min + ps_rand;
-		return ret;
-    }
-    public Vector3 GetBiomeMove(int ulam)
+
+		got_now = GetBiomeMoveR(ulam);
+		mems[currentBOU].ulam = ulam;
+		mems[currentBOU].memories = "1000";
+		mems[currentBOU].Move = got_now;
+
+		currentBOU++;
+		if(currentBOU==36) currentBOU=0;
+
+		return got_now;
+	}
+	public float GetBiomeSize(int ulam)
+	{
+		float got_now;
+		int i;
+		for(i=0;i<36;i++) {
+			if(mems[i].ulam==ulam)
+			{
+				if(mems[i].memories[1]=='1') {
+					return mems[i].Size;
+				}
+				else {
+					string str = mems[i].memories;
+					mems[i].memories=str[0]+"1"+str[2]+str[3];
+					got_now = GetBiomeSizeR(ulam);
+					mems[i].Size = got_now;
+					return got_now;
+				}
+			}
+		}
+
+		got_now = GetBiomeSizeR(ulam);
+		mems[currentBOU].ulam = ulam;
+		mems[currentBOU].memories = "0100";
+		mems[currentBOU].Size = got_now;
+
+		currentBOU++;
+		if(currentBOU==36) currentBOU=0;
+
+		return got_now;
+	}
+	public string GetBiomeTag(int ulam)
+	{
+		string got_now;
+		int i;
+		for(i=0;i<36;i++) {
+			if(mems[i].ulam==ulam)
+			{
+				if(mems[i].memories[2]=='1') {
+					return mems[i].Tag;
+				}
+				else {
+					string str = mems[i].memories;
+					mems[i].memories=str[0]+str[1]+"1"+str[3];
+					got_now = GetBiomeTagR(ulam);
+					mems[i].Tag = got_now;
+					return got_now;
+				}
+			}
+		}
+
+		got_now = GetBiomeTagR(ulam);
+		mems[currentBOU].ulam = ulam;
+		mems[currentBOU].memories = "0010";
+		mems[currentBOU].Tag = got_now;
+
+		currentBOU++;
+		if(currentBOU==36) currentBOU=0;
+
+		return got_now;
+	}
+	public string GetBiomeString(int ulam)
+	{
+		string got_now;
+		int i;
+		for(i=0;i<36;i++) {
+			if(mems[i].ulam==ulam)
+			{
+				if(mems[i].memories[3]=='1') {
+					return mems[i].String;
+				}
+				else {
+					string str = mems[i].memories;
+					mems[i].memories=str[0]+str[1]+str[2]+"1";
+					got_now = GetBiomeStringR(ulam);
+					mems[i].String = got_now;
+					return got_now;
+				}
+			}
+		}
+
+		got_now = GetBiomeStringR(ulam);
+		mems[currentBOU].ulam = ulam;
+		mems[currentBOU].memories = "0001";
+		mems[currentBOU].String = got_now;
+
+		currentBOU++;
+		if(currentBOU==36) currentBOU=0;
+
+		return got_now;
+	}
+	public Vector3 GetBiomeMoveR(int ulam)
     {
 		string bstr=GetBiomeString(ulam);
         float size=GetBiomeSize(ulam);
@@ -306,31 +472,38 @@ public class SC_fun : MonoBehaviour
 		
         return new Vector3(dX,dY,0f);
     }
-	public int pseudoRandom100(int prSeed)
+	public float GetBiomeSizeR(int ulam)
+    {
+        string typ=GetBiomeString(ulam);
+		string tags=GetBiomeTag(ulam);
+		
+		if(TagContains(tags,"full")) return 900f;
+		
+		int[] ulXY = UlamToXY(ulam);
+        if(typ=="b0") return -1f;
+		if(TagContains(tags,"structural") && !(ulXY[0]%2==0 && ulXY[1]%2==0)) return -1f;
+		
+		int i,j;
+		float min, max;
+		
+		min = bMI[int.Parse(typ.Split('b')[1])];
+		max = bMA[int.Parse(typ.Split('b')[1])];
+		
+		if(min>max)
+		{
+			float pom=min;
+			min=max; max=pom;
+		}
+		
+		int ps_rand = pseudoRandom10e4(ulam+seed) % (((int)max-(int)min)+1);
+		float ret = min + ps_rand;
+		return ret;
+    }
+	public string GetBiomeTagR(int ulam)
 	{
-		prSeed = prSeed % 15000;
-		string psInt = (SC_long_strings.BiomeNewBase[2*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[2*prSeed+1]+"");
-		return int.Parse(psInt);
+		return SC_data.BiomeTags[int.Parse(GetBiomeString(ulam).Split('b')[1])];
 	}
-	public int pseudoRandom1000(int prSeed)
-	{
-		prSeed = prSeed % 10000;
-		string psInt = (SC_long_strings.BiomeNewBase[3*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[3*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[3*prSeed+2]+"");
-		return int.Parse(psInt);
-	}
-	public int pseudoRandom10e4(int prSeed)
-	{
-		prSeed = prSeed % 7500;
-		string psInt = (SC_long_strings.BiomeNewBase[4*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+2]+"") + (SC_long_strings.BiomeNewBase[4*prSeed+3]+"");
-		return int.Parse(psInt);
-	}
-	public int pseudoRandom10e5(int prSeed)
-	{
-		prSeed = prSeed % 6000;
-		string psInt = (SC_long_strings.BiomeNewBase[5*prSeed+0]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+1]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+2]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+3]+"") + (SC_long_strings.BiomeNewBase[5*prSeed+4]+"");
-		return int.Parse(psInt);
-	}
-    public string GetBiomeString(int ulam)
+    public string GetBiomeStringR(int ulam)
     {
 		int i;
 		if(ulam==1)
@@ -362,10 +535,6 @@ public class SC_fun : MonoBehaviour
 		
 		return "b0";
     }
-	public string GetBiomeTag(int ulam)
-	{
-		return SC_data.BiomeTags[int.Parse(GetBiomeString(ulam).Split('b')[1])];
-	}
 	public bool TagContains(string tags, string tag)
 	{
 		return (Array.IndexOf(tags.Replace('[','_').Replace(']','_').Replace('_',',').Split(','),tag)>-1);
@@ -451,12 +620,13 @@ public class SC_fun : MonoBehaviour
 	{
 		float[] retu = new float[2];
 		
+		//Ulam segment
 		int[] astXY = UlamToXY(ID);
 		Vector3 astPos = new Vector3(astXY[0]*10f,astXY[1]*10f,0f);
-		
 		Vector3 BS = biome_sector_size * new Vector3(Mathf.Round(astPos.x/biome_sector_size),Mathf.Round(astPos.y/biome_sector_size),0f);
-		
 		int ulam = TrueBiomeUlam(BS,astPos);
+
+		//Distance segment
 		int[] tupXY = UlamToXY(ulam);
 		
 		BS = biome_sector_size * new Vector3(tupXY[0],tupXY[1],0f);
