@@ -62,7 +62,10 @@ public class SC_driller : MonoBehaviour
     {
         string[] uAst = SC_data.GetAsteroid(SC_fobs.X,SC_fobs.Y).Split(';');
         int c=int.Parse(uAst[0]), a=int.Parse(uAst[1]);
-        int ret = SC_asteroid.SetLoot(int.Parse(SC_data.World[a,0,c]),true);
+        int get_type = int.Parse(SC_data.World[a,0,c]);
+        if(get_type<0) get_type = 0;
+        else get_type = get_type % 16;
+        int ret = SC_asteroid.SetLoot(get_type,true);
         return ret;
     }
     void FixedUpdate()

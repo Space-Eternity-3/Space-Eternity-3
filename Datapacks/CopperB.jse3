@@ -7,7 +7,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 1.14'; <Don't change>
-name: 'DEFAULT'; <Rename it>
+name: 'CopperB'; <Rename it>
 craftings
 {
 	<Category>1
@@ -106,6 +106,8 @@ craftings
 drill_loot
 {
 	stone: stone(100%);
+	stone_geyzer: stone(100%);
+	magnetic_geyzer: magnetic_stone(100%);
 	copper: copper(100%);
 	gold: gold(30%);
 	grass: stone(100%);
@@ -181,64 +183,27 @@ generator_settings
 	
 	<---BIOMES--->
 	
-	<Hell biome> 1
+	<CopperB biome> 1
 	{
-		chance: 8%;
+		chance: 50%;
 		settings: [];
 	
-		<Size>4: coal(100%);
-		<Size>5: coal(100%);
-		<Size>6: coal(97%) + diamond(3%);
-		<Size>7: coal(65%) + red(35%);
-		<Size>8: coal(65%) + red(35%);
-		<Size>9: coal(45%) + red(55%);
-		<Size>10: coal(45%) + red(55%);
-	}
-	<Geyzer biome> 2
-	{
-		chance: 8%;
-		settings: [];
-	
-		all_sizes: stoneA(100%);
-		<Size>5: stoneA(70%) + magneticA(30%);
-		<Size>6: stoneA(70%) + magneticA(30%);
-		<Size>7: stoneA(70%) + magneticA(30%);
-	}
-	<Alien biome> 3
-	{
-		chance: 8%;
-		settings: [];
-	
-		all_sizes: grass(60%) + magnetic(40%);
-	}
-	
-	<---STRUCTURES--->
-	
-	<Arena structure> 4
-	{
-		chance: 5%;
-		settings: [
-			structural, arena,
-			ring.inner.change -> 0, ring.inner.change -> 50,
-			radius = 80,
-			density = 100%,
-		];
-		
-		all_sizes: metalic(100%);
+		all_sizes: copperB(100%);
 	}
 	<max 31 biomes + default>
 }
 objects_generate
 {
 	stone: stone(35%);
-	stoneA: stone(30%) + geyzer(20%);
+	stone_geyzer: stone(30%) + geyzer(20%);
+	magnetic_geyzer: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
 	copper: copper(35%);
+	copperB: treasure(35%);
 	gold: gold(25%);
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%) + pumpkin(0,3%);
 	amethyst: small_amethyst(20%) + medium_amethyst(20%) + large_amethyst(20%);
 	coal: coal(45%);
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
-	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
 	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	metalic: stone(35%) + metal_piece(25%);
@@ -249,6 +214,8 @@ game_translate <low-level settings>
 	Asteroids
 	{
 		0: stone;
+		1: stone_geyzer;
+		2: magnetic_geyzer;
 		3: copper;
 		4: gold;
 		5: grass;

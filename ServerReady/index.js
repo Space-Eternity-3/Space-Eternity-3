@@ -137,11 +137,11 @@ var craftings = "";
 var craftMaxPage = "";
 var biomeChances = "";
 var drillLoot = new Array(16);
-var fobGenerate = new Array(16);
+var fobGenerate = new Array(64);
 var biomeTags = new Array(32);
 var customStructures = new Array(32);
 var typeSet = new Array(224);
-var gameplay = new Array(32);
+var gameplay = new Array(64);
 var modifiedDrops = new Array(128);
 var translateFob = [];
 var translateAsteroid = [];
@@ -235,7 +235,8 @@ function writeF(nate, text) {
     pathCurrent += foldT[i] + "/";
     if (!existsF(pathCurrent)) fs.mkdirSync(pathCurrent);
   }
-  fs.writeFileSync(nate, String(text));
+  if(existsF(nate)) fs.writeFileSync(nate, String(text), {flag:"rs+"});
+  else fs.writeFileSync(nate, String(text));
 }
 function removeF(nate) {
   fs.unlinkSync(nate);
@@ -1404,7 +1405,7 @@ function serverDrill(ulam, place) {
   }
 }
 function drillGet(det) {
-  var typp = chunk_data[det[0]][det[1]][0];
+  var typp = parseInt(chunk_data[det[0]][det[1]][0]+"")%16;
   var ltdt = drillLoot[typp].split(";");
   var lngt = ltdt.length;
 
@@ -1428,7 +1429,7 @@ function growActive(ulam) {
     block = blockTab[i];
     if (
       ["25"].includes(block) ||
-      (["5", "6"].includes(block) && chunk_data[det[0]][det[1]][0] == 6)
+      (["5", "6"].includes(block) && parseInt(chunk_data[det[0]][det[1]][0]+"")%16 == 6)
     ) {
       if (!growT.includes(ulam + "g" + i)) {
         if (chunk_data[det[0]][det[1]][21 + 2 * i] == "") {
@@ -2556,6 +2557,9 @@ function translate(str, mod) {
   if (mod == 1) {
     for (i = 0; i < 16; i++) {
       if (translateAsteroid[i] == str) return i + "";
+      if (translateAsteroid[i]+"A" == str) return (16+i) + "";
+      if (translateAsteroid[i]+"B" == str) return (32+i) + "";
+      if (translateAsteroid[i]+"C" == str) return (48+i) + "";
     }
   } else if (mod == 2) {
     for (i = 0; i < 128; i++) {
@@ -3142,6 +3146,8 @@ function checkDatapackGoodE() {
       !drillGoodItem(drillLoot[i])
     )
       nev++;
+  }
+  for (i = 0; i < 64; i++) {
     if (!intsAll(fobGenerate[i], 3) || !in1000(fobGenerate[i], false)) nev++;
   }
   for (i = 0; i < 224; i++) {
@@ -3170,7 +3176,7 @@ function datapackPaste(splitTab) {
     craftMaxPage = parseIntE(raws[1]) + "";
 
     for (i = 0; i < 16; i++) drillLoot[i] = raws[2].split("'")[i];
-    for (i = 0; i < 16; i++) fobGenerate[i] = raws[3].split("'")[i];
+    for (i = 0; i < 64; i++) fobGenerate[i] = raws[3].split("'")[i];
     for (i = 0; i < 224; i++) typeSet[i] = raws[4].split("'")[i];
     for (i = 0; i < gpl_number; i++) {
       if (false) gameplay[i] = parseIntE(raws[5].split("'")[i]) + "";

@@ -268,6 +268,7 @@ public class SC_structure : MonoBehaviour
 
 						i++;
 						int prtype = int.Parse(arg[i]);
+						if(prtype<0||prtype>=64) throw(new Exception());
 
 						i++;
 						string prfobs = uzup20(arg[i]);

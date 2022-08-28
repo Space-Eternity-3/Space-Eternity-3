@@ -106,8 +106,6 @@ craftings
 drill_loot
 {
 	stone: stone(100%);
-	stone_geyzer: stone(100%);
-	magnetic_geyzer: magnetic_stone(100%);
 	copper: copper(100%);
 	gold: gold(30%);
 	grass: stone(100%);
@@ -201,10 +199,10 @@ generator_settings
 		chance: 8%;
 		settings: [];
 	
-		all_sizes: stone_geyzer(100%);
-		<Size>5: stone_geyzer(70%) + magnetic_geyzer(30%);
-		<Size>6: stone_geyzer(70%) + magnetic_geyzer(30%);
-		<Size>7: stone_geyzer(70%) + magnetic_geyzer(30%);
+		all_sizes: stoneA(100%);
+		<Size>5: stoneA(70%) + magneticA(30%);
+		<Size>6: stoneA(70%) + magneticA(30%);
+		<Size>7: stoneA(70%) + magneticA(30%);
 	}
 	<Alien biome> 3
 	{
@@ -233,14 +231,14 @@ generator_settings
 objects_generate
 {
 	stone: stone(35%);
-	stone_geyzer: stone(30%) + geyzer(20%);
-	magnetic_geyzer: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
+	stoneA: stone(30%) + geyzer(20%);
 	copper: copper(35%);
 	gold: gold(25%);
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%) + pumpkin(0,3%);
 	amethyst: small_amethyst(20%) + medium_amethyst(20%) + large_amethyst(20%);
 	coal: coal(45%);
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
+	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
 	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	metalic: stone(35%) + metal_piece(25%);
@@ -251,8 +249,6 @@ game_translate <low-level settings>
 	Asteroids
 	{
 		0: stone;
-		1: stone_geyzer;
-		2: magnetic_geyzer;
 		3: copper;
 		4: gold;
 		5: grass;

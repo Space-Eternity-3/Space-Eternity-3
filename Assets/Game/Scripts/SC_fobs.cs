@@ -347,7 +347,7 @@ public class SC_fobs : MonoBehaviour
                 string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
                 int c=int.Parse(uAst[0]), a=int.Parse(uAst[1]);
 
-                if(!((SC_data.World[a,0,c]=="6" && (ObjID==5||ObjID==6)) || ObjID==25))
+                if(!((int.Parse(SC_data.World[a,0,c])%16==6 && (ObjID==5||ObjID==6)) || ObjID==25))
                 {
                     GrowTimeLeft=99999999;
                 }

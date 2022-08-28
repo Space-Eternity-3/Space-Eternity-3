@@ -35,7 +35,7 @@ public class SC_asteroid : MonoBehaviour {
 	public SC_snd_start SC_snd_start;
 	public SC_slots SC_slots;
 
-	int type=0;
+	int type=0, supertype=0;
 	bool mother = true;
 	public int ID=1,X=0,Y=0;
 	int[] objectID = new int[32];
@@ -43,7 +43,6 @@ public class SC_asteroid : MonoBehaviour {
 	string[] objectGrow = new string[32];
 
 	bool Mining=false;
-	int AD_loottableID=0;
 	int counter=-1;
 	int counter_to_destroy = 200;
 	int suze;
@@ -77,11 +76,6 @@ public class SC_asteroid : MonoBehaviour {
 	string worldDIR="";
 	int worldID=1;
 
-	void settings(int typpe)
-	{
-		if(typpe<=1) AD_loottableID=1;
-		else AD_loottableID=typpe;
-	}
 	int longg(float S)
 	{
 		int size=(int)S;
@@ -95,7 +89,7 @@ public class SC_asteroid : MonoBehaviour {
 		int[] max = new int[2048];
 		string[] prefobs = fobCode.Split(';');
 		
-		string[] dGet = SC_data.FobGenerate[type].Split(';');
+		string[] dGet = SC_data.FobGenerate[supertype].Split(';');
 		lngt=dGet.Length/3;
 
 		for(i=0;i<lngt&&i<2048;i++)
@@ -154,12 +148,23 @@ public class SC_asteroid : MonoBehaviour {
 				if(rand>=min[i]&&rand<=max[i])
 				{
 					type=idn[i];
-					if(type<0||type>=16) type=0;
+					if(type<0) {
+						supertype=0;
+						type=0;
+					}
+					else {
+						supertype = type;
+						type = type % 16;
+					}
 					break;
 				}
 			}
 		}
-		else type = int.Parse(generation_code.Split('t')[1]);
+		else
+		{
+			supertype = int.Parse(generation_code.Split('t')[1]);
+			type = supertype % 16;
+		}
 	}
 	void Move(float size, string Mg)
 	{
@@ -233,7 +238,7 @@ public class SC_asteroid : MonoBehaviour {
 					//Not exists
 					TypeSet(size);
 					generate_free();
-					SC_data.World[a,0,c]=type+"";
+					SC_data.World[a,0,c]=supertype+"";
 					for(i=0;i<longg(size);i++){
 						SC_data.World[a,i+1,c]=objectID[i]+"";
 					}
@@ -241,7 +246,9 @@ public class SC_asteroid : MonoBehaviour {
 				else
 				{
 					//Exists
-					type=int.Parse(SC_data.World[a,0,c]);
+					supertype = int.Parse(SC_data.World[a,0,c]);
+					if(supertype<0) supertype=0;
+					type = supertype % 16;
 					for(i=0;i<longg(size);i++){
 						try{
 						objectID[i]=int.Parse(SC_data.World[a,i+1,c]);
@@ -266,7 +273,8 @@ public class SC_asteroid : MonoBehaviour {
 			int i;
 			string[] astDats=arg[2].Split(';');
 			type=int.Parse(astDats[0]);
-			if(type<0||type>=16) type=0;
+			if(type<0) type=0;
+			else type = type % 16;
 			for(i=0;i<longg(saze);i++)
 			{
 				try{
@@ -301,7 +309,6 @@ public class SC_asteroid : MonoBehaviour {
 			int S=(int)size;
 			float alpha=180f/S;
 			int times=2*S;
-			settings(type);
 			try{
 				if(type>1) asteroidR.material=texture[type];
 				else

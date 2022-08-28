@@ -78,11 +78,11 @@ public class SC_data : MonoBehaviour
     public string craftMaxPage;
 	public string biomeChances;
     public string[] DrillLoot = new string[16];
-    public string[] FobGenerate = new string[16];
+    public string[] FobGenerate = new string[64];
 	public string[] BiomeTags = new string[32];
     public string[] CustomStructures = new string[32];
     public string[] TypeSet = new string[224];
-    public string[] Gameplay = new string[32];
+    public string[] Gameplay = new string[64];
     public string[] ModifiedDrops = new string[128];
     //---------------------------------------------
     public string[] variable = new string[16384];
@@ -735,6 +735,9 @@ public class SC_data : MonoBehaviour
             for(i=0;i<16;i++)
             {
                 if(translateAsteroid[i]==str) return i+"";
+                if(translateAsteroid[i]+"A"==str) return (16+i)+"";
+                if(translateAsteroid[i]+"B"==str) return (32+i)+"";
+                if(translateAsteroid[i]+"C"==str) return (48+i)+"";
             }
         }
         else if(mode==2)
@@ -960,10 +963,10 @@ public class SC_data : MonoBehaviour
         craftMaxPage="";
 		biomeChances="";
         for(y=0;y<16;y++) DrillLoot[y]="";
-        for(y=0;y<16;y++) FobGenerate[y]="";
+        for(y=0;y<64;y++) FobGenerate[y]="";
 		for(y=0;y<32;y++) BiomeTags[y]="";
         for(y=0;y<224;y++) TypeSet[y]="";
-        for(y=0;y<32;y++) Gameplay[y]="";
+        for(y=0;y<64;y++) Gameplay[y]="";
         for(y=0;y<128;y++) ModifiedDrops[y]="";
         for(y=0;y<16;y++) translateAsteroid[y]="";
         for(y=0;y<128;y++) translateFob[y]="";
@@ -1337,6 +1340,9 @@ public class SC_data : MonoBehaviour
         for(i=0;i<16;i++)
         {
             if(!IntsAll(DrillLoot[i],3) || !In1000(DrillLoot[i],false) || !DrillGoodItem(DrillLoot[i])) throw new Exception("error");
+        }
+        for(i=0;i<64;i++)
+        {
             if(!IntsAll(FobGenerate[i],3) || !In1000(FobGenerate[i],false)) throw new Exception("error");
         }
         for(i=0;i<224;i++)
@@ -1361,7 +1367,7 @@ public class SC_data : MonoBehaviour
             craftMaxPage = int.Parse(raws[1])+"";
 
             for(i=0;i<16;i++) DrillLoot[i] = raws[2].Split('\'')[i];
-            for(i=0;i<16;i++) FobGenerate[i] = raws[3].Split('\'')[i];
+            for(i=0;i<64;i++) FobGenerate[i] = raws[3].Split('\'')[i];
             for(i=0;i<224;i++) TypeSet[i] = raws[4].Split('\'')[i];
             for(i=0;i<gpl_number;i++)
             {
