@@ -2032,19 +2032,33 @@ wss.on("connection", function connection(ws) {
         }
       }
     }
-    if(arg[0] == "/ScrSabotage")
+    if(arg[0] == "/GiveUpTry")
     {
-      //ScrSabotage 1[PlayerID] 2[bID]
+      //GiveUpTry 1[PlayerID] 2[bID]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
       var bID = arg[2];
+      var blivID = arg[msl - 1];
+      var in_arena_range = 37;
 
-      var lngts = scrs.length;
+      var j,lngts = scrs.length;
       for(i=0;i<lngts;i++)
       {
         if(scrs[i].bID==bID) {
-          if(scrs[i].additionalData[2-2]=="2")
-          scrs[i].additionalData[4-2] = "1";
+          if(scrs[i].additionalData[2-2]!="2") break;
+
+          var players_inside=1;
+          for(j=0;j<max_players;j++)
+            if(plr.players[j]!="0" && plr.players[j]!="1" && arg[1]!=j)
+            {
+              var plas = plr.players[j].split(";");
+              var dx = parseFloat(plas[0]) - scrs[i].posCX;
+              var dy = parseFloat(plas[1]) - scrs[i].posCY;
+              if(dx**2 + dy**2 <= (in_arena_range)**2) players_inside++;
+            }
+
+          if(players_inside==1) scrs[i].additionalData[4-2] = "1";
+          else sendTo(ws,"/RetGiveUpTeleport "+arg[1]+" "+bID+" 1024 X "+blivID);
           break;
         }
       }

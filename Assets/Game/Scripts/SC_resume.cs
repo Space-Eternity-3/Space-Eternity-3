@@ -18,9 +18,8 @@ public class SC_resume : MonoBehaviour
 	}
 	public void GiveUp()
 	{
-		//NOT UPDATE, CAN BE HERE
 		SC_control.esc_press(false);
-		SC_boss[] boses = FindObjectsOfType<SC_boss>();
+		List<SC_boss> boses = SC_control.SC_lists.SC_boss;
 		foreach(SC_boss bos in boses)
 		{
 			if(bos.bosnumed)
@@ -39,7 +38,7 @@ public class SC_resume : MonoBehaviour
 	}
 	void Update()
 	{
-		if(SC_control.bos_num > 0 && ((int)SC_control.Communtron4.position.y!=100 || !SC_control.impulse_enabled)) {
+		if(SC_control.bos_num > 0) {
 			normal_menu.localPosition = new Vector3(10000f,0f,0f);
 			giveup_menu.localPosition = new Vector3(0f,0f,0f);
 		}

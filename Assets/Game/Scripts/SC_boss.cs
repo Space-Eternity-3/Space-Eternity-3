@@ -107,6 +107,11 @@ public class SC_boss : MonoBehaviour
 
             StateUpdate();
         }
+        if(arg[0]=="/RetGiveUpTeleport" && arg[1]==SC_control.connectionID+"" && arg[2]==bID+"")
+        {
+            SC_control.transform.position = NextToRandomGate();
+            SC_control.RemoveImpulse();
+        }
     }
     public void StartFromStructure()
     {
@@ -234,7 +239,7 @@ public class SC_boss : MonoBehaviour
         float fcr = SC_control.Pitagoras(
             (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
         );
-        bool in_arena_range = (fcr<=35f);
+        bool in_arena_range = (fcr<=37f);
         bool in_arena_vision = (fcr<=80f);
         string iar="F"; if(in_arena_range) iar="T";
 
@@ -387,16 +392,7 @@ public class SC_boss : MonoBehaviour
     public void GiveUpMTP(bool killed)
     {
         if(dataID[2]!="2") return;
-
-        if(fightingPlayers()<=1) //Only you on arena
-        {
-            SC_control.SendMTP("/ScrSabotage "+SC_control.connectionID+" "+bID);
-        }
-        else if(!killed) //More players on arena
-        {
-            SC_control.transform.position = NextToRandomGate();
-            SC_control.playerR.velocity = new Vector3(0f,0f,0f);
-        }
+        SC_control.SendMTP("/GiveUpTry "+SC_control.connectionID+" "+bID);
     }
     Vector3 NextToRandomGate()
     {
@@ -407,30 +403,6 @@ public class SC_boss : MonoBehaviour
         if(rand==2) posit += new Vector3(0f,41.5f,0f);
         if(rand==3) posit += new Vector3(0f,-41.5f,0f);
         return posit;
-    }
-    int fightingPlayers()
-    {
-        int i,amount = 0;
-        float fcr = SC_control.Pitagoras(
-            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
-        ); bool in_arena_range = (fcr<=35f);
-        if(in_arena_range) amount++;
-
-        if(multiplayer)
-        for(i=1;i<SC_control.max_players;i++)
-        {
-            if(SC_control.NUL[i])
-            {
-                Vector3 sps = SC_control.PL[i].sourcedPosition;
-                
-                fcr = SC_control.Pitagoras(
-                    (solidPosition-new Vector3(0f,0f,solidPosition.z))-(sps-new Vector3(0f,0f,sps.z))
-                ); in_arena_range = (fcr<=35f);
-
-                if(in_arena_range) amount++;
-            }
-        }
-        return amount;
     }
     string FloatToScrd(float src) {
         return ((int)(src*100000))+"";

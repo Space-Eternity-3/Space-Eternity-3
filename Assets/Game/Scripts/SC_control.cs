@@ -498,17 +498,6 @@ public class SC_control : MonoBehaviour {
 		SC_sounds.PlaySound(transform.position,2,2);
 		Instantiate(explosion,transform.position,transform.rotation);
 		living=false;
-		if((int)Communtron4.position.y==100)
-		{
-			livID=(int.Parse(livID)+1)+"";
-		}
-		Debug.Log("Player died");
-		Screen1.targetDisplay=1;
-		Screen2.targetDisplay=1;
-		Screen3.targetDisplay=0;
-				
-		SC_invisibler.invisible = false;
-		RemoveImpulse();
 
 		List<SC_boss> boses = SC_lists.SC_boss;
 		foreach(SC_boss bos in boses)
@@ -521,6 +510,18 @@ public class SC_control : MonoBehaviour {
 					bos.GiveUpMTP(true);
 			}
 		}
+
+		if((int)Communtron4.position.y==100)
+		{
+			livID=(int.Parse(livID)+1)+"";
+		}
+		Debug.Log("Player died");
+		Screen1.targetDisplay=1;
+		Screen2.targetDisplay=1;
+		Screen3.targetDisplay=0;
+				
+		SC_invisibler.invisible = false;
+		RemoveImpulse();
 	}
 	void ImmortalMe()
 	{
@@ -1218,6 +1219,7 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RetFobsTurn"||
 		arg[0]=="/RetAsteroidData"||
 		arg[0]=="/RSD"||
+		arg[0]=="/RetGiveUpTeleport"||
 		arg[0]=="/RetFobsPing"||
 		arg[0]=="/RetGeyzerTurn"||
 		arg[0]=="/RetInventory"||
@@ -1498,7 +1500,8 @@ public class SC_control : MonoBehaviour {
 				aul.onMSG(cmdThis);
 			}
 		}
-		if(arg[0]=="/RSD")
+		if(arg[0]=="/RSD"||
+		arg[0]=="/RetGiveUpTeleport")
 		{
 			if(arg[3]=="1024")
 			{
