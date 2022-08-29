@@ -186,7 +186,8 @@ public class SC_fobs : MonoBehaviour
         if(b>=25&&b<=38) return true; //39 -> red bullet
         if(b>=40&&b<=47) return true; //48 -> unstable bullet
 		if(b==48&&Input.GetKey(KeyCode.LeftControl)) return true;
-		if(b>=49&&b<=53) return true;
+		if(b>=49&&b<=51) return true; //52 -> bedrock storage
+        if(b>=53&&b<=54) return true; //55 -> healing potion //56 -> magic element
         return false;
     }
     void Replace(int id, bool MTPchange)
@@ -576,13 +577,14 @@ public class SC_fobs : MonoBehaviour
             if(Input.GetMouseButtonDown(0)&&
             Communtron2.position.x==0f&&Communtron3.position.y==0f)
             {
-                if(SC_slots.InvHaveB(-1,1,true,true,true,1))
+                bool bpck = (SC_slots.SC_bp_upg.state == 1 && SC_slots.SC_inv_mover.active);
+                if(SC_slots.InvHaveB(-1,1,true,bpck,true,1))
                 {
                     string localDrop=getLoot(lootSE3);
                     int ldI=int.Parse(localDrop.Split(';')[0]);
                     int ldC=int.Parse(localDrop.Split(';')[1]);
                     
-                    slot = SC_slots.InvChange(ldI,ldC,true,true,false);
+                    slot = SC_slots.InvChange(ldI,ldC,true,bpck,false);
 
                     if(multiplayer)
                     {

@@ -62,6 +62,7 @@ craftings
 		title_image: bush;
 		1: bush(3) -> big_bush;
 		2: big_bush -> bush(3);
+		3: magnetic_stone(3) + magic_element -> healing_potion;
 	}
 	<Category>8
 	{
@@ -108,7 +109,7 @@ drill_loot
 	stone: stone(100%);
 	copper: copper(100%);
 	gold: gold(30%);
-	grass: stone(100%);
+	grass: stone(95%) + magic_element(5%);
 	amethyst: small_amethyst(20%);
 	coal: coal(100%);
 	magnetic: magnetic_stone(100%);
@@ -226,23 +227,50 @@ generator_settings
 		
 		all_sizes: metalic(100%);
 	}
+	<Catastrophic arena structure> 5
+	{
+		chance: 0,5%;
+		settings: [
+			structural, catastrophic.arena,
+			ring.inner.change -> 0, ring.inner.change -> 50,
+			radius = 80,
+			density = 100%,
+		];
+		
+		all_sizes: metalic(100%);
+	}
+	<Cementery structure> 6
+	{
+		chance: 6%;
+		settings: [
+			structural, cementery,
+			ring.inner.change -> 0, ring.inner.change -> 20,
+			radius = 50,
+			density = 100%,
+		];
+		
+		all_sizes: stoneB(100%);
+	}
 	<max 31 biomes + default>
 }
 objects_generate
 {
 	stone: stone(35%);
 	stoneA: stone(30%) + geyzer(20%);
+	stoneB: stone(30%) + bone(20%) + stone_tomb(15%) + treasure(6%) + pumpkin(1%);
 	copper: copper(35%);
 	gold: gold(25%);
-	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%) + pumpkin(0,3%);
+	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%);
 	amethyst: small_amethyst(20%) + medium_amethyst(20%) + large_amethyst(20%);
 	coal: coal(45%);
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
 	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
+	redA: unstable_matter(20%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	metalic: stone(35%) + metal_piece(25%);
 	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
+	bedrockA: bedrock_stone(30%) + packed_bedrock(15%) + unstable_matter(20%);
 }
 game_translate <low-level settings>
 {
@@ -313,8 +341,11 @@ game_translate <low-level settings>
 		49: packed_bedrock;				<only object>
 		50: bedrock_stone;				<only object>
 		51: metal_piece;
-		52: bedrock_storage;
-		53: bedrock_alien;
+		52: bedrock_storage;			<only arena object>
+		53: bedrock_alien;				<only object>
+		54: bone;
+		55: healing_potion;				<only item>
+		56: magic_element;				<only item>
 	}
 }
 custom_structures <advanced settings>

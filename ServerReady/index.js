@@ -1405,7 +1405,9 @@ function serverDrill(ulam, place) {
   }
 }
 function drillGet(det) {
-  var typp = parseInt(chunk_data[det[0]][det[1]][0]+"")%16;
+  var typp = parseInt(chunk_data[det[0]][det[1]][0]+"");
+  if(typp<0) typp=0;
+  else typp = typp % 16;
   var ltdt = drillLoot[typp].split(";");
   var lngt = ltdt.length;
 
@@ -1425,11 +1427,15 @@ function growActive(ulam) {
   var det = asteroidIndex(ulam);
   for (i = 0; i < 20; i++) blockTab[i] = chunk_data[det[0]][det[1]][i + 1];
 
+  var typpu = parseInt(chunk_data[det[0]][det[1]][0]+"");
+  if(typpu<0) typpu = 0;
+  else typpu = typpu % 16;
+
   for (i = 0; i < 20; i++) {
     block = blockTab[i];
     if (
       ["25"].includes(block) ||
-      (["5", "6"].includes(block) && parseInt(chunk_data[det[0]][det[1]][0]+"")%16 == 6)
+      (["5", "6"].includes(block) && typpu == 6)
     ) {
       if (!growT.includes(ulam + "g" + i)) {
         if (chunk_data[det[0]][det[1]][21 + 2 * i] == "") {

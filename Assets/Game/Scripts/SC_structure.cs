@@ -20,6 +20,7 @@ public class SC_structure : MonoBehaviour
     public int X=0,Y=0,ID=1,overrand=0;
 	public string actual_state = "default";
 	public int scaling_blocker = 0;
+	public TextAsset SeonSource;
 	[TextArea(15,20)]
 	public string SeonField = "";
 	public Transform[] st_structs = new Transform[1024];
@@ -67,6 +68,7 @@ public class SC_structure : MonoBehaviour
 		transform.position += SC_fun.GetBiomeMove(ID);
 
 		//SEON
+		if(SeonSource!=null) SeonField = SeonSource.text;
 		overrand = SC_fun.pseudoRandom10e5(ID+SC_fun.seed);
 		string final_seon = TxtToSeonArray(SeonField);
 		SeonGenerate(final_seon);
@@ -316,7 +318,7 @@ public class SC_structure : MonoBehaviour
 
 						ras.localScale = new Vector3(prsize,prsize,0.75f*prsize);
 
-						if(prmaterial==0 || prmaterial==1) ras.GetChild(0).GetComponent<Renderer>().material = ras.GetComponent<SC_material>().Materials2[UnityEngine.Random.Range(0,3)];
+						if(prmaterial==0) ras.GetChild(0).GetComponent<Renderer>().material = ras.GetComponent<SC_material>().Materials2[UnityEngine.Random.Range(0,3)];
 						else ras.GetChild(0).GetComponent<Renderer>().material = ras.GetComponent<SC_material>().Materials[prmaterial];
 					}
 					else if(arg[i]=="piston")

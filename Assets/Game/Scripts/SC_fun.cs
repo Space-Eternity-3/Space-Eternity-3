@@ -709,6 +709,8 @@ public class SC_fun : MonoBehaviour
 			
 			if(TagContains(tags,"structural")) bP[i]=32;
 			if(TagContains(tags,"arena")) bC[i]=1;
+			if(TagContains(tags,"cementery")) bC[i]=2;
+			if(TagContains(tags,"catastrophic.arena")) bC[i]=3;
 		}
 		
 		bP[0] = 0;

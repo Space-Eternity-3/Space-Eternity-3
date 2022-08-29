@@ -1,0 +1,72 @@
+summon #50 respblock 41,5284
+
+summon #1 asteroid 8 28 x move 2 2 rotate 11,25
+summon #2 asteroid 8 28 x move -2 2 rotate 101,25
+summon #3 asteroid 8 28 x move -2 -2 rotate 191,25
+summon #4 asteroid 8 28 x move 2 -2 rotate 281,25
+summon #5 asteroid 8 28 x move 2 -2 rotate -11,25
+summon #6 asteroid 8 28 x move -2 -2 rotate -101,25
+summon #7 asteroid 8 28 x move -2 2 rotate -191,25
+summon #8 asteroid 8 28 x move 2 2 rotate -281,25
+from #1 to #4 move 35 -0,5
+from #5 to #8 move 35 0,5
+
+catch child $0 from #1 to #8 layer child -500
+catch child $8 from #1 to #8 layer child -500
+catch child $9 from #1 to #8 layer child -500
+catch child $15 from #1 to #8 layer child -500
+
+summon #9 asteroid 7 28 x move 2 2 rotate 33,75
+summon #10 asteroid 7 28 x move 2 2 rotate 56,25
+summon #11 asteroid 7 28 x move -2 2 rotate 123,75
+summon #12 asteroid 7 28 x move -2 2 rotate 146,25
+summon #13 asteroid 7 28 x move -2 -2 rotate 213,75
+summon #14 asteroid 7 28 x move -2 -2 rotate 236,25
+summon #15 asteroid 7 28 x move 2 -2 rotate 303,75
+summon #16 asteroid 7 28 x move 2 -2 rotate 326,25
+from #9 to #16 move 35 0
+
+catch child $0 from #9 to #16 layer child -500
+catch child $7 from #9 to #16 layer child -500
+catch child $8 from #9 to #16 layer child -500
+catch child $13 from #9 to #16 layer child -500
+
+summon #59 wall 12 move 2 2 rotate 22,5
+summon #60 wall 12 move 2 2 rotate 45
+summon #61 wall 12 move 2 2 rotate 67,5
+summon #62 wall 12 move -2 2 rotate 112,5
+summon #63 wall 12 move -2 2 rotate 135
+summon #64 wall 12 move -2 2 rotate 157,5
+summon #65 wall 12 move -2 -2 rotate 202,5
+summon #66 wall 12 move -2 -2 rotate 225
+summon #67 wall 12 move -2 -2 rotate 247,5
+summon #68 wall 12 move 2 -2 rotate 292,5
+summon #69 wall 12 move 2 -2 rotate 315
+summon #70 wall 12 move 2 -2 rotate 337,5
+from #59 to #70 move 34,25 0
+
+summon #17 asteroid 4 25 x
+summon #18 asteroid 4 25 x
+summon #19 asteroid 4 25 x
+summon #20 asteroid 4 25 x
+summon #21 asteroid 4 25 x
+summon #22 asteroid 4 25 x
+summon #23 asteroid 4 25 x
+summon #24 asteroid 4 25 x
+summon #25 asteroid 4 25 x
+summon #26 asteroid 4 25 x
+summon #27 asteroid 4 25 x
+summon #28 asteroid 4 25 x
+from #59 to #70 steal 4 from delta -42
+
+summon #51 piston move 36,4 6,4
+summon #52 piston move -36,4 6,4
+summon #53 piston move 36,4 -6,4 rotate 180
+summon #54 piston move -36,4 -6,4 rotate 180
+summon #55 piston rotate 90 move 36,4 6,4
+summon #56 piston rotate 90 move -36,4 6,4
+summon #57 piston rotate 90 move 36,4 -6,4 rotate 180
+summon #58 piston rotate 90 move -36,4 -6,4 rotate 180
+
+summon #29 asteroid 6 25 ,49,50,,,,,,,,50,49 asteroid hide
+summon #30 sphere 6 12 from #29 to #30 move 0 -2

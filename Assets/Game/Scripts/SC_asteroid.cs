@@ -310,7 +310,7 @@ public class SC_asteroid : MonoBehaviour {
 			float alpha=180f/S;
 			int times=2*S;
 			try{
-				if(type>1) asteroidR.material=texture[type];
+				if(type>0) asteroidR.material=texture[type];
 				else
 				{
 					int rand2=UnityEngine.Random.Range(0,textureStone.Length);
