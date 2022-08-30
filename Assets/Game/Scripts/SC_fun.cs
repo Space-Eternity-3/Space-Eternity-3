@@ -20,7 +20,7 @@ public class SC_fun : MonoBehaviour
     public Transform Communtron1;
     public Material[] M = new Material[128];
     public Texture[] Item = new Texture[128];
-    public Texture Item20u;
+    public Texture Item20u, Item55u;
 	
     public float volume;
     public int seed;

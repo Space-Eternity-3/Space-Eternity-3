@@ -13,7 +13,7 @@ var serverVersion = "Beta 1.14";
 var serverRedVersion = "Beta_1_14";
 var clientDatapacksVar = "";
 var seed;
-var gpl_number = 31;
+var gpl_number = 32;
 var max_players = 128;
 
 if(Number.isInteger(config.max_players))
@@ -235,8 +235,8 @@ function writeF(nate, text) {
     pathCurrent += foldT[i] + "/";
     if (!existsF(pathCurrent)) fs.mkdirSync(pathCurrent);
   }
-  if(existsF(nate)) fs.writeFileSync(nate, String(text), {flag:"rs+"});
-  else fs.writeFileSync(nate, String(text));
+  /*if(existsF(nate)) fs.writeFileSync(nate, String(text), {flag:"rs+"});*/
+  /*else*/ fs.writeFileSync(nate, String(text));
 }
 function removeF(nate) {
   fs.unlinkSync(nate);
@@ -784,6 +784,35 @@ setInterval(function () { // <interval #2>
         }
       }
 
+      //[Scrs: Multiplayer boss mechanics update]
+      lngt = scrs.length;
+      for(i=0;i<lngt;i++) {
+        var sta = scrs[i].additionalData[2-2];
+        scrs[i].additionalData[3-2] = (parseInt(scrs[i].additionalData[3-2])+1)+"";
+        if(sta=="2") scrs[i].additionalData[4-2] = (parseInt(scrs[i].additionalData[4-2])-1)+"";
+        if((sta=="1" || sta=="3" || sta=="4") && parseInt(scrs[i].additionalData[3-2])>=50)
+        {
+          if(sta=="1") scrs[i].additionalData[2-2] = "2";
+          else if(sta=="3" || sta=="4") scrs[i].additionalData[2-2] = "0";
+          resetScr(i);
+        }
+        else if(sta=="2" && parseInt(scrs[i].additionalData[4-2])<=0)
+        {
+          scrs[i].additionalData[2-2] = "3";
+          resetScr(i);
+        }
+        else if(sta=="2" && parseInt(scrs[i].additionalData[6-2])<=0)
+        {
+          scrs[i].additionalData[2-2] = "4";
+          resetScr(i);
+        }
+        /*if(sta=="2") boss_behaviour.BehaviourUpdate50fps(
+
+          REFERENCE DATA HERE
+
+        );*/
+      }
+
       //Connection time
       for(i=0;i<max_players;i++)
       {
@@ -858,7 +887,7 @@ setInterval(function () { // <interval #2>
         if (chunk_waiter[i] > 0) chunk_waiter[i]--;
       }
 
-      //[Scrs]
+      //[Scrs: Server counters actions]
       lngt = scrs.length;
       for(i=0;i<lngt;i++) {
         scrs[i].timeToDisappear-=5;
@@ -869,30 +898,9 @@ setInterval(function () { // <interval #2>
           lngt--; i--;
           continue;
         }
-
         if(scrs[i].timeToLose<=0 && scrs[i].additionalData[2-2]=="2")
         {
           scrs[i].additionalData[2-2] = "3";
-          resetScr(i);
-        }
-
-        var sta = scrs[i].additionalData[2-2];
-        scrs[i].additionalData[3-2] = (parseInt(scrs[i].additionalData[3-2])+1)+"";
-        if(sta=="2") scrs[i].additionalData[4-2] = (parseInt(scrs[i].additionalData[4-2])-1)+"";
-        if((sta=="1" || sta=="3" || sta=="4") && parseInt(scrs[i].additionalData[3-2])>=10)
-        {
-          if(sta=="1") scrs[i].additionalData[2-2] = "2";
-          else if(sta=="3" || sta=="4") scrs[i].additionalData[2-2] = "0";
-          resetScr(i);
-        }
-        else if(sta=="2" && parseInt(scrs[i].additionalData[4-2])<=0)
-        {
-          scrs[i].additionalData[2-2] = "3";
-          resetScr(i);
-        }
-        else if(sta=="2" && parseInt(scrs[i].additionalData[6-2])<=0)
-        {
-          scrs[i].additionalData[2-2] = "4";
           resetScr(i);
         }
       }
@@ -918,10 +926,10 @@ function setTerminalTitle(title)
 }
 function getTimeSize(n)
 {
-  if(n=="0") return "1800";
-  if(n=="1") return "2100";
-  if(n=="2") return "2400";
-  return "600";
+  if(n=="0") return "9000";
+  if(n=="1") return "10500";
+  if(n=="2") return "12000";
+  return "3000";
 }
 function getBossHealth(n,typ)
 {
@@ -936,6 +944,7 @@ function getBossHealth(n,typ)
 function resetScr(i)
 {
   var mem6 = scrs[i].additionalData[6-2];
+  var mem7 = scrs[i].additionalData[7-2];
   var mem8 = scrs[i].additionalData[8-2];
   var mem9 = scrs[i].additionalData[9-2];
   var mem10 = scrs[i].additionalData[10-2];
@@ -961,17 +970,20 @@ function resetScr(i)
   {
     scrs[i].additionalData[5-2] = getTimeSize(scrs[i].generalData[1]); //Max time
     scrs[i].additionalData[4-2] = scrs[i].additionalData[5-2]; //Time left
-    scrs[i].additionalData[7-2] = getBossHealth(scrs[i].generalData[1],scrs[i].type); //Max health
+    scrs[i].additionalData[7-2] = mem7; //Max health
     scrs[i].additionalData[6-2] = scrs[i].additionalData[7-2]; //Health left
   }
   else if(sta=="3")
   {
-    scrs[i].additionalData[7-2] = getBossHealth(scrs[i].generalData[1],scrs[i].type); //Max health
+    scrs[i].additionalData[7-2] = mem7; //Max health
     scrs[i].additionalData[6-2] = mem6; //Health left
     scrs[i].additionalData[8-2] = mem8; scrs[i].additionalData[9-2] = mem9; scrs[i].additionalData[10-2] = mem10; //Position & Rotation
   }
   else if(sta=="4")
   {
+    scrs[i].additionalData[7-2] = mem7; //Max health
+    scrs[i].additionalData[8-2] = mem8; scrs[i].additionalData[9-2] = mem9; scrs[i].additionalData[10-2] = mem10; //Position & Rotation
+
     //Add 1 to wave number
     scrs[i].generalData[1] = (parseInt(scrs[i].generalData[1])+1)+"";
     var det = asteroidIndex(scrs[i].bID);
@@ -990,7 +1002,7 @@ function DamageBoss(i,dmg)
   var actualHealth = parseInt(scrs[i].additionalData[6-2])/100;
   actualHealth -= dmg;
   scrs[i].additionalData[6-2] = Math.floor(actualHealth*100)+"";
-  sendToAllClients(
+  if(dmg!=0) sendToAllClients(
     "/RetEmitParticles -1 9 "+
     ((ScrdToFloat(scrs[i].additionalData[8-2])+scrs[i].posCX)+"").replaceAll(".",",")+" "+
     ((ScrdToFloat(scrs[i].additionalData[9-2])+scrs[i].posCY)+"").replaceAll(".",",")+
@@ -2486,6 +2498,35 @@ wss.on("connection", function connection(ws) {
         "/RetInvisibilityPulse " + arg[1] + " " + arg[2] + " X X"
       );
     }
+    if (arg[0] == "/Heal") {
+      //Heal 1[PlayerID] 2[healID]
+      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if(arg[msl - 1] != plr.livID[arg[1]]) return;
+
+      var pid=arg[1];
+
+      if(arg[2]=="1")
+      {
+        var artid = plr.backpack[pid].split(";")[30] - 41;
+        if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
+
+        var sth1 = plr.sHealth[pid];
+
+        var potHHH = parseFloat(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + parseFloat(gameplay[26]);
+		    if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
+		    var heal=0.02*parseFloat(gameplay[31])/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
+        if(heal<0) heal=0;
+        
+        plr.sHealth[pid] += heal;
+        if(plr.sHealth[pid]>1) plr.sHealth[pid]=1;
+
+        var sth2 = plr.sHealth[pid];
+
+        var del = ((sth2-sth1)+"").replaceAll(".",",");
+        sendTo(ws,"R "+del+" "+plr.immID[pid]+" "+plr.livID[pid]); //Medium type message
+        sendTo(ws,"/RetHeal "+arg[1]+" "+arg[2]+" X X");
+      }
+    }
     if (arg[0] == "/Backpack") {
       //Backpack 1[PlayerID] 2[Item] 3[Count] 4[Slot]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
@@ -2778,6 +2819,8 @@ function finalTranslate(varN) {
             gameplay[27] = parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "bullet_owner_push")
             gameplay[30] = parseFloatE(jse3Dat[i]) + "";
+            if (psPath[1] == "healing_potion_hp")
+            gameplay[31] = parseFloatE(jse3Dat[i]) + "";
 
           if (psPath[1] == "player_normal_speed")
             gameplay[9] = parseFloatE(jse3Dat[i]) + "";

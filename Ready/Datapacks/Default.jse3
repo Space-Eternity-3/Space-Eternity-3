@@ -149,6 +149,7 @@ gameplay
 	copper_bullet_damage: 3;
 	red_bullet_damage: 4;
 	bullet_owner_push: 1;
+	healing_potion_hp: 10;
 	
 	at_protection_health_level_add: 2,272;
 	at_protection_health_regenerate_multiplier: 1,5;	<relative variable>
@@ -184,7 +185,7 @@ generator_settings
 	
 	<Hell biome> 1
 	{
-		chance: 8%;
+		chance: 7%;
 		settings: [];
 	
 		<Size>4: coal(100%);
@@ -197,7 +198,7 @@ generator_settings
 	}
 	<Geyzer biome> 2
 	{
-		chance: 8%;
+		chance: 7%;
 		settings: [];
 	
 		all_sizes: stoneA(100%);
@@ -207,7 +208,7 @@ generator_settings
 	}
 	<Alien biome> 3
 	{
-		chance: 8%;
+		chance: 7%;
 		settings: [];
 	
 		all_sizes: grass(60%) + magnetic(40%);
@@ -237,7 +238,7 @@ generator_settings
 			density = 100%,
 		];
 		
-		all_sizes: metalic(100%);
+		all_sizes: metalicA(100%);
 	}
 	<Cementery structure> 6
 	{
@@ -257,7 +258,7 @@ objects_generate
 {
 	stone: stone(35%);
 	stoneA: stone(30%) + geyzer(20%);
-	stoneB: stone(30%) + bone(20%) + stone_tomb(15%) + treasure(6%) + pumpkin(1%);
+	stoneB: stone(15%) + bone(20%) + stone_tomb(24%) + treasure(6%) + dead_alien(1%) + pumpkin(1%);
 	copper: copper(35%);
 	gold: gold(25%);
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%);
@@ -266,9 +267,10 @@ objects_generate
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
 	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
-	redA: unstable_matter(20%);
+	redA: unstable_matter(20%); <actually not designed to be red>
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	metalic: stone(35%) + metal_piece(25%);
+	metalicA: stone(35%) + metal_piece(25%) + unstable_matter(8%);
 	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
 	bedrockA: bedrock_stone(30%) + packed_bedrock(15%) + unstable_matter(20%);
 }
@@ -326,7 +328,7 @@ game_translate <low-level settings>
 		34: stone_drill;
 		35: magnetic_lamp;
 		36: golden_drill;
-		37: treasure;					<not used>
+		37: treasure;
 		38: geyzer;
 		39: red_bullet;					<only item>
 		40: dead_alien;

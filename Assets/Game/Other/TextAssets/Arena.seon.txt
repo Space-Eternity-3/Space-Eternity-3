@@ -95,7 +95,7 @@ list hidden doing b1a1,b2a2,b3a3
 list hidden done default,A1,A2,A3,R,b1a2,b2a3,b3r
 list hidden undoing a1b1,a2b2,a3b3
 list hidden undone B1,B2,B3
-hidesmooth 0 30
+hidesmooth 0 40
 
 catch #71
 list hidden done default,A1,A2,A3,B1,B2,B3,a1b1,a2b2,a3b3,b1a1,b2a2,b3a3,b1a2,b2a3

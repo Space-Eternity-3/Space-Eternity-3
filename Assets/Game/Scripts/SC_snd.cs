@@ -9,6 +9,7 @@ public class SC_snd : MonoBehaviour
     public float maxDeltaPitch;
 
     public float volume;
+    public float deeprange = 0;
     AudioSource audio;
     public bool updator = false;
     bool activated = false;
@@ -27,12 +28,16 @@ public class SC_snd : MonoBehaviour
     public void Active()
     {
         audio.pitch=SetPitch();
-        if(!updator) audio.volume=volume;
         activated=true;
+        Update();
     }
     void Update()
     {
-        if(activated && !terminated) audio.volume=SC_sounds.GetVolume(transform.position,naturalVolume);
+        if(activated && !terminated)
+        {
+            volume=SC_sounds.GetVolume(transform.position,naturalVolume,deeprange);
+            audio.volume = volume;
+        }
         if(terminated) audio.volume = 0f;
     }
 }

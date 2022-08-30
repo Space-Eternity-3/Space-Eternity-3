@@ -44,6 +44,7 @@ public class SC_bullet : MonoBehaviour
     public SC_bullet Shot(Vector3 position, Vector3 vector, Vector3 delta, int typ)
     {
         SC_bullet gob = Instantiate(gameObject, position, Quaternion.identity).GetComponent<SC_bullet>();
+        SC_control.SC_lists.AddTo_SC_bullet(gob);
         gob.type = typ;
         gob.mode = "present";
         gob.controller = true;
@@ -75,6 +76,7 @@ public class SC_bullet : MonoBehaviour
     public SC_bullet ShotProjection(Vector3 position, Vector3 vector, int typ, string mod, int idd, string pown)
     {
         SC_bullet gob = Instantiate(gameObject, position, Quaternion.identity).GetComponent<SC_bullet>();
+        SC_control.SC_lists.AddTo_SC_bullet(gob);
         gob.type = typ;
         gob.mode = mod;
         gob.controller = false;
@@ -140,8 +142,6 @@ public class SC_bullet : MonoBehaviour
     {
         multiplayer = (int)Communtron4.position.y==100;
         if (mode == "mother") return;
-
-        SC_control.SC_lists.AddTo_SC_bullet(this);
 
         if(mode=="projection")
         {

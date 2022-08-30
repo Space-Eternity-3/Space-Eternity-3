@@ -29,7 +29,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 31;
+	int gpl_number = 32;
     
 	bool lockData = false;
 	bool remember = false;
@@ -1010,6 +1010,7 @@ public class SC_data : MonoBehaviour
                     if(psPath[1]=="copper_bullet_damage") Gameplay[3]=float.Parse(value[i])+"";
                     if(psPath[1]=="red_bullet_damage") Gameplay[27]=float.Parse(value[i])+"";
                     if(psPath[1]=="bullet_owner_push") Gameplay[30]=float.Parse(value[i])+"";
+                    if(psPath[1]=="healing_potion_hp") Gameplay[31]=float.Parse(value[i])+"";
 
                     if(psPath[1]=="player_normal_speed") Gameplay[9]=float.Parse(value[i])+"";
                     if(psPath[1]=="player_brake_speed") Gameplay[10]=float.Parse(value[i])+"";

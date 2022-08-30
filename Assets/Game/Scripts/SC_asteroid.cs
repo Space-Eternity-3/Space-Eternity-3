@@ -32,7 +32,6 @@ public class SC_asteroid : MonoBehaviour {
 	public SC_fun SC_fun;
 	public SC_upgrades SC_upgrades;
 	public SC_data SC_data;
-	public SC_snd_start SC_snd_start;
 	public SC_slots SC_slots;
 
 	int type=0, supertype=0;

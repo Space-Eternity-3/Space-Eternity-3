@@ -40,7 +40,7 @@ public class SC_colboss : MonoBehaviour
                 if(mdo==2) base_damage = float.Parse(SC_control.SC_data.Gameplay[27]);
                 if(mdo==3) base_damage = float.Parse(SC_control.SC_data.Gameplay[28]);
                 if(mdo!=3) base_damage *= Mathf.Pow(1.08f,SC_control.SC_upgrades.MTP_levels[3]);
-                SC_boss.DamageSGP(base_damage);
+                if(mdo!=3 || SC_boss.type!=6) SC_boss.DamageSGP(base_damage);
             }
         }
     }

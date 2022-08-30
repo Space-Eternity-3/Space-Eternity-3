@@ -7,7 +7,6 @@ public class SC_players : MonoBehaviour
     //Constants
     public Material normal,active,turbo,brake;
     public Material M1,M2,M3,M4;
-    public SC_snd_start SC_snd_start;
     public SC_fun SC_fun;
 
     //Relative constants

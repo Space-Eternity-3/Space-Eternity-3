@@ -69,28 +69,20 @@ public class SC_craft2 : MonoBehaviour {
 		if(SpaceID==1)
 		{
 			//RESPAWN SET (strange place)
-			if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f)
-			if(SC_resp_blocker.IsAllowing())
+			if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&SC_slots.InvHaving(20))
+			if(!SC_control.impulse_enabled && !SC_control.SC_invisibler.invisible && SC_resp_blocker.IsAllowing())
 			{
-				float dX=player.position.x;
-				float dY=player.position.y;
-				float distance=Mathf.Sqrt(dX*dX+dY*dY);
-
-				if(!SC_control.SC_invisibler.invisible)
-				if(SC_slots.InvHaving(20))
+				int slot = SC_slots.InvChange(20,-1,true,false,true);
+				if((int)Communtron4.position.y==100)
 				{
-					int slot = SC_slots.InvChange(20,-1,true,false,true);
-					if((int)Communtron4.position.y==100)
-					{
-						SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" 20 -1 "+slot);
-						SC_control.SendMTP("/EmitParticles "+SC_control.connectionID+" 3 "+player.position.x+" "+player.position.y);
-						//SC_control.InvisiblityPulseSend("none");
-					}
-					Instantiate(R_set_particles,player.position,player.rotation);
-					respawn_point.position=player.position+new Vector3(0f,0f,1f);
+					SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" 20 -1 "+slot);
+					SC_control.SendMTP("/EmitParticles "+SC_control.connectionID+" 3 "+player.position.x+" "+player.position.y);
+					//SC_control.InvisiblityPulseSend("none");
 				}
+				Instantiate(R_set_particles,player.position,player.rotation);
+				respawn_point.position=player.position+new Vector3(0f,0f,1f);
 			}
-			else if(SC_slots.InvHaving(20)) SC_control.InfoUp("Unrespawnable zone",380);
+			else SC_control.InfoUp("Respawn blocked",380);
 		}
 	}
 	void FixedUpdate()

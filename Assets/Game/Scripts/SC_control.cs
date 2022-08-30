@@ -115,6 +115,7 @@ public class SC_control : MonoBehaviour {
 	public WebSocket ws;
 	public int connectionID=0;
 	public bool living;
+	public float healBalance = 0f;
 	Vector3 solidPos;
 	bool connectWorks=true;
 	public string nick;
@@ -128,7 +129,6 @@ public class SC_control : MonoBehaviour {
 	public SC_backpack SC_backpack;
 	public SC_data SC_data;
 	public SC_sounds SC_sounds;
-	public SC_snd_start SC_snd_start;
 	public SC_slots SC_slots;
 	public SC_artefacts SC_artefacts;
 	public SC_invisibler SC_invisibler;
@@ -257,6 +257,19 @@ public class SC_control : MonoBehaviour {
 			);
 			SC_invisibler.invisible = false;
 		}
+
+		if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&SC_slots.InvHaving(55))
+		if((Mathf.Round(health_V*10000f)/10000f+healBalance)<1f && !impulse_enabled)
+		{
+			int slot = SC_slots.InvChange(55,-1,true,false,true);
+			if((int)Communtron4.position.y==100) {
+				SendMTP("/InventoryChange "+connectionID+" 55 -1 "+slot);
+				SendMTP("/Heal "+connectionID+" 1");
+				healBalance += float.Parse(SC_data.Gameplay[31]);
+			}
+			else HealSGP();
+		}
+		else InfoUp("Potion blocked",380);
 		
 		}
 		
@@ -412,13 +425,6 @@ public class SC_control : MonoBehaviour {
 			engine.material=E1;
 			M=0;
 		}
-
-		if(SC_snd_start.enMode!=M)
-        {
-            SC_snd_start.enMode=M;
-            if(M!=0) SC_snd_start.ManualStartLoop(M-1);
-            else SC_snd_start.ManualEndLoop();
-        }
 		
 		//DRILL
 		if(!SC_invisibler.invisible)
@@ -649,7 +655,8 @@ public class SC_control : MonoBehaviour {
 		float potH=SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
 		if(potH<-50f) potH = -50f; if(potH>56.397f) potH = 56.397f;
 		float maxH=50f*Mathf.Pow(health_base,potH) - 1f;
-		float curH=health_V*maxH;
+		//health_V=Mathf.Round(health_V*10000f)/10000f;
+		float curH=Mathf.Round(health_V*10000f)/10000f*maxH;
 		float maxHr=Mathf.Ceil(maxH);
 		float curHr=Mathf.Ceil((curH*maxHr)/maxH);
 		if(curHr == (curH*maxHr)/maxH) curHr=maxHr+1f;
@@ -1112,6 +1119,16 @@ public class SC_control : MonoBehaviour {
 		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
 		Instantiate(explosion2,transform.position,transform.rotation);
 	}
+	public void HealSGP()
+	{
+		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
+		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
+		float heal=0.02f*float.Parse(SC_data.Gameplay[31])/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
+
+		if(heal<0) heal=0;
+		health_V += heal;
+		if(health_V>1f) health_V=1f;
+	}
 	public Vector3 Skop(float F, Vector3 vec3)
 	{
 		float sqrt = Mathf.Sqrt(vec3.x*vec3.x + vec3.y*vec3.y + vec3.z*vec3.z);
@@ -1198,6 +1215,9 @@ public class SC_control : MonoBehaviour {
 			sr_immID = arg[1];
 
 			return;
+		}
+		if(arg[0]=="/RetHeal" && arg[1]==connectionID+"" && arg[2]=="1") {
+			healBalance -= float.Parse(SC_data.Gameplay[31]);
 		}
 
 		int msl=arg.Length;
@@ -1471,7 +1491,6 @@ public class SC_control : MonoBehaviour {
 					Instantiate(particlesBossDamageM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 10:
-					SC_sounds.PlaySound(particlePos,2,2);
 					Instantiate(particlesBossExplosionM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				default:

@@ -55,7 +55,7 @@ public class SC_bars : MonoBehaviour
 			double_left = true;
 			left_value = bos.timer_bar_value;
 			left_max = bos.timer_bar_max;
-			left_text.text = "Time " + ConvertToTime((left_value+9)/10);
+			left_text.text = "Time " + ConvertToTime((left_value+49)/50);
 			if(left_max==0) left_max=1;
 			left_slider.fillAmount = 0.112f + (left_value*0.788f/left_max);
 			if(left_value==0) left_slider.fillAmount = 0f;

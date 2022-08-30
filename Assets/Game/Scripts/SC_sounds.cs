@@ -11,24 +11,32 @@ public class SC_sounds : MonoBehaviour
     public SC_data SC_data;
     public float MHD; //max hearing distance
 
-    public float GetVolume(Vector3 pos,float nvl)
+    public float GetVolume(Vector3 pos,float nvl,float deeprng)
     {
         float dN = nvl;
 		float dG = SC_data.global_volume;
         float dS = float.Parse(SC_data.volume);
-        return GetVolumeRaw(pos) * dS * dN * dG;
+        if(deeprng==0) return GetVolumeRaw(pos) * dS * dN * dG;
+        else return GetVolumeDeep(pos,deeprng) * dS * dN * dG;
     }
     public float GetVolumeRaw(Vector3 pos)
     {
-        int xd = 0;
-        if(xd > 0) return 0f;
-
         //Linear system
         float dD;
         dD=(MHD-SC_control.Pitagoras((camera.position - new Vector3(0f,0f,camera.position.z)) - pos))/MHD;
         if(dD<0f) dD=0f;
         return dD;
     }
+    public float GetVolumeDeep(Vector3 pos, float deeprng)
+    {
+        //Linear system
+        float dD = SC_control.Pitagoras((camera.position - new Vector3(0f,0f,camera.position.z)) - pos) - deeprng;
+        if(dD<0f) dD=0f;
+        dD=(MHD-dD)/MHD;
+        if(dD<0f) dD=0f;
+        return dD;
+    }
+    public float deeprange = 0;
     public void PlaySound(Vector3 pos,int group,int ID)
     {
         AudioSource ads = new AudioSource();
@@ -37,23 +45,9 @@ public class SC_sounds : MonoBehaviour
         if(group==2) ads=Instantiate(Other[ID],pos,new Quaternion(0f,0f,0f,0f));
 
         SC_snd snd = ads.GetComponent<SC_snd>();
-        snd.volume = GetVolume(pos,snd.naturalVolume);
+        snd.deeprange = deeprange;
         snd.Active();
-    }
-    public AudioSource StartLoop(GameObject parent,int group,int ID)
-    {
-        Vector3 pos=parent.transform.position;
-        
-        AudioSource ads = new AudioSource();
-        if(group==0) ads=Instantiate(FobBreak[ID],pos,new Quaternion(0f,0f,0f,0f));
-        if(group==1) ads=Instantiate(FobPlace[ID],pos,new Quaternion(0f,0f,0f,0f));
-        if(group==2) ads=Instantiate(Other[ID],pos,new Quaternion(0f,0f,0f,0f));
 
-        SC_snd snd = ads.GetComponent<SC_snd>();
-        snd.updator=true;
-        snd.Active();
-        snd.GetComponent<Transform>().SetParent(parent.transform);
-
-        return ads.GetComponent<AudioSource>();
+        deeprange = 0;
     }
 }

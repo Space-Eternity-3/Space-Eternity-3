@@ -72,10 +72,14 @@ public class SC_inventory_manager : MonoBehaviour {
 		if(gameObject.name!="ItemImageO"&&gameObject.name!="ItemImageB"&&gameObject.name!="ItemImageOU")
 		{
 			if(pvNum==20f)
-			if(SC_resp_blocker.IsAllowing()&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&Communtron1.position.y==sNum&&!SC_fun.SC_control.SC_invisibler.invisible)
-			{
+			if(Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f)
+			if(SC_resp_blocker.IsAllowing() && Communtron1.position.y==sNum && !SC_fun.SC_control.SC_invisibler.invisible && !SC_fun.SC_control.impulse_enabled)
 				sImg.texture=SC_fun.Item20u;
-			}
+
+			if(pvNum==55f)
+			if(Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f)
+			if(Communtron1.position.y==sNum && (Mathf.Round(SC_fun.SC_control.health_V*10000f)/10000f+SC_fun.SC_control.healBalance)<1f && !SC_fun.SC_control.impulse_enabled)
+				sImg.texture=SC_fun.Item55u;
 		}
 	}
 }

@@ -5,50 +5,36 @@ using UnityEngine;
 public class SC_snd_start : MonoBehaviour
 {
     public SC_sounds SC_sounds;
+    public SC_control SC_control;
     public int type,id;
-    public bool updator;
-    public bool dontStart;
-
-    public int enMode=0;
-    public int drMode=0;
-
-    bool exists=false;
-    AudioSource sndObject;
-
-    int nanoCounter=-1;
+    public float deeprange = 0f;
 
     void Start()
     {
         if(transform.position.z<100f)
         {
-            if(!updator)
-            {
+            if(deeprange==0f)
                 SC_sounds.PlaySound(transform.position,type,id);
-            }
-            else if(!dontStart)
+            else
             {
-                nanoCounter=Random.Range(1,15);
+                List<SC_boss> boses = SC_control.SC_lists.SC_boss;
+                SC_boss fav_bos = null;
+                float fav_distance = -1f;
+                foreach(SC_boss bos in boses)
+                {
+                    if(bos.mother) continue;
+                    float got_distance = SC_control.Pitagoras(transform.position-bos.SC_structure.transform.position);
+                    if(fav_distance==-1f || got_distance<fav_distance)
+                    {
+                        fav_bos = bos;
+                        fav_distance = got_distance;
+                    }
+                }
+                if(fav_bos!=null) {
+                    SC_sounds.deeprange = deeprange;
+                    SC_sounds.PlaySound(fav_bos.SC_structure.transform.position,type,id);
+                }
             }
         }
-    }
-    void FixedUpdate()
-    {
-        nanoCounter--;
-        if(nanoCounter==0)
-        {
-            ManualStartLoop(0);
-        }
-    }
-    public void ManualStartLoop(int deltaID)
-    {
-        if(exists) ManualEndLoop();
-        exists=true;
-        sndObject=SC_sounds.StartLoop(gameObject,type,id+deltaID);
-    }
-    public void ManualEndLoop()
-    {
-        nanoCounter=-1;
-        exists=false;
-        sndObject.GetComponent<SC_terminate>().disabled=false;
     }
 }
