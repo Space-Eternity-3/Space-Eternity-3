@@ -62,7 +62,7 @@ craftings
 		title_image: bush;
 		1: bush(3) -> big_bush;
 		2: big_bush -> bush(3);
-		3: magnetic_stone(3) + magic_element -> healing_potion;
+		3: bush(3) + magic_element -> healing_potion;
 	}
 	<Category>8
 	{
@@ -97,10 +97,11 @@ craftings
 	<Category>12
 	{
 		title_image: alien;
-		1: dead_alien + bush(3) -> alien;
-		2: dead_alien + magnetic_stone(3) -> magnetic_alien;
-		3: dead_alien + red_stone(3) -> red_alien;
-		4: dead_alien -> stone(5);
+		1: bone(4) + unstable_matter -> dead_alien;
+		2: dead_alien -> bone(4);
+		3: dead_alien + bush(3) -> alien;
+		4: dead_alien + magnetic_stone(3) -> magnetic_alien;
+		5: dead_alien + red_stone(3) -> red_alien;
 	}
 	<Max 512 categories>
 }
@@ -109,7 +110,7 @@ drill_loot
 	stone: stone(100%);
 	copper: copper(100%);
 	gold: gold(30%);
-	grass: stone(95%) + magic_element(5%);
+	grass: stone(92%) + magic_element(8%);
 	amethyst: small_amethyst(20%);
 	coal: coal(100%);
 	magnetic: magnetic_stone(100%);

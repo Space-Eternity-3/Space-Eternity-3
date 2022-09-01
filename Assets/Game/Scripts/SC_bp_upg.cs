@@ -22,11 +22,6 @@ public class SC_bp_upg : MonoBehaviour
     }
     void Update()
     {
-        if(SC_inv_mover.active && Input.GetKeyDown(KeyCode.U)) set_state(0);
-        if(SC_inv_mover.active && Input.GetKeyDown(KeyCode.B)) set_state(1);
-        if(SC_inv_mover.active && Input.GetKeyDown(KeyCode.M)) set_state(2);
-        if(SC_inv_mover.active && Input.GetKeyDown(KeyCode.C)) set_state(3);
-
         if(state==0)
         {
             upper.text = "Upgrades";

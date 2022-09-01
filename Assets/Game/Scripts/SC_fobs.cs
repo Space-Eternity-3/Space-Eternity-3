@@ -187,7 +187,8 @@ public class SC_fobs : MonoBehaviour
         if(b>=40&&b<=47) return true; //48 -> unstable bullet
 		if(b==48&&Input.GetKey(KeyCode.LeftControl)) return true;
 		if(b>=49&&b<=51) return true; //52 -> bedrock storage
-        if(b>=53&&b<=54) return true; //55 -> healing potion //56 -> magic element
+        if(b>=53&&b<=54) return true; //55 -> healing potion
+        if(b==56) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)

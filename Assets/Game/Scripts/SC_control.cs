@@ -35,6 +35,7 @@ public class SC_control : MonoBehaviour {
 	public Transform particlesBossDamageM;
 	public Transform particlesBossExplosion;
 	public Transform particlesBossExplosionM;
+	public Transform particlesEmptyBulb;
 	public Rigidbody playerR;
 	public Transform drill3T;
 	public Transform respawn_point;
@@ -218,7 +219,8 @@ public class SC_control : MonoBehaviour {
 		//SHOT
 		bool wr_comms = Communtron3.position.y==0f && Communtron2.position.x==0f && Communtron3.position.z==0f;
 		bool wr_have = SC_slots.InvHaving(24) || SC_slots.InvHaving(39) || SC_slots.InvHaving(48);
-		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftControl);
+		bool wr_cotr = (!Input.GetKey(KeyCode.LeftControl) || !SC_slots.InvHaving(48));
+		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && wr_cotr;
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
 		
 		if(wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
@@ -261,10 +263,12 @@ public class SC_control : MonoBehaviour {
 		if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&SC_slots.InvHaving(55))
 		if((Mathf.Round(health_V*10000f)/10000f+healBalance)<1f && !impulse_enabled)
 		{
+			Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
 			int slot = SC_slots.InvChange(55,-1,true,false,true);
 			if((int)Communtron4.position.y==100) {
 				SendMTP("/InventoryChange "+connectionID+" 55 -1 "+slot);
 				SendMTP("/Heal "+connectionID+" 1");
+				SendMTP("/EmitParticles "+connectionID+" 11 0 0");
 				healBalance += float.Parse(SC_data.Gameplay[31]);
 			}
 			else HealSGP();
@@ -795,7 +799,7 @@ public class SC_control : MonoBehaviour {
 				
 				SC_bullet.Shot(
 					transform.position,
-					new Vector3(Input.mousePosition.x-Screen.width/2,Input.mousePosition.y-Screen.height/2,0f),
+					new Vector3(ux,uy,0f),
 					playerR.velocity*0.02f,
 					3
 				);
@@ -1446,7 +1450,7 @@ public class SC_control : MonoBehaviour {
 			int pid = int.Parse(arg[1]);
 			if(pid==0) pid = connectionID;
 			
-			if(put>=6 && put<=8)
+			if((put>=6 && put<=8) || put==11)
 			{
 				particlePos = PL[pid].GetComponent<Transform>().position;
 				if(put==7||false)
@@ -1492,6 +1496,9 @@ public class SC_control : MonoBehaviour {
 					break;
 				case 10:
 					Instantiate(particlesBossExplosionM,particlePos,new Quaternion(0f,0f,0f,0f));
+					break;
+				case 11:
+					Instantiate(particlesEmptyBulb,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				default:
 					Debug.LogWarning("Unknown particles ID: "+put);

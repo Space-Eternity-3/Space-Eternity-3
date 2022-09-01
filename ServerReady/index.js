@@ -2501,7 +2501,10 @@ wss.on("connection", function connection(ws) {
     if (arg[0] == "/Heal") {
       //Heal 1[PlayerID] 2[healID]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
-      if(arg[msl - 1] != plr.livID[arg[1]]) return;
+      if(arg[msl - 1] != plr.livID[arg[1]]) {
+        sendTo(ws,"/RetHeal "+arg[1]+" "+arg[2]+" X X");
+        return;
+      }
 
       var pid=arg[1];
 
