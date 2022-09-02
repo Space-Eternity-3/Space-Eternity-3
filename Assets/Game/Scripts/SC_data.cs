@@ -50,6 +50,7 @@ public class SC_data : MonoBehaviour
     StreamReader sr;
     StreamWriter sw;
     BinaryFormatter bf;
+    string writingStorage="";
 
     //Awake Universal
     public string[] MultiplayerInput = new string[2];
@@ -104,10 +105,16 @@ public class SC_data : MonoBehaviour
         CloseWrite();
         fw = new FileStream(file, FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough);
         sw = new StreamWriter(fw);
+        writingStorage = "";
+    }
+    void SaveLineCrLf(string str)
+    {
+        writingStorage += str+"\r\n";
     }
     void CloseWrite()
     {
         try{
+            sw.WriteLine(writingStorage);
             sw.Close();
             fw.Close();
         }catch(Exception){}
@@ -156,7 +163,6 @@ public class SC_data : MonoBehaviour
     {
 		//Culture set to comma (India converter)
 		System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("pl-PL");
-        //Screen.orientation = ScreenOrientation.LandscapeLeft;
 
         if(Application.platform==RuntimePlatform.Android || Application.platform==RuntimePlatform.IPhonePlayer)
         {
@@ -387,8 +393,7 @@ public class SC_data : MonoBehaviour
             
             file=CustomDataPath;
             OpenRead(file);
-            dataSource="";
-            for(i=0;!sr.EndOfStream;i++) dataSource=dataSource+(sr.ReadLine()).Replace('\r',' ').Replace('\n',' ')+" ";
+            dataSource=sr.ReadToEnd().Replace('\r',' ').Replace('\n',' ');
             CloseRead();
             DatapackTranslate();
 
@@ -423,14 +428,14 @@ public class SC_data : MonoBehaviour
             try{
             OpenWrite(file);
             
-            sw.WriteLine(volume);
-            sw.WriteLine(camera_zoom);
-            sw.WriteLine(MultiplayerInput[0]);
-            sw.WriteLine(MultiplayerInput[1]);
-            if(!menu) sw.WriteLine(dataSourceStorage);
-            else sw.WriteLine(dataSource);
-			sw.WriteLine(music);
-			sw.WriteLine(compass_mode);
+            SaveLineCrLf(volume);
+            SaveLineCrLf(camera_zoom);
+            SaveLineCrLf(MultiplayerInput[0]);
+            SaveLineCrLf(MultiplayerInput[1]);
+            if(!menu) SaveLineCrLf(dataSourceStorage);
+            else SaveLineCrLf(dataSource);
+			SaveLineCrLf(music);
+			SaveLineCrLf(compass_mode);
 
             CloseWrite();
             
@@ -446,8 +451,8 @@ public class SC_data : MonoBehaviour
             try{
             OpenWrite(file);
             
-            sw.WriteLine(TempFile);
-            for(i=0;i<11;i++) sw.WriteLine(TempFileConID[i]);
+            SaveLineCrLf(TempFile);
+            for(i=0;i<11;i++) SaveLineCrLf(TempFileConID[i]);
             
             CloseWrite();
 
@@ -471,9 +476,9 @@ public class SC_data : MonoBehaviour
                     try{
                     OpenWrite(file);
                     
-                    sw.WriteLine(UniverseX[i-1,0]);
-                    sw.WriteLine(UniverseX[i-1,1]);
-                    sw.WriteLine(UniverseX[i-1,2]);
+                    SaveLineCrLf(UniverseX[i-1,0]);
+                    SaveLineCrLf(UniverseX[i-1,1]);
+                    SaveLineCrLf(UniverseX[i-1,2]);
 
                     CloseWrite();
 
@@ -491,7 +496,7 @@ public class SC_data : MonoBehaviour
             try{
             OpenWrite(file);
             
-            sw.WriteLine(seed);
+            SaveLineCrLf(seed);
 
             CloseWrite();
 
@@ -515,7 +520,7 @@ public class SC_data : MonoBehaviour
             try{
             OpenWrite(file);
             
-            for(i=0;i<4;i++) sw.WriteLine(effectTab[i]);
+            for(i=0;i<4;i++) SaveLineCrLf(effectTab[i]);
 
             CloseWrite();
 
@@ -644,12 +649,12 @@ public class SC_data : MonoBehaviour
         OpenWrite(file);
         
         string locef;
-        sw.WriteLine(seed);
+        SaveLineCrLf(seed);
         for(i=0;i<100;i++)
         {
             locef=World[i,0,A];
             for(j=1;j<61;j++) locef=locef+";"+World[i,j,A];
-            sw.WriteLine(ReduceAst(locef));
+            SaveLineCrLf(ReduceAst(locef));
         }
 
         CloseWrite();

@@ -3299,11 +3299,11 @@ if (!existsF("ServerUniverse/Seed.se3")) {
 
 function laggy_comment(nn)
 {
-  if(nn<=0) return "\nWarning: Can't join to server with "+max_players+" max players.";
+  if(nn<=0) return "\r\nWarning: Can't join to server with "+max_players+" max players.";
   if(nn>=1 && nn<=25) return "";
-  if(nn>=26 && nn<=150) return "\nWarning: Over 25 max players can cause lags on some weaker devices";
-  if(nn>=151 && nn<=500) return "\nWarning: Over 150 max players can cause lags on most devices";
-  if(nn>=501) return "\nWarning: Too many players! Shut it down! Your device might explode, but of course you can try joining ;)";
+  if(nn>=26 && nn<=150) return "\r\nWarning: Over 25 max players can cause lags on some weaker devices";
+  if(nn>=151 && nn<=500) return "\r\nWarning: Over 150 max players can cause lags on most devices";
+  if(nn>=501) return "\r\nWarning: Too many players! Shut it down! Your device might explode, but of course you can try joining ;)";
 }
 
 console.log("Server started on version: [" + serverVersion + "]");
