@@ -13,6 +13,7 @@ var serverVersion = "Beta 1.14";
 var serverRedVersion = "Beta_1_14";
 var clientDatapacksVar = "";
 var seed;
+var hourHeader = "";
 var gpl_number = 32;
 var max_players = 128;
 
@@ -907,6 +908,7 @@ setInterval(function () { // <interval #2>
     }
     if((date_before-date_start) % 1000 == 0) //precisely 1 times per second
     {
+      updateHourHeader();
       setTerminalTitle("SE3 server | " + serverVersion +
         " | Download: " + size_download/1000 + "KB/s" +
         " | Upload: " + size_upload/1000 + "KB/s" +
@@ -923,6 +925,18 @@ function setTerminalTitle(title)
   process.stdout.write(
     String.fromCharCode(27) + "]0;" + title + String.fromCharCode(7)
   );
+}
+function updateHourHeader()
+{
+  var date_ob = new Date();
+  var hours = ToTwo(date_ob.getHours());
+  var minutes = ToTwo(date_ob.getMinutes());
+  var seconds = ToTwo(date_ob.getSeconds());
+  hourHeader = `[${hours}:${minutes}:${seconds}] `;
+}
+function ToTwo(n) {
+  if(n>9) return n+"";
+  else return "0"+n;
 }
 function getTimeSize(n)
 {
@@ -1072,7 +1086,7 @@ setInterval(function () { //<interval #3>
 //Kick functions
 function kick(i) {
   SaveAllNow();
-  console.log(plr.nicks[i] + " disconnected [" + i + "]");
+  console.log(hourHeader + plr.nicks[i] + " disconnected");
   var pom = se3_ws[i];
   se3_ws[i] = "";
   se3_wsS[i] = "";
@@ -1919,7 +1933,7 @@ wss.on("connection", function connection(ws) {
           );
           se3_ws[i] = ws;
           se3_wsS[i] = "menu";
-          console.log(plr.nicks[i] + " connected [" + i + "]");
+          console.log(hourHeader + plr.nicks[i] + " connected [" + i + "]");
           break;
         }
       }
@@ -2559,7 +2573,7 @@ wss.on("connection", function connection(ws) {
           ws.close();
         }catch{}
       else {
-        console.log(plr.nicks[imkConID] + " joined [" + imkConID + "]");
+        console.log(hourHeader + plr.nicks[imkConID] + " joined");
 
         se3_ws[imkConID] = ws;
         se3_wsS[imkConID] = "game";
@@ -3311,4 +3325,5 @@ console.log("Max players: [" + max_players + "]");
 console.log("Port: [" + connectionOptions.port + "]" + laggy_comment(max_players));
 console.log("-------------------------------");
 
+updateHourHeader();
 setTerminalTitle("SE3 server | "+serverVersion+" | "+getRandomFunnyText());

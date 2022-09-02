@@ -263,12 +263,16 @@ public class SC_control : MonoBehaviour {
 		if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&SC_slots.InvHaving(55))
 		if((Mathf.Round(health_V*10000f)/10000f+healBalance)<1f && !impulse_enabled)
 		{
-			Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+			if(!SC_invisibler.invisible)
+			{
+				Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+				trn11.GetComponent<SC_seeking>().enabled = true;
+			}
 			int slot = SC_slots.InvChange(55,-1,true,false,true);
 			if((int)Communtron4.position.y==100) {
 				SendMTP("/InventoryChange "+connectionID+" 55 -1 "+slot);
 				SendMTP("/Heal "+connectionID+" 1");
-				SendMTP("/EmitParticles "+connectionID+" 11 0 0");
+				if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
 				healBalance += float.Parse(SC_data.Gameplay[31]);
 			}
 			else HealSGP();
@@ -1498,7 +1502,9 @@ public class SC_control : MonoBehaviour {
 					Instantiate(particlesBossExplosionM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 11:
-					Instantiate(particlesEmptyBulb,particlePos,new Quaternion(0f,0f,0f,0f));
+					Transform trn11 = Instantiate(particlesEmptyBulb,particlePos,new Quaternion(0f,0f,0f,0f));
+					trn11.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
+					trn11.GetComponent<SC_seeking>().enabled = true;
 					break;
 				default:
 					Debug.LogWarning("Unknown particles ID: "+put);

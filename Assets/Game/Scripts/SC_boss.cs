@@ -335,11 +335,11 @@ public class SC_boss : MonoBehaviour
     {
         if(typ==0)
         {
-            if(n=="0") return "16000";
-            if(n=="1") return "18000";
-            if(n=="2") return "20000";
+            if(n=="0") return "160000";
+            if(n=="1") return "180000";
+            if(n=="2") return "200000";
         }
-        return "4000";
+        return "40000";
     }
     public void resetScr()
     {
