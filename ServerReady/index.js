@@ -9,8 +9,8 @@ const health_base = 1.0985;
 const unit = 0.0008;
 
 //Global variables
-var serverVersion = "Beta 1.14";
-var serverRedVersion = "Beta_1_14";
+var serverVersion = "Beta 2.0";
+var serverRedVersion = "Beta_2_0";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
@@ -471,25 +471,9 @@ function parseIntE(str) {
   else return not_existing_variable;
 }
 function parseIntP(str) {
-  var i,
-    lngt = str.length;
-  for (i = 0; i < lngt; i++)
-    if (
-      !["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-"].includes(str[i])
-    )
-      return parseInt("not_number");
   return parseInt(str);
 }
 function parseFloatP(str) {
-  var i,
-    lngt = str.length;
-  for (i = 0; i < lngt; i++)
-    if (
-      !["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",", ".", "-"].includes(
-        str[i]
-      )
-    )
-      return parseInt("not_number");
   return parseFloat(str.replaceAll(",", "."));
 }
 
