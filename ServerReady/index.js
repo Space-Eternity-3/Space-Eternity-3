@@ -9,8 +9,8 @@ const health_base = 1.0985;
 const unit = 0.0008;
 
 //Global variables
-var serverVersion = "Beta 2.0";
-var serverRedVersion = "Beta_2_0";
+var serverVersion = "Beta 1.14";
+var serverRedVersion = "Beta_1_14";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
