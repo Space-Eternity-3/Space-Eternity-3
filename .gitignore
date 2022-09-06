@@ -38,6 +38,7 @@ sysinfo.txt
 *.unitypackage
 ServerReady/ServerUniverse/
 Ready/Settings/
+LinuxBuild/Settings/
 Settings/
 
 # Anothers
