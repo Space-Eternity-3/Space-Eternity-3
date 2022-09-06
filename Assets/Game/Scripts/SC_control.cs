@@ -621,6 +621,7 @@ public class SC_control : MonoBehaviour {
 		SC_data.UniverseX[worldID-1,0]=SC_camera.TotalTime+"";
 		SC_data.Save("universeX");
 
+		while(SC_data.ArchivedWorld.Count>0) SC_data.ArchiveSave(0);
 		for(z=0;z<16;z++) SC_data.SaveAsteroid(z);
 	}
 	void OnApplicationQuit()

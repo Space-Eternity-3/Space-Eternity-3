@@ -71,8 +71,11 @@ public class SC_data : MonoBehaviour
 
     //Asteroids
     public int asteroidCounter=0;
-    public string[] WorldSector = new string[16];
-    public string[,,] World = new string[100,61,16];
+    public string[] WorldSector = new string[17]; //16th reserved for archived saving
+    public string[,,] World = new string[100,61,17];
+
+    public List<string> ArchivedWorldSector = new List<string>();
+    public List<string[,]> ArchivedWorld = new List<string[,]>();
 
     //Datapacks
     public string craftings;
@@ -96,6 +99,41 @@ public class SC_data : MonoBehaviour
     public string dataSource="";
     string dataSourceStorage="";
 
+    public void ArchiveAdd(int from)
+    {
+        //Use directly before fragment overwritting
+        int i,j,to=ArchivedWorldSector.Count;
+        ArchivedWorldSector.Add(WorldSector[from]);
+        ArchivedWorld.Add(new string[100,61]);
+        for(i=0;i<100;i++)
+            for(j=0;j<61;j++) {
+                ArchivedWorld[to][i,j] = World[i,j,from];
+            }
+    }
+    public void ArchiveTake(int from, int to)
+    {
+        int i,j;
+        WorldSector[to] = ArchivedWorldSector[from];
+        for(i=0;i<100;i++)
+            for(j=0;j<61;j++) {
+                World[i,j,to] = ArchivedWorld[from][i,j];
+            }
+        ArchivedWorldSector.RemoveAt(from);
+        ArchivedWorld.RemoveAt(from);
+    }
+    public int GetArchiveIndex(string worldSector)
+    {
+        int i,lngt=ArchivedWorldSector.Count;
+        for(i=0;i<lngt;i++)
+            if(ArchivedWorldSector[i]==worldSector)
+                return i;
+        return -1;
+    }
+    public void ArchiveSave(int ind)
+    {
+        ArchiveTake(ind,16);
+        SaveAsteroid(16);
+    }
     void DirQ(string path)
     {
         if(!Directory.Exists(path)) Directory.CreateDirectory(path);
@@ -114,7 +152,7 @@ public class SC_data : MonoBehaviour
     void CloseWrite()
     {
         try{
-            sw.WriteLine(writingStorage);
+            sw.Write(writingStorage);
             sw.Close();
             fw.Close();
         }catch(Exception){}
@@ -158,6 +196,25 @@ public class SC_data : MonoBehaviour
         for(i=0;i<8;i++) data[i]="";
         dataSource=example;
         dataSourceStorage=example;
+    }
+    void Start()
+    {
+        //Raycast auto repair
+        Image[] imgs1 = FindObjectsOfType<Image>();
+		foreach(Image img in imgs1) {
+			if(img.GetComponent<Button>()==null && img.GetComponent<SC_instant_button>()==null && img.GetComponent<SC_raycast_dont_delete>()==null)
+				img.raycastTarget = false;
+		}
+		RawImage[] imgs2 = FindObjectsOfType<RawImage>();
+		foreach(RawImage img in imgs2) {
+			if(img.GetComponent<Button>()==null && img.GetComponent<SC_instant_button>()==null && img.GetComponent<SC_raycast_dont_delete>()==null)
+				img.raycastTarget = false;
+		}
+		Text[] imgs3 = FindObjectsOfType<Text>();
+		foreach(Text img in imgs3) {
+			if(img.GetComponent<Button>()==null && img.GetComponent<SC_instant_button>()==null && img.GetComponent<SC_raycast_dont_delete>()==null)
+				img.raycastTarget = false;
+		}
     }
     void PreAwake()
     {
@@ -550,8 +607,21 @@ public class SC_data : MonoBehaviour
             if(WorldSector[i]==gX+";"+gY) return i+";"+rSS+";F";
         }
 
-        SaveAsteroid(asteroidCounter);
+        //StoreAsteroid(asteroidCounter);
+        //SC_control.MainSaveData();
 
+        if(WorldSector[asteroidCounter]!="")
+        ArchiveAdd(asteroidCounter);
+
+        int archind = GetArchiveIndex(gX+";"+gY);
+        if(archind!=-1)
+        {
+            //World sector still in archive
+            ArchiveTake(archind,asteroidCounter);
+        }
+        else {
+
+        //Search files for a world sector
         string path,file,filePre;
         path=GetPath("generated");
         filePre=GetFile("generated");
@@ -609,6 +679,8 @@ public class SC_data : MonoBehaviour
             else AsteroidReset(asteroidCounter);
         }
         else AsteroidReset(asteroidCounter);
+
+        }
 
         asteroidCounter++;
         if(asteroidCounter==16) asteroidCounter=0;

@@ -19,6 +19,12 @@ public class SC_push : MonoBehaviour
         if(!Input.GetMouseButton(0)) clicked_on=0;
 
         float x = Input.mousePosition.x/Screen.width;
+        if(Screen.width/Screen.height>=1.7777777f)
+        {
+            float shouldwidth = 1.7777777f*Screen.height;
+            x = (Input.mousePosition.x - (Screen.width-shouldwidth)/2f)/shouldwidth;
+        }
+
         int mouse_over = (int) Mathf.Round(a*x+b);
         if(mouse_over<1||mouse_over>9) return;
 
