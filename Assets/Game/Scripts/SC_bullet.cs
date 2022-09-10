@@ -201,11 +201,17 @@ public class SC_bullet : MonoBehaviour
     {
         string neme = collision.gameObject.name;
         string nume = collision.gameObject.transform.root.gameObject.name;
+
+        bool aBossScaled0 = false; //Boss collider blocker
+        if(neme=="aBossScaled0") {
+            SC_boss bos = collision.gameObject.GetComponent<SC_colboss>().SC_boss;
+            aBossScaled0 = (multiplayer || bos.dataID[2]!=2);
+        }
         
         if ((
             neme[0] != 'S' &&
             nume[0] != 'P' &&
-            (!(multiplayer && neme=="aBossScaled0")) &&
+            !aBossScaled0 &&
             Array.IndexOf(SafeNames, neme) == -1 &&
             controller
         ) || (

@@ -80,11 +80,11 @@ from #51 to #58 list extended undoing b1a1,b2a2,b3a3,b1a2,b2a3,b3r
 
 summon #71 empty summon #72 empty
 summon #30 asteroid 6 12 52,53,50,0,0,0,0,0,0,0,50,53
-ifrandom 0 summon #0 boss 0 summon #29 asteroid 6 12 42,49,50,0,0,0,0,0,0,0,50,49
-ifrandom 1 summon #0 boss 0 summon #29 asteroid 6 12 43,49,50,0,0,0,0,0,0,0,50,49
-ifrandom 2 summon #0 boss 0 summon #29 asteroid 6 12 44,49,50,0,0,0,0,0,0,0,50,49
-ifrandom 3 summon #0 boss 0 summon #29 asteroid 6 12 45,49,50,0,0,0,0,0,0,0,50,49
-ifrandom 4 summon #0 boss 0 summon #29 asteroid 6 12 47,49,50,0,0,0,0,0,0,0,50,49
+ifrandom 0 summon #0 boss 1 summon #29 asteroid 6 12 42,49,50,0,0,0,0,0,0,0,50,49
+ifrandom 1 summon #0 boss 2 summon #29 asteroid 6 12 43,49,50,0,0,0,0,0,0,0,50,49
+ifrandom 2 summon #0 boss 3 summon #29 asteroid 6 12 44,49,50,0,0,0,0,0,0,0,50,49
+ifrandom 3 summon #0 boss 4 summon #29 asteroid 6 12 45,49,50,0,0,0,0,0,0,0,50,49
+ifrandom 4 summon #0 boss 6 summon #29 asteroid 6 12 47,49,50,0,0,0,0,0,0,0,50,49
 ifrandom break
 from #29 to #30 move 0 -2
 catch #29 parent set #71

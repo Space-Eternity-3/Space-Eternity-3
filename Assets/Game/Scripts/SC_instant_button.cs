@@ -107,7 +107,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
                                 if(SC_Fob21.count==0) SC_Fob21.item = 0;
                                 SC_Fob21.SaveSGP();
 
-                                bts.dataID[2] = "1";
+                                bts.dataID[2] = 1;
                                 bts.resetScr();
                             }
                             else

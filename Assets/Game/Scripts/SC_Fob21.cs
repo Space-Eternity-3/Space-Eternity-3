@@ -102,7 +102,7 @@ public class SC_Fob21 : MonoBehaviour {
                     SC_boss bts = rts.st_structs[0].GetComponent<SC_boss>();
                     if(bts!=null)
                     {
-						screen_description.text = bts.BossNames[bts.type]+" "+(int.Parse(bts.dataID[1])+1)+"/3";
+						screen_description.text = bts.BossNames[bts.type]+" "+(bts.dataID[1]+1)+"/3";
 						screen_description_image.color = bts.arenaColors[bts.type];
 					}
                 }

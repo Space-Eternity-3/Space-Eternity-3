@@ -88,6 +88,8 @@ public class SC_structure : MonoBehaviour
 				if(counter_to_destroy==0)
 				{
 					SC_fun.GenListRemove(ID,1);
+					if(st_structs[0].GetComponent<SC_boss>()!=null)
+						st_structs[0].GetComponent<SC_boss>().BeforeDestroy();
 					Destroy(gameObject);
 				}
 				else counter_to_destroy--;

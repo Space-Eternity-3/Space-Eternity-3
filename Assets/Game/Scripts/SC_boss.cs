@@ -16,18 +16,19 @@ public class SC_boss : MonoBehaviour
 
     public string[] BossNames = new string[7];
     public Color32[] arenaColors = new Color32[7];
-    const string scrID = "1024";
+    const int scrID = 1024;
 
     public bool mother = true;
     public bool multiplayer = false;
     public int force_give_up_counter = 0;
     Vector3 solidPosition = new Vector3(0f,0f,0f);
+    public Transform bossModels;
 
     public int bX=0,bY=0,bID=1,sID=1;
 
-    string memory2 = "-1";
+    int memory2 = -1;
     public bool bosnumed = false;
-    public string[] dataID = new string[21];
+    public int[] dataID = new int[61];
 
     /*
     K0 -> DataType (1024)
@@ -95,15 +96,9 @@ public class SC_boss : MonoBehaviour
         if(arg[0]=="/RSD" && arg[1]==bID+"")
         {
             int i;
-            string[] dataIDs = arg[2].Split(';');
-            for(i=0;i<=20;i++)
-            {
-                try{
-                    dataID[i] = int.Parse(dataIDs[i])+"";
-                }catch(Exception){
-                    dataID[i] = "0";
-                }
-            }
+            string dataIDs = arg[2];
+            for(i=0;i<=60;i++)
+                dataID[i] = SC_control.Char3ToInt(dataIDs,3*i);
 
             StateUpdate();
         }
@@ -120,6 +115,7 @@ public class SC_boss : MonoBehaviour
         mother = false;
         multiplayer = ((int)Communtron4.position.y==100);
         solidPosition = transform.position;
+        bossModels.localPosition = new Vector3(0f,0f,-4000f*type);
 
         CanvP = Instantiate(CanvPS,new Vector3(0f,0f,0f),Quaternion.identity);
         CanvP.SetParent(TestBossNick,false); CanvP.name = "CanvBS";
@@ -140,29 +136,33 @@ public class SC_boss : MonoBehaviour
 			int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]),i;
 				
             dataID[0]=scrID;
-			if(SC_data.World[a,0,c]!=scrID)
+			if(SC_data.World[a,0,c]!=scrID+"")
 			{
 				//Not exists
-				for(i=0;i<20;i++){
-                    dataID[i+1] = "0";
+				for(i=1;i<=60;i++){
+                    dataID[i] = 0;
                 }
 				SC_data.World[a,0,c]=dataID[0]+"";
-				for(i=0;i<20;i++){
-					SC_data.World[a,i+1,c]=dataID[i+1]+"";
+				for(i=1;i<=60;i++){
+					SC_data.World[a,i,c]=dataID[i]+"";
 				}
 			}
 			else
 			{
 				//Exists
-				for(i=0;i<20;i++){
-					dataID[i+1] = SC_data.World[a,i+1,c];
-                    if(dataID[i+1]=="") dataID[i+1] = "0";
+				for(i=1;i<=60;i++){
+                    try{
+					    dataID[i] = int.Parse(SC_data.World[a,i,c]);
+                    }catch(Exception){
+                        dataID[i] = 0;
+                    }
 				}
 			}
 			StateUpdate();
         }
         else //If multiplayer
         {
+            //Boss initialization server side
             SC_control.SendMTP(
                 "/ScrData "+
                 SC_control.connectionID+" "+
@@ -172,6 +172,9 @@ public class SC_boss : MonoBehaviour
                 solidPosition.x+" "+
                 solidPosition.y
             );
+
+            //Starting refresh
+            SC_control.SendMTP("/ScrRefresh "+SC_control.connectionID+" "+bID+" F");
         }
 
         FixedUpdateT();
@@ -187,7 +190,7 @@ public class SC_boss : MonoBehaviour
                     if(SC_structure.st_structs[i].GetComponent<SC_seon_remote>()!=null)
                         SC_structure.st_structs[i].GetComponent<SC_seon_remote>().jump = true;
         }
-        SC_structure.actual_state = GetState(int.Parse(dataID[1]),int.Parse(dataID[2]));
+        SC_structure.actual_state = GetState(dataID[1],dataID[2]);
         
         float fcr = SC_control.Pitagoras(
             (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
@@ -196,9 +199,9 @@ public class SC_boss : MonoBehaviour
 
         if(memory2!=dataID[2] && in_arena_vision)
         {
-            if(memory2=="1" && dataID[2]=="2") SC_control.InfoUp("Battle started!",500);
-            if(memory2=="2" && dataID[2]=="3") SC_control.InfoUp("Boss wins!",500);
-            if(memory2=="2" && dataID[2]=="4") SC_control.InfoUp("Boss defeated!",500);
+            if(memory2==1 && dataID[2]==2) SC_control.InfoUp("Battle started!",500);
+            if(memory2==2 && dataID[2]==3) SC_control.InfoUp("Boss wins!",500);
+            if(memory2==2 && dataID[2]==4) SC_control.InfoUp("Boss defeated!",500);
         }
         memory2 = dataID[2];
     }
@@ -210,17 +213,17 @@ public class SC_boss : MonoBehaviour
     }
     public void DamageSGP(float dmg)
     {
-        if(dataID[2]!="2") return;
-        float actualHealth = int.Parse(dataID[6])/100f;
+        if(dataID[2]!=2) return;
+        float actualHealth = dataID[6]/100f;
         actualHealth -= dmg;
-        dataID[6] = (int)(actualHealth*100)+"";
+        dataID[6] = (int)(actualHealth*100);
         Instantiate(SC_control.particlesBossDamage,Boss.position-new Vector3(0f,0f,Boss.position.z),Quaternion.identity);
     }
     void SaveSGP()
 	{
 		string[] uAst = SC_data.GetAsteroid(bX,bY).Split(';');
         int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]),i;
-		for(i=0;i<=20;i++) SC_data.World[a,i,c]=dataID[i];
+		for(i=0;i<=60;i++) SC_data.World[a,i,c]=dataID[i]+"";
 	}
     void FixedUpdate()
     {
@@ -244,7 +247,7 @@ public class SC_boss : MonoBehaviour
         string iar="F"; if(in_arena_range) iar="T";
 
         //Force give up counter
-        if(!multiplayer && !in_arena_range && dataID[2]=="2") force_give_up_counter++;
+        if(!multiplayer && !in_arena_range && dataID[2]==2) force_give_up_counter++;
         else force_give_up_counter = 0;
         if(force_give_up_counter>=50) GiveUpSGP();
 
@@ -266,11 +269,11 @@ public class SC_boss : MonoBehaviour
         Boss.eulerAngles = new Vector3(0f,0f,ScrdToFloat(dataID[10]));
 
         //Give up allow checker
-        if((in_arena_range && (dataID[2]=="2")) && !bosnumed) {
+        if((in_arena_range && (dataID[2]==2)) && !bosnumed) {
             SC_control.bos_num++;
             bosnumed = true;
         }
-        if(!(in_arena_range && (dataID[2]=="2")) && bosnumed) {
+        if(!(in_arena_range && (dataID[2]==2)) && bosnumed) {
             SC_control.bos_num--;
             bosnumed = false;
         }
@@ -278,8 +281,8 @@ public class SC_boss : MonoBehaviour
         //Time bar controller
         string ass = SC_structure.actual_state;
         if(in_arena_vision && (ass=="B1"||ass=="B2"||ass=="B3")) {
-            timer_bar_value = int.Parse(dataID[4]);
-            timer_bar_max = int.Parse(dataID[5]);
+            timer_bar_value = dataID[4];
+            timer_bar_max = dataID[5];
             timer_bar_enabled = true;
             SC_bars.bos = this;
         }
@@ -290,29 +293,29 @@ public class SC_boss : MonoBehaviour
         SC_bars.LateUpdate();
 
         //Boss name and health bar controller
-        if(dataID[2]!="4") CanvNick.GetComponent<Text>().text = BossNames[type] + " " + romeNumber(int.Parse(dataID[1])+1);
-        else CanvNick.GetComponent<Text>().text = BossNames[type] + " " + romeNumber(int.Parse(dataID[1]));
-        SetBarLength(int.Parse(dataID[6]),int.Parse(dataID[7]));
+        if(dataID[2]!=4) CanvNick.GetComponent<Text>().text = BossNames[type] + " " + romeNumber(dataID[1]+1);
+        else CanvNick.GetComponent<Text>().text = BossNames[type] + " " + romeNumber(dataID[1]);
+        SetBarLength(dataID[6],dataID[7]);
     }
     void BossUpdateMechanics()
     {
-        var sta = dataID[2];
-        dataID[3] = (int.Parse(dataID[3])+1)+"";
-        if(sta=="2") dataID[4] = (int.Parse(dataID[4])-1)+"";
-        if((sta=="1" || sta=="3" || sta=="4") && int.Parse(dataID[3])>=50)
+        int sta = dataID[2];
+        dataID[3]++;
+        if(sta==2) dataID[4]--;
+        if((sta==1 || sta==3 || sta==4) && dataID[3]>=50)
         {
-            if(sta=="1") dataID[2] = "2";
-            else if(sta=="3" || sta=="4") dataID[2] = "0";
+            if(sta==1) dataID[2] = 2;
+            else if(sta==3 || sta==4) dataID[2] = 0;
             resetScr();
         }
-        else if(sta=="2" && int.Parse(dataID[4])<=0)
+        else if(sta==2 && dataID[4]<=0)
         {
-            dataID[2] = "3";
+            dataID[2] = 3;
             resetScr();
         }
-        else if(sta=="2" && int.Parse(dataID[6])<=0)
+        else if(sta==2 && dataID[6]<=0)
         {
-            dataID[2] = "4";
+            dataID[2] = 4;
             resetScr();
         }
         SaveSGP();
@@ -324,65 +327,65 @@ public class SC_boss : MonoBehaviour
         if(num==3) return "III";
         return "IV";
     }
-    string getTimeSize(string n)
+    int getTimeSize(int n)
     {
-        if(n=="0") return "9000";
-        if(n=="1") return "10500";
-        if(n=="2") return "12000";
-        return "3000";
+        if(n==0) return 9000;
+        if(n==1) return 10500;
+        if(n==2) return 12000;
+        return 3000;
     }
-    string getBossHealth(string n, int typ)
+    int getBossHealth(int n, int typ)
     {
         if(typ==0)
         {
-            if(n=="0") return "160000";
-            if(n=="1") return "180000";
-            if(n=="2") return "200000";
+            if(n==0) return 160000;
+            if(n==1) return 180000;
+            if(n==2) return 200000;
         }
-        return "40000";
+        return 40000;
     }
     public void resetScr()
     {
-        string mem6 = dataID[6];
-        string mem7 = dataID[7];
-        string mem8 = dataID[8];
-        string mem9 = dataID[9];
-        string mem10 = dataID[10];
+        int mem6 = dataID[6];
+        int mem7 = dataID[7];
+        int mem8 = dataID[8];
+        int mem9 = dataID[9];
+        int mem10 = dataID[10];
 
         int i;
-        for(i=3;i<=20;i++) dataID[i] = "0";
-        string sta = dataID[2];
+        for(i=3;i<=60;i++) dataID[i] = 0;
+        int sta = dataID[2];
 
-        if(sta=="0")
+        if(sta==0)
         {
             
         }
-        else if(sta=="1")
+        else if(sta==1)
         {
             dataID[5] = getTimeSize(dataID[1]); //Max time
             dataID[4] = dataID[5]; //Time left
             dataID[7] = getBossHealth(dataID[1],type); //Max health
             dataID[6] = dataID[7]; //Boss health
         }
-        else if(sta=="2")
+        else if(sta==2)
         {
             dataID[5] = getTimeSize(dataID[1]); //Max time
             dataID[4] = dataID[5]; //Time left
             dataID[7] = mem7; //Max health
             dataID[6] = dataID[7]; //Boss health
         }
-        else if(sta=="3")
+        else if(sta==3)
         {
             dataID[7] = mem7; //Max health
             dataID[6] = mem6; //Boss health
             dataID[8] = mem8; dataID[9] = mem9; dataID[10] = mem10; //Position & Rotation
         }
-        else if(sta=="4")
+        else if(sta==4)
         {
             dataID[7] = mem7; //Max health
             dataID[8] = mem8; dataID[9] = mem9; dataID[10] = mem10; //Position & Rotation
 
-            dataID[1] = (int.Parse(dataID[1])+1)+"";
+            dataID[1]++;
             Vector3 poss = Boss.position - new Vector3(0f,0f,Boss.position.z);
             Instantiate(SC_control.particlesBossExplosion,poss,Quaternion.identity);
         }
@@ -391,12 +394,12 @@ public class SC_boss : MonoBehaviour
     }
     public void GiveUpSGP()
     {
-        if(dataID[2]!="2") return;
-        dataID[4] = "1";
+        if(dataID[2]!=2) return;
+        dataID[4] = 1;
     }
     public void GiveUpMTP(bool killed)
     {
-        if(dataID[2]!="2") return;
+        if(dataID[2]!=2) return;
         SC_control.SendMTP("/GiveUpTry "+SC_control.connectionID+" "+bID);
     }
     Vector3 NextToRandomGate()
@@ -409,11 +412,16 @@ public class SC_boss : MonoBehaviour
         if(rand==3) posit += new Vector3(0f,-41.5f,0f);
         return posit;
     }
-    string FloatToScrd(float src) {
-        return ((int)(src*100000))+"";
+    int FloatToScrd(float src) {
+        return (int)(src*124);
     }
-    float ScrdToFloat(string src) {
-        return int.Parse(src)/100000f;
+    float ScrdToFloat(int src) {
+        return src/124f;
+    }
+    public void BeforeDestroy()
+    {
+        if(multiplayer)
+            SC_control.SendMTP("/ScrForget "+SC_control.connectionID+" "+bID);
     }
     void OnDestroy()
     {

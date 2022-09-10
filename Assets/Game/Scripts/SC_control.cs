@@ -1802,7 +1802,7 @@ public class SC_control : MonoBehaviour {
 		bs[2] = 124;
 		bs[3] = 1;
 
-		float[] get = new float[4];
+		int[] get = new int[4];
 		get[0] = RASCII_toInt(dat[st+0]);
 		get[1] = RASCII_toInt(dat[st+1]);
 		get[2] = RASCII_toInt(dat[st+2]);
@@ -1815,6 +1815,30 @@ public class SC_control : MonoBehaviour {
 		}
 
 		float ret = (get[0]*bs[0] + get[1]*bs[1] + get[2]*bs[2] + get[3]*bs[3]) / 124f;
+		if(minus) ret = -ret;
+		return ret;
+	}
+	public int Char3ToInt(string dat, int st)
+	{
+		bool minus = false;
+
+		int[] bs = new int[3];
+		bs[0] = 15376;
+		bs[1] = 124;
+		bs[2] = 1;
+
+		int[] get = new int[4];
+		get[0] = RASCII_toInt(dat[st+0]);
+		get[1] = RASCII_toInt(dat[st+1]);
+		get[2] = RASCII_toInt(dat[st+2]);
+
+		if(get[0]>=62)
+		{
+			minus = true;
+			get[0]-=62;
+		}
+
+		int ret = (get[0]*bs[0] + get[1]*bs[1] + get[2]*bs[2]);
 		if(minus) ret = -ret;
 		return ret;
 	}
