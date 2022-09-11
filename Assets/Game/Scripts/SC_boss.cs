@@ -56,6 +56,7 @@ public class SC_boss : MonoBehaviour
     public SC_control SC_control;
     public SC_structure SC_structure;
     public SC_bars SC_bars;
+    public SC_behaviour SC_behaviour;
 
     string GetState(int general, int additional)
     {
@@ -205,6 +206,16 @@ public class SC_boss : MonoBehaviour
         }
         memory2 = dataID[2];
     }
+    Vector3[] positionMem = new Vector3[10];
+    Vector3 SmoothPosition(Vector3 latest)
+    {
+        return latest;
+    }
+    float[] rotationMem = new float[10];
+    float SmoothRotation(float latest)
+    {
+        return latest;
+    }
     void SetBarLength(int current, int max)
     {
         if(max==0) max=40000;
@@ -261,12 +272,12 @@ public class SC_boss : MonoBehaviour
         //Position & rotation update
         solidPosition = new Vector3(solidPosition.x,solidPosition.y,transform.position.z);
         transform.position = solidPosition;
-        Boss.position = solidPosition + new Vector3(
+        Boss.position = SmoothPosition(solidPosition + new Vector3(
             ScrdToFloat(dataID[8]),
             ScrdToFloat(dataID[9]),
             0f
-        );
-        Boss.eulerAngles = new Vector3(0f,0f,ScrdToFloat(dataID[10]));
+        ));
+        Boss.eulerAngles = new Vector3(0f,0f,SmoothRotation(ScrdToFloat(dataID[10])));
 
         //Give up allow checker
         if((in_arena_range && (dataID[2]==2)) && !bosnumed) {
@@ -302,6 +313,7 @@ public class SC_boss : MonoBehaviour
         int sta = dataID[2];
         dataID[3]++;
         if(sta==2) dataID[4]--;
+        if(sta==2) SC_behaviour._FixedUpdate();
         if((sta==1 || sta==3 || sta==4) && dataID[3]>=50)
         {
             if(sta==1) dataID[2] = 2;
@@ -353,8 +365,9 @@ public class SC_boss : MonoBehaviour
         int mem10 = dataID[10];
 
         int i;
-        for(i=3;i<=60;i++) dataID[i] = 0;
         int sta = dataID[2];
+        if(sta==3||sta==4) SC_behaviour._End();
+        for(i=3;i<=60;i++) dataID[i] = 0;
 
         if(sta==0)
         {
@@ -373,6 +386,7 @@ public class SC_boss : MonoBehaviour
             dataID[4] = dataID[5]; //Time left
             dataID[7] = mem7; //Max health
             dataID[6] = dataID[7]; //Boss health
+            SC_behaviour._Start();
         }
         else if(sta==3)
         {
@@ -412,10 +426,10 @@ public class SC_boss : MonoBehaviour
         if(rand==3) posit += new Vector3(0f,-41.5f,0f);
         return posit;
     }
-    int FloatToScrd(float src) {
+    public int FloatToScrd(float src) {
         return (int)(src*124);
     }
-    float ScrdToFloat(int src) {
+    public float ScrdToFloat(int src) {
         return src/124f;
     }
     public void BeforeDestroy()

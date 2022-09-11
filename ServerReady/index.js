@@ -163,6 +163,38 @@ typeSet.fill(""); Object.seal(typeSet);
 gameplay.fill(""); Object.seal(gameplay);
 modifiedDrops.fill(""); Object.seal(modifiedDrops);
 
+//Classes
+class CInfo
+{
+  constructor(plas,buls) {
+    this.plas = plas;
+    this.buls = buls;
+    this.players = []; //ID, X, Y
+  }
+
+  UpdatePlayers()
+  {
+    this.players = [];
+    var i;
+    for(i=0;i<max_players;i++)
+      if(plr.players[i]!="0" && plr.players[i]!="1")
+      {
+        var splitted = plr.players[i].split(";");
+        var tpl = {id:0,x:0,y:0};
+        tpl.id = i;
+        tpl.x = func.parseFloatU(splitted[0]);
+        tpl.y = func.parseFloatU(splitted[1]);
+        if(func.parseIntU(splitted[5].split("&")[1]) % 100 != 1) //not invisible
+          this.players.push(tpl);
+      }
+  }
+  GetPlayers()
+  {
+    return this.players;
+  }
+}
+let visionInfo = new CInfo(plr,bulletsT);
+
 //Websocket functions
 let connectionOptions = {
   port: 27683,
@@ -755,6 +787,7 @@ setInterval(function () { // <interval #2>
       }
 
       //[Scrs: Multiplayer boss mechanics update]
+      visionInfo.UpdatePlayers();
       lngt = scrs.length;
       for(i=0;i<lngt;i++)
       {
@@ -2039,7 +2072,8 @@ wss.on("connection", function connection(ws) {
           tpl.dataY = [];
           tpl.dataX = [func.parseIntU(lc3T[0]),func.parseIntU(lc3T[1])];
           for(i=2;i<=60;i++) tpl.dataY[i-2] = 0;
-          tpl.behaviour = new CBoss(bossType,tpl.dataX,tpl.dataY,plr,bulletsT);
+          var tpl2 = {x:0,y:0}; tpl2.x = tpl.posCX; tpl2.y = tpl.posCY;
+          tpl.behaviour = new CBoss(bossType,tpl2,tpl.dataX,tpl.dataY,visionInfo);
           scrs.push(tpl);
         }
         else return;
