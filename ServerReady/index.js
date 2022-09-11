@@ -4,8 +4,8 @@ const path = require("path");
 const config = require("./config.json");
 const { runInNewContext } = require("vm");
 const { parse } = require("path");
-const { cfun } = require("./functions");
-const func = new cfun();
+const { func } = require("./functions");
+const { CBoss } = require("./behaviour");
 
 const health_base = 1.0985;
 const unit = 0.0008;
@@ -122,6 +122,7 @@ const scrTemplate = {
   posCY: 0,
   timeToDisappear: 1000,
   timeToLose: 1000,
+  behaviour: -1,
 };
 
 var bulletsT = [];
@@ -690,8 +691,8 @@ setInterval(function () { // <interval #2>
           var l = scrs[j].bID;
           if(scrs[j].dataY[2-2]==2)
           {
-            var xc = scrs[j].posCX + ScrdToFloat(scrs[j].dataY[8-2]);
-            var yc = scrs[j].posCY + ScrdToFloat(scrs[j].dataY[9-2]);
+            var xc = scrs[j].posCX + func.ScrdToFloat(scrs[j].dataY[8-2]);
+            var yc = scrs[j].posCY + func.ScrdToFloat(scrs[j].dataY[9-2]);
             if(((xb-xc)**2)+((yb-yc)**2) <= ((rr)**2))
             {
               if(bulletsT[i].type!=3) {
@@ -755,10 +756,12 @@ setInterval(function () { // <interval #2>
 
       //[Scrs: Multiplayer boss mechanics update]
       lngt = scrs.length;
-      for(i=0;i<lngt;i++) {
+      for(i=0;i<lngt;i++)
+      {
         var sta = scrs[i].dataY[2-2]+"";
         scrs[i].dataY[3-2]++;
         if(sta=="2") scrs[i].dataY[4-2]--;
+        if(sta=="2") scrs[i].behaviour.FixedUpdate();
         if((sta=="1" || sta=="3" || sta=="4") && scrs[i].dataY[3-2]>=50)
         {
           if(sta=="1") scrs[i].dataY[2-2] = 2;
@@ -775,11 +778,6 @@ setInterval(function () { // <interval #2>
           scrs[i].dataY[2-2] = 4;
           resetScr(i);
         }
-        /*if(sta=="2") boss_behaviour.BehaviourUpdate50fps(
-
-          REFERENCE DATA HERE
-
-        );*/
       }
 
       //Connection time
@@ -932,8 +930,9 @@ function resetScr(i)
   var mem10 = scrs[i].dataY[10-2];
 
   var j;
-  for(j=3;j<=60;j++) scrs[i].dataY[j-2] = 0;
   var sta = scrs[i].dataY[2-2]+"";
+  if(sta=="3"||sta=="4") scrs[i].behaviour.End();
+  for(j=3;j<=60;j++) scrs[i].dataY[j-2] = 0;
 
   scrs[i].timeToLose = 1000;
 
@@ -954,6 +953,7 @@ function resetScr(i)
     scrs[i].dataY[4-2] = scrs[i].dataY[5-2]; //Time left
     scrs[i].dataY[7-2] = mem7; //Max health
     scrs[i].dataY[6-2] = scrs[i].dataY[7-2]; //Health left
+    scrs[i].behaviour.Start();
   }
   else if(sta=="3")
   {
@@ -972,8 +972,8 @@ function resetScr(i)
     chunk_data[det[0]][det[1]][1] = scrs[i].dataX[1]+"";
     sendToAllClients(
       "/RetEmitParticles -1 10 "+
-      ((ScrdToFloat(mem8)+scrs[i].posCX)+"").replaceAll(".",",")+" "+
-      ((ScrdToFloat(mem9)+scrs[i].posCY)+"").replaceAll(".",",")+
+      ((func.ScrdToFloat(mem8)+scrs[i].posCX)+"").replaceAll(".",",")+" "+
+      ((func.ScrdToFloat(mem9)+scrs[i].posCY)+"").replaceAll(".",",")+
       " X X"
     );
   }
@@ -986,16 +986,10 @@ function DamageBoss(i,dmg)
   scrs[i].dataY[6-2] = Math.floor(actualHealth*100);
   if(dmg!=0) sendToAllClients(
     "/RetEmitParticles -1 9 "+
-    ((ScrdToFloat(scrs[i].dataY[8-2])+scrs[i].posCX)+"").replaceAll(".",",")+" "+
-    ((ScrdToFloat(scrs[i].dataY[9-2])+scrs[i].posCY)+"").replaceAll(".",",")+
+    ((func.ScrdToFloat(scrs[i].dataY[8-2])+scrs[i].posCX)+"").replaceAll(".",",")+" "+
+    ((func.ScrdToFloat(scrs[i].dataY[9-2])+scrs[i].posCY)+"").replaceAll(".",",")+
     " X X"
   );
-}
-function FloatToScrd(src) {
-  return Math.floor(src*124);
-}
-function ScrdToFloat(src) {
-  return src/124;
 }
 
 //RetPlayerUpdate (25 times per second by default)
@@ -1863,8 +1857,8 @@ wss.on("connection", function connection(ws) {
           var l = scrs[j].bID;
           if(scrs[j].dataY[2-2]==2 && !plr.impulsed[arg[1]].includes(-l))
           {
-            var xc = scrs[j].posCX + ScrdToFloat(scrs[j].dataY[8-2]);
-            var yc = scrs[j].posCY + ScrdToFloat(scrs[j].dataY[9-2]);
+            var xc = scrs[j].posCX + func.ScrdToFloat(scrs[j].dataY[8-2]);
+            var yc = scrs[j].posCY + func.ScrdToFloat(scrs[j].dataY[9-2]);
             if(((xb-xc)**2)+((yb-yc)**2) <= ((rr)**2))
             {
               DamageBoss(j,func.parseFloatU(gameplay[29]))
@@ -2045,6 +2039,7 @@ wss.on("connection", function connection(ws) {
           tpl.dataY = [];
           tpl.dataX = [func.parseIntU(lc3T[0]),func.parseIntU(lc3T[1])];
           for(i=2;i<=60;i++) tpl.dataY[i-2] = 0;
+          tpl.behaviour = new CBoss(bossType,tpl.dataX,tpl.dataY,plr,bulletsT);
           scrs.push(tpl);
         }
         else return;
