@@ -37,7 +37,7 @@ sysinfo.txt
 *.apk
 *.unitypackage
 ServerReady/ServerUniverse/
-Ready/Settings/
+WindowsBuild/Settings/
 LinuxBuild/Settings/
 Settings/
 
