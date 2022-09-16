@@ -1391,7 +1391,7 @@ public class SC_control : MonoBehaviour {
 				foreach(SC_bullet bul in buls)
 				{
 					if(bul.ID+""==arg[7] && bul.mode=="projection")
-						bul.delta_age = -bul.age - (SC_fun.smooth_size/2);
+						bul.delta_age = -bul.age - (4/2);
 				}
 			}
 
@@ -1415,7 +1415,7 @@ public class SC_control : MonoBehaviour {
 					int.Parse(arg[7]),
 					arg[1]
 				);
-				bul3.delta_age = (SC_fun.smooth_size/2);
+				bul3.delta_age = (4/2);
 			}
 		}
 		if(arg[0]=="/RetNewBulletDestroy")

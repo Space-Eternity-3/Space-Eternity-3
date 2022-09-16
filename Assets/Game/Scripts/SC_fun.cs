@@ -25,7 +25,6 @@ public class SC_fun : MonoBehaviour
     public float volume;
     public int seed;
     public bool halloween_theme;
-    public int smooth_size;
 	public List<int> GenListsB0 = new List<int>();
 	public List<int> GenListsB1 = new List<int>();
 	public List<int> GenListsB2 = new List<int>();

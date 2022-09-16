@@ -4,6 +4,17 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*public class CSmoothMemory
+{
+    private int memorySize;
+    private Vector3[] position = new Vector3[20](0f,0f,0f);
+
+    public CSmoothMemory(int ms)
+    {
+        memorySize = ms;
+    }
+}*/
+
 public class SC_boss : MonoBehaviour
 {
     public Transform TestBossNick;
@@ -23,6 +34,7 @@ public class SC_boss : MonoBehaviour
     public int force_give_up_counter = 0;
     Vector3 solidPosition = new Vector3(0f,0f,0f);
     public Transform bossModels;
+    //CSmoothMemory CSmoothMemory = new CSmoothMemory(4);
 
     public int bX=0,bY=0,bID=1,sID=1;
 

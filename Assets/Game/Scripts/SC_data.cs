@@ -202,18 +202,31 @@ public class SC_data : MonoBehaviour
         //Raycast auto repair
         Image[] imgs1 = FindObjectsOfType<Image>();
 		foreach(Image img in imgs1) {
-			if(img.GetComponent<Button>()==null && img.GetComponent<SC_instant_button>()==null && img.GetComponent<SC_raycast_dont_delete>()==null)
-				img.raycastTarget = false;
+			if(
+                img.GetComponent<Button>()==null &&
+                img.GetComponent<SC_instant_button>()==null &&
+                img.GetComponent<InputField>()==null &&
+                img.gameObject.name!="Handle" &&
+                img.GetComponent<SC_raycast_dont_delete>()==null
+            ) img.raycastTarget = false;
 		}
 		RawImage[] imgs2 = FindObjectsOfType<RawImage>();
 		foreach(RawImage img in imgs2) {
-			if(img.GetComponent<Button>()==null && img.GetComponent<SC_instant_button>()==null && img.GetComponent<SC_raycast_dont_delete>()==null)
-				img.raycastTarget = false;
+			if(
+                img.GetComponent<Button>()==null &&
+                img.GetComponent<SC_instant_button>()==null &&
+                img.GetComponent<InputField>()==null &&
+                img.GetComponent<SC_raycast_dont_delete>()==null
+            ) img.raycastTarget = false;
 		}
 		Text[] imgs3 = FindObjectsOfType<Text>();
 		foreach(Text img in imgs3) {
-			if(img.GetComponent<Button>()==null && img.GetComponent<SC_instant_button>()==null && img.GetComponent<SC_raycast_dont_delete>()==null)
-				img.raycastTarget = false;
+			if(
+                img.GetComponent<Button>()==null &&
+                img.GetComponent<SC_instant_button>()==null &&
+                img.GetComponent<InputField>()==null &&
+                img.GetComponent<SC_raycast_dont_delete>()==null
+            ) img.raycastTarget = false;
 		}
     }
     void PreAwake()

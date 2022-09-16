@@ -78,7 +78,7 @@ public class SC_players : MonoBehaviour
     void ArrayPusher(Vector3 new_push, float new_rot)
     {
         int i;
-        for(i=19;i>0;i--){
+        for(i=3;i>0;i--){
             memSourced[i]=memSourced[i-1];
             rotSourced[i]=rotSourced[i-1];
         }
@@ -145,8 +145,8 @@ public class SC_players : MonoBehaviour
             if(inrange)
             {
                 ArrayPusher(sourcedPosition, sourcedRotation);
-                Vector3 avar=ArrayAvarge(SC_fun.smooth_size);
-                float avar_rot=ArrayAvarge_rot(SC_fun.smooth_size);
+                Vector3 avar=ArrayAvarge(4);
+                float avar_rot=ArrayAvarge_rot(4);
 
                 transform.position = new Vector3(avar.x,avar.y,0f);
                 transform.eulerAngles = new Vector3(0f,0f,avar_rot);
