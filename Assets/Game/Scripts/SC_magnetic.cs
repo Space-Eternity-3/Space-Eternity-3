@@ -11,6 +11,7 @@ public class SC_magnetic : MonoBehaviour {
 	public float MaxRange;
 	public float Force;
 	public bool sameForce;
+	int fixeds = 0;
 
 	SC_players SC_players;
 	public SC_control SC_control;
@@ -27,29 +28,39 @@ public class SC_magnetic : MonoBehaviour {
 	}
 	void FixedUpdate()
 	{
+		fixeds++;
+	}
+	void Update()
+	{
 		//Magnetic double check
-		if(transform.position.z>100f || transform.position.z<-100f) return;
+		Vector3 tpz = transform.position;
+		if(tpz.z>100f || tpz.z<-100f) return;
+		Vector3 ppz = player.position;
 
 		float range;
-		float dX=player.position.x-transform.position.x;
-		float dY=player.position.y-transform.position.y;
+		float dX=ppz.x-tpz.x;
+		float dY=ppz.y-tpz.y;
 		range=Mathf.Sqrt(dX*dX+dY*dY);
+
+		if(range>=MaxRange) return;
 		if(range==0 || (player_magnetic && isImpulsing())) return;
 
-		if(range<MaxRange&&!sameForce)
+		float nX,nY;
+		if(!sameForce)
 		{
 			float F;
 			if(range>CritRange) F=Force*(MaxRange-range);
 			else F=Force*(MaxRange-CritRange);
-			float nX=dX*F/range;
-			float nY=dY*F/range;
-			playerR.velocity+=new Vector3(nX,nY,0f);
+			nX=dX*F/range;
+			nY=dY*F/range;
 		}
-		if(range<MaxRange&&sameForce)
+		else
 		{
-			float nX=dX*Force/range;
-			float nY=dY*Force/range;
-			playerR.velocity+=new Vector3(nX,nY,0f);
+			nX=dX*Force/range;
+			nY=dY*Force/range;
 		}
+
+		playerR.velocity+=fixeds*new Vector3(nX,nY,0f);
+		fixeds = 0;
 	}
 }

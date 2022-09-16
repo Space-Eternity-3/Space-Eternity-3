@@ -4,16 +4,75 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-/*public class CSmoothMemory
+public class CSmoothMemory
 {
-    private int memorySize;
-    private Vector3[] position = new Vector3[20](0f,0f,0f);
+    private int ms;
+    private Vector3[] position;
+    private float[] rotation;
+    private SC_players SC_players;
+    public bool used;
 
-    public CSmoothMemory(int ms)
+    public CSmoothMemory(int mss, SC_players plrs)
     {
-        memorySize = ms;
+        ms = mss;
+        position = new Vector3[ms];
+        rotation = new float[ms];
+        SC_players = plrs;
+        ResetData();
     }
-}*/
+    public void ResetData()
+    {
+        int i;
+        for(i=0;i<ms;i++)
+        {
+            position[i] = new Vector3(0f,0f,10000f);
+            rotation[i] = 10000f;
+        }
+        used = false;
+    }
+    public void PushArray(Vector3 npos, float nrot)
+    {
+        int i;
+        for(i=ms-1;i>0;i--)
+        {
+            position[i] = position[i-1];
+            rotation[i] = rotation[i-1];
+        }
+        position[0] = npos;
+        rotation[0] = nrot;
+        
+        used = true;
+    }
+    public Vector3 AveragePosition()
+    {
+        int i,m=ms;
+        Vector3 sum=new Vector3(0f,0f,0f);
+        for(i=0;i<ms;i++){
+            if(position[i].z<100f)
+                sum+=position[i];
+            else
+                m--;
+        }
+        if(m!=0) return sum/m;
+        else return new Vector3(0f,0f,2000f);
+    }
+    public float AverageRotation()
+    {
+        int i,m=0;
+        float currentAngle = 0f;
+
+        for(i=0;i<ms;i++)
+        {
+            if(rotation[i]!=10000f)
+            {
+                currentAngle = SC_players.rotAvg(m,currentAngle,rotation[i]);
+                m++;
+            }
+        }
+
+        return currentAngle;
+    }
+}
 
 public class SC_boss : MonoBehaviour
 {
@@ -34,7 +93,7 @@ public class SC_boss : MonoBehaviour
     public int force_give_up_counter = 0;
     Vector3 solidPosition = new Vector3(0f,0f,0f);
     public Transform bossModels;
-    //CSmoothMemory CSmoothMemory = new CSmoothMemory(4);
+    CSmoothMemory SmoothMemory;
 
     public int bX=0,bY=0,bID=1,sID=1;
 
@@ -124,6 +183,7 @@ public class SC_boss : MonoBehaviour
     public void StartFromStructure()
     {
         SC_control.SC_lists.AddTo_SC_boss(this);
+        SmoothMemory = new CSmoothMemory(4,SC_control.PL[1]);
 
         mother = false;
         multiplayer = ((int)Communtron4.position.y==100);
@@ -218,16 +278,6 @@ public class SC_boss : MonoBehaviour
         }
         memory2 = dataID[2];
     }
-    Vector3[] positionMem = new Vector3[10];
-    Vector3 SmoothPosition(Vector3 latest)
-    {
-        return latest;
-    }
-    float[] rotationMem = new float[10];
-    float SmoothRotation(float latest)
-    {
-        return latest;
-    }
     void SetBarLength(int current, int max)
     {
         if(max==0) max=40000;
@@ -282,14 +332,29 @@ public class SC_boss : MonoBehaviour
         if(!multiplayer) BossUpdateMechanics();
 
         //Position & rotation update
+        if(multiplayer && dataID[2]!=2 && SmoothMemory.used) SmoothMemory.ResetData();
         solidPosition = new Vector3(solidPosition.x,solidPosition.y,transform.position.z);
         transform.position = solidPosition;
-        Boss.position = SmoothPosition(solidPosition + new Vector3(
-            ScrdToFloat(dataID[8]),
-            ScrdToFloat(dataID[9]),
-            0f
-        ));
-        Boss.eulerAngles = new Vector3(0f,0f,SmoothRotation(ScrdToFloat(dataID[10])));
+        if(multiplayer && dataID[2]==2)
+        {
+            SmoothMemory.PushArray(solidPosition + new Vector3(
+                ScrdToFloat(dataID[8]),
+                ScrdToFloat(dataID[9]),
+                0f
+            ),ScrdToFloat(dataID[10]));
+
+            Boss.position = SmoothMemory.AveragePosition();
+            Boss.eulerAngles = new Vector3(0f,0f,SmoothMemory.AverageRotation());
+        }
+        else
+        {
+            Boss.position = (solidPosition + new Vector3(
+                ScrdToFloat(dataID[8]),
+                ScrdToFloat(dataID[9]),
+                0f
+            ));
+            Boss.eulerAngles = new Vector3(0f,0f,ScrdToFloat(dataID[10]));
+        }
 
         //Give up allow checker
         if((in_arena_range && (dataID[2]==2)) && !bosnumed) {

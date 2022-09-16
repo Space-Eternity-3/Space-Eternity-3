@@ -104,7 +104,7 @@ public class SC_players : MonoBehaviour
         while(angle>=360) angle-=360f;
         return angle;
     }
-    float rotAvg(int weight1, float angle1, float angle2)
+    public float rotAvg(int weight1, float angle1, float angle2)
     {
         float sr;
         angle1 = reduceAngle(angle1);
