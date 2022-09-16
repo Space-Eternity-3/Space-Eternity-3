@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 997
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Game
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 371}
   m_MaxSize: {x: 10000, y: 10000}
@@ -68,8 +68,8 @@ MonoBehaviour:
     y: 0
     width: 615
     height: 947
-  m_MinSize: {x: 276, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -318,22 +318,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Game/Scenes
+    - Assets/Game/Scripts
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Game/Scenes
+  - Assets/Game/Scripts
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\Pc\Desktop\unity_projects\Space Eternity 3
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 95}
-    m_SelectedIDs: 74570000
-    m_LastClickedID: 22388
-    m_ExpandedIDs: 0000000050570000525700005457000056570000585700005a5700005c5700005e57000060570000625700007257000000ca9a3b
+    m_SelectedIDs: a6570000
+    m_LastClickedID: 22438
+    m_ExpandedIDs: 0000000066570000685700006a5700006c5700006e57000070570000725700007457000076570000785700007a5700008c57000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -361,7 +361,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000050570000525700005457000056570000585700005a5700005c5700005e5700006057000062570000
+    m_ExpandedIDs: 0000000066570000685700006a5700006c5700006e57000070570000725700007457000076570000785700007a570000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -388,7 +388,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -493,7 +493,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 86d2ffffd6d2ffff0ce0fffffae0ffff00e5ffff50e5ffff86f2ffff74f3ffff1efbffff144f00008a4f000080530000e854000006560000
+      m_ExpandedIDs: 02d3ffff52d3ffff88e0ffff76e1ffff1ae3ffffe6e6ffff36e7ffff70f4ffff62f5ffff08fbffff2a4f0000a04f0000fe540000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -798,9 +798,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 368.77615, y: 363.70224, z: -11.21402}
+    m_Target: {x: 425.19574, y: 353.9023, z: -23.272644}
     speed: 2
-    m_Value: {x: 368.77615, y: 363.70224, z: -11.21402}
+    m_Value: {x: 425.19574, y: 353.9023, z: -23.272644}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -846,13 +846,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.014593623, y: 0.11433481, z: 0.0016754468, w: -0.99334407}
+    m_Target: {x: -0.030257465, y: 0.05604089, z: -0.001711144, w: -0.9979806}
     speed: 2
-    m_Value: {x: 0.014593473, y: 0.11433364, z: 0.0016754295, w: -0.9933339}
+    m_Value: {x: -0.030257097, y: 0.05604021, z: -0.0017111232, w: -0.99796844}
   m_Size:
-    m_Target: 191.39018
+    m_Target: 103.61201
     speed: 2
-    m_Value: 191.39018
+    m_Value: 103.61201
   m_Ortho:
     m_Target: 0
     speed: 2
