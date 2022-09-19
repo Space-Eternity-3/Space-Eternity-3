@@ -61,6 +61,9 @@ public class SC_magnetic : MonoBehaviour {
 		}
 
 		playerR.velocity+=fixeds*new Vector3(nX,nY,0f);
+	}
+	void LateUpdate()
+	{
 		fixeds = 0;
 	}
 }

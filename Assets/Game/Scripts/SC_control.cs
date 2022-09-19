@@ -366,7 +366,7 @@ public class SC_control : MonoBehaviour {
 			//engine.material=E1;
 		}
 		//ENGINE
-		if((Input.GetKey(KeyCode.Space))&&living&&!pause)
+		if((Input.GetKey(KeyCode.Space)||tempengine)&&living&&!pause)
 		{
 			engineON=true;
 			if(!turbo)
@@ -393,7 +393,7 @@ public class SC_control : MonoBehaviour {
 			//engine.material=E1;
 		}
 		//TURBO
-		if((Input.GetKey(KeyCode.LeftShift)&&turbo_V>0f)&&Communtron2.position.x==0&&living&&!pause)
+		if(((Input.GetKey(KeyCode.LeftShift)||tempturbo)&&turbo_V>0f)&&Communtron2.position.x==0&&living&&!pause)
 		{
 			if(turbo_V>=F_barrier)
 			{
@@ -1786,8 +1786,9 @@ public class SC_control : MonoBehaviour {
 	int RASCII_toInt(char c)
 	{
 		int ret;
-		string cc = c+"";
-		int intt = System.Text.Encoding.ASCII.GetBytes(cc)[0];
+		//string cc = c+"";
+		//int intt = System.Text.Encoding.ASCII.GetBytes(cc)[0];
+		int intt = (int)c;
 		if(intt>=1 && intt<=31) ret = intt-1;
 		else ret = intt-4;
 		return ret;
@@ -1868,4 +1869,11 @@ public class SC_control : MonoBehaviour {
 	{
 		return RASCII_toInt(dat[st+0])/123f;
 	}
+	bool tempengine = false;
+	bool tempturbo = false;
+	void OnGUI()
+    {
+        if(GUI.Button(new Rect(10, 10, 100, 40), "Engine")) tempengine = !tempengine;
+		if(GUI.Button(new Rect(120, 10, 100, 40), "Turbo")) tempturbo = !tempturbo;
+    }
 }

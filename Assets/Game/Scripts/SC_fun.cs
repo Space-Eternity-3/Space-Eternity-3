@@ -195,7 +195,8 @@ public class SC_fun : MonoBehaviour
         int IDm=MakeID(ID,seed);
         if(ID==1) return false;
         if(IDm%2==0) return false;
-        int it = System.Text.Encoding.ASCII.GetBytes(SC_long_strings.AsteroidBase[(IDm%65536-1)/2]+"")[0];
+        //int it = System.Text.Encoding.ASCII.GetBytes(SC_long_strings.AsteroidBase[(IDm%65536-1)/2]+"")[0];
+		int it = (int)SC_long_strings.AsteroidBase[(IDm%65536-1)/2];
 		int ia = 28; //from 28th ASCII char
 		int inu = it - ia;
 		

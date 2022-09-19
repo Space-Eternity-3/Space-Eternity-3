@@ -4,6 +4,16 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+public class CDeltaPos
+{
+    public CDeltaPos(float xx, float yy)
+    {
+        x=xx;
+        y=yy;
+    }
+    public float x,y;
+}
+
 public class CSmoothMemory
 {
     private int ms;
@@ -128,6 +138,9 @@ public class SC_boss : MonoBehaviour
     public SC_structure SC_structure;
     public SC_bars SC_bars;
     public SC_behaviour SC_behaviour;
+    
+    public CInfo world;
+    public CDeltaPos deltapos;
 
     string GetState(int general, int additional)
     {
@@ -184,6 +197,8 @@ public class SC_boss : MonoBehaviour
     {
         SC_control.SC_lists.AddTo_SC_boss(this);
         SmoothMemory = new CSmoothMemory(4,SC_control.PL[1]);
+        world = new CInfo(SC_control.SC_lists,SC_control.player);
+        deltapos = new CDeltaPos(transform.position.x,transform.position.y);
 
         mother = false;
         multiplayer = ((int)Communtron4.position.y==100);
@@ -389,8 +404,12 @@ public class SC_boss : MonoBehaviour
     {
         int sta = dataID[2];
         dataID[3]++;
-        if(sta==2) dataID[4]--;
-        if(sta==2) SC_behaviour._FixedUpdate();
+        if(sta==2)
+        {
+            dataID[4]--;
+            world.UpdatePlayers(deltapos);
+            SC_behaviour._FixedUpdate();
+        }
         if((sta==1 || sta==3 || sta==4) && dataID[3]>=50)
         {
             if(sta==1) dataID[2] = 2;

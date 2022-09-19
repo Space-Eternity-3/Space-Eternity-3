@@ -9,6 +9,7 @@ const { CBoss } = require("./behaviour");
 
 const health_base = 1.0985;
 const unit = 0.0008;
+const in_arena_range = 37;
 
 //Global variables
 var serverVersion = "Beta 2.0";
@@ -169,12 +170,14 @@ class CInfo
   constructor(plas,buls) {
     this.plas = plas;
     this.buls = buls;
-    this.players = []; //ID, X, Y
+    this.players = [];
+    this.deltaposmem = 0;
   }
 
-  UpdatePlayers()
+  UpdatePlayers(deltapos)
   {
     this.players = [];
+    this.deltaposmem = deltapos;
     var i;
     for(i=0;i<max_players;i++)
       if(plr.players[i]!="0" && plr.players[i]!="1")
@@ -182,9 +185,12 @@ class CInfo
         var splitted = plr.players[i].split(";");
         var tpl = {id:0,x:0,y:0};
         tpl.id = i;
-        tpl.x = func.parseFloatU(splitted[0]);
-        tpl.y = func.parseFloatU(splitted[1]);
+        tpl.x = func.parseFloatU(splitted[0]) - deltapos.x;
+        tpl.y = func.parseFloatU(splitted[1]) - deltapos.y;
+        var px = tpl.x;
+        var py = tpl.y;
         if(func.parseIntU(splitted[5].split("&")[1]) % 100 != 1) //not invisible
+        if(px**2 + py**2 <= in_arena_range**2) //in arena range
           this.players.push(tpl);
       }
   }
@@ -787,14 +793,20 @@ setInterval(function () { // <interval #2>
       }
 
       //[Scrs: Multiplayer boss mechanics update]
-      visionInfo.UpdatePlayers();
       lngt = scrs.length;
       for(i=0;i<lngt;i++)
       {
         var sta = scrs[i].dataY[2-2]+"";
         scrs[i].dataY[3-2]++;
-        if(sta=="2") scrs[i].dataY[4-2]--;
-        if(sta=="2") scrs[i].behaviour.FixedUpdate();
+        if(sta=="2")
+        {
+          scrs[i].dataY[4-2]--;
+          var deltapos = {x:0,y:0};
+          deltapos.x = scrs[i].posCX;
+          deltapos.y = scrs[i].posCY;
+          visionInfo.UpdatePlayers(deltapos);
+          scrs[i].behaviour.FixedUpdate();
+        }
         if((sta=="1" || sta=="3" || sta=="4") && scrs[i].dataY[3-2]>=50)
         {
           if(sta=="1") scrs[i].dataY[2-2] = 2;
@@ -2119,7 +2131,6 @@ wss.on("connection", function connection(ws) {
 
       var bID = arg[2];
       var blivID = arg[msl - 1];
-      var in_arena_range = 37;
 
       var j,lngts = scrs.length;
       for(i=0;i<lngts;i++)
