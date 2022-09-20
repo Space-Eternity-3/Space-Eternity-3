@@ -196,7 +196,38 @@ class CInfo
   }
   GetPlayers()
   {
-    return this.players;
+      return this.players;
+  }
+  ShotRaw(px,py,vx,vy,type,bidf)
+  {
+      var tpl = Object.assign({},bulletTemplate);
+      tpl.start = Object.assign({},bulletTemplate.start);
+      tpl.vector = Object.assign({},bulletTemplate.vector);
+      tpl.pos = Object.assign({},bulletTemplate.pos);
+      tpl.damaged = [];
+
+      tpl.ID = randomInteger(0,1000000000);
+      tpl.owner = bidf;
+      tpl.type = type;
+      tpl.start.x = px;
+      tpl.start.y = py;
+      tpl.vector.x = vx;
+      tpl.vector.y = vy;
+      tpl.pos.x = tpl.start.x;
+      tpl.pos.y = tpl.start.y;
+
+      if(tpl.vector.x==0) tpl.vector.x = 0.00001;
+      if(tpl.vector.y==0) tpl.vector.y = 0.00001;
+
+      var arg = ("/ "+bidf+" "+type+" "+px+" "+py+" "+vx+" "+vy+" "+tpl.ID).replaceAll(".",",").split(" ");
+      spawnBullet(tpl,arg);
+  }
+  CleanBullets(bidf)
+  {
+    var i,lngt=bulletsT.length;
+    for(i=0;i<lngt;i++)
+      if(bulletsT[i].owner==bidf)
+        destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], false);
   }
 }
 let visionInfo = new CInfo(plr,bulletsT);
@@ -659,8 +690,9 @@ function getBulletDamage(type,owner,pid)
   if(type==2) dmg = func.parseFloatU(gameplay[27]);
   if(type==3) dmg = func.parseFloatU(gameplay[28]);
 
-  if(type!=3 && plr.players[owner]!="0")
-    dmg *= Math.pow(1.08,func.parseIntU(plr.upgrades[owner].split(";")[3]));
+  if(owner>=0)
+    if(type!=3 && plr.players[owner]!="0")
+      dmg *= Math.pow(1.08,func.parseIntU(plr.upgrades[owner].split(";")[3]));
 
   return dmg;
 }
@@ -711,6 +743,7 @@ setInterval(function () { // <interval #2>
         }
 
         var lngts = scrs.length;
+        if(bulletsT[i].owner>=0)
         for(j=0;j<lngts;j++)
         {
           var l = scrs[j].bID;
@@ -1843,7 +1876,7 @@ wss.on("connection", function connection(ws) {
         var ya = func.parseFloatU(caray[1]);
         var xb = func.parseFloatU(arg[8]);
         var yb = func.parseFloatU(arg[9]);
-        func.CollisionLinearBulletSet(xa,ya,xb,yb,1.08);
+        func.CollisionLinearBulletSet(xa,ya,xb,yb,1.2);
 
         if(pvp)
         for(j=0;j<max_players;j++)
@@ -2505,7 +2538,8 @@ wss.on("connection", function connection(ws) {
       tpl.start.y = func.parseFloatU(arg[4]);
       tpl.vector.x = func.parseFloatU(arg[5]);
       tpl.vector.y = func.parseFloatU(arg[6]);
-      tpl.pos = tpl.start;
+      tpl.pos.x = tpl.start.x;
+      tpl.pos.y = tpl.start.y;
 
       if(tpl.vector.x==0) tpl.vector.x = 0.00001;
       if(tpl.vector.y==0) tpl.vector.y = 0.00001;

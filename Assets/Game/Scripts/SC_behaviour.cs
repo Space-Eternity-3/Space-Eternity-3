@@ -13,6 +13,8 @@ public struct SPlayerInfo
 public class CInfo
 {
     private SC_lists SC_lists;
+    private SC_control SC_control;
+    private SC_bullet SC_bullet;
     private Transform player;
     private SPlayerInfo[] PlayerInfo;
     private CDeltaPos deltaposmem;
@@ -21,6 +23,8 @@ public class CInfo
     {
         SC_lists = lts;
         player = pla;
+        SC_control = player.GetComponent<SC_control>();
+        SC_bullet = SC_control.SC_bullet;
         PlayerInfo = new SPlayerInfo[1];
     }
     public void UpdatePlayers(CDeltaPos deltapos)
@@ -39,6 +43,38 @@ public class CInfo
         if(PlayerInfo[0].enabled) return PlayerInfo;
         else return new SPlayerInfo[0];
     }
+    public void ShotRaw(float px, float py, float vx, float vy, int typ, int bidf)
+    {
+        SC_bullet.Shot(
+			new Vector3(px,py,0f),
+			new Vector3(0f,0f,0f),
+			new Vector3(vx,vy,0f),
+			typ,
+			bidf
+		);
+    }
+    public void CleanBullets(int bidf)
+    {
+        List<SC_bullet> buls = SC_lists.SC_bullet;
+        List<int> to_remove = new List<int>();
+        foreach(SC_bullet bul in buls) //Check remove IDs
+        {
+            if(bul.controller && bul.mode=="present" && bul.gun_owner==bidf)
+                to_remove.Add(bul.ID);
+        }
+        foreach(SC_bullet bul in buls) //Particles remove
+        {
+            if(bul.mode=="projection")
+            if(to_remove.IndexOf(bul.ID)!=-1)
+                bul.destroy_mode = "false";
+        }
+        foreach(SC_bullet bul in buls) //Destroy bullets
+        {
+            if(bul.mode=="present")
+            if(to_remove.IndexOf(bul.ID)!=-1)
+                bul.MakeDestroy(false);
+        }
+    }
 }
 
 public class SC_behaviour : MonoBehaviour
@@ -46,9 +82,10 @@ public class SC_behaviour : MonoBehaviour
     public SC_boss thys;
 
     //thys.type // Boss type (read only)
-    //thys.deltapos //Delta position of boss center (read only)
+    //thys.deltapos // Delta position of boss center (read only)
     //thys.dataID // General & Additional data
-    //thys.world //Info about world
+    //thys.world // Info about world
+    //thys.identifier // Object identifier
 
     public void _Start()
     {
@@ -60,13 +97,10 @@ public class SC_behaviour : MonoBehaviour
         thys.dataID[8] = thys.FloatToScrd(22f*Mathf.Cos(angle));
         thys.dataID[9] = thys.FloatToScrd(22f*Mathf.Sin(angle));
         thys.dataID[10] = thys.FloatToScrd(angle*180f/3.14159f);
-
-        //SPlayerInfo[] players = thys.world.GetPlayers();
-        //if(players.Length>0) Debug.Log(players.Length+": "+players[0].id+";"+players[0].x+";"+players[0].y);
-        //else Debug.Log(players.Length);
+        if(thys.dataID[3]%7==0) thys.world.ShotRaw(0+thys.deltapos.x,0+thys.deltapos.y,0.25f,0.25f,1,thys.identifier);
     }
     public void _End()
     {
-        
+        thys.world.CleanBullets(thys.identifier);
     }
 }

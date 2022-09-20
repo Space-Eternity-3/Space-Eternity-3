@@ -31,7 +31,7 @@ public class SC_colboss : MonoBehaviour
         if(collision.gameObject.name=="Bullet(Clone)" && !SC_boss.multiplayer)
         {
             SC_bullet bul = collision.gameObject.GetComponent<SC_bullet>();
-            if(bul.controller && !bul.boss_damaged)
+            if(bul.controller && !bul.boss_damaged && bul.gun_owner==0)
             {
                 bul.boss_damaged = true;
                 int mdo = bul.type;

@@ -8,6 +8,7 @@ public class SC_bullet : MonoBehaviour
     public Vector3 st_vect;
     public int type;
     public string mode = "mother";  //[mother, present, projection, server]
+    public int gun_owner = 0;
     public int ID = 0;
     public bool dev_bullets_show = false;
 
@@ -41,12 +42,13 @@ public class SC_bullet : MonoBehaviour
 
     public string projectionOwner="";
 
-    public SC_bullet Shot(Vector3 position, Vector3 vector, Vector3 delta, int typ)
+    public SC_bullet Shot(Vector3 position, Vector3 vector, Vector3 delta, int typ, int gun_own)
     {
         SC_bullet gob = Instantiate(gameObject, position, Quaternion.identity).GetComponent<SC_bullet>();
         SC_control.SC_lists.AddTo_SC_bullet(gob);
         gob.type = typ;
         gob.mode = "present";
+        gob.gun_owner = gun_own;
         gob.controller = true;
         gob.st_vect = SC_fun.Skop(vector, bullet_speed * speed[typ]) + delta;
         gob.ID = UnityEngine.Random.Range(0,1000000000);
@@ -125,6 +127,8 @@ public class SC_bullet : MonoBehaviour
             {
                 if(bul.ID==ID && bul.mode!="mother" && !bul.controller)
                 {
+                    //boss_damaged <=(means)=> player_damaged || boss_damaged
+                    if(gun_owner<0 && boss_damaged) bul.destroy_mode = "false";
                     bul.max_age = age;
                     bul.CheckAge();
                 }
@@ -208,20 +212,18 @@ public class SC_bullet : MonoBehaviour
             aBossScaled0 = (multiplayer || bos.dataID[2]!=2);
         }
         
-        if ((
-            neme[0] != 'S' &&
-            nume[0] != 'P' &&
-            !aBossScaled0 &&
-            Array.IndexOf(SafeNames, neme) == -1 &&
-            controller
-        ) || (
-            (neme == "Asteroid(Clone)" || neme == "aWallScaled(Clone)") &&
-            !controller
-        ))
+        if(gun_owner==0)
         {
+            if(
+                neme[0] != 'S' &&
+                nume[0] != 'P' &&
+                !aBossScaled0 &&
+                Array.IndexOf(SafeNames, neme) == -1 &&
+                controller
+            )
             MakeDestroy(mode=="projection");
         }
-
+        else if(neme=="Seon_special_collider" || neme=="pseudoBody") MakeDestroy(mode=="projection");
     }
     void OnDestroy()
     {

@@ -108,6 +108,7 @@ public class SC_boss : MonoBehaviour
     public int bX=0,bY=0,bID=1,sID=1;
 
     int memory2 = -1;
+    public int identifier;
     public bool bosnumed = false;
     public int[] dataID = new int[61];
 
@@ -194,11 +195,12 @@ public class SC_boss : MonoBehaviour
         }
     }
     public void StartFromStructure()
-    {
+    {try{
         SC_control.SC_lists.AddTo_SC_boss(this);
         SmoothMemory = new CSmoothMemory(4,SC_control.PL[1]);
         world = new CInfo(SC_control.SC_lists,SC_control.player);
         deltapos = new CDeltaPos(transform.position.x,transform.position.y);
+        identifier = -UnityEngine.Random.Range(1,1000000000);
 
         mother = false;
         multiplayer = ((int)Communtron4.position.y==100);
@@ -266,6 +268,11 @@ public class SC_boss : MonoBehaviour
         }
 
         FixedUpdateT();
+        
+    }catch(Exception e){
+        Debug.LogError(e);
+        throw;
+    }
     }
     void StateUpdate()
     {

@@ -84,7 +84,9 @@ public class SC_fun : MonoBehaviour
     }
 	public Vector3 Skop(Vector3 V, float F)
 	{
-		return V*F/SC_control.Pitagoras(V);
+		float pita = SC_control.Pitagoras(V);
+		if(pita!=0) return V*F/SC_control.Pitagoras(V);
+		else return V*F;
 	}
     int MakeID(int ID,int sed)
     {

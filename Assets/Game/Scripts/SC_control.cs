@@ -255,7 +255,8 @@ public class SC_control : MonoBehaviour {
 				transform.position,
 				new Vector3(xpo,ypo,0f),
 				playerR.velocity*0.02f,
-				typ
+				typ,
+				0
 			);
 			SC_invisibler.invisible = false;
 		}
@@ -638,6 +639,11 @@ public class SC_control : MonoBehaviour {
 		foreach(SC_bullet bul in buls)
 		{
 			if(bul.mode!="mother")
+			bul.destroy_mode = "false";
+		}
+		foreach(SC_bullet bul in buls)
+		{
+			if(bul.mode!="mother")
 			bul.MakeDestroy(false);
 		}
 
@@ -806,7 +812,8 @@ public class SC_control : MonoBehaviour {
 					transform.position,
 					new Vector3(ux,uy,0f),
 					playerR.velocity*0.02f,
-					3
+					3,
+					0
 				);
 				
 				//playerR.velocity += new Vector3(ux*unstable_force,uy*unstable_force,0f);
@@ -1140,8 +1147,7 @@ public class SC_control : MonoBehaviour {
 	}
 	public Vector3 Skop(float F, Vector3 vec3)
 	{
-		float sqrt = Mathf.Sqrt(vec3.x*vec3.x + vec3.y*vec3.y + vec3.z*vec3.z);
-		return vec3*F/sqrt;
+		return SC_fun.Skop(vec3,F);
 	}
 	void OnCollisionEnter(Collision collision)
     {

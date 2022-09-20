@@ -400,6 +400,7 @@ public class SC_fobs : MonoBehaviour
             collision.gameObject.name=="Bullet(Clone)" &&
             !collision.gameObject.GetComponent<SC_bullet>().turn_used &&
             collision.gameObject.GetComponent<SC_bullet>().controller &&
+            collision.gameObject.GetComponent<SC_bullet>().gun_owner==0 &&
             collision.gameObject.GetComponent<SC_bullet>().mode=="present" &&
             ShotTurn && (!(asst.permanent_blocker || asst.temporary_blocker))
         ){

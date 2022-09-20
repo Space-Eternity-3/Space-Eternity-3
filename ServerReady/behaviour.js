@@ -1,5 +1,9 @@
 const { func } = require("./functions");
 
+function randomInteger(min, max) {
+    return Math.round(Math.random() * (max - min)) + func.parseIntU(min);
+}
+
 class CBoss
 {
     constructor(type,deltapos,dataX,dataY,world)
@@ -8,7 +12,8 @@ class CBoss
         this.deltapos = deltapos; //Delta position of boss center (read only)
         this.dataX = dataX; // General data
         this.dataY = dataY; // Additional data
-        this.world = world; //Info about world
+        this.world = world; // Info about world
+        this.identifier = -randomInteger(1,1000000000); // Boss object identifier
     }
 
     /*--------------------------//
@@ -41,14 +46,14 @@ class CBoss
     FixedUpdate() //Executes 50 times per second after starting frame
     {
         var angle = (this.dataY[3-2]/50)%(2*3.14159);
-        //this.dataY[8-2] = func.FloatToScrd(22*Math.cos(angle));
-        //this.dataY[9-2] = func.FloatToScrd(22*Math.sin(angle));
+        this.dataY[8-2] = func.FloatToScrd(22*Math.cos(angle));
+        this.dataY[9-2] = func.FloatToScrd(22*Math.sin(angle));
         this.dataY[10-2] = func.FloatToScrd(angle*180/3.14159);
-        //console.log(this.world.GetPlayers());
+        if(this.dataY[3-2]%7==0) this.world.ShotRaw(0+this.deltapos.x,0+this.deltapos.y,0.25,0.25,1,this.identifier);
     }
     End() //Executes on battle end directly after last FixedUpdate() Note: dataY will be reseted automatically after execution
     {
-
+        this.world.CleanBullets(this.identifier);
     }
 }
 
