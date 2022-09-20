@@ -35,4 +35,8 @@ public class SC_lists : MonoBehaviour
     public List<SC_point_expand> SC_point_expand = new List<SC_point_expand>();
     public void AddTo_SC_point_expand(SC_point_expand pex) { SC_point_expand.Add(pex); }
     public void RemoveFrom_SC_point_expand(SC_point_expand pex) { SC_point_expand.Remove(pex); }
+
+    public List<SC_players> SC_players = new List<SC_players>();
+    public void AddTo_SC_players(SC_players pla) { SC_players.Add(pla); }
+    public void RemoveFrom_SC_players(SC_players pla) { SC_players.Remove(pla); }
 }

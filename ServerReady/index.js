@@ -678,21 +678,14 @@ setInterval(function () { // <interval #2>
       var i, j, lngt = bulletsT.length;
       for(i=0;i<lngt;i++)
       {
-        var start_xa = bulletsT[i].pos.x;
-        var start_ya = bulletsT[i].pos.y;
         var xv = bulletsT[i].vector.x;
         var yv = bulletsT[i].vector.y;
 
-        var xn = (xv/Math.sqrt(xv*xv + yv*yv))
-        var yn = (yv/Math.sqrt(xv*xv + yv*yv))
-
-        var xa = start_xa - xn;
-        var ya = start_ya - yn;
-        var xb = start_xa + (xv) + xn;
-        var yb = start_ya + (yv) + yn;
-
-        var aab = (yb-ya)/(xb-xa);
-        var adc = -1/(aab);
+        var xa = bulletsT[i].pos.x;
+        var ya = bulletsT[i].pos.y;
+        var xb = xa + bulletsT[i].vector.x;
+        var yb = ya + bulletsT[i].vector.x;
+        func.CollisionLinearBulletSet(xa,ya,xb,yb,0.08);
 
         if(pvp)
         for(j=0;j<max_players;j++)
@@ -702,10 +695,7 @@ setInterval(function () { // <interval #2>
             var plas = plr.players[j].split(";");
             var xc = func.parseFloatU(plas[0]);
             var yc = func.parseFloatU(plas[1]);
-            var xd = (yc-ya + (aab*xa)-(adc*xc))/(aab-adc);
-            var yd = aab*(xd-xa) + ya;
-            if((xd>xa && xd>xb) || (xd<xa && xd<xb)) continue;
-            if(((xd-xc)**2)+((yd-yc)**2) <= ((1)**2))
+            if(func.CollisionLinearCheck(xc,yc,0.92))
             {
               if(bulletsT[i].type!=3) {
                 DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j) );
@@ -720,9 +710,6 @@ setInterval(function () { // <interval #2>
           }
         }
 
-        var rr = 7.58;
-        xb = start_xa + (xv);
-        yb = start_ya + (yv);
         var lngts = scrs.length;
         for(j=0;j<lngts;j++)
         {
@@ -731,7 +718,7 @@ setInterval(function () { // <interval #2>
           {
             var xc = scrs[j].posCX + func.ScrdToFloat(scrs[j].dataY[8-2]);
             var yc = scrs[j].posCY + func.ScrdToFloat(scrs[j].dataY[9-2]);
-            if(((xb-xc)**2)+((yb-yc)**2) <= ((rr)**2))
+            if(func.CollisionLinearCheck(xc,yc,7.5))
             {
               if(bulletsT[i].type!=3) {
                 DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1) );
@@ -1848,31 +1835,15 @@ wss.on("connection", function connection(ws) {
         plr.data[arg[1]] = censured;
       }
 
-      //impulse player damage
+      //impulse damage
       var j, caray = censured.split(";");
       if(caray.length>1 && arg[7]=="T")
       {
-        var rr = 2;
-
         var xa = func.parseFloatU(caray[0]);
         var ya = func.parseFloatU(caray[1]);
         var xb = func.parseFloatU(arg[8]);
         var yb = func.parseFloatU(arg[9]);
-
-        if(xb==xa) xb+=0.00001;
-        if(yb==ya) yb+=0.00001;
-
-        var xv = xb-xa;
-        var yv = yb-ya;
-
-        var xn = (rr*xv/Math.sqrt(xv*xv + yv*yv))
-        var yn = (rr*yv/Math.sqrt(xv*xv + yv*yv))
-
-        xa = xa - xn; ya = ya - yn;
-        xb = xb + xn; yb = yb + yn;
-
-        var aab = (yb-ya)/(xb-xa);
-        var adc = -1/(aab);
+        func.CollisionLinearBulletSet(xa,ya,xb,yb,1.08);
 
         if(pvp)
         for(j=0;j<max_players;j++)
@@ -1882,10 +1853,7 @@ wss.on("connection", function connection(ws) {
             var plas = plr.players[j].split(";");
             var xc = func.parseFloatU(plas[0]);
             var yc = func.parseFloatU(plas[1]);
-            var xd = (yc-ya + (aab*xa)-(adc*xc))/(aab-adc);
-            var yd = aab*(xd-xa) + ya;
-            if((xd>xa && xd>xb) || (xd<xa && xd<xb)) continue;
-            if(((xd-xc)**2)+((yd-yc)**2) <= ((rr)**2))
+            if(func.CollisionLinearCheck(xc,yc,0.92))
             {
               DamageFLOAT(j,func.parseFloatU(gameplay[29]))
               plr.impulsed[arg[1]].push(j);
@@ -1893,9 +1861,6 @@ wss.on("connection", function connection(ws) {
           }
         }
 
-        rr = 8.9;
-        xb = func.parseFloatU(arg[8]);
-        yb = func.parseFloatU(arg[9]);
         var lngts = scrs.length;
         for(j=0;j<lngts;j++)
         {
@@ -1904,7 +1869,7 @@ wss.on("connection", function connection(ws) {
           {
             var xc = scrs[j].posCX + func.ScrdToFloat(scrs[j].dataY[8-2]);
             var yc = scrs[j].posCY + func.ScrdToFloat(scrs[j].dataY[9-2]);
-            if(((xb-xc)**2)+((yb-yc)**2) <= ((rr)**2))
+            if(func.CollisionLinearCheck(xc,yc,7.5))
             {
               DamageBoss(j,func.parseFloatU(gameplay[29]))
               plr.impulsed[arg[1]].push(-l);

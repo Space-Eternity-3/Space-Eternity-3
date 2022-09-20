@@ -8,6 +8,7 @@ public class SC_players : MonoBehaviour
     public Material normal,active,turbo,brake;
     public Material M1,M2,M3,M4;
     public SC_fun SC_fun;
+    public SC_control SC_control;
 
     //Relative constants
     public Renderer engine,nose,drillRen;
@@ -49,6 +50,7 @@ public class SC_players : MonoBehaviour
     }
     public void B_Awake()
     {
+        SC_control.SC_lists.AddTo_SC_players(this);
         ResetArray();
 
 		Aeffs = Instantiate(atS,atS.position,atS.rotation);
@@ -67,6 +69,10 @@ public class SC_players : MonoBehaviour
         }
 		
 		IDP_phys = IDP;
+    }
+    void OnDestroy()
+    {
+        SC_control.SC_lists.RemoveFrom_SC_players(this);
     }
 	public void B_Start()
 	{

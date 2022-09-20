@@ -41,8 +41,8 @@ class CBoss
     FixedUpdate() //Executes 50 times per second after starting frame
     {
         var angle = (this.dataY[3-2]/50)%(2*3.14159);
-        this.dataY[8-2] = func.FloatToScrd(22*Math.cos(angle));
-        this.dataY[9-2] = func.FloatToScrd(22*Math.sin(angle));
+        //this.dataY[8-2] = func.FloatToScrd(22*Math.cos(angle));
+        //this.dataY[9-2] = func.FloatToScrd(22*Math.sin(angle));
         this.dataY[10-2] = func.FloatToScrd(angle*180/3.14159);
         //console.log(this.world.GetPlayers());
     }
