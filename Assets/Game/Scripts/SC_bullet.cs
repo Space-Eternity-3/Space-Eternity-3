@@ -37,6 +37,7 @@ public class SC_bullet : MonoBehaviour
     bool multiplayer = false;
     bool destroyed = false;
     public bool boss_damaged = false;
+    public bool block_graphics = false;
     int looper = 0;
     int loopSndID = -1;
 
@@ -127,8 +128,7 @@ public class SC_bullet : MonoBehaviour
             {
                 if(bul.ID==ID && bul.mode!="mother" && !bul.controller)
                 {
-                    //boss_damaged <=(means)=> player_damaged || boss_damaged
-                    if(gun_owner<0 && boss_damaged) bul.destroy_mode = "false";
+                    if(block_graphics) bul.destroy_mode = "false";
                     bul.max_age = age;
                     bul.CheckAge();
                 }
@@ -223,7 +223,14 @@ public class SC_bullet : MonoBehaviour
             )
             MakeDestroy(mode=="projection");
         }
-        else if(neme=="Seon_special_collider" || neme=="pseudoBody") MakeDestroy(mode=="projection");
+        else
+        {
+            if(
+                neme=="Seon_special_collider" &&
+                controller
+            )
+            MakeDestroy(mode=="projection");
+        }
     }
     void OnDestroy()
     {

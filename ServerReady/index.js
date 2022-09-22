@@ -117,6 +117,7 @@ const bulletTemplate = {
 const scrTemplate = {
   dataX: [],
   dataY: [],
+  bulCols: [],
   bID: -1,
   type: 0,
   posCX: 0,
@@ -165,6 +166,41 @@ gameplay.fill(""); Object.seal(gameplay);
 modifiedDrops.fill(""); Object.seal(modifiedDrops);
 
 //Classes
+class CShape
+{
+  constructor(neme1,shape_description1,default_offset1,col_id) {
+    this.neme = neme1;
+    this.sds = shape_description1; // sx sy
+    this.dof = default_offset1; // cx cy lx ly lrot
+    this.cop = {cx:0,cy:0};
+    this.col_identifier = col_id;
+  }
+  SetShapeCollider(dx,dy,drot)
+  {
+    var alpha = (drot) * Math.PI / 180;
+    var beta = (this.dof.lrot+drot) * Math.PI / 180;
+
+    var lroted = func.RotatePoint([this.dof.lx,this.dof.ly],alpha,false);
+    var cx = this.dof.cx + dx + lroted[0];
+    var cy = this.dof.cy + dy + lroted[1];
+    this.cop.cx = cx; this.cop.cy = cy;
+
+    if(this.neme=="sphere") return;
+
+    var srt1 = func.RotatePoint([0,this.sds.sy],beta,false)
+    var srt2 = [-srt1[0],-srt1[1]];
+    srt1[0] += cx; srt1[1] += cy;
+    srt2[0] += cx; srt2[1] += cy;
+
+    if(this.neme=="cylinder" || this.neme=="capsule") func.CollisionLinearBulletSet(srt1[0],srt1[1],srt2[0],srt2[1],this.sds.sx);
+  }
+  IsSphereColliding(cx,cy,r1)
+  {
+    if(this.neme=="sphere") return func.CollisionPointCheck(this.cop.cx,this.cop.cy,cx,cy,this.sds.sx,r1);
+    if(this.neme=="cylinder" || this.neme=="capsule") return func.CollisionLinearCheck(cx,cy,r1,(this.neme=="capsule"));
+    return false;
+  }
+}
 class CInfo
 {
   constructor(plas,buls) {
@@ -706,8 +742,22 @@ setInterval(function () { // <interval #2>
     date_before++;
     if((date_before-date_start) % 20 == 0) //precisely 50 times per second
     {
-      //Bullet movement && check player collision
-      var i, j, lngt = bulletsT.length;
+      //Bullet movement && check collision
+      var i, j, lngt=bulletsT.length, slngt=scrs.length;
+      for(j=0;j<slngt;j++)
+      {
+        var q,qlngt=scrs[j].bulCols.length;
+        for(q=0;q<qlngt;q++)
+        {
+          scrs[j].bulCols[q].SetShapeCollider(0,0,0);
+          for(i=0;i<lngt;i++)
+          {
+            if(bulletsT[i].age != bulletsT[i].max_age && bulletsT[i].owner<0)
+              if(scrs[j].bulCols[q].IsSphereColliding(bulletsT[i].pos.x + bulletsT[i].vector.x, bulletsT[i].pos.y + bulletsT[i].vector.y, 0.08))
+                  destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
+          }
+        }
+      }
       for(i=0;i<lngt;i++)
       {
         var xv = bulletsT[i].vector.x;
@@ -716,10 +766,10 @@ setInterval(function () { // <interval #2>
         var xa = bulletsT[i].pos.x;
         var ya = bulletsT[i].pos.y;
         var xb = xa + bulletsT[i].vector.x;
-        var yb = ya + bulletsT[i].vector.x;
+        var yb = ya + bulletsT[i].vector.y;
         func.CollisionLinearBulletSet(xa,ya,xb,yb,0.08);
 
-        if(pvp)
+        if(pvp || bulletsT[i].owner<0)
         for(j=0;j<max_players;j++)
         {
           if(plr.players[j]!="0" && plr.players[j]!="1" && bulletsT[i].owner!=j)
@@ -2080,6 +2130,7 @@ wss.on("connection", function connection(ws) {
           tpl.posCY = func.parseFloatU(bossPosY);
           tpl.dataX = [];
           tpl.dataY = [];
+          tpl.bulCols = [];
           tpl.dataX = [func.parseIntU(lc3T[0]),func.parseIntU(lc3T[1])];
           for(i=2;i<=60;i++) tpl.dataY[i-2] = 0;
           var tpl2 = {x:0,y:0}; tpl2.x = tpl.posCX; tpl2.y = tpl.posCY;
@@ -2121,6 +2172,42 @@ wss.on("connection", function connection(ws) {
       var remindex = plr.bossMemories[arg[1]].indexOf(bID);
       if(remindex!=-1)
         plr.bossMemories[arg[1]].splice(remindex);
+    }
+    if(arg[0] == "/ScrShapeAdd")
+    {
+      //ScrShapeAdd 1[PlayerID] 2[bID] 3[shape] 4,5[sx,sy] 6,7,8[x,y,r] 9[col_identifier]
+      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+
+      var bID = arg[2];
+
+      var lngts = scrs.length;
+      for(i=0;i<lngts;i++)
+      {
+        if(scrs[i].bID==bID)
+        {
+          var q,qlngt=scrs[i].bulCols.length;
+          for(q=0;q<qlngt;q++)
+            if(scrs[i].bulCols[q].col_identifier==arg[9]) return;
+
+          shape_description = {sx:0,sy:0};
+          default_offset = {cx:0,cy:0,lx:0,ly:0,lrot:0};
+          
+          shape_description.sx = func.parseFloatU(arg[4]);
+          shape_description.sy = func.parseFloatU(arg[5]);
+          default_offset.cx = scrs[i].posCX;
+          default_offset.cy = scrs[i].posCY;
+          default_offset.lx = func.parseFloatU(arg[6]);
+          default_offset.ly = func.parseFloatU(arg[7]);
+          default_offset.lrot = func.parseFloatU(arg[8]);
+
+          scrs[i].bulCols.push(new CShape(
+            arg[3],
+            shape_description,
+            default_offset,
+            arg[9]
+          ));
+        }
+      }
     }
     if(arg[0] == "/GiveUpTry")
     {

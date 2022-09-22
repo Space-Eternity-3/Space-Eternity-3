@@ -6,6 +6,7 @@ using System;
 public class SC_structure : MonoBehaviour
 {
 	public SC_fun SC_fun;
+	public SC_control SC_control;
 	public Transform legs;
 	public Transform Communtron1;
 	
@@ -16,6 +17,7 @@ public class SC_structure : MonoBehaviour
 	public Transform stsphere;
 	public Transform stboss;
 	public Transform emptyobject;
+	public Transform bosbul;
 	
     public int X=0,Y=0,ID=1,overrand=0;
 	public string actual_state = "default";
@@ -369,6 +371,19 @@ public class SC_structure : MonoBehaviour
 						st_structs[current] = arc;
 
 						arc.GetComponent<SC_resp_blocker>().radius = prradius;
+					}
+					else if(arg[i]=="bosbul")
+					{
+						i++;
+						string prshape = arg[i];
+
+						Transform bbl = Instantiate(bosbul,transform.position,Quaternion.identity);
+						bbl.parent = transform;
+						st_structs[current] = bbl;
+
+						if(prshape=="sphere") bbl.GetChild(0).GetComponent<SphereCollider>().enabled = true;
+						if(prshape=="cylinder") bbl.GetChild(0).GetComponent<BoxCollider>().enabled = true;
+						if(prshape=="capsule") bbl.GetChild(0).GetComponent<CapsuleCollider>().enabled = true;
 					}
 					else throw(new Exception());
 				}
@@ -903,6 +918,7 @@ public class SC_structure : MonoBehaviour
 		for(i=0;i<1024;i++)
 		{
 			if(st_structs[i]!=null)
+			{
 				if(
 					st_structs[i].GetComponent<SC_asteroid>()!=null &&
 					st_structs[i].GetComponent<SC_seon_remote>()==null &&
@@ -911,6 +927,39 @@ public class SC_structure : MonoBehaviour
 					SC_seon_remote ssr = st_structs[i].gameObject.AddComponent<SC_seon_remote>();
 					ssr.SC_structure = transform.GetComponent<SC_structure>();
 				}
+
+				if(st_structs[i].name=="StBulcol(Clone)" && st_structs[0]!=null)
+				{
+					string prshape = "";
+					if(st_structs[i].GetChild(0).GetComponent<SphereCollider>().enabled) prshape = "sphere";
+					if(st_structs[i].GetChild(0).GetComponent<BoxCollider>().enabled) prshape = "cylinder";
+					if(st_structs[i].GetChild(0).GetComponent<CapsuleCollider>().enabled) prshape = "capsule";
+
+					float sx=0,sy=0,lx=0,ly=0,lrot=0;
+
+					lx = st_structs[i].localPosition.x;
+					ly = st_structs[i].localPosition.y;
+					lrot = st_structs[i].eulerAngles.z;
+
+					if(prshape=="sphere")
+					{
+						sx = st_structs[i].localScale.x/2;
+					}
+					else if(prshape=="cylinder" || prshape=="capsule")
+					{
+						sx = 3f*st_structs[i].localScale.x/2;
+						sy = 10f*st_structs[i].localScale.y/2;
+					}
+					else continue;
+
+					SC_control.SendMTP("/ScrShapeAdd "+
+						SC_control.connectionID+" "+
+						st_structs[0].GetComponent<SC_boss>().bID+" "+
+						prshape+" "+
+						sx+" "+sy+" "+lx+" "+ly+" "+lrot+" "+i
+					);
+				}
+			}
 		}
 	}
 }

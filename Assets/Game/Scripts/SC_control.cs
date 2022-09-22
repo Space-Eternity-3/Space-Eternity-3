@@ -639,12 +639,10 @@ public class SC_control : MonoBehaviour {
 		foreach(SC_bullet bul in buls)
 		{
 			if(bul.mode!="mother")
-			bul.destroy_mode = "false";
-		}
-		foreach(SC_bullet bul in buls)
-		{
-			if(bul.mode!="mother")
-			bul.MakeDestroy(false);
+			{
+				bul.block_graphics = true;
+				bul.MakeDestroy(false);
+			}
 		}
 
 		if(!dont)
@@ -816,7 +814,6 @@ public class SC_control : MonoBehaviour {
 					0
 				);
 				
-				//playerR.velocity += new Vector3(ux*unstable_force,uy*unstable_force,0f);
 				Quaternion quat_foo = new Quaternion(0f,0f,0f,0f);
 				quat_foo.eulerAngles = new Vector3(0f,0f,alp+90f);
 				Transform trn = Instantiate(unstablePart,transform.position,quat_foo);
@@ -891,7 +888,7 @@ public class SC_control : MonoBehaviour {
 		//Cmd list activator
 		while(cmdList.Count > 0)
 		{
-			cmdDo(cmdList[0]);
+			if(cmdList[0]!=null) cmdDo(cmdList[0]);
 			cmdList.RemoveAt(0);
 		}
 
@@ -1164,7 +1161,6 @@ public class SC_control : MonoBehaviour {
 				DamageFLOAT(hai);
 			}
 		}
-		//else if(Pitagoras(playerR.velocity)<=50f) playerR.velocity += Skop(mushroom_force,playerR.velocity);
     }
 	void OnTriggerStay(Collider collision)
 	{
@@ -1433,6 +1429,7 @@ public class SC_control : MonoBehaviour {
 				{
 					bul.max_age = int.Parse(arg[3]);
 					bul.destroy_mode = arg[4];
+					if(arg[4]=="false") bul.block_graphics = true;
 					bul.CheckAge();
 				}
 			}

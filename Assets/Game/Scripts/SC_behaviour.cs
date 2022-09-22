@@ -56,23 +56,13 @@ public class CInfo
     public void CleanBullets(int bidf)
     {
         List<SC_bullet> buls = SC_lists.SC_bullet;
-        List<int> to_remove = new List<int>();
-        foreach(SC_bullet bul in buls) //Check remove IDs
+        foreach(SC_bullet bul in buls)
         {
-            if(bul.controller && bul.mode=="present" && bul.gun_owner==bidf)
-                to_remove.Add(bul.ID);
-        }
-        foreach(SC_bullet bul in buls) //Particles remove
-        {
-            if(bul.mode=="projection")
-            if(to_remove.IndexOf(bul.ID)!=-1)
-                bul.destroy_mode = "false";
-        }
-        foreach(SC_bullet bul in buls) //Destroy bullets
-        {
-            if(bul.mode=="present")
-            if(to_remove.IndexOf(bul.ID)!=-1)
+            if(bul.gun_owner==bidf)
+            {
+                bul.block_graphics = true;
                 bul.MakeDestroy(false);
+            }
         }
     }
 }
@@ -97,7 +87,10 @@ public class SC_behaviour : MonoBehaviour
         thys.dataID[8] = thys.FloatToScrd(22f*Mathf.Cos(angle));
         thys.dataID[9] = thys.FloatToScrd(22f*Mathf.Sin(angle));
         thys.dataID[10] = thys.FloatToScrd(angle*180f/3.14159f);
-        if(thys.dataID[3]%7==0) thys.world.ShotRaw(0+thys.deltapos.x,0+thys.deltapos.y,0.25f,0.25f,1,thys.identifier);
+        
+        float[] pak = new float[2]; pak[0]=0; pak[1]=0.35f;
+        float[] efwing = thys.RotatePoint(pak,angle+3.14159f/2,false);
+        if(thys.dataID[3]%7==0) thys.world.ShotRaw(0+thys.deltapos.x,0+thys.deltapos.y,efwing[0],efwing[1],1,thys.identifier);
     }
     public void _End()
     {

@@ -46,6 +46,49 @@ summon #69 wall 12 move 2 -2 rotate 315
 summon #70 wall 12 move 2 -2 rotate 337,5
 from #59 to #70 move 34,25 0
 
+summon #101 bosbul sphere parent set #1
+summon #102 bosbul sphere parent set #2
+summon #103 bosbul sphere parent set #3
+summon #104 bosbul sphere parent set #4
+summon #105 bosbul sphere parent set #5
+summon #106 bosbul sphere parent set #6
+summon #107 bosbul sphere parent set #7
+summon #108 bosbul sphere parent set #8
+summon #109 bosbul sphere parent set #9
+summon #110 bosbul sphere parent set #10
+summon #111 bosbul sphere parent set #11
+summon #112 bosbul sphere parent set #12
+summon #113 bosbul sphere parent set #13
+summon #114 bosbul sphere parent set #14
+summon #115 bosbul sphere parent set #15
+summon #116 bosbul sphere parent set #16
+from #101 to #116 reset localpos
+from #101 to #116 parent remove
+from #101 to #108 scale 8 8 8
+from #109 to #116 scale 7 7 7
+
+summon #159 bosbul cylinder parent set #59
+summon #160 bosbul cylinder parent set #60
+summon #161 bosbul cylinder parent set #61
+summon #162 bosbul cylinder parent set #62
+summon #163 bosbul cylinder parent set #63
+summon #164 bosbul cylinder parent set #64
+summon #165 bosbul cylinder parent set #65
+summon #166 bosbul cylinder parent set #66
+summon #167 bosbul cylinder parent set #67
+summon #168 bosbul cylinder parent set #68
+summon #169 bosbul cylinder parent set #69
+summon #170 bosbul cylinder parent set #70
+from #159 to #170 reset localpos
+from #159 to #170 reset rotation
+from #159 to #170 parent remove
+
+summon #171 bosbul cylinder rotate 0
+summon #172 bosbul cylinder rotate 90
+summon #173 bosbul cylinder rotate 180
+summon #174 bosbul cylinder rotate 270
+from #171 to #174 move 36.4 0
+
 summon #17 asteroid 4 12 0,0,0,0,0,0,0,0
 summon #18 asteroid 4 12 0,0,0,0,0,0,0,0
 summon #19 asteroid 4 12 0,0,0,0,0,0,0,0

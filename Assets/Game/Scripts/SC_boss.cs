@@ -535,6 +535,18 @@ public class SC_boss : MonoBehaviour
     public float ScrdToFloat(int src) {
         return src/124f;
     }
+    public float[] RotatePoint(float[] crd, float rot, bool convert_to_radians)
+    {
+        float x = crd[0];
+        float y = crd[1];
+        float alpha;
+        if(convert_to_radians) alpha = rot * 3.14159f / 180f;
+        else alpha = rot;
+        float[] ret = new float[2];
+        ret[0] = ( x*Mathf.Cos(alpha) + y*Mathf.Cos(alpha + 3.14159f / 2f) );
+        ret[1] = ( x*Mathf.Sin(alpha) + y*Mathf.Sin(alpha + 3.14159f / 2f) );
+        return ret;
+    }
     public void BeforeDestroy()
     {
         if(multiplayer)

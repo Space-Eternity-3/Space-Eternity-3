@@ -51,6 +51,19 @@ class cfun
         return src/124;
     }
 
+    RotatePoint(crd,rot,convert_to_radians=true)
+    {
+        var x = crd[0];
+        var y = crd[1];
+        var alpha;
+        if(convert_to_radians) alpha = rot * Math.PI / 180;
+        else alpha = rot;
+        return [
+            ( x*Math.cos(alpha) + y*Math.cos(alpha + Math.PI / 2) ),
+            ( x*Math.sin(alpha) + y*Math.sin(alpha + Math.PI / 2) )
+        ];
+    }
+
     CollisionLinearBulletSet(xa,ya,xb,yb,r1)
     {
         if(xa==xb) xb+=0.0001;
@@ -69,7 +82,7 @@ class cfun
         this.lps.a2 = a2;
         this.lps.b1 = b1;
     }
-    CollisionLinearCheck(xt,yt,r2)
+    CollisionLinearCheck(xt,yt,r2,capsule=true)
     {
         var mem = this.lps;
         var xa = mem.xa;
@@ -87,10 +100,10 @@ class cfun
         var xc = (b2-b1)/(a1-a2);
         var yc = a1*xc + b1;
 
-        if(this.CollisionPointCheck(xa,ya,xt,yt,r1,r2) || this.CollisionPointCheck(xb,yb,xt,yt,r1,r2)) return true; //border point collision detected
-        else if((xc>xa&&xc>xb) || (xc<xa&&xc<xb)) return false; //not in line area
-        else if(this.CollisionPointCheck(xc,yc,xt,yt,r1,r2)) return true; //linear collision detected
-        else return false; //linear collision not detected
+        if(capsule) if(this.CollisionPointCheck(xa,ya,xt,yt,r1,r2) || this.CollisionPointCheck(xb,yb,xt,yt,r1,r2)) return true; //border point collision detected
+        if((xc>xa&&xc>xb) || (xc<xa&&xc<xb)) return false; //not in line area
+        if(this.CollisionPointCheck(xc,yc,xt,yt,r1,r2)) return true; //linear collision detected
+        return false; //linear collision not detected
     }
     CollisionPointCheck(xa,ya,xt,yt,r1,r2)
     {
