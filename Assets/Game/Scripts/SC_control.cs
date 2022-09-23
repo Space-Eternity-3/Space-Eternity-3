@@ -914,7 +914,7 @@ public class SC_control : MonoBehaviour {
 		}
 		
 		if(SC_invisibler.invisible) drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
-		if(drill3T.localPosition.y>=1.44f&&Mathf.Sqrt(playerR.velocity.x*playerR.velocity.x+playerR.velocity.y*playerR.velocity.y)<1000f)
+		if(drill3T.localPosition.y>=1.44f)
 		{
 			Communtron1.localScale=new Vector3(Communtron1.localScale.x,Communtron1.localScale.y,2f);
 		}

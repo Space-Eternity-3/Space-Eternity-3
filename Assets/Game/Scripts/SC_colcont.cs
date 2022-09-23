@@ -20,8 +20,11 @@ public class SC_colcont : MonoBehaviour
                 if(mdo==2) base_damage = float.Parse(SC_control.SC_data.Gameplay[27]);
                 if(mdo==3) base_damage = float.Parse(SC_control.SC_data.Gameplay[28]);
                 if(mdo!=3 || SC_control.SC_artefacts.GetArtefactID()!=6) SC_control.DamageFLOAT(base_damage);
-                bul.block_graphics = true;
-                bul.MakeDestroy(false);
+                if(mdo!=3)
+                {
+                    bul.block_graphics = true;
+                    bul.MakeDestroy(false);
+                }
             }
         }
     }

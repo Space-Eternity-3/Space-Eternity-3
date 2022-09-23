@@ -221,7 +221,7 @@ public class SC_bullet : MonoBehaviour
                 Array.IndexOf(SafeNames, neme) == -1 &&
                 controller
             )
-            MakeDestroy(mode=="projection");
+            MakeDestroy(false);
         }
         else
         {
@@ -229,7 +229,7 @@ public class SC_bullet : MonoBehaviour
                 neme=="Seon_special_collider" &&
                 controller
             )
-            MakeDestroy(mode=="projection");
+            MakeDestroy(false);
         }
     }
     void OnDestroy()

@@ -60,7 +60,7 @@ public class SC_magnetic : MonoBehaviour {
 			nY=dY*Force/range;
 		}
 
-		playerR.velocity+=fixeds*new Vector3(nX,nY,0f);
+		playerR.velocity += fixeds*new Vector3(nX,nY,0f);
 	}
 	void LateUpdate()
 	{
