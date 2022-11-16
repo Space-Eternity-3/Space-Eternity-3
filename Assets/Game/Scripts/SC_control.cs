@@ -1386,6 +1386,7 @@ public class SC_control : MonoBehaviour {
 				int.Parse(arg[7]),
 				arg[1]
 			);
+			bul1.InstantMove(int.Parse(arg[8]));
 
 			if(connectionID+""==arg[1])
 			{
@@ -1417,6 +1418,7 @@ public class SC_control : MonoBehaviour {
 					int.Parse(arg[7]),
 					arg[1]
 				);
+				bul3.InstantMove(int.Parse(arg[8]));
 				bul3.delta_age = (4/2);
 			}
 		}

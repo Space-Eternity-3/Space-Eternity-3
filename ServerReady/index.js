@@ -256,6 +256,7 @@ class CInfo
       if(tpl.vector.y==0) tpl.vector.y = 0.00001;
 
       var arg = ("/ "+bidf+" "+type+" "+px+" "+py+" "+vx+" "+vy+" "+tpl.ID).replaceAll(".",",").split(" ");
+      arg.push("0");
       spawnBullet(tpl,arg);
   }
   CleanBullets(bidf)
@@ -1213,6 +1214,7 @@ function spawnBullet(tpl,arg)
       arg[5]+" " +
       arg[6]+" " +
       arg[7]+" " +
+      arg[8]+" " +
       " X X"
   );
 }
@@ -2626,6 +2628,7 @@ wss.on("connection", function connection(ws) {
       if(tpl.vector.x==0) tpl.vector.x = 0.00001;
       if(tpl.vector.y==0) tpl.vector.y = 0.00001;
 
+      arg[8] = "0";
       spawnBullet(tpl,arg);
     }
     if (arg[0] == "/NewBulletRemove") {
@@ -2734,6 +2737,27 @@ wss.on("connection", function connection(ws) {
         var gtt = GetRPC(plr.players,lngt,true);
         eff = "/RPC " + max_players + " " + gtt + " X X";
         sendTo(ws,eff);
+
+        //Bullet data send to new player
+        lngt = bulletsT.length;
+        var ag,tpl;
+        for(i=0;i<lngt;i++)
+        {
+          tpl = bulletsT[i];
+          ag = ["/",tpl.owner,tpl.type,tpl.start.x,tpl.start.y,tpl.vector.x,tpl.vector.y,tpl.ID,tpl.age].join(" ").replaceAll(".",",").split(" ");
+          sendTo(ws,
+            "/RetNewBulletSend " +
+              ag[1]+" " +
+              ag[2]+" " +
+              ag[3]+" " +
+              ag[4]+" " +
+              ag[5]+" " +
+              ag[6]+" " +
+              ag[7]+" " +
+              ag[8]+" " +
+              " X X"
+          );
+        }
       }
     }
   });
