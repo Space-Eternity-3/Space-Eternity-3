@@ -455,8 +455,8 @@ function readPlayer(n) {
 function ulamToXY(ulam) {
   var sqrt = Math.floor(Math.sqrt(ulam));
   if (sqrt % 2 == 0) sqrt--;
-  var x = sqrt / 2 + 0.5,
-    y = -sqrt / 2 - 0.5;
+  var x = sqrt / 2 + 0.5;
+  var y = -sqrt / 2 - 0.5;
   var pot = sqrt ** 2;
   var delta = ulam - pot;
   var cwr = Math.floor(delta / (sqrt + 1));
@@ -475,13 +475,10 @@ function ulamToXY(ulam) {
   return [x, y];
 }
 function chunkRead(ind) {
-  var i,
-    j,
-    eff = seed + "\r\n";
-  if (existsF("ServerUniverse/Asteroids/Generated_" + ind + ".se3")) {
-    var datT = readF(
-      "ServerUniverse/Asteroids/Generated_" + ind + ".se3"
-    ).split("\r\n");
+  var i, j, eff = seed + "\r\n";
+  if (existsF("ServerUniverse/Asteroids/Generated_" + ind + ".se3"))
+  {
+    var datT = readF("ServerUniverse/Asteroids/Generated_" + ind + ".se3").split("\r\n");
     var pom;
 
     try {
@@ -495,16 +492,14 @@ function chunkRead(ind) {
           eff += datT[i] + "\r\n";
         }
         return eff;
-      } else nev++;
+      } else throw "error";
     } catch {
       console.log(
         "Asteroid file [" + ind + "] is invalid. Generating new data..."
       );
     }
   }
-  for (i = 0; i < 100; i++)
-    eff +=
-      ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;" + "\r\n";
+  for (i = 0; i < 100; i++) eff += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;" + "\r\n";
   return eff;
 }
 function removeEnds(str) {
@@ -3137,14 +3132,14 @@ function finalTranslate(varN) {
       } else if (psPath[0] == "generator_settings") {
         try {
           mID = func.parseIntE(psPath[1]);
-          if (mID < 0 || mID > 31) nev++;
+          if (mID < 0 || mID > 31) throw "error";
 
           if (psPath[2] == "settings") {
             biomeTags[mID] = jse3Dat[i].replaceAll(" ", "_");
           } else if (psPath[2] != "chance") {
             if (psPath[2] == "all_sizes") mID2 = -4;
             else mID2 = func.parseIntE(psPath[2]) - 4;
-            if ((mID2 < 0 || mID2 > 6) && mID2 != -4) nev++;
+            if ((mID2 < 0 || mID2 > 6) && mID2 != -4) throw "error";
 
             if (mID2 != -4) mID = 7 * mID + mID2;
             else mID = 7 * mID;
@@ -3180,16 +3175,16 @@ function finalTranslate(varN) {
       if (psPath[0] == "generator_settings") {
         try {
           mID = func.parseIntE(psPath[1]);
-          if (mID < 0 || mID > 31) nev++;
+          if (mID < 0 || mID > 31) throw "error";
 
           if (psPath[2] == "chance") {
-            if (mID == 0) nev++;
+            if (mID == 0) throw "error";
             var efe = mID + ";" + cur1000biome + ";";
 
             var le = jse3Dat[i].length;
             if (jse3Dat[i][le - 1] == "%")
               jse3Dat[i] = percentRemove(jse3Dat[i]);
-            else nev++;
+            else throw "error";
 
             var mno;
             if (tagContains(biomeTags[mID], "structural")) mno = 2;
@@ -3347,26 +3342,26 @@ function checkDatapackGoodE() {
   var i;
 
   //Check int arrays
-  if (!intsAll(craftings, 6) || !goodItems(craftings, true)) nev++;
-  if (!intsAll(biomeChances, 3) || !in1000(biomeChances, false)) nev++;
+  if (!intsAll(craftings, 6) || !goodItems(craftings, true)) throw "error";
+  if (!intsAll(biomeChances, 3) || !in1000(biomeChances, false)) throw "error";
   for (i = 0; i < 16; i++) {
     if (
       !intsAll(drillLoot[i], 3) ||
       !in1000(drillLoot[i], false) ||
       !drillGoodItem(drillLoot[i])
     )
-      nev++;
+      throw "error";
   }
   for (i = 0; i < 64; i++) {
-    if (!intsAll(fobGenerate[i], 3) || !in1000(fobGenerate[i], false)) nev++;
+    if (!intsAll(fobGenerate[i], 3) || !in1000(fobGenerate[i], false)) throw "error";
   }
   for (i = 0; i < 224; i++) {
     if (typeSet[i] != "")
-      if (!intsAll(typeSet[i], 3) || !in1000(typeSet[i], true)) nev++;
+      if (!intsAll(typeSet[i], 3) || !in1000(typeSet[i], true)) throw "error";
   }
   for (i = 0; i < 128; i++) {
     if (!intsAll(modifiedDrops[i], 2) || !goodItems(modifiedDrops[i], false))
-      nev++;
+      throw "error";
   }
 }
 
