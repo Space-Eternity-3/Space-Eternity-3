@@ -930,13 +930,37 @@ public class SC_structure : MonoBehaviour
 					}
 					else throw(new Exception());
 				}
+				/*else if(arg[i]=="bosbul")
+				{
+					i++;
+					string prjunk = arg[i];
+					if(prjunk!="add") throw;
+
+					Transform bbl = Instantiate(bosbul,transform.position,Quaternion.identity);
+					bbl.parent = transform;
+					st_structs[current+1024] = bbl;
+
+					string prshape;
+					if(st_structs[current].name=="Asteroid(Clone)" || st_structs[current].name=="StSphere(Clone)") prshape = "sphere";
+					else if(st_structs[current].name=="StWall(Clone)") prshape = "cylinder";
+					else throw;
+
+					if(prshape=="sphere")
+					{
+						bbl.GetChild(0).GetComponent<SphereCollider>().enabled = true;
+					}
+					if(prshape=="cylinder")
+					{
+						bbl.GetChild(0).GetComponent<BoxCollider>().enabled = true;
+					}
+				}*/
 			}
 			catch(Exception) {
 				i--;
 				continue;
 			}
 		}
-		for(i=0;i<1024;i++)
+		for(i=0;i<2048;i++)
 		{
 			if(st_structs[i]!=null)
 			{
