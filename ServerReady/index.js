@@ -17,7 +17,7 @@ var serverRedVersion = "Beta_2_0";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
-var gpl_number = 32;
+var gpl_number = 43;
 var max_players = 128;
 
 if(Number.isInteger(config.max_players))
@@ -3044,6 +3044,31 @@ function finalTranslate(varN) {
             gameplay[24] = func.parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "at_unstable_force")
             gameplay[25] = func.parseFloatE(jse3Dat[i]) + "";
+
+          //2.0 attacker data
+          if (psPath[1] == "bullet04_electro_damage")
+            gameplay[32] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "bullet05_fire_damage")
+            gameplay[33] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "bullet06_spike_damage")
+            gameplay[34] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "bullet07_lava_damage")
+            gameplay[35] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "bullet08_sticky_damage")
+            gameplay[36] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "bullet09_rocket_damage")
+            gameplay[37] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "bullet10_spikeball_damage")
+            gameplay[38] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "bullet11_brainwave_damage")
+            gameplay[39] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "bullet12_octoarm_damage")
+            gameplay[40] = func.parseFloatE(jse3Dat[i]) + "";
+          
+          if (psPath[1] == "effect07_lava_damage")
+            gameplay[41] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "effect08_sticky_damage")
+            gameplay[42] = func.parseFloatE(jse3Dat[i]) + "";
         } catch {
           datapackError("Error in variable: " + jse3Var[i]);
         }

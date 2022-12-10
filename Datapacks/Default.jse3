@@ -166,6 +166,19 @@ gameplay
 	at_unstable_normal_avarage_time: 1,5;
 	at_unstable_special_avarage_time: 3;
 	at_unstable_force: 15;
+	
+	bullet04_electro_damage: 30;
+	bullet05_fire_damage: 4;
+	bullet06_spike_damage: 3;
+	bullet07_lava_damage: 4;
+	bullet08_sticky_damage: 1,33;
+	bullet09_rocket_damage: 20;
+	bullet10_spikeball_damage: 10;
+	bullet11_brainwave_damage: 6;
+	bullet12_octoarm_damage: 6;
+	
+	effect07_lava_damage: 3;
+	effect08_sticky_damage: 1;
 }
 generator_settings
 {

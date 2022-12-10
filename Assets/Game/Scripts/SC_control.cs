@@ -1878,7 +1878,7 @@ public class SC_control : MonoBehaviour {
 	bool tempturbo = false;
 	void OnGUI()
     {
-        if(GUI.Button(new Rect(10, 10, 100, 40), "Engine")) tempengine = !tempengine;
-		if(GUI.Button(new Rect(120, 10, 100, 40), "Turbo")) tempturbo = !tempturbo;
+        if(GUI.Button(new Rect(10, -10010, 100, 40), "Engine")) tempengine = !tempengine;
+		if(GUI.Button(new Rect(120, -10010, 100, 40), "Turbo")) tempturbo = !tempturbo;
     }
 }

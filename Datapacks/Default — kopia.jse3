@@ -6,8 +6,8 @@ https://se3.website/docs/Beta-1.14/SE3Documentation/
 Edit file and select it in your SE3 browser.
 >
 
-version: 'Beta 1.14'; <Don't change>
-name: 'deeer'; <Rename it>
+version: 'Beta 2.0'; <Don't change>
+name: 'dear'; <Rename it>
 craftings
 {
 	<Category>1
@@ -219,9 +219,9 @@ generator_settings
 	
 	<Arena structure> 4
 	{
-		chance: 5%;
+		chance: 30%;
 		settings: [
-			structural, arena,
+			arena, spawn, structural,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
 			density = 100%,
@@ -355,7 +355,10 @@ custom_structures <advanced settings>
 {
 	1: '[
 	
-		<seon code here>
+		summon #0 boss 3
+		summon #1 asteroid 5 5 52 move 20 10 scale 2 2 2 rotate 45 bosbul add
+		summon #2 sphere 4 8 move -20 10 scale 1.5 1.5 1.5 rotate 30 bosbul add
+		summon #3 wall 6 move -20 -10 scale 1 2 1 rotate 70 bosbul add
 	
 	]';
 }

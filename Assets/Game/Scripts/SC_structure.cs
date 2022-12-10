@@ -90,8 +90,9 @@ public class SC_structure : MonoBehaviour
 				if(counter_to_destroy==0)
 				{
 					SC_fun.GenListRemove(ID,1);
-					if(st_structs[0].GetComponent<SC_boss>()!=null)
-						st_structs[0].GetComponent<SC_boss>().BeforeDestroy();
+					if(st_structs[0]!=null)
+						if(st_structs[0].GetComponent<SC_boss>()!=null)
+							st_structs[0].GetComponent<SC_boss>().BeforeDestroy();
 					Destroy(gameObject);
 				}
 				else counter_to_destroy--;
@@ -320,7 +321,7 @@ public class SC_structure : MonoBehaviour
 						if(ras.GetComponent<SC_drill>()!=null)
 							ras.GetComponent<SC_drill>().type=prmaterial;
 
-						ras.localScale = new Vector3(prsize,prsize,0.75f*prsize);
+						ras.GetChild(0).localScale = new Vector3(prsize,prsize,0.75f*prsize);
 
 						if(prmaterial==0) ras.GetChild(0).GetComponent<Renderer>().material = ras.GetComponent<SC_material>().Materials2[UnityEngine.Random.Range(0,3)];
 						else ras.GetChild(0).GetComponent<Renderer>().material = ras.GetComponent<SC_material>().Materials[prmaterial];
@@ -930,30 +931,36 @@ public class SC_structure : MonoBehaviour
 					}
 					else throw(new Exception());
 				}
-				/*else if(arg[i]=="bosbul")
+				else if(arg[i]=="bosbul")
 				{
 					i++;
 					string prjunk = arg[i];
-					if(prjunk!="add") throw;
+					if(prjunk!="add") throw(new Exception());
 
 					Transform bbl = Instantiate(bosbul,transform.position,Quaternion.identity);
-					bbl.parent = transform;
 					st_structs[current+1024] = bbl;
+					bbl.parent = st_structs[current];
+					bbl.localPosition = new Vector3(0f,0f,0f);
+					bbl.eulerAngles = st_structs[current].eulerAngles;
+					bbl.localScale = new Vector3(1f,1f,1f);
+					bbl.parent = transform;
 
 					string prshape;
 					if(st_structs[current].name=="Asteroid(Clone)" || st_structs[current].name=="StSphere(Clone)") prshape = "sphere";
 					else if(st_structs[current].name=="StWall(Clone)") prshape = "cylinder";
-					else throw;
+					else throw(new Exception());
 
 					if(prshape=="sphere")
 					{
 						bbl.GetChild(0).GetComponent<SphereCollider>().enabled = true;
+						if(st_structs[current].name=="Asteroid(Clone)") bbl.localScale *= st_structs[current].GetComponent<SC_asteroid>().protsize;
+						if(st_structs[current].name=="StSphere(Clone)") bbl.localScale *= st_structs[current].GetChild(0).localScale.x;
 					}
 					if(prshape=="cylinder")
 					{
 						bbl.GetChild(0).GetComponent<BoxCollider>().enabled = true;
 					}
-				}*/
+				}
 			}
 			catch(Exception) {
 				i--;
@@ -975,6 +982,10 @@ public class SC_structure : MonoBehaviour
 
 				if(st_structs[i].name=="StBulcol(Clone)" && st_structs[0]!=null)
 				{
+					st_structs[i].parent = transform;
+					st_structs[i].position -= new Vector3(0f,0f,st_structs[i].position.z);
+					if(st_structs[i].GetComponent<SC_seon_remote>()!=null) Destroy(st_structs[i].GetComponent<SC_seon_remote>());
+
 					string prshape = "";
 					if(st_structs[i].GetChild(0).GetComponent<SphereCollider>().enabled) prshape = "sphere";
 					if(st_structs[i].GetChild(0).GetComponent<BoxCollider>().enabled) prshape = "cylinder";
