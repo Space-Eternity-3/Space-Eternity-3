@@ -156,7 +156,7 @@ public class SC_control : MonoBehaviour {
 	public List<float> rposY_RPC = new List<float>();
 	public List<string> nick_RPC = new List<string>();
 
-	public List<string> cmdList = new List<string>();
+	public Queue cmdList = new Queue();
 	int fixup=0;
 
 	public float health_V=1f, turbo_V=0f, power_V=0f;
@@ -882,11 +882,9 @@ public class SC_control : MonoBehaviour {
 		if(power.fillAmount>0.9f) power.fillAmount=0.9f;
 
 		//Cmd list activator
-		while(cmdList.Count > 0)
-		{
-			cmdDo(cmdList[0]);
-			cmdList.RemoveAt(0);
-		}
+		Queue tsList = Queue.Synchronized(cmdList);
+		while(tsList.Count > 0)
+			cmdDo(tsList.Dequeue()+"");
 
 		List<SC_bullet> buls = SC_lists.SC_bullet;
 		foreach(SC_bullet bul in buls)
@@ -1194,6 +1192,43 @@ public class SC_control : MonoBehaviour {
 	void Ws_OnMessage(object sender, MessageEventArgs e)
     {
 		string[] arg = e.Data.Split(' ');
+		if(
+		//Fast commands
+		arg[0]=="/RPU"||
+		arg[0]=="R"||
+		arg[0]=="I"||
+		arg[0]=="/RetHeal"||
+		(arg[0])[0]=='P'||
+
+		//Old commands	
+		arg[0]=="/RetUpgrade"||
+		arg[0]=="/RetFobsChange"||
+		arg[0]=="/RetFobsDataChange"||
+		arg[0]=="/RetFobsDataCorrection"||
+		arg[0]=="/RetFobsTurn"||
+		arg[0]=="/RetAsteroidData"||
+		arg[0]=="/RSD"||
+		arg[0]=="/RetGiveUpTeleport"||
+		arg[0]=="/RetFobsPing"||
+		arg[0]=="/RetGeyzerTurn"||
+		arg[0]=="/RetInventory"||
+		arg[0]=="/RetGrowNow"||
+		arg[0]=="/RetServerDamage"||
+		arg[0]=="/RetNewBulletSend"||
+		arg[0]=="/RetNewBulletDestroy"||
+		arg[0]=="/RetInfoClient"||
+		arg[0]=="/RetInvisibilityPulse"||
+		arg[0]=="/RPC"||
+		(arg[0]=="/RetEmitParticles" && arg[1]!=connectionID+""))
+		{
+			cmdList.Enqueue(e.Data);
+		}
+    }
+	void cmdDo(string cmdThis)
+	{
+		string[] arg = cmdThis.Split(' ');
+
+		//Fast commands
 
 		if((arg[0])[0]=='P')
 		{
@@ -1238,35 +1273,12 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="/RPU")
 		{
 			//RPU big variable
-			RPU=e.Data;
+			RPU=cmdThis;
 			return;
 		}
-		if(arg[0]=="/RetUpgrade"||
-		arg[0]=="/RetFobsChange"||
-		arg[0]=="/RetFobsDataChange"||
-		arg[0]=="/RetFobsDataCorrection"||
-		arg[0]=="/RetFobsTurn"||
-		arg[0]=="/RetAsteroidData"||
-		arg[0]=="/RSD"||
-		arg[0]=="/RetGiveUpTeleport"||
-		arg[0]=="/RetFobsPing"||
-		arg[0]=="/RetGeyzerTurn"||
-		arg[0]=="/RetInventory"||
-		arg[0]=="/RetGrowNow"||
-		arg[0]=="/RetServerDamage"||
-		arg[0]=="/RetNewBulletSend"||
-		arg[0]=="/RetNewBulletDestroy"||
-		arg[0]=="/RetInfoClient"||
-		arg[0]=="/RetInvisibilityPulse"||
-		arg[0]=="/RPC"||
-		(arg[0]=="/RetEmitParticles" && arg[1]!=connectionID+""))
-		{
-			cmdList.Add(e.Data);
-		}
-    }
-	void cmdDo(string cmdThis)
-	{
-		string[] arg = cmdThis.Split(' ');
+
+		//Old commands
+
 		if(arg[0]=="/RPC")
 		{
 			//RPC small variables
