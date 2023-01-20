@@ -29,7 +29,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 43;
+	int gpl_number = 33;
     
 	bool lockData = false;
 	bool remember = false;
@@ -1128,18 +1128,7 @@ public class SC_data : MonoBehaviour
 					if(psPath[1]=="at_unstable_force") Gameplay[25]=float.Parse(value[i])+"";
 
                     //2.0 attacker data
-                    if(psPath[1]=="bullet04_electro_damage") Gameplay[32]=float.Parse(value[i])+"";
-                    if(psPath[1]=="bullet05_fire_damage") Gameplay[33]=float.Parse(value[i])+"";
-                    if(psPath[1]=="bullet06_spike_damage") Gameplay[34]=float.Parse(value[i])+"";
-                    if(psPath[1]=="bullet07_lava_damage") Gameplay[35]=float.Parse(value[i])+"";
-                    if(psPath[1]=="bullet08_sticky_damage") Gameplay[36]=float.Parse(value[i])+"";
-                    if(psPath[1]=="bullet09_rocket_damage") Gameplay[37]=float.Parse(value[i])+"";
-                    if(psPath[1]=="bullet10_spikeball_damage") Gameplay[38]=float.Parse(value[i])+"";
-                    if(psPath[1]=="bullet11_brainwave_damage") Gameplay[39]=float.Parse(value[i])+"";
-                    if(psPath[1]=="bullet12_octoarm_damage") Gameplay[40]=float.Parse(value[i])+"";
-                    
-                    if(psPath[1]=="effect07_lava_damage") Gameplay[41]=float.Parse(value[i])+"";
-                    if(psPath[1]=="effect08_sticky_damage") Gameplay[42]=float.Parse(value[i])+"";
+                    if(psPath[1]=="boss_damage_multiplier") Gameplay[32]=float.Parse(value[i])+"";
 
                     }catch(Exception){DatapackError("Error in variable: "+variable[i]); return;}
                 }

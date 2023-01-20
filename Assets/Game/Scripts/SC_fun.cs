@@ -31,6 +31,10 @@ public class SC_fun : MonoBehaviour
 	BiomeOfUlam[] mems = new BiomeOfUlam[36];
 	int currentBOU=0;
     public float biome_sector_size;
+
+	public float[] boss_damages = new float[16];
+	public float[] boss_damages_cyclic = new float[16];
+
     public bool[] pushed_markers = new bool[9];
 	
 	public int[] bW = new int[32];

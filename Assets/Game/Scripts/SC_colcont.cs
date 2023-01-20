@@ -14,13 +14,8 @@ public class SC_colcont : MonoBehaviour
             if(bul.controller && !bul.boss_damaged && bul.gun_owner!=0)
             {
                 bul.boss_damaged = true;
-                int mdo = bul.type;
-                float base_damage=0f;
-                if(mdo==1) base_damage = float.Parse(SC_control.SC_data.Gameplay[3]);
-                if(mdo==2) base_damage = float.Parse(SC_control.SC_data.Gameplay[27]);
-                if(mdo==3) base_damage = float.Parse(SC_control.SC_data.Gameplay[28]);
-                if(mdo!=3 || SC_control.SC_artefacts.GetArtefactID()!=6) SC_control.DamageFLOAT(base_damage);
-                if(mdo!=3)
+                if(!bul.is_unstable || SC_control.SC_artefacts.GetArtefactID()!=6) SC_control.DamageFLOAT(bul.normal_damage);
+                if(!bul.is_unstable)
                 {
                     bul.block_graphics = true;
                     bul.MakeDestroy(false);

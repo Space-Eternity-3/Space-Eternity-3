@@ -17,8 +17,11 @@ var serverRedVersion = "Beta_2_0";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
-var gpl_number = 43;
+var gpl_number = 33;
 var max_players = 128;
+
+var boss_damages = [0,3.75,5,10,35,4.5,3.75,4.5,0,15,8,4,0,0,0,0];
+var boss_damages_cyclic = [0,0,0,0,0,3,0,3,0,0,0,0,0,0,0,0];
 
 if(Number.isInteger(config.max_players))
   max_players = config.max_players;
@@ -97,6 +100,9 @@ const bulletTemplate = {
   type: 0,
   age: 0,
   max_age: 100,
+
+  normal_damage: 0,
+  is_unstable: false,
   
   start: {
     x: 0,
@@ -251,6 +257,10 @@ class CInfo
       tpl.vector.y = vy;
       tpl.pos.x = tpl.start.x;
       tpl.pos.y = tpl.start.y;
+
+      tpl.normal_damage = boss_damages[type] * func.parseFloatU(gameplay[32]);
+      if(type==3) tpl.is_unstable = true;
+      else tpl.is_unstable = false;
 
       if(tpl.vector.x==0) tpl.vector.x = 0.00001;
       if(tpl.vector.y==0) tpl.vector.y = 0.00001;
@@ -704,29 +714,21 @@ function CookedDamage(pid,dmg)
   sendToAllClients("/RetEmitParticles "+pid+" 2 "+xx+" "+yy+" X X");
   sendToAllClients("/RetInvisibilityPulse "+pid+" wait X X");
 }
-function getBulletDamage(type,owner,pid)
+function getBulletDamage(type,owner,pid,bll)
 {
-  var artid=-41;
-  if(pid!=-1 && pid!=-2)
-  {
+  var artid;
+  if(pid==-2) { //unstable boss
+    artid = 6;
+  }
+  else if(pid==-1) { //normal boss
+    artid = -41;
+  }
+  else { //player
     artid = plr.backpack[pid].split(";")[30] - 41;
     if(plr.backpack[pid].split(";")[31]==0) artid = -41;
   }
-  else if(pid==-1) artid=-41;
-  else if(pid==-2) artid=6;
-
-  if(artid==6 && type==3) return 0;
-
-  var dmg = 0;
-  if(type==1) dmg = func.parseFloatU(gameplay[3]);
-  if(type==2) dmg = func.parseFloatU(gameplay[27]);
-  if(type==3) dmg = func.parseFloatU(gameplay[28]);
-
-  if(owner>=0)
-    if(type!=3 && plr.players[owner]!="0")
-      dmg *= Math.pow(1.08,func.parseIntU(plr.upgrades[owner].split(";")[3]));
-
-  return dmg;
+  if(artid!=6 || !bll.is_unstable) return bll.normal_damage;
+  else return 0;
 }
 
 //HUB INTERVAL <interval #0>
@@ -768,6 +770,7 @@ setInterval(function () { // <interval #2>
         if(pvp || bulletsT[i].owner<0)
         for(j=0;j<max_players;j++)
         {
+          // player/boss -> player
           if(plr.players[j]!="0" && plr.players[j]!="1" && bulletsT[i].owner!=j)
           {
             var plas = plr.players[j].split(";");
@@ -776,12 +779,12 @@ setInterval(function () { // <interval #2>
             if(func.CollisionLinearCheck(xc,yc,0.92))
             {
               if(bulletsT[i].type!=3) {
-                DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j) );
+                DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j, bulletsT[i]) );
                 destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], false);
                 break;
               }
               else if(!bulletsT[i].damaged.includes(j)) {
-                DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j) );
+                DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j, bulletsT[i]) );
                 bulletsT[i].damaged.push(j);
               }
             }
@@ -792,6 +795,7 @@ setInterval(function () { // <interval #2>
         if(bulletsT[i].owner>=0)
         for(j=0;j<lngts;j++)
         {
+          // player -> boss
           var l = scrs[j].bID;
           if(scrs[j].dataY[2-2]==2)
           {
@@ -800,13 +804,13 @@ setInterval(function () { // <interval #2>
             if(func.CollisionLinearCheck(xc,yc,7.5))
             {
               if(bulletsT[i].type!=3) {
-                DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1) );
+                DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1, bulletsT[i]) );
                 destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
                 break;
               }
               else if(!bulletsT[i].damaged.includes(-l)) {
-                if(scrs[j].type!=6) DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1) );
-                else DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -2) );
+                if(scrs[j].type!=6) DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1, bulletsT[i]) );
+                else DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -2, bulletsT[i]) );
                 bulletsT[i].damaged.push(-l);
                 destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
                 break;
@@ -989,7 +993,7 @@ setInterval(function () { // <interval #2>
       setTerminalTitle("SE3 server | " + serverVersion +
         " | Download: " + size_download/1000 + "KB/s" +
         " | Upload: " + size_upload/1000 + "KB/s" +
-        " | Refresh: " + size_updates + "/s"
+        " | TPS: " + size_updates
       );
       size_download = 0;
       size_upload = 0;
@@ -2606,7 +2610,7 @@ wss.on("connection", function connection(ws) {
       plr.pushInventory[locPlaID] = newPush;
     }
     if (arg[0] == "/NewBulletSend") {
-      //NewBulletSend 1[PlayerID] 2[type] 3,4[position] 5,6[vector] 7[ID]
+      //NewBulletSend 1[PlayerID] 2[type] 3,4[position] 5,6[vector] 7[ID] 8[damage]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;
 
       var tpl = Object.assign({},bulletTemplate);
@@ -2624,6 +2628,10 @@ wss.on("connection", function connection(ws) {
       tpl.vector.y = func.parseFloatU(arg[6]);
       tpl.pos.x = tpl.start.x;
       tpl.pos.y = tpl.start.y;
+
+      tpl.normal_damage = func.parseFloatU(arg[8]);
+      if(arg[2]=="3") tpl.is_unstable = true;
+      else tpl.is_unstable = false;
 
       if(tpl.vector.x==0) tpl.vector.x = 0.00001;
       if(tpl.vector.y==0) tpl.vector.y = 0.00001;
@@ -3046,29 +3054,8 @@ function finalTranslate(varN) {
             gameplay[25] = func.parseFloatE(jse3Dat[i]) + "";
 
           //2.0 attacker data
-          if (psPath[1] == "bullet04_electro_damage")
+          if (psPath[1] == "boss_damage_multiplier")
             gameplay[32] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "bullet05_fire_damage")
-            gameplay[33] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "bullet06_spike_damage")
-            gameplay[34] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "bullet07_lava_damage")
-            gameplay[35] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "bullet08_sticky_damage")
-            gameplay[36] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "bullet09_rocket_damage")
-            gameplay[37] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "bullet10_spikeball_damage")
-            gameplay[38] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "bullet11_brainwave_damage")
-            gameplay[39] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "bullet12_octoarm_damage")
-            gameplay[40] = func.parseFloatE(jse3Dat[i]) + "";
-          
-          if (psPath[1] == "effect07_lava_damage")
-            gameplay[41] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "effect08_sticky_damage")
-            gameplay[42] = func.parseFloatE(jse3Dat[i]) + "";
         } catch {
           datapackError("Error in variable: " + jse3Var[i]);
         }

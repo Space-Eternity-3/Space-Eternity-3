@@ -8,12 +8,11 @@ public class SC_bullet : MonoBehaviour
     public Vector3 st_vect;
     public int type;
     public string mode = "mother";  //[mother, present, projection, server]
-    public int gun_owner = 0;
+    public int gun_owner = 0; // <0: boss =0 player sgp/mtp ! only for controllers
     public int ID = 0;
     public bool dev_bullets_show = false;
 
     public float bullet_speed;
-    public float[] speed = new float[5];
     public string[] SafeNames = new string[0];
 
     public Renderer bulletRE;
@@ -43,6 +42,10 @@ public class SC_bullet : MonoBehaviour
 
     public string projectionOwner="";
 
+    //pre-defined values
+    public float normal_damage = 0;
+    public bool is_unstable = false;
+
     public SC_bullet Shot(Vector3 position, Vector3 vector, Vector3 delta, int typ, int gun_own)
     {
         SC_bullet gob = Instantiate(gameObject, position, Quaternion.identity).GetComponent<SC_bullet>();
@@ -51,8 +54,24 @@ public class SC_bullet : MonoBehaviour
         gob.mode = "present";
         gob.gun_owner = gun_own;
         gob.controller = true;
-        gob.st_vect = SC_fun.Skop(vector, bullet_speed * speed[typ]) + delta;
+        gob.st_vect = SC_fun.Skop(vector, bullet_speed) + delta;
         gob.ID = UnityEngine.Random.Range(0,1000000000);
+
+        if(typ==3) gob.is_unstable = true;
+        else gob.is_unstable = false;
+        if(gun_own==0)
+        {
+            //Player pre-define
+            if(typ==1) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[3]);
+            if(typ==2) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[27]);
+            if(typ==3) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[28]);
+            if(!gob.is_unstable) gob.normal_damage *= Mathf.Pow(1.08f,SC_control.SC_upgrades.MTP_levels[3]);
+        }
+        else
+        {
+            //Boss pre-define
+            gob.normal_damage = SC_fun.boss_damages[typ] * float.Parse(SC_fun.SC_data.Gameplay[32]);
+        }
 
         SC_bullet bul = ShotProjection(
             position,
@@ -62,7 +81,9 @@ public class SC_bullet : MonoBehaviour
             gob.ID,
             SC_control.connectionID+""
         );
-        bul.delta_age = -1000; //undefined very low
+        bul.delta_age = -1000; //just very low
+
+        if(multiplayer) Debug.Log(gob.normal_damage);
 
         if(multiplayer)
             SC_control.SendMTP(
@@ -71,7 +92,7 @@ public class SC_bullet : MonoBehaviour
                 typ+" "+
                 position.x+" "+position.y+" "+
                 gob.st_vect.x+" "+gob.st_vect.y+" "+
-                gob.ID
+                gob.ID+" "+gob.normal_damage
             );
         
         return gob;
