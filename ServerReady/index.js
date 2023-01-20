@@ -22,6 +22,7 @@ var max_players = 128;
 
 var boss_damages = [0,3.75,5,10,35,4.5,3.75,4.5,0,15,8,4,0,0,0,0];
 var boss_damages_cyclic = [0,0,0,0,0,3,0,3,0,0,0,0,0,0,0,0];
+var other_bullets_colliders = [0,0.08,0.08,0.08,1.5,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
 
 if(Number.isInteger(config.max_players))
   max_players = config.max_players;

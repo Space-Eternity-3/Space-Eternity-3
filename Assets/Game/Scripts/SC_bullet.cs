@@ -16,10 +16,16 @@ public class SC_bullet : MonoBehaviour
     public string[] SafeNames = new string[0];
 
     public Renderer bulletRE;
-    public Transform Bullet3Effect;
-    public Transform[] BulletEnd = new Transform[5];
     public Transform Communtron4;
-    public Material[] BulletMaterials = new Material[5];
+
+    public Transform Bullet3Effect;
+
+    public int[] StartSounds = new int[16];
+    public Material[] BulletMaterials = new Material[16];
+    public Transform[] BulletEffects = new Transform[16];
+    public int[] LoopSounds = new int[16];
+    public int[] EndSounds = new int[16];
+    public Transform[] BulletEnd = new Transform[16];
 
     public SC_fun SC_fun;
     public SC_sounds SC_sounds;
@@ -158,28 +164,25 @@ public class SC_bullet : MonoBehaviour
         Destroy(gameObject);
 
         if(!graphics || destroy_mode=="false") return;
-        if(type==1 || type==2) SC_sounds.PlaySound(transform.position, 2, 1);
-        if(type==3) SC_sounds.PlaySound(transform.position, 2, 15);
+        if(EndSounds[type]!=-1) SC_sounds.PlaySound(transform.position, 2, EndSounds[type]); // 1 1 15
 
-        Instantiate(BulletEnd[type], transform.position, new Quaternion(0f, 0f, 0f, 0f));
+        if(BulletEnd[type]!=null) Instantiate(BulletEnd[type], transform.position, new Quaternion(0f, 0f, 0f, 0f));
     }
     void Start()
     {
         multiplayer = (int)Communtron4.position.y==100;
-        if (mode == "mother") return;
+        if(mode=="mother") return;
 
         if(mode=="projection")
         {
-            if (type != 3) SC_sounds.PlaySound(transform.position, 2, 1);
-            else SC_sounds.PlaySound(transform.position, 2, 17);
-
+            if(StartSounds[type]!=-1) SC_sounds.PlaySound(transform.position,2,StartSounds[type]); //1 1 17
             bulletRE.material = BulletMaterials[type];
-            if (type == 3)
+            if(BulletEffects[type]!=null)
             {
-                Transform trn = Instantiate(Bullet3Effect, transform.position, Quaternion.identity);
+                Transform trn = Instantiate(BulletEffects[type], transform.position, Quaternion.identity);
                 trn.parent = transform;
-                loopSndID = SC_snd_loop.AddToLoop(2,transform.position);
             }
+            if(LoopSounds[type]!=-1) loopSndID = SC_snd_loop.AddToLoop(LoopSounds[type],transform.position); // x x 2
         }
         else if(dev_bullets_show) bulletRE.material = BulletMaterials[0];
         else bulletRE.enabled = false;
