@@ -362,7 +362,7 @@ public class SC_structure : MonoBehaviour
 						ssr.SC_structure = transform.GetComponent<SC_structure>();
 
 						string[] undoneH = {"B1","B2","B3"};
-						string[] doingH = {"a1b1","b2a2","b3a3"};
+						string[] doingH = {"b1a1","b2a2","b3a3"};
 						string[] doneH = {"default","A1","A2","A3","R","b1a2","b2a3","b3r"};
 						string[] undoingH = {"a1b1","a2b2","a3b3"};
 

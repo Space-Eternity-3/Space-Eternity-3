@@ -89,8 +89,6 @@ public class SC_bullet : MonoBehaviour
         );
         bul.delta_age = -1000; //just very low
 
-        if(multiplayer) Debug.Log(gob.normal_damage);
-
         if(multiplayer)
             SC_control.SendMTP(
                 "/NewBulletSend "+
@@ -163,15 +161,23 @@ public class SC_bullet : MonoBehaviour
         }
         Destroy(gameObject);
 
-        if(!graphics || destroy_mode=="false") return;
-        if(EndSounds[type]!=-1) SC_sounds.PlaySound(transform.position, 2, EndSounds[type]); // 1 1 15
+        if(!graphics) return;
+        if(destroy_mode=="false" && !SC_fun.force_destroy_effect[type]) return;
 
+        if(EndSounds[type]!=-1) SC_sounds.PlaySound(transform.position, 2, EndSounds[type]); // 1 1 15
         if(BulletEnd[type]!=null) Instantiate(BulletEnd[type], transform.position, new Quaternion(0f, 0f, 0f, 0f));
     }
     void Start()
     {
         multiplayer = (int)Communtron4.position.y==100;
         if(mode=="mother") return;
+
+        //bullet scaling
+        float r2 = SC_fun.other_bullets_colliders[type];
+        float R2 = 0.32f + r2;
+        float u2 = r2 / R2;
+        transform.localScale = 2*new Vector3(R2,R2,R2*5f/8f);
+        transform.GetComponent<SphereCollider>().radius = u2/2;
 
         if(mode=="projection")
         {

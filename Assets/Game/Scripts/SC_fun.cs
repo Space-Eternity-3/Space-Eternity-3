@@ -35,6 +35,7 @@ public class SC_fun : MonoBehaviour
 	public float[] boss_damages = new float[16];
 	public float[] boss_damages_cyclic = new float[16];
 	public float[] other_bullets_colliders = new float[16];
+	public bool[] force_destroy_effect = new bool[16];
 
     public bool[] pushed_markers = new bool[9];
 	

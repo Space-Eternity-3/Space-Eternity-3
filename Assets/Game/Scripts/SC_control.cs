@@ -1228,6 +1228,7 @@ public class SC_control : MonoBehaviour {
     }
 	void cmdDo(string cmdThis)
 	{
+		if(cmdThis==null || cmdThis=="") return;
 		string[] arg = cmdThis.Split(' ');
 
 		//Fast commands

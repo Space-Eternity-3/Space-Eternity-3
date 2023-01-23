@@ -20,9 +20,9 @@ var hourHeader = "";
 var gpl_number = 33;
 var max_players = 128;
 
-var boss_damages = [0,3.75,5,10,35,4.5,3.75,4.5,0,15,8,4,0,0,0,0];
+var boss_damages = [0,3.75,5,10,45,4.5,3.75,4.5,0,20,10,6,0,0,0,0];
 var boss_damages_cyclic = [0,0,0,0,0,3,0,3,0,0,0,0,0,0,0,0];
-var other_bullets_colliders = [0,0.08,0.08,0.08,1.5,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
+var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
 
 if(Number.isInteger(config.max_players))
   max_players = config.max_players;
@@ -752,7 +752,7 @@ setInterval(function () { // <interval #2>
           for(i=0;i<lngt;i++)
           {
             if(bulletsT[i].age != bulletsT[i].max_age && bulletsT[i].owner<0)
-              if(scrs[j].bulCols[q].IsSphereColliding(bulletsT[i].pos.x + bulletsT[i].vector.x, bulletsT[i].pos.y + bulletsT[i].vector.y, 0.08))
+              if(scrs[j].bulCols[q].IsSphereColliding(bulletsT[i].pos.x + bulletsT[i].vector.x, bulletsT[i].pos.y + bulletsT[i].vector.y, other_bullets_colliders[bulletsT[i].type]))
                   destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
           }
         }
@@ -766,7 +766,7 @@ setInterval(function () { // <interval #2>
         var ya = bulletsT[i].pos.y;
         var xb = xa + bulletsT[i].vector.x;
         var yb = ya + bulletsT[i].vector.y;
-        func.CollisionLinearBulletSet(xa,ya,xb,yb,0.08);
+        func.CollisionLinearBulletSet(xa,ya,xb,yb,other_bullets_colliders[bulletsT[i].type]);
 
         if(pvp || bulletsT[i].owner<0)
         for(j=0;j<max_players;j++)
