@@ -96,6 +96,7 @@ public class SC_control : MonoBehaviour {
 	bool repetedAF=false;
 	public bool gtm1 = false;
 	public int bos_num = 0;
+	bool damage_sounds_disabled = false;
 
 	public Color32 HealthNormal;
 
@@ -137,6 +138,7 @@ public class SC_control : MonoBehaviour {
 	public SC_projection SC_projection;
 	public SC_lists SC_lists;
 	public SC_camera SC_camera;
+	public SC_effect SC_effect;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -465,26 +467,7 @@ public class SC_control : MonoBehaviour {
 		
 		}
 
-		if(!living)
-		{
-			int y;
-			for(y=0;y<9;y++)
-			{
-				SC_slots.SlotX[y] = 0;
-				SC_slots.SlotY[y] = 0;
-			}
-			for(y=0;y<21;y++)
-			{
-				SC_slots.BackpackX[y] = 0;
-				SC_slots.BackpackY[y] = 0;
-			}
-			SC_slots.ResetYAB();
-			for(y=0;y<5;y++) SC_upgrades.MTP_levels[y]=0;
-			for(y=0;y<5;y++) SC_upgrades.UPG_levels[y]=0;
-
-			transform.position=solidPos;
-			playerR.velocity=new Vector3(0f,0f,0f);
-		}
+		InLaterUpdateIfNotLiving();
 
 		SC_projection.MuchLaterUpdate();
 
@@ -510,8 +493,11 @@ public class SC_control : MonoBehaviour {
 	{
 		solidPos=transform.position+new Vector3(0f,0f,2500f);
 		Communtron1.position+=new Vector3(0f,0f,75f);
-		SC_sounds.PlaySound(transform.position,2,2);
-		Instantiate(explosion,transform.position,transform.rotation);
+		if(!damage_sounds_disabled)
+		{
+			SC_sounds.PlaySound(transform.position,2,2);
+			Instantiate(explosion,transform.position,transform.rotation);
+		}
 		living=false;
 
 		List<SC_boss> boses = SC_lists.SC_boss;
@@ -536,7 +522,32 @@ public class SC_control : MonoBehaviour {
 		Screen3.targetDisplay=0;
 				
 		SC_invisibler.invisible = false;
+		SC_effect.Remove();
 		RemoveImpulse();
+
+		InLaterUpdateIfNotLiving();
+	}
+	void InLaterUpdateIfNotLiving()
+	{
+		if(living) return;
+
+		int y;
+		for(y=0;y<9;y++)
+		{
+			SC_slots.SlotX[y] = 0;
+			SC_slots.SlotY[y] = 0;
+		}
+		for(y=0;y<21;y++)
+		{
+			SC_slots.BackpackX[y] = 0;
+			SC_slots.BackpackY[y] = 0;
+		}
+		SC_slots.ResetYAB();
+		for(y=0;y<5;y++) SC_upgrades.MTP_levels[y]=0;
+		for(y=0;y<5;y++) SC_upgrades.UPG_levels[y]=0;
+
+		transform.position=solidPos;
+		playerR.velocity=new Vector3(0f,0f,0f);
 	}
 	void ImmortalMe()
 	{
@@ -548,7 +559,7 @@ public class SC_control : MonoBehaviour {
 		{
 			immID=(int.Parse(immID)+1)+"";
 		}
-		Instantiate(ImmortalParticles,transform.position,transform.rotation);
+		if(!damage_sounds_disabled) Instantiate(ImmortalParticles,transform.position,transform.rotation);
 		Debug.Log("Player avoided death");
 	}
 	public void esc_press(bool bo)
@@ -634,6 +645,9 @@ public class SC_control : MonoBehaviour {
 	{
 		if(repeted) return;
 		repeted=true;
+
+		damage_sounds_disabled = true;
+		SC_effect.OneFrameDamage();
 
 		List<SC_bullet> buls = SC_lists.SC_bullet;
 		foreach(SC_bullet bul in buls)
@@ -1128,7 +1142,7 @@ public class SC_control : MonoBehaviour {
 		health_V-=dmg;
 		if(Mathf.Round(health_V*10000f) == 0f) health_V = 0f;
 		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
-		Instantiate(explosion2,transform.position,transform.rotation);
+		if(!damage_sounds_disabled) Instantiate(explosion2,transform.position,transform.rotation);
 	}
 	public void HealSGP()
 	{
@@ -1215,6 +1229,7 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RetGeyzerTurn"||
 		arg[0]=="/RetInventory"||
 		arg[0]=="/RetGrowNow"||
+		arg[0]=="/RetDamageUsing"||
 		arg[0]=="/RetServerDamage"||
 		arg[0]=="/RetNewBulletSend"||
 		arg[0]=="/RetNewBulletDestroy"||
@@ -1350,6 +1365,11 @@ public class SC_control : MonoBehaviour {
 			}
 
 			return;
+		}
+		if(arg[0]=="/RetDamageUsing")
+		{
+			int effectID = int.Parse(arg[1]);
+			SC_effect.SetEffect(effectID,SC_fun.bullet_effector[effectID]);
 		}
 		if(arg[0]=="/RetServerDamage")
 		{

@@ -20,9 +20,9 @@ var hourHeader = "";
 var gpl_number = 33;
 var max_players = 128;
 
-var boss_damages = [0,3.75,5,10,45,4.5,3.75,4.5,0,20,10,6,0,0,0,0];
-var boss_damages_cyclic = [0,0,0,0,0,3,0,3,0,0,0,0,0,0,0,0];
-var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
+var boss_damages = [0,3.75,5,10,45,4,3.75,4.5,0,20,10,6,0,0,0,0];
+var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
+var bullet_air_consistence = [0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0];
 
 if(Number.isInteger(config.max_players))
   max_players = config.max_players;
@@ -699,6 +699,7 @@ function DamageFLOAT(pid,dmg)
       immortal(pid);
       plr.players[pid] = Censure(plr.players[pid],pid,plr.livID[pid]);
     }
+    return info;
   }
 }
 function CookedDamage(pid,dmg)
@@ -779,13 +780,15 @@ setInterval(function () { // <interval #2>
             var yc = func.parseFloatU(plas[1]);
             if(func.CollisionLinearCheck(xc,yc,0.92))
             {
-              if(bulletsT[i].type!=3) {
-                DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j, bulletsT[i]) );
+              if(bullet_air_consistence[bulletsT[i].type]==0) {
+                if( DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j, bulletsT[i]) ) != "K")
+                  sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" X "+plr.livID[j]);
                 destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], false);
                 break;
               }
               else if(!bulletsT[i].damaged.includes(j)) {
-                DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j, bulletsT[i]) );
+                if( DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j, bulletsT[i]) ) != "K")
+                  sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" X "+plr.livID[j]);
                 bulletsT[i].damaged.push(j);
               }
             }
