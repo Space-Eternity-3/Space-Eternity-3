@@ -953,7 +953,11 @@ public class SC_control : MonoBehaviour {
 			mPPx=Mathf.Round(memPosition.x*10000f)/10000f;
 			mPPy=Mathf.Round(memPosition.y*10000f)/10000f;
 			int sendOther=enMode*16+(int)Communtron5.position.x*4+(int)Communtron2.position.x*2+(int)CommuntronM1.transform.position.x*1;
-			int sendOtherParasite=ArtSource;
+			int compressedEffect = 0;
+			if(SC_effect.effect==5) compressedEffect = 1;
+			if(SC_effect.effect==7) compressedEffect = 2;
+			if(SC_effect.effect==8) compressedEffect = 3;
+			int sendOtherParasite=ArtSource + 25*compressedEffect;
 			
 			if(living){
 				/*

@@ -20,15 +20,16 @@ public class SC_players : MonoBehaviour
     public Transform TestNick;
 
     //Roots
-	public Transform atZ, atS;      //Z - root parents (static)
-	public Transform atZZ, atSS;    //S - root artefact effects (clonable)
+	public Transform atZ, atZZ;      //Z - root parents (static)
+	public Transform atS, atSS;    //S - root artefact effects (clonable)
+    public Transform eZ, eS;        //S - root effect objects (clonable)
     public Transform CanvPS;        //PS - root player mini canvas (clonable)
 	
     //Auto sets
-	Transform Aeffs, Beefs;
+	Transform Aeffs, Beefs, Ceffs;
     Transform CanvP;
     public int IDP, IDP_phys;
-    SC_seeking obj, obj2;
+    SC_seeking obj, obj2, obj3;
     SC_bar_game SC_bar_game;
 
     //Gameplay variables
@@ -61,6 +62,10 @@ public class SC_players : MonoBehaviour
 		Beefs.parent = atZZ; Beefs.name = "atSS" + IDP;
 		Beefs.GetComponent<SC_seeking>().seek = transform;
 
+        Ceffs = Instantiate(eS,eS.position,eS.rotation);
+		Ceffs.parent = eZ; Ceffs.name = "eS" + IDP;
+		Ceffs.GetComponent<SC_seeking>().seek = transform;
+
         CanvP = Instantiate(CanvPS,new Vector3(0f,0f,0f),Quaternion.identity);
         CanvP.SetParent(TestNick,false); CanvP.name = "CanvP" + IDP;
 
@@ -80,6 +85,7 @@ public class SC_players : MonoBehaviour
 
         obj = Aeffs.GetComponent<SC_seeking>();
 		obj2 = Beefs.GetComponent<SC_seeking>();
+        obj3 = Ceffs.GetComponent<SC_seeking>();
 	}
     void ArrayPusher(Vector3 new_push, float new_rot)
     {
@@ -162,6 +168,7 @@ public class SC_players : MonoBehaviour
                 transform.position = sourcedPosition;
                 obj.offset = new Vector3(0f,0f,0f);
                 obj2.offset = new Vector3(0f,0f,0f);
+                obj3.offset = new Vector3(0f,0f,0f);
 
                 if(ArtSource%100==1) {
 			        SC_invisibler.visible = (SC_fun.SC_control.ramvis[IDP]>0 && SC_fun.SC_control.ramvis[IDP]<=SC_fun.SC_control.timeInvisiblePulse);
@@ -185,6 +192,7 @@ public class SC_players : MonoBehaviour
                 SC_fun.SC_control.ramvis[IDP]=0;
 			    obj.offset = new Vector3(0f,0f,0f);
                 obj2.offset = new Vector3(0f,0f,0f);
+                obj3.offset = new Vector3(0f,0f,0f);
 			    SC_invisibler.invisible = false;
 
                 drill3T.localPosition = new Vector3(drill3T.localPosition.x,0.45f,drill3T.localPosition.z);
@@ -198,10 +206,17 @@ public class SC_players : MonoBehaviour
 		
 		int A=guitar/100;
 		int B=guitar%100;
+        int C=B/25; B=B%25; //effect parasite division
 		
 		obj2.offset = new Vector3(0f,0f,-450f*B);
 		if(B % 2 == 0) Beefs.rotation = transform.rotation;
 		else Beefs.rotation = new Quaternion(0f,0f,0f,0f);
+
+        if(C==1) C=5;
+        if(C==2) C=7;
+        if(C==3) C=8;
+
+        obj3.offset = new Vector3(0f,0f,-450f*C);
 		
 		if(B==1)
 		{

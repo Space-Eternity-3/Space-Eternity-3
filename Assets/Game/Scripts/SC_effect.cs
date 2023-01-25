@@ -6,14 +6,17 @@ public class SC_effect : MonoBehaviour
 {
     public int cycle_period;
     
-    int effect = 0;
+    public int effect = 0;
     int damage_cycle_timer = 0;
+
+    public SC_seeking eS;
 
     public SC_fun SC_fun;
     public SC_control SC_control;
 
     public void SetEffect(int type, int cycles)
     {
+        if(effect==8 && type!=8) return;
         effect = type;
         damage_cycle_timer = cycles * cycle_period + 49;
     }
@@ -38,5 +41,7 @@ public class SC_effect : MonoBehaviour
             }
             damage_cycle_timer--;
         }
+
+        eS.offset = new Vector3(0f,0f,-450f*effect);
     }
 }

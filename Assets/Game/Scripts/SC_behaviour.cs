@@ -90,7 +90,7 @@ public class SC_behaviour : MonoBehaviour
         
         float[] pak = new float[2]; pak[0]=0; pak[1]=0.35f;
         float[] efwing = thys.RotatePoint(pak,angle+3.14159f/2,false);
-        if(thys.dataID[3]%20==0) thys.world.ShotRaw(0+thys.deltapos.x,0+thys.deltapos.y,efwing[0],efwing[1],5,thys.identifier);
+        if(thys.dataID[3]%20==0) thys.world.ShotRaw(0+thys.deltapos.x,0+thys.deltapos.y,efwing[0],efwing[1],6,thys.identifier);
     }
     public void _End()
     {

@@ -182,7 +182,8 @@ public class SC_bullet : MonoBehaviour
         if(mode=="projection")
         {
             if(StartSounds[type]!=-1) SC_sounds.PlaySound(transform.position,2,StartSounds[type]); //1 1 17
-            bulletRE.material = BulletMaterials[type];
+            if(BulletMaterials[type]!=null) bulletRE.material = BulletMaterials[type];
+            else bulletRE.enabled = false;
             if(BulletEffects[type]!=null)
             {
                 Transform trn = Instantiate(BulletEffects[type], transform.position, Quaternion.identity);
