@@ -179,6 +179,11 @@ public class SC_bullet : MonoBehaviour
         transform.localScale = 2*new Vector3(R2,R2,R2*5f/8f);
         transform.GetComponent<SphereCollider>().radius = u2/2;
 
+        //bullet rotate
+        if(st_vect.x==0f) transform.eulerAngles = new Vector3(0f,0f,90f);
+        else transform.eulerAngles = new Vector3(0f,0f,180f*Mathf.Atan(st_vect.y/st_vect.x)/Mathf.PI);
+        if(st_vect.x<0 || (st_vect.x==0 && st_vect.y<0)) transform.eulerAngles += new Vector3(0f,0f,180f);
+
         if(mode=="projection")
         {
             if(StartSounds[type]!=-1) SC_sounds.PlaySound(transform.position,2,StartSounds[type]); //1 1 17
@@ -186,7 +191,7 @@ public class SC_bullet : MonoBehaviour
             else bulletRE.enabled = false;
             if(BulletEffects[type]!=null)
             {
-                Transform trn = Instantiate(BulletEffects[type], transform.position, Quaternion.identity);
+                Transform trn = Instantiate(BulletEffects[type], transform.position, transform.rotation);
                 trn.parent = transform;
             }
             if(LoopSounds[type]!=-1) loopSndID = SC_snd_loop.AddToLoop(LoopSounds[type],transform.position); // x x 2
