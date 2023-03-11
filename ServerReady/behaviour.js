@@ -51,7 +51,7 @@ class CBoss
         this.dataY[10-2] = func.FloatToScrd(angle*180/3.14159);
         
         var efwing = func.RotatePoint([0,0.35],angle+Math.PI/2,false);
-        if(this.dataY[3-2]%20==0) this.world.ShotRaw(0+this.deltapos.x,0+this.deltapos.y,efwing[0],efwing[1],5,this.identifier);
+        if(this.dataY[3-2]%20==0) this.world.ShotRaw(0+this.deltapos.x,0+this.deltapos.y,efwing[0],efwing[1],8,this.identifier);
     }
     End() //Executes on battle end directly after last FixedUpdate() Note: dataY will be reseted automatically after execution
     {

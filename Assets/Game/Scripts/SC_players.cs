@@ -213,7 +213,7 @@ public class SC_players : MonoBehaviour
 		else Beefs.rotation = new Quaternion(0f,0f,0f,0f);
 
         if(C==1) C=5;
-        if(C==2) C=7;
+        if(C==2) C=6;
         if(C==3) C=8;
 
         obj3.offset = new Vector3(0f,0f,-450f*C);

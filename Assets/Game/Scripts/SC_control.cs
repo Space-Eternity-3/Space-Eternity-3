@@ -193,7 +193,7 @@ public class SC_control : MonoBehaviour {
 	float V_to_F(float V,bool turboo)
 	{
 		if(V==0f) return 0f;
-		V=Engines*V;
+		V=Engines*V*SC_effect.GetSpeedMultiplier();
 		if(turboo) V=V*Mathf.Pow(1.08f,SC_upgrades.MTP_levels[1]);
 		if(V>=0f) return V*(V+15f)/1000f;
 		else
@@ -225,7 +225,7 @@ public class SC_control : MonoBehaviour {
 		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && wr_cotr;
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
 		
-		if(wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
+		if(SC_effect.effect!=8 && wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
 		{
 			cooldown=7;
 			int slot, typ = 1;
@@ -467,7 +467,12 @@ public class SC_control : MonoBehaviour {
 		
 		}
 
-		InLaterUpdateIfNotLiving();
+		if(!living)
+		{
+			//update force dumb correction
+			transform.position=solidPos;
+			playerR.velocity=new Vector3(0f,0f,0f);
+		}
 
 		SC_projection.MuchLaterUpdate();
 
@@ -820,7 +825,7 @@ public class SC_control : MonoBehaviour {
 				float ux = Mathf.Cos((alp*3.14159f)/180f);
 				float uy = Mathf.Sin((alp*3.14159f)/180f);
 				
-				SC_bullet.Shot(
+				if(SC_effect.effect!=8) SC_bullet.Shot(
 					transform.position,
 					new Vector3(ux,uy,0f),
 					playerR.velocity*0.02f,
@@ -955,7 +960,7 @@ public class SC_control : MonoBehaviour {
 			int sendOther=enMode*16+(int)Communtron5.position.x*4+(int)Communtron2.position.x*2+(int)CommuntronM1.transform.position.x*1;
 			int compressedEffect = 0;
 			if(SC_effect.effect==5) compressedEffect = 1;
-			if(SC_effect.effect==7) compressedEffect = 2;
+			if(SC_effect.effect==6) compressedEffect = 2;
 			if(SC_effect.effect==8) compressedEffect = 3;
 			int sendOtherParasite=ArtSource + 25*compressedEffect;
 			
