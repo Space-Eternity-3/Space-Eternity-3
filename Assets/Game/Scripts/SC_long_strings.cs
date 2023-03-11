@@ -20,10 +20,9 @@ public class SC_long_strings : MonoBehaviour
     6. DEV mode
 
     And:
-    1. Github SE3
-    2. Github Website
-    3. Website info
-    4. Changelog
+    1. Github Website
+    2. Website info
+    3. Changelog
 
     */
 }
