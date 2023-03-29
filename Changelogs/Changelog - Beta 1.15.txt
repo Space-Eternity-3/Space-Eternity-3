@@ -1,0 +1,146 @@
+06.09.2022:
+
+- int based storing boss data in RAM (singleplayer)
+- not instant buttons in pause menu
+- server parsing 3 types (P,U,E)
+
+08.09.2022:
+
+- singleplayer bullet collider on boss transitions removed
+- boss can set its look depending on its type
+- changed arena seon: 5 types of bosses
+- int based storing boss data in RAM (multiplayer)
+
+10.09.2022:
+
+- boss variables 21 to 61
+- server parse functions exported
+- generalData and additionalData changed to dataX and dataY
+- boss sending compressed to 4KB/s per player
+- rafael functions (1)
+
+11.09.2022:
+
+- rafael functions (2)
+
+16.09.2022:
+
+- gray button chat again
+- array player smooth reduced
+- error spotted remove raycast
+- boss movement & rotation smooth
+- removed useless colliders
+- magnetic system converted to update
+- android temporary buttons
+
+17.09.2022:
+
+- magnetic update repaired
+- encoding to (int) using ASCII
+
+19.09.2022:
+
+- rafael functions (3)
+
+20.09.2022:
+
+- better server collision system
+- impulse-boss damage range reduced: 8.9 -> 8.7
+- impulse-player damage range increased: 2 -> 2.12
+- added projection when others impulsing
+- bullet projections no longer destroy on walls and asteroids
+- "pseudobody" collider range increased: 0.8 -> 0.92
+- bullet destroy sound on quit removed
+- world.ShotRaw() function
+
+21.09.2022:
+
+- bullet linear collision corrected (bugfix)
+- shape collision (1)
+
+22.09.2022:
+
+- a bit better particles disabling
+- new seon object: StBulcol
+- static shape colliders
+- changed arena seon: added static shape colliders
+- mushroom physics material removed
+- boss unstable matter fly through players
+
+23.09.2022:
+
+- engine colliders returned (bugfix)
+
+16.11.2022:
+
+- auto boss hide, manual change possibility removed
+- bullets send on player join
+
+17.11.2022:
+
+- stuck repaired (teleportation)
+
+10.12.2022:
+
+- bosbul static force
+- error on destroying structure removed
+- sphere local size added
+- capsule bosbul strange behaviour spotted
+- bosbul add command + arena.seon changed
+- gameplay 2.0 attacker variables
+
+16.12.2022:
+
+- safe thread code (Beta 1.14d)
+
+11.01.2023:
+
+- gameplay variables reduced to boss_damage_multiplier
+- boss damage in-code array
+
+20.01.2023:
+
+- bullet damage included
+- boss_damage_multiplier working
+- bullet graphics in script united
+
+23.01.2023
+
+- bullet scaling system
+- electro bullet
+- force destroy effect
+- b1a1 auto boss hide fixed
+- fire bullets (pop sounds)
+
+24.01.2023:
+
+- fire bullet look improved
+- bullet fly through option as bool array
+- effect system (no look)
+- anti-logout (instant effect damage)
+
+25.01.2023:
+
+- effect system visual
+
+04.02.2023:
+
+- fire effect improved
+- spike bullet improved
+- posion effect
+- brainwave bullet
+- sticky bullet alpha
+
+11.03.2023:
+
+- sticky bullet done
+- title change: levels -> achievements
+- Beta 2.0 changed to Beta 1.15
+
+idk day:
+
+- low TPS system on server side
+
+29.03.2023:
+
+- barrier tick client side (low TPS client side)

@@ -1,0 +1,3 @@
+Bugfixes:
+
+- Sliders and input fields couldn't be used.
