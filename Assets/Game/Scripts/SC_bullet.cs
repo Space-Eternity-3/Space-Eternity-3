@@ -36,6 +36,7 @@ public class SC_bullet : MonoBehaviour
     public int max_age = 100;
     public int delta_age = 0;
     public int float_age = 0;
+    public int start_tick = -1000;
     public bool turn_used = false;
     public bool controller = false;
     public string destroy_mode = "";
@@ -172,6 +173,8 @@ public class SC_bullet : MonoBehaviour
         multiplayer = (int)Communtron4.position.y==100;
         if(mode=="mother") return;
 
+        start_tick = SC_control.current_tick - age;
+
         //bullet scaling
         float r2 = SC_fun.other_bullets_colliders[type];
         float R2 = 0.32f + r2;
@@ -202,6 +205,9 @@ public class SC_bullet : MonoBehaviour
     public void AfterFixedUpdate()
     {
         if(mode=="mother") return;
+
+        //Server lag, stop bullet
+        if(SC_control.current_tick + 1 < start_tick + age && start_tick>=0) return;
 
         if(loopSndID!=-1) SC_snd_loop.sound_pos[loopSndID] = transform.position;
 

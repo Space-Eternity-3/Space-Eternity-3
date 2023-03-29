@@ -163,6 +163,9 @@ var translateAsteroid = [];
 var size_download = 0;
 var size_upload = 0;
 var size_updates = 0;
+var size_tps = 1;
+
+var current_tick = 0;
 
 drillLoot.fill(""); Object.seal(drillLoot);
 fobGenerate.fill(""); Object.seal(fobGenerate);
@@ -736,12 +739,39 @@ function getBulletDamage(type,owner,pid,bll)
 //HUB INTERVAL <interval #0>
 var date_before = Date.now();
 var date_start = Date.now();
+var time_loan = 0;
 setInterval(function () { // <interval #2>
   while(Date.now() > date_before)
   {
-    date_before++;
-    if((date_before-date_start) % 20 == 0) //precisely 50 times per second
+    date_before+=20;
+    if((date_before-date_start) % 1000 == 0) //precisely 1 times per second (never affected)
     {
+      updateHourHeader();
+      setTerminalTitle("SE3 server | " + serverVersion +
+        " | Download: " + size_download/1000 + "KB/s" +
+        " | Upload: " + size_upload/1000 + "KB/s" +
+        " | Packet frequency: " + size_updates + "/s" +
+        " | TPS: " + size_tps
+      );
+      size_download = 0;
+      size_upload = 0;
+      size_updates = 0;
+      size_tps = 0;
+    }
+
+    //LAG PREVENTING
+    if(time_loan>=15) {
+      time_loan-=15;
+      continue;
+    }
+
+    var v1_date_now = Date.now();
+
+    //FRAME UPDATE (50TPS by default):
+
+    //lagger
+    //while(Date.now()<v1_date_now+40) { console.log("lagger enabled"); }
+
       //Bullet movement && check collision
       var i, j, lngt=bulletsT.length, slngt=scrs.length;
       for(j=0;j<slngt;j++)
@@ -905,11 +935,7 @@ setInterval(function () { // <interval #2>
         if(plr.connectionTime[i]>=0)
           plr.connectionTime[i]++;
       }
-    }
-    if((date_before-date_start) % 50 == 0) //precisely 20 times per second
-    {
-      //NOTHING SO IMPORTANT
-    }
+
     if((date_before-date_start) % 100 == 0) //precisely 10 times per second
     {
       //[Grow]
@@ -991,18 +1017,13 @@ setInterval(function () { // <interval #2>
         }
       }
     }
-    if((date_before-date_start) % 1000 == 0) //precisely 1 times per second
-    {
-      updateHourHeader();
-      setTerminalTitle("SE3 server | " + serverVersion +
-        " | Download: " + size_download/1000 + "KB/s" +
-        " | Upload: " + size_upload/1000 + "KB/s" +
-        " | TPS: " + size_updates
-      );
-      size_download = 0;
-      size_upload = 0;
-      size_updates = 0;
-    }
+
+    var v2_date_now = Date.now();
+    var date_dif = v2_date_now - v1_date_now;
+    if(date_dif>15) time_loan += date_dif-15;
+
+    current_tick++;
+    size_tps++;
   }
 }, 5);
 function setTerminalTitle(title)
@@ -1127,7 +1148,8 @@ setInterval(function () {  // <interval #2>
 
   //RPU - Dynamic data
   eff = "/RPU " + max_players + " ";
-  eff += GetRPU(plr.players,lngt);
+  eff += GetRPU(plr.players,lngt) + " ";
+  eff += current_tick;
   eff += " X X"
   sendToAllClients(eff);
 

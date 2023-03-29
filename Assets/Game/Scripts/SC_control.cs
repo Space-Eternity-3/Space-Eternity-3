@@ -97,6 +97,7 @@ public class SC_control : MonoBehaviour {
 	public bool gtm1 = false;
 	public int bos_num = 0;
 	bool damage_sounds_disabled = false;
+	public int current_tick = -1;
 
 	public Color32 HealthNormal;
 
@@ -219,13 +220,14 @@ public class SC_control : MonoBehaviour {
 		if(!timeStop){
 		
 		//SHOT
+		bool wr_tick = (int)Communtron4.position.y!=100 || current_tick!=-1;
 		bool wr_comms = Communtron3.position.y==0f && Communtron2.position.x==0f && Communtron3.position.z==0f;
 		bool wr_have = SC_slots.InvHaving(24) || SC_slots.InvHaving(39) || SC_slots.InvHaving(48);
 		bool wr_cotr = (!Input.GetKey(KeyCode.LeftControl) || !SC_slots.InvHaving(48));
 		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && wr_cotr;
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
 		
-		if(SC_effect.effect!=8 && wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
+		if(SC_effect.effect!=8 && wr_tick && wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
 		{
 			cooldown=7;
 			int slot, typ = 1;
@@ -821,11 +823,13 @@ public class SC_control : MonoBehaviour {
 			}
 			if(UnityEngine.Random.Range(0,unstable_sprobability)==0)
 			{
+				bool wr_tick = (int)Communtron4.position.y!=100 || current_tick!=-1;
+
 				float alp = UnityEngine.Random.Range(0,360);
 				float ux = Mathf.Cos((alp*3.14159f)/180f);
 				float uy = Mathf.Sin((alp*3.14159f)/180f);
 				
-				if(SC_effect.effect!=8) SC_bullet.Shot(
+				if(SC_effect.effect!=8 && wr_tick) SC_bullet.Shot(
 					transform.position,
 					new Vector3(ux,uy,0f),
 					playerR.velocity*0.02f,
@@ -1007,6 +1011,7 @@ public class SC_control : MonoBehaviour {
 		string[] arg = RPU.Split(' ');
 		int i,lngt = int.Parse(arg[1]);
 		string[] arh = splitChars(arg[2],lngt);
+		current_tick = int.Parse(arg[3]);
 
 		for(i=1;i<lngt;i++)
 		{
