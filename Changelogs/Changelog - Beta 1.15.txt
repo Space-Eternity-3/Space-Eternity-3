@@ -151,5 +151,11 @@ idk day:
 
 31.03.2023:
 
-- server side steering bullets part 1
+- server side steering bullets part 1/2
 - removed strange future bullets feature
+
+01.04.2023:
+
+- player is immune to bullets created before his joining, they are not visible for him
+- server side steering bullets part 2/2
+- kamikadze bullet done

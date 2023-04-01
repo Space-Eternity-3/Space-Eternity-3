@@ -142,7 +142,7 @@ public class SC_bullet : MonoBehaviour
                     Vector3 dif_v = transform.position - SC_control.transform.position;
                     float angle = SC_fun.AngleBetweenVectorAndOX(st_vect.x,st_vect.y) - SC_fun.AngleBetweenVectorAndOX(dif_v.x,dif_v.y);
                     while(angle<-180f) angle+=360f;
-                    while(angle>180f) angle-=360;
+                    while(angle>180f) angle-=360f;
                     if(angle>0) SC_seek_data.steerData[seekPointer]+="L";
                     else SC_seek_data.steerData[seekPointer]+="P";
                 }
@@ -159,6 +159,7 @@ public class SC_bullet : MonoBehaviour
                 if(c=='L') get = SC_fun.RotateVector(st_vect.x,st_vect.y,SC_fun.seek_default_angle);
                 if(c=='P') get = SC_fun.RotateVector(st_vect.x,st_vect.y,-SC_fun.seek_default_angle);
                 st_vect = new Vector3(get[0],get[1],0f);
+                BulletRotate();
             }
 
             //Age change
@@ -214,7 +215,13 @@ public class SC_bullet : MonoBehaviour
         //seek check
         if(seekPointer==-1 && (type==9 || type==10))
             seekPointer = SC_seek_data.getSeekPointer(ID);
-        if(seekPointer!=-1) max_age = 400;
+        if(seekPointer!=-1) max_age = 250;
+    }
+    void BulletRotate()
+    {
+        if(st_vect.x==0f) transform.eulerAngles = new Vector3(0f,0f,90f);
+        else transform.eulerAngles = new Vector3(0f,0f,180f*Mathf.Atan(st_vect.y/st_vect.x)/Mathf.PI);
+        if(st_vect.x<0 || (st_vect.x==0 && st_vect.y<0)) transform.eulerAngles += new Vector3(0f,0f,180f);
     }
     void Start()
     {
@@ -230,10 +237,7 @@ public class SC_bullet : MonoBehaviour
         transform.localScale = 2*new Vector3(R2,R2,R2*5f/8f);
         transform.GetComponent<SphereCollider>().radius = u2/2;
 
-        //bullet rotate
-        if(st_vect.x==0f) transform.eulerAngles = new Vector3(0f,0f,90f);
-        else transform.eulerAngles = new Vector3(0f,0f,180f*Mathf.Atan(st_vect.y/st_vect.x)/Mathf.PI);
-        if(st_vect.x<0 || (st_vect.x==0 && st_vect.y<0)) transform.eulerAngles += new Vector3(0f,0f,180f);
+        BulletRotate();
 
         if(mode=="projection")
         {

@@ -51,6 +51,13 @@ class cfun
         return src/124;
     }
 
+    AngleBetweenVectorAndOX(dx, dy)
+    {
+        var angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        if (angle < 0) angle += 360;
+        return angle;
+    }
+
     RotatePoint(crd,rot,convert_to_radians=true)
     {
         var x = crd[0];

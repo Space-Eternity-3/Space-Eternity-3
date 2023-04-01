@@ -20,8 +20,8 @@ var hourHeader = "";
 var gpl_number = 33;
 var max_players = 128;
 
-var boss_damages = [0,3.75,5,10,45,4,6,4.5,0,20,10,6,0,0,0,0];
-var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.25,1.2,1.68,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
+var boss_damages = [0,3.75,5,10,45,4,6,4.5,0,10,6,0,0,0,0,0];
+var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.25,1.2,1.68,0.92,0.25,0.08,0.08,0.08,0.08,0.08];
 var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0];
 
 if(Number.isInteger(config.max_players))
@@ -101,7 +101,9 @@ const bulletTemplate = {
   type: 0,
   age: 0,
   max_age: 100,
+
   steerPtr: -1,
+  boss_owner: 0,
 
   normal_damage: 0,
   is_unstable: false,
@@ -119,7 +121,8 @@ const bulletTemplate = {
     y: 0
   },
 
-  damaged: []
+  damaged: [],
+  immune: []
 };
 
 const scrTemplate = {
@@ -252,6 +255,7 @@ class CInfo
       tpl.vector = Object.assign({},bulletTemplate.vector);
       tpl.pos = Object.assign({},bulletTemplate.pos);
       tpl.damaged = [];
+      tpl.immune = [];
 
       tpl.ID = randomInteger(0,1000000000);
       tpl.owner = bidf;
@@ -272,7 +276,7 @@ class CInfo
 
       var arg = ("/ "+bidf+" "+type+" "+px+" "+py+" "+vx+" "+vy+" "+tpl.ID).replaceAll(".",",").split(" ");
       arg.push("0");
-      spawnBullet(tpl,arg);
+      spawnBullet(tpl,arg,bidf);
   }
   CleanBullets(bidf)
   {
@@ -730,6 +734,7 @@ function getBulletDamage(type,owner,pid,bll)
     artid = -41;
   }
   else { //player
+    if(bll.immune.includes(pid+"")) return 0;
     artid = plr.backpack[pid].split(";")[30] - 41;
     if(plr.backpack[pid].split(";")[31]==0) artid = -41;
   }
@@ -793,8 +798,47 @@ setInterval(function () { // <interval #2>
       {
         if(bulletsT[i].steerPtr!=-1)
         {
-          steer_steerData[bulletsT[i].steerPtr]+="P";
-          steer_steerSend[bulletsT[i].steerPtr]+="P";
+          //Seek decisions
+          var nc="0";
+          for(j=0;j<slngt;j++) {
+            if(scrs[j].behaviour.identifier==bulletsT[i].boss_owner) break;
+          }
+          if(j!=slngt)
+          {
+            var deltapos = {x:0,y:0};
+            deltapos.x = scrs[j].posCX;
+            deltapos.y = scrs[j].posCY;
+            visionInfo.UpdatePlayers(deltapos);
+
+            var player_candidates = visionInfo.GetPlayers();
+            var nbx = bulletsT[i].pos.x - deltapos.x;
+            var nby = bulletsT[i].pos.y - deltapos.y;
+            var cl,cnajm,cnajwart,curwart,clngt = player_candidates.length;
+            if(clngt>0)
+            {
+              cnajm = 0;
+              cnajwart = (nbx-player_candidates[0].x)**2 + (nby-player_candidates[0].y)**2;
+              for(cl=1;cl<clngt;cl++) {
+                curwart = (nbx-player_candidates[cl].x)**2 + (nby-player_candidates[cl].y)**2;
+                if(curwart < cnajwart)
+                {
+                  cnajm = cl;
+                  cnajwart = curwart;
+                }
+              }
+
+              //Choosing
+              var dif_x = nbx - player_candidates[cnajm].x;
+              var dif_y = nby - player_candidates[cnajm].y;
+              var angle = func.AngleBetweenVectorAndOX(bulletsT[i].vector.x,bulletsT[i].vector.y) - func.AngleBetweenVectorAndOX(dif_x,dif_y);
+              while(angle<-180) angle+=360;
+              while(angle>180) angle-=360;
+              if(angle>0) nc = "L";
+              else nc = "P";
+            }
+          }
+          steer_steerData[bulletsT[i].steerPtr]+=nc;
+          steer_steerSend[bulletsT[i].steerPtr]+=nc;
 
           //Seek update
           var c = steer_tryGet(bulletsT[i].steerPtr,bulletsT[i].age);
@@ -1260,14 +1304,15 @@ function kick(i) {
 }
 
 //Bullet functions
-function spawnBullet(tpl,arg)
+function spawnBullet(tpl,arg,bow)
 {
   if(tpl.type==9 || tpl.type==10)
   {
     tpl.steerPtr = steer_createSeekPointer(tpl.ID);
     if(tpl.steerPtr!=-1)
     {
-      tpl.max_age = 400;
+      tpl.boss_owner = bow;
+      tpl.max_age = 250;
       sendToAllClients("/RetSeekData "+tpl.steerPtr+" "+tpl.ID+" X X");
     }
   }
@@ -2758,6 +2803,7 @@ wss.on("connection", function connection(ws) {
       tpl.vector = Object.assign({},bulletTemplate.vector);
       tpl.pos = Object.assign({},bulletTemplate.pos);
       tpl.damaged = [];
+      tpl.immune = [];
 
       tpl.ID = func.parseIntU(arg[7]);
       tpl.owner = func.parseIntU(arg[1]);
@@ -2778,7 +2824,7 @@ wss.on("connection", function connection(ws) {
 
       arg[8] = "0";
       if(tpl.type==9 || tpl.type==10) return;
-      spawnBullet(tpl,arg);
+      spawnBullet(tpl,arg,0);
     }
     if (arg[0] == "/NewBulletRemove") {
       //NewBulletRemove 1[PlayerID] 2[ID] 3[age]
@@ -2892,8 +2938,9 @@ wss.on("connection", function connection(ws) {
         var ag,tpl;
         for(i=0;i<lngt;i++)
         {
-          tpl = bulletsT[i];
-          ag = ["/",tpl.owner,tpl.type,tpl.start.x,tpl.start.y,tpl.vector.x,tpl.vector.y,tpl.ID,tpl.age].join(" ").replaceAll(".",",").split(" ");
+          bulletsT[i].immune.push(imkConID+"");
+          //tpl = bulletsT[i];
+          /*ag = ["/",tpl.owner,tpl.type,tpl.start.x,tpl.start.y,tpl.vector.x,tpl.vector.y,tpl.ID,tpl.age].join(" ").replaceAll(".",",").split(" ");
           sendTo(ws,
             "/RetNewBulletSend " +
               ag[1]+" " +
@@ -2905,7 +2952,7 @@ wss.on("connection", function connection(ws) {
               ag[7]+" " +
               ag[8]+" " +
               " X X"
-          );
+          );*/
         }
       }
     }
