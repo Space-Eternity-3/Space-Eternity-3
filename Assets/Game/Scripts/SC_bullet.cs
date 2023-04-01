@@ -31,12 +31,14 @@ public class SC_bullet : MonoBehaviour
     public SC_sounds SC_sounds;
     public SC_snd_loop SC_snd_loop;
     public SC_control SC_control;
+    public SC_seek_data SC_seek_data;
 
     public int age = 0;
     public int max_age = 100;
     public int delta_age = 0;
     public int float_age = 0;
     public int start_tick = -1000;
+    public int seekPointer = -1;
     public bool turn_used = false;
     public bool controller = false;
     public string destroy_mode = "";
@@ -63,6 +65,9 @@ public class SC_bullet : MonoBehaviour
         gob.controller = true;
         gob.st_vect = SC_fun.Skop(vector, bullet_speed) + delta;
         gob.ID = UnityEngine.Random.Range(0,1000000000);
+
+        if(!multiplayer && (gob.type==9 || gob.type==10))
+            gob.seekPointer = SC_seek_data.createSeekPointer(gob.ID);
 
         if(typ==3) gob.is_unstable = true;
         else gob.is_unstable = false;
@@ -128,6 +133,35 @@ public class SC_bullet : MonoBehaviour
         int i;
         for(i=0;i<n;i++)
         {
+            //Singleplayer seek add
+            if(!multiplayer && controller && seekPointer!=-1)
+            {
+                //A few frames before action, so you can put adding here safely
+                if(SC_control.transform.position.z<100f && !SC_control.GetComponent<SC_invisibler>().invisible)
+                {
+                    Vector3 dif_v = transform.position - SC_control.transform.position;
+                    float angle = SC_fun.AngleBetweenVectorAndOX(st_vect.x,st_vect.y) - SC_fun.AngleBetweenVectorAndOX(dif_v.x,dif_v.y);
+                    while(angle<-180f) angle+=360f;
+                    while(angle>180f) angle-=360;
+                    if(angle>0) SC_seek_data.steerData[seekPointer]+="L";
+                    else SC_seek_data.steerData[seekPointer]+="P";
+                }
+                else SC_seek_data.steerData[seekPointer]+="0";
+            }
+
+            //Seek update
+            char c = '0';
+            if(seekPointer!=-1)
+                c = SC_seek_data.tryGet(seekPointer,age);
+            if(c!='0')
+            {
+                float[] get = new float[2];
+                if(c=='L') get = SC_fun.RotateVector(st_vect.x,st_vect.y,SC_fun.seek_default_angle);
+                if(c=='P') get = SC_fun.RotateVector(st_vect.x,st_vect.y,-SC_fun.seek_default_angle);
+                st_vect = new Vector3(get[0],get[1],0f);
+            }
+
+            //Age change
             age++;
             CheckAge();
             transform.position += st_vect;
@@ -168,12 +202,26 @@ public class SC_bullet : MonoBehaviour
         if(EndSounds[type]!=-1) SC_sounds.PlaySound(transform.position, 2, EndSounds[type]); // 1 1 15
         if(BulletEnd[type]!=null) Instantiate(BulletEnd[type], transform.position, new Quaternion(0f, 0f, 0f, 0f));
     }
+    bool techstarted = false;
+    void TechStart()
+    {
+        if(techstarted) return;
+        techstarted = true;
+
+        //start tick set
+        start_tick = SC_control.current_tick - age;
+
+        //seek check
+        if(seekPointer==-1 && (type==9 || type==10))
+            seekPointer = SC_seek_data.getSeekPointer(ID);
+        if(seekPointer!=-1) max_age = 400;
+    }
     void Start()
     {
         multiplayer = (int)Communtron4.position.y==100;
         if(mode=="mother") return;
 
-        start_tick = SC_control.current_tick - age;
+        TechStart();
 
         //bullet scaling
         float r2 = SC_fun.other_bullets_colliders[type];
@@ -206,8 +254,14 @@ public class SC_bullet : MonoBehaviour
     {
         if(mode=="mother") return;
 
+        TechStart();
+
         //Server lag, stop bullet
-        if(SC_control.current_tick + 1 < start_tick + age && start_tick>=0) return;
+        if(seekPointer==-1 && SC_control.current_tick + 3 < start_tick + age && start_tick>=0) return;
+        if(seekPointer!=-1 && SC_seek_data.steerData[seekPointer].Length<=age) return;
+
+        //Auto-steering bullets can't go into future (any bullets)
+        //if(seekPointer!=-1 && delta_age>0) delta_age=0;
 
         if(loopSndID!=-1) SC_snd_loop.sound_pos[loopSndID] = transform.position;
 

@@ -31,6 +31,7 @@ public class SC_fun : MonoBehaviour
 	BiomeOfUlam[] mems = new BiomeOfUlam[36];
 	int currentBOU=0;
     public float biome_sector_size;
+	public float seek_default_angle;
 
 	public float[] boss_damages = new float[16];
 	public float[] boss_damages_cyclic = new float[16];
@@ -95,6 +96,21 @@ public class SC_fun : MonoBehaviour
 		float pita = SC_control.Pitagoras(V);
 		if(pita!=0) return V*F/SC_control.Pitagoras(V);
 		else return V*F;
+	}
+	public static float[] RotateVector(float x, float y, float a)
+	{//ChatGPT function
+	    float angle = a * (float)Math.PI / 180;
+
+    	float newX = x * (float)Math.Cos(angle) - y * (float)Math.Sin(angle);
+    	float newY = x * (float)Math.Sin(angle) + y * (float)Math.Cos(angle);
+
+    	return new float[] { newX, newY };
+	}
+	public static float AngleBetweenVectorAndOX(float dx, float dy)
+	{//ChatGPT function
+    	float angle = (float)Math.Atan2(dy, dx) * (180 / (float)Math.PI);
+    	if(angle < 0) angle += 360;
+    	return angle;
 	}
     int MakeID(int ID,int sed)
     {

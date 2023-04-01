@@ -101,6 +101,7 @@ const bulletTemplate = {
   type: 0,
   age: 0,
   max_age: 100,
+  steerPtr: -1,
 
   normal_damage: 0,
   is_unstable: false,
@@ -790,6 +791,23 @@ setInterval(function () { // <interval #2>
       }
       for(i=0;i<lngt;i++)
       {
+        if(bulletsT[i].steerPtr!=-1)
+        {
+          steer_steerData[bulletsT[i].steerPtr]+="P";
+          steer_steerSend[bulletsT[i].steerPtr]+="P";
+
+          //Seek update
+          var c = steer_tryGet(bulletsT[i].steerPtr,bulletsT[i].age);
+          if(c!='0')
+          {
+              var get, pak = [bulletsT[i].vector.x,bulletsT[i].vector.y];
+              if(c=='L') get = func.RotatePoint(pak,3,true);
+              if(c=='P') get = func.RotatePoint(pak,-3,true);
+              bulletsT[i].vector.x = get[0];
+              bulletsT[i].vector.y = get[1];
+          }
+        }
+
         var xv = bulletsT[i].vector.x;
         var yv = bulletsT[i].vector.y;
 
@@ -856,6 +874,7 @@ setInterval(function () { // <interval #2>
         bulletsT[i].age++;
         if(bulletsT[i].age>=bulletsT[i].max_age)
         {
+          steer_removeSeekPointer(bulletsT[i].steerPtr);
           bulletsT.remove(i);
           lngt--; i--; continue;
         }
@@ -1016,6 +1035,10 @@ setInterval(function () { // <interval #2>
           resetScr(i);
         }
       }
+
+      //Steer cooldown
+      for(i=0;i<1024;i++)
+        if(steer_cooldown[i]>0) steer_cooldown[i]-=5;
     }
 
     var v2_date_now = Date.now();
@@ -1153,6 +1176,11 @@ setInterval(function () {  // <interval #2>
   eff += " X X"
   sendToAllClients(eff);
 
+  //BRP - Bullet Rotation Packet
+  var gbrp = GetBRP();
+  eff = "/BRP " + gbrp + " X X";
+  if(gbrp!="") sendToAllClients(eff);
+
   var i,j;
   for(i=0;i<scrs.length;i++)
   {
@@ -1234,6 +1262,15 @@ function kick(i) {
 //Bullet functions
 function spawnBullet(tpl,arg)
 {
+  if(tpl.type==9 || tpl.type==10)
+  {
+    tpl.steerPtr = steer_createSeekPointer(tpl.ID);
+    if(tpl.steerPtr!=-1)
+    {
+      tpl.max_age = 400;
+      sendToAllClients("/RetSeekData "+tpl.steerPtr+" "+tpl.ID+" X X");
+    }
+  }
   bulletsT.push(tpl);
   sendToAllClients(
     "/RetNewBulletSend " +
@@ -1259,6 +1296,48 @@ function destroyBullet(n,arg,noise)
     noise +" "+
     " X X"
   );
+}
+
+//Seek data functions
+var steer_bulletID = [];
+var steer_steerData = [];
+var steer_steerSend = [];
+var steer_cooldown = [];
+var steer_it;
+for(steer_it=0;steer_it<1024;steer_it++)
+{
+  steer_bulletID[steer_it] = -1;
+  steer_steerData[steer_it] = "";
+  steer_steerSend[steer_it] = "";
+  steer_cooldown[steer_it] = 0;
+}
+
+function steer_createSeekPointer(bulID)
+{
+  var i;
+  for(i=0;i<1024;i++)
+  {
+    if(steer_bulletID[i]==-1 && steer_cooldown[i]<=0)
+    {
+      steer_bulletID[i] = bulID;
+      steer_steerData[i] = "0000";
+      steer_steerSend[steer_it] = "";
+      return i;
+    }
+  }
+  return -1;
+}
+
+function steer_removeSeekPointer(pID)
+{
+    steer_bulletID[pID] = -1;
+    steer_cooldown[pID] = 200;
+}
+
+function steer_tryGet(pID,ind)
+{
+    if(steer_steerData[pID].length>ind) return steer_steerData[pID][ind];
+    return '0';
 }
 
 //Check functions
@@ -1380,6 +1459,41 @@ function GetRPU(players,lngt)
     }
   }
 
+  return eff;
+}
+
+function GetBRP()
+{
+  var i,j,kngt,eff="";
+  for(i=0;i<1024;i++)
+  {
+    if(steer_steerSend[i]!="")
+    {
+      var awt1 = [0,0,0,0,0,0];
+      var awt2 = [0,0,0,0,0,0];
+      var i_t = i;
+      for(j=3;j>=0;j--) {
+        awt2[j] = i_t % 2;
+        i_t=Math.floor(i_t/2);
+      }
+      for(j=5;j>=0;j--) {
+        awt1[j] = i_t % 2;
+        i_t=Math.floor(i_t/2);
+      }
+
+      kngt = steer_steerSend[i].length;
+      for(j=0;j<kngt;j++)
+      {
+        var awn1 = awt1;
+        var awn2 = awt2;
+        if(steer_steerSend[i][j]=='L') {awn2[4] = 0; awn2[5] = 1;}
+        if(steer_steerSend[i][j]=='P') {awn2[4] = 1; awn2[5] = 0;}
+        if(steer_steerSend[i][j]=='0') {awn2[4] = 1; awn2[5] = 1;}
+        eff += bool6ToChar1(awn1) + bool6ToChar1(awn2);
+      }
+      steer_steerSend[i] = "";
+    }
+  }
   return eff;
 }
 
@@ -2663,6 +2777,7 @@ wss.on("connection", function connection(ws) {
       if(tpl.vector.y==0) tpl.vector.y = 0.00001;
 
       arg[8] = "0";
+      if(tpl.type==9 || tpl.type==10) return;
       spawnBullet(tpl,arg);
     }
     if (arg[0] == "/NewBulletRemove") {

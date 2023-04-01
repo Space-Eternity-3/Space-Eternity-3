@@ -140,6 +140,7 @@ public class SC_control : MonoBehaviour {
 	public SC_lists SC_lists;
 	public SC_camera SC_camera;
 	public SC_effect SC_effect;
+	public SC_seek_data SC_seek_data;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -1006,6 +1007,29 @@ public class SC_control : MonoBehaviour {
 		if(!Input.GetMouseButton(1)) public_placed = false;
 		gtm1 = false;
 	}
+	void ConvertBRP(string brp)
+	{
+		int i,j,lngt=brp.Length;
+		for(i=0;i<lngt;i+=2)
+		{
+			int[] b1 = Char1ToBool6(brp,i);
+			int[] b2 = Char1ToBool6(brp,i+1);
+			int bul_id = 0; int mn=1;
+			for(j=3;j>=0;j--) {
+				bul_id+=mn*b2[j];
+				mn*=2;
+			}
+			for(j=5;j>=0;j--) {
+				bul_id+=mn*b1[j];
+				mn*=2;
+			}
+			char N = '?';
+			if(b2[4]==0 && b2[5]==1) N='L';
+			if(b2[4]==1 && b2[5]==0) N='P';
+			if(b2[4]==1 && b2[5]==1) N='0';
+			SC_seek_data.steerData[bul_id]+=N;
+		}
+	}
 	void TranslateRPU()
 	{
 		string[] arg = RPU.Split(' ');
@@ -1249,6 +1273,8 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RetNewBulletDestroy"||
 		arg[0]=="/RetInfoClient"||
 		arg[0]=="/RetInvisibilityPulse"||
+		arg[0]=="/RetSeekData"||
+		arg[0]=="/BRP"||
 		arg[0]=="/RPC"||
 		(arg[0]=="/RetEmitParticles" && arg[1]!=connectionID+""))
 		{
@@ -1380,6 +1406,10 @@ public class SC_control : MonoBehaviour {
 
 			return;
 		}
+		if(arg[0]=="/BRP")
+		{
+			ConvertBRP(arg[1]);
+		}
 		if(arg[0]=="/RetDamageUsing")
 		{
 			int effectID = int.Parse(arg[1]);
@@ -1466,7 +1496,8 @@ public class SC_control : MonoBehaviour {
 					arg[1]
 				);
 				bul3.InstantMove(int.Parse(arg[8]));
-				bul3.delta_age = (4/2);
+				//Future bullets make no sense, change my mind
+				//bul3.delta_age = (4/2);
 			}
 		}
 		if(arg[0]=="/RetNewBulletDestroy")
@@ -1498,6 +1529,13 @@ public class SC_control : MonoBehaviour {
 					else if(ramvis[cid]<=timeInvisiblePulse) ramvis[cid] = timeInvisiblePulse;
 				}
 			}
+		}
+		if(arg[0]=="/RetSeekData")
+		{
+			int seek_id = int.Parse(arg[1]);
+			int bul_id = int.Parse(arg[2]);
+			SC_seek_data.bulletID[seek_id] = bul_id;
+			SC_seek_data.steerData[seek_id] = "0000";
 		}
 		if(arg[0]=="/RetEmitParticles")
 		{
