@@ -21,7 +21,7 @@ var gpl_number = 33;
 var max_players = 128;
 
 var boss_damages = [0,3.75,5,10,45,4,6,4.5,0,10,6,0,0,0,0,0];
-var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.25,1.2,1.68,0.92,0.25,0.08,0.08,0.08,0.08,0.08];
+var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.25,1.2,1.68,0.92,0.92,0.08,0.08,0.08,0.08,0.08];
 var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0];
 
 if(Number.isInteger(config.max_players))
@@ -239,7 +239,7 @@ class CInfo
         tpl.y = func.parseFloatU(splitted[1]) - deltapos.y;
         var px = tpl.x;
         var py = tpl.y;
-        if(func.parseIntU(splitted[5].split("&")[1]) % 100 != 1) //not invisible
+        if(func.parseIntU(splitted[5].split("&")[1]) % 100 != 1) //not invisible (must be 100)
         if(px**2 + py**2 <= in_arena_range**2) //in arena range
           this.players.push(tpl);
       }
@@ -683,7 +683,7 @@ function DamageFLOAT(pid,dmg)
   {
     var artid = plr.backpack[pid].split(";")[30] - 41;
     if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
-    if(func.parseFloatU(plr.players[pid].split(";")[5].split("&")[1])%100==2) return;
+    if(func.parseFloatU(plr.players[pid].split(";")[5].split("&")[1])%25==2) return;
     var potHHH = func.parseFloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + func.parseFloatU(gameplay[26]);
 		if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
 		dmg=0.02*dmg/(Math.ceil(50*Math.pow(health_base,potHHH))/50);

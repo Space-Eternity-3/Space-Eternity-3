@@ -137,7 +137,7 @@ public class SC_bullet : MonoBehaviour
             if(!multiplayer && controller && seekPointer!=-1)
             {
                 //A few frames before action, so you can put adding here safely
-                if(SC_control.transform.position.z<100f && !SC_control.GetComponent<SC_invisibler>().invisible)
+                if(SC_control.transform.position.z<100f && (!SC_control.GetComponent<SC_invisibler>().invisible || SC_control.SC_effect.effect!=0))
                 {
                     Vector3 dif_v = transform.position - SC_control.transform.position;
                     float angle = SC_fun.AngleBetweenVectorAndOX(st_vect.x,st_vect.y) - SC_fun.AngleBetweenVectorAndOX(dif_v.x,dif_v.y);
@@ -219,6 +219,7 @@ public class SC_bullet : MonoBehaviour
     }
     void BulletRotate()
     {
+        if(type==10) return;
         if(st_vect.x==0f) transform.eulerAngles = new Vector3(0f,0f,90f);
         else transform.eulerAngles = new Vector3(0f,0f,180f*Mathf.Atan(st_vect.y/st_vect.x)/Mathf.PI);
         if(st_vect.x<0 || (st_vect.x==0 && st_vect.y<0)) transform.eulerAngles += new Vector3(0f,0f,180f);

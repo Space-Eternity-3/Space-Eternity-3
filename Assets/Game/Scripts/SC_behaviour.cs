@@ -36,7 +36,7 @@ public class CInfo
         float px = PlayerInfo[0].x;
         float py = PlayerInfo[0].y;
         bool in_arena_range = (px*px + py*py <= (37f*37f));
-        PlayerInfo[0].enabled = (player.position.z<100f && !player.GetComponent<SC_invisibler>().invisible && in_arena_range);
+        PlayerInfo[0].enabled = (player.position.z<100f && (!player.GetComponent<SC_invisibler>().invisible || SC_control.SC_effect.effect!=0) && in_arena_range);
     }
     public SPlayerInfo[] GetPlayers()
     {
@@ -77,6 +77,22 @@ public class SC_behaviour : MonoBehaviour
     //thys.world // Info about world
     //thys.identifier // Object identifier
 
+    int tempMemBullet = 1;
+    int tempGetBullet()
+    {
+        if(Input.GetKey("1")) tempMemBullet = 1;
+        if(Input.GetKey("2")) tempMemBullet = 2;
+        if(Input.GetKey("3")) tempMemBullet = 3;
+        if(Input.GetKey("4")) tempMemBullet = 4;
+        if(Input.GetKey("5")) tempMemBullet = 5;
+        if(Input.GetKey("6")) tempMemBullet = 6;
+        if(Input.GetKey("7")) tempMemBullet = 7;
+        if(Input.GetKey("8")) tempMemBullet = 8;
+        if(Input.GetKey("9")) tempMemBullet = 9;
+        if(Input.GetKey("0")) tempMemBullet = 10;
+        return tempMemBullet;
+    }
+
     public void _Start()
     {
         
@@ -90,8 +106,7 @@ public class SC_behaviour : MonoBehaviour
         
         float[] pak = new float[2]; pak[0]=0; pak[1]=0.35f;
         float[] efwing = thys.RotatePoint(pak,angle+3.14159f/2,false);
-        if(thys.dataID[3]%40==0) thys.world.ShotRaw(0+thys.deltapos.x,0+thys.deltapos.y,efwing[0],efwing[1],7,thys.identifier);
-        if(thys.dataID[3]%40==20) thys.world.ShotRaw(0+thys.deltapos.x,0+thys.deltapos.y,efwing[0],efwing[1],10,thys.identifier);
+        if(thys.dataID[3]%20==0) thys.world.ShotRaw(0+thys.deltapos.x,0+thys.deltapos.y,efwing[0],efwing[1],tempGetBullet(),thys.identifier);
     }
     public void _End()
     {

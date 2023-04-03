@@ -115,6 +115,7 @@ public class SC_Fob21 : MonoBehaviour {
 	void FixedUpdate()
 	{
 		if(transform.position.z>100f) return;
+		int i;
 		if(screen_button_cooldown>0) screen_button_cooldown--;
 		if(count<=0) item=0;
 		pub_item=item;
@@ -222,6 +223,10 @@ public class SC_Fob21 : MonoBehaviour {
 		{
 			if(Input.GetMouseButtonDown(0))
 			{
+				int i,its=1;
+				if(Input.GetKey(KeyCode.LeftControl)) its=35;
+				
+				for(i=0;i<its;i++)
 				if(SC_slots.InvHaveB(item,1,true,true,true,1))
 				{
 					pressed_0 = true;
@@ -236,8 +241,14 @@ public class SC_Fob21 : MonoBehaviour {
 		{
 			if(Input.GetMouseButtonDown(1))
 			{
-				pressed_1 = true;
-				ClickUpdate(1);
+				int i,its=1;
+				if(Input.GetKey(KeyCode.LeftControl)) its=35;
+
+				for(i=0;i<its;i++)
+				{
+					pressed_1 = true;
+					ClickUpdate(1);
+				}
 			}
 			else if(!Input.GetMouseButton(1)) pressed_1 = false;
 		}

@@ -63,7 +63,7 @@ public class SC_projection : MonoBehaviour
                 }
             List<SC_players> plas = SC_control.SC_lists.SC_players;
             foreach(SC_players pla in plas)
-                if(pla.ArtSource%100==2)
+                if(pla.ArtSource%25==2)
                 {
                     Vector3 btr = pla.GetComponent<Transform>().position;
                     if(SC_control.Pitagoras(transform.position-btr-new Vector3(0f,0f,transform.position.z-btr.z)) < maxDangerRange)

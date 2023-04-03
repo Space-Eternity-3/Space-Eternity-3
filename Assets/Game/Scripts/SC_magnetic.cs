@@ -23,7 +23,7 @@ public class SC_magnetic : MonoBehaviour {
 	bool isImpulsing()
 	{
 		int IDP = SC_players.IDP_phys;
-		if(SC_control.others2_RPC[IDP]%100==2) return true;
+		if(SC_control.others2_RPC[IDP]%25==2) return true;
 		else return false;
 	}
 	void FixedUpdate()

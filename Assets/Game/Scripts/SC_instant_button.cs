@@ -27,6 +27,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
 	public SC_resume SC_resume;
     public SC_Fob21 SC_Fob21;
     public SC_control SC_control;
+    public SC_bp_upg SC_bp_upg;
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -63,7 +64,11 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
             if(ID==4) SC_backpack.Select(index,true);
             if(ID==5)
 			{
-				if(!special) SC_backpack.Import(index,true);
+				if(!special)
+                {
+                    if(SC_bp_upg.state==1) SC_backpack.Import(index,true);
+                    if(SC_bp_upg.state==2) SC_backpack.ImportJunk(index,true);
+                }
 				else SC_backpack.ImportArt(index);
 			}
             if(ID==6) SC_upgrades.Upgraded();
@@ -86,7 +91,11 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
             if(ID==4) SC_backpack.Select(index,false);
             if(ID==5)
 			{
-				if(!special) SC_backpack.Import(index,false);
+				if(!special)
+                {
+                    if(SC_bp_upg.state==1) SC_backpack.Import(index,false);
+                    if(SC_bp_upg.state==2) SC_backpack.ImportJunk(index,false);
+                }
 				else SC_backpack.ImportArt(index);
 			}
         }

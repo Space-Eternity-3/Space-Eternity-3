@@ -22,7 +22,6 @@ public class SC_backT : MonoBehaviour
     void Start()
     {
         if(!special) startPos = transform.localPosition;
-		//else startPos = transform.localPosition - delta_pos;
 		else startPos = transform.localPosition;
     }
     void LateUpdate()
@@ -32,10 +31,6 @@ public class SC_backT : MonoBehaviour
 			if(SC_slots.SlotY[index-1]==0||SC_slots.BackpackY[15]!=0||!SC_artefacts.IsArtefact(SC_slots.SlotX[index-1])||
 			!SC_inv_mover.active||SC_bp_upg.state!=1||SC_backpack.SC_upgrades.MTP_levels[4]<5) transform.localPosition = new Vector3(10000f,0f,0f);
 			else transform.localPosition=startPos;
-			
-			//if(transform.localPosition==startPos) SC2_backT.delta_accept = true;
-			//else SC2_backT.delta_accept = false;
-			
 			SC2_backT.LaterUpdate();
 		}
     }
@@ -43,12 +38,13 @@ public class SC_backT : MonoBehaviour
 	{
 		//!special
 		
-		if(SC_slots.SlotY[index-1]==0||!SC_slots.InvHaveB(SC_slots.SlotX[index-1],1,false,true,false,0)||
-		!SC_inv_mover.active||SC_bp_upg.state!=1) transform.localPosition = new Vector3(10000f,0f,0f);
-		else
+		if(SC_slots.SlotY[index-1]!=0 && SC_inv_mover.active &&
+		((SC_slots.InvHaveB(SC_slots.SlotX[index-1],1,false,true,false,0) && SC_bp_upg.state==1) ||
+		(SC_bp_upg.state==2 && (SC_slots.BackpackY[16]==0 || SC_slots.BackpackX[16]==SC_slots.SlotX[index-1]))))
 		{
 			if(!delta_accept) transform.localPosition = startPos;
 			else transform.localPosition = startPos + delta_pos;
 		}
+		else transform.localPosition = new Vector3(10000f,0f,0f);
 	}
 }

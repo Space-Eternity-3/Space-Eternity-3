@@ -16,6 +16,7 @@ public class SC_effect : MonoBehaviour
 
     public void SetEffect(int type, int cycles)
     {
+        if(cycles==0) return;
         if(type==10) type = 6;
         effect = type;
         damage_cycle_timer = cycles * cycle_period + 49;

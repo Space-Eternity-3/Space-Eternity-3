@@ -159,3 +159,19 @@ idk day:
 - player is immune to bullets created before his joining, they are not visible for him
 - server side steering bullets part 2/2
 - kamikadze bullet done
+- all %100 to %25 (artefacts)
+- bullets milk functionality bug removed
+- item destroy system (ugly version)
+- left ctrl + click on Fob21 = instant use
+
+02.04.2023:
+
+- spikeball alpha
+
+03.04.2023:
+
+- melted stone impossible to craft from now
+- boss realistic invisibility (illusion nerf while effects)
+- spikeball done
+- destroyer look
+- junk messages

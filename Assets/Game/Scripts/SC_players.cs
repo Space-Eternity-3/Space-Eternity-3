@@ -170,7 +170,7 @@ public class SC_players : MonoBehaviour
                 obj2.offset = new Vector3(0f,0f,0f);
                 obj3.offset = new Vector3(0f,0f,0f);
 
-                if(ArtSource%100==1) {
+                if(ArtSource%25==1) {
 			        SC_invisibler.visible = (SC_fun.SC_control.ramvis[IDP]>0 && SC_fun.SC_control.ramvis[IDP]<=SC_fun.SC_control.timeInvisiblePulse);
 			        SC_invisibler.invisible = true;
 		        }

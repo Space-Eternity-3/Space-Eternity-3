@@ -100,6 +100,43 @@ public class SC_backpack : MonoBehaviour
 			if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+(-yy)+" "+slI+" "+slB);
 		}
 	}
+    public void ImportJunk(int n, bool all)
+	{
+		destroyLock=true;
+		
+		int xx = SC_slots.SlotX[n-1];
+		int yy = SC_slots.SlotY[n-1];
+
+        if(!all) yy=1;
+		
+		if(SC_slots.InvHaveB(xx,-yy,true,false,true,0) && (SC_slots.BackpackY[16]==0 || SC_slots.BackpackX[16]==xx))
+		{
+			int slI = SC_slots.InvChange(xx,-yy,true,false,true);
+			int slB = 16+9;
+			
+			SC_slots.BackpackX[16] = xx;
+			SC_slots.BackpackY[16] += yy; //sureMTP
+			SC_slots.BackpackYA[16] += yy;
+			SC_slots.BackpackYB[16] += yy;
+			SC_slots.PopInv(16+9,1);
+			
+			if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+(-yy)+" "+slI+" "+slB);
+		}
+	}
+    public void DestroyButton()
+    {
+        int xx = SC_slots.BackpackX[16];
+		int yy = -SC_slots.BackpackY[16];
+        if(yy==0) return;
+        int sl = 16+9;
+
+        SC_slots.BackpackX[16] = 0;
+        SC_slots.BackpackY[16] += yy;
+        SC_slots.BackpackYA[16] += yy;
+        SC_slots.BackpackYB[16] += yy;
+
+        if((int)Communtron4.position.y==100) SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" "+xx+" "+yy+" "+sl);
+    }
     void LateUpdate()
     {
         int i,lim=Lim();

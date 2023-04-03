@@ -10,7 +10,6 @@ public class SC_bp_upg : MonoBehaviour
     public Text upper;
     public Button B,U,M,C;
     Vector3 upgS,bpS,hidden;
-    bool wysuned = false;
     public SC_inv_mover SC_inv_mover;
 	public SC_control SC_control;
 
@@ -38,7 +37,7 @@ public class SC_bp_upg : MonoBehaviour
 
         if(state==2)
         {
-            upper.text = "Manager";
+            upper.text = "Destroyer";
             mng.localPosition = bpS;
             M.interactable = false;
         }else {mng.localPosition = hidden; M.interactable = true;}

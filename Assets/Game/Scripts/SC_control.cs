@@ -211,7 +211,7 @@ public class SC_control : MonoBehaviour {
 		Screen1.enabled = !f1;
 		Screen2.enabled = !f1;
 		for(int ji=1;ji<max_players;ji++){
-			NC[ji].enabled = !f1 && (PL[ji].ArtSource % 100!=1);
+			NC[ji].enabled = !f1 && (PL[ji].ArtSource % 25!=1);
 		}
 		List<SC_pulse_bar> spbs = SC_lists.SC_pulse_bar;
 		foreach(SC_pulse_bar spb in spbs) {
@@ -1098,7 +1098,7 @@ public class SC_control : MonoBehaviour {
 				}
 					
 				//Based on <atf> value
-				NC[i].enabled = !f1 && (atf%100!=1);
+				NC[i].enabled = !f1 && (atf%25!=1);
 				NCHOF[i].color = SC_artefacts.Color1N[atf/100];
 			}
 		}
