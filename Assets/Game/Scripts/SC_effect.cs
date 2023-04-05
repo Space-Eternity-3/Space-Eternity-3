@@ -21,6 +21,11 @@ public class SC_effect : MonoBehaviour
         effect = type;
         damage_cycle_timer = cycles * cycle_period + 49;
     }
+    public void EffectClean()
+    {
+        effect = 0;
+        damage_cycle_timer = 0;
+    }
     public float GetSpeedMultiplier()
     {
         if(effect==8) return 0.2f;

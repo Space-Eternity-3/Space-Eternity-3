@@ -266,24 +266,93 @@ public class SC_control : MonoBehaviour {
 			SC_invisibler.invisible = false;
 		}
 
-		if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&SC_slots.InvHaving(55))
-		if((Mathf.Round(health_V*10000f)/10000f+healBalance)<1f && !impulse_enabled)
+		if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f)
 		{
-			if(!SC_invisibler.invisible)
+			//Healing potion
+			if(SC_slots.InvHaving(55)) if((Mathf.Round(health_V*10000f)/10000f+healBalance)<1f && !impulse_enabled)
+			{
+				if(!SC_invisibler.invisible)
+				{
+					Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+					trn11.GetComponent<SC_seeking>().enabled = true;
+				}
+				int slot = SC_slots.InvChange(55,-1,true,false,true);
+				if((int)Communtron4.position.y==100) {
+					SendMTP("/InventoryChange "+connectionID+" 55 -1 "+slot);
+					SendMTP("/Heal "+connectionID+" 1");
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
+					healBalance += float.Parse(SC_data.Gameplay[31]);
+				}
+				else HealSGP();
+			}
+			else InfoUp("Potion blocked",380);
+
+			//Turbo potion
+			if(SC_slots.InvHaving(57)) if(turbo_V<0.9f && !impulse_enabled)
+			{
+				if(!SC_invisibler.invisible)
+				{
+					Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+					trn11.GetComponent<SC_seeking>().enabled = true;
+				}
+				int slot = SC_slots.InvChange(57,-1,true,false,true);
+				if((int)Communtron4.position.y==100) {
+					SendMTP("/InventoryChange "+connectionID+" 57 -1 "+slot);
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
+				}
+				turbo_V = 1f;
+			}
+			else InfoUp("Potion blocked",380);
+
+			//Power potion
+			if(SC_slots.InvHaving(59)) if(power_V<0.9f && (SC_artefacts.GetArtefactID()==2 || SC_artefacts.GetArtefactID()==3) && !SC_invisibler.invisible && !impulse_enabled)
 			{
 				Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
 				trn11.GetComponent<SC_seeking>().enabled = true;
+
+				int slot = SC_slots.InvChange(59,-1,true,false,true);
+				if((int)Communtron4.position.y==100) {
+					SendMTP("/InventoryChange "+connectionID+" 59 -1 "+slot);
+					SendMTP("/EmitParticles "+connectionID+" 11 0 0");
+				}
+				power_V = 1f;
 			}
-			int slot = SC_slots.InvChange(55,-1,true,false,true);
-			if((int)Communtron4.position.y==100) {
-				SendMTP("/InventoryChange "+connectionID+" 55 -1 "+slot);
-				SendMTP("/Heal "+connectionID+" 1");
-				if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
-				healBalance += float.Parse(SC_data.Gameplay[31]);
+			else InfoUp("Potion blocked",380);
+
+			//Blank potion
+			if(SC_slots.InvHaving(61)) if(SC_effect.effect!=0 && !impulse_enabled)
+			{
+				if(!SC_invisibler.invisible)
+				{
+					Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+					trn11.GetComponent<SC_seeking>().enabled = true;
+				}
+				int slot = SC_slots.InvChange(61,-1,true,false,true);
+				if((int)Communtron4.position.y==100) {
+					SendMTP("/InventoryChange "+connectionID+" 61 -1 "+slot);
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
+				}
+				SC_effect.EffectClean();
 			}
-			else HealSGP();
+			else InfoUp("Potion blocked",380);
+
+			//Killing potion
+			if(SC_slots.InvHaving(63)) if(!impulse_enabled)
+			{
+				if(!SC_invisibler.invisible)
+				{
+					Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+					trn11.GetComponent<SC_seeking>().enabled = true;
+				}
+				int slot = SC_slots.InvChange(63,-1,true,false,true);
+				if((int)Communtron4.position.y==100) {
+					SendMTP("/InventoryChange "+connectionID+" 63 -1 "+slot);
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
+				}
+				DamageFLOAT(float.Parse(SC_data.Gameplay[31]));
+			}
+			else InfoUp("Potion blocked",380);
 		}
-		else InfoUp("Potion blocked",380);
 		
 		}
 		
@@ -1222,8 +1291,8 @@ public class SC_control : MonoBehaviour {
 				string neme = collision.gameObject.name;
 				licznikD=25;
 				float dmgg = 0f;
-				if(neme=="damager2") dmgg = float.Parse(SC_data.Gameplay[8]); //spikes
-				if(neme=="damager3") dmgg = float.Parse(SC_data.Gameplay[28]); //unstable matter
+				/*if(neme=="damager2")*/ dmgg = float.Parse(SC_data.Gameplay[8]); //spikes always
+				//if(neme=="damager3") dmgg = float.Parse(SC_data.Gameplay[28]); //unstable matter
 				if(dmgg!=0f) DamageFLOAT(dmgg);
 			}
 		}

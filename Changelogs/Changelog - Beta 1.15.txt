@@ -175,3 +175,13 @@ idk day:
 - spikeball done
 - destroyer look
 - junk messages
+
+04.04.2023:
+
+- junk messages #2 & #3 removed (cosmic machine)
+- Destroyer->Junkyard & Destroy->Discard
+- unstable matter as object damage from spikes variable
+- spike damage 10->5
+- added potions and their elements
+- added potion craftings
+- potions functional

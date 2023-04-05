@@ -37,7 +37,7 @@ public class SC_bp_upg : MonoBehaviour
 
         if(state==2)
         {
-            upper.text = "Destroyer";
+            upper.text = "Junkyard";
             mng.localPosition = bpS;
             M.interactable = false;
         }else {mng.localPosition = hidden; M.interactable = true;}

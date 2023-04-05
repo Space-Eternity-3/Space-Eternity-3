@@ -61,7 +61,6 @@ craftings
 		title_image: bush;
 		1: bush(3) -> big_bush;
 		2: big_bush -> bush(3);
-		3: bush(3) + magic_element -> healing_potion;
 	}
 	<Category>8
 	{
@@ -95,7 +94,16 @@ craftings
 	}
 	<Category>12
 	{
-		title_image: alien;
+		title_image: healing_potion;
+		1: bush(3) + magic_element -> healing_potion;
+		2: copper(3) + turbo_element -> turbo_potion;
+		3: small_amethyst(3) + power_element -> power_potion;
+		4: bone(3) + blank_element -> blank_potion;
+		5: red_stone(3) + unstable_matter -> killing_potion;
+	}
+	<Category>13
+	{
+		title_image: bone;
 		1: bone(4) + unstable_matter -> dead_alien;
 		2: dead_alien -> bone(4);
 		3: dead_alien + bush(3) -> alien;
@@ -107,10 +115,10 @@ craftings
 drill_loot
 {
 	stone: stone(100%);
-	copper: copper(100%);
+	copper: copper(92%) + turbo_element(8%);
 	gold: gold(30%);
 	grass: stone(92%) + magic_element(8%);
-	amethyst: small_amethyst(20%);
+	amethyst: small_amethyst(20%) + power_element(2%);
 	coal: coal(100%);
 	magnetic: magnetic_stone(100%);
 	red: red_stone(100%);
@@ -144,7 +152,7 @@ gameplay
 	drill_normal_speed: 8;
 	drill_brake_speed: -5;
 	
-	spike_damage: 10;
+	spike_damage: 5;
 	unstable_matter_damage: 10;
 	copper_bullet_damage: 3;
 	red_bullet_damage: 4;
@@ -349,7 +357,14 @@ game_translate <low-level settings>
 		53: bedrock_alien;				<only object>
 		54: bone;
 		55: healing_potion;				<only item>
-		56: magic_element;				<only item>
+		56: magic_element;
+		57: turbo_potion;				<only item>
+		58: turbo_element;
+		59: power_potion;				<only item>
+		60: power_element;
+		61: blank_potion;				<only item>
+		62: blank_element;
+		63: killing_potion;				<only item>
 	}
 }
 custom_structures <advanced settings>
