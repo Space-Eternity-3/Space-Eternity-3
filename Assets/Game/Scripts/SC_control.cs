@@ -35,7 +35,7 @@ public class SC_control : MonoBehaviour {
 	public Transform particlesBossDamageM;
 	public Transform particlesBossExplosion;
 	public Transform particlesBossExplosionM;
-	public Transform particlesEmptyBulb;
+	public Transform[] particlesEmptyBulb = new Transform[5];
 	public Rigidbody playerR;
 	public Transform drill3T;
 	public Transform respawn_point;
@@ -273,7 +273,7 @@ public class SC_control : MonoBehaviour {
 			{
 				if(!SC_invisibler.invisible)
 				{
-					Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+					Transform trn11 = Instantiate(particlesEmptyBulb[0],transform.position,new Quaternion(0f,0f,0f,0f));
 					trn11.GetComponent<SC_seeking>().enabled = true;
 				}
 				int slot = SC_slots.InvChange(55,-1,true,false,true);
@@ -288,32 +288,32 @@ public class SC_control : MonoBehaviour {
 			else InfoUp("Potion blocked",380);
 
 			//Turbo potion
-			if(SC_slots.InvHaving(57)) if(turbo_V<0.9f && !impulse_enabled)
+			if(SC_slots.InvHaving(57)) if(turbo_V<0.95f && !impulse_enabled && !turbo)
 			{
 				if(!SC_invisibler.invisible)
 				{
-					Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+					Transform trn11 = Instantiate(particlesEmptyBulb[1],transform.position,new Quaternion(0f,0f,0f,0f));
 					trn11.GetComponent<SC_seeking>().enabled = true;
 				}
 				int slot = SC_slots.InvChange(57,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/InventoryChange "+connectionID+" 57 -1 "+slot);
-					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 12 0 0");
 				}
 				turbo_V = 1f;
 			}
 			else InfoUp("Potion blocked",380);
 
 			//Power potion
-			if(SC_slots.InvHaving(59)) if(power_V<0.9f && (SC_artefacts.GetArtefactID()==2 || SC_artefacts.GetArtefactID()==3) && !SC_invisibler.invisible && !impulse_enabled)
+			if(SC_slots.InvHaving(59)) if(power_V<0.95f && (SC_artefacts.GetArtefactID()==2 || SC_artefacts.GetArtefactID()==3) && !SC_invisibler.invisible && !impulse_enabled)
 			{
-				Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+				Transform trn11 = Instantiate(particlesEmptyBulb[2],transform.position,new Quaternion(0f,0f,0f,0f));
 				trn11.GetComponent<SC_seeking>().enabled = true;
 
 				int slot = SC_slots.InvChange(59,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/InventoryChange "+connectionID+" 59 -1 "+slot);
-					SendMTP("/EmitParticles "+connectionID+" 11 0 0");
+					SendMTP("/EmitParticles "+connectionID+" 13 0 0");
 				}
 				power_V = 1f;
 			}
@@ -322,15 +322,15 @@ public class SC_control : MonoBehaviour {
 			//Blank potion
 			if(SC_slots.InvHaving(61)) if(SC_effect.effect!=0 && !impulse_enabled)
 			{
-				if(!SC_invisibler.invisible)
-				{
-					Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+				//if(!SC_invisibler.invisible)
+				//{
+					Transform trn11 = Instantiate(particlesEmptyBulb[3],transform.position,new Quaternion(0f,0f,0f,0f));
 					trn11.GetComponent<SC_seeking>().enabled = true;
-				}
+				//}
 				int slot = SC_slots.InvChange(61,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/InventoryChange "+connectionID+" 61 -1 "+slot);
-					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
+					/*if(!SC_invisibler.invisible)*/ SendMTP("/EmitParticles "+connectionID+" 14 0 0");
 				}
 				SC_effect.EffectClean();
 			}
@@ -341,13 +341,13 @@ public class SC_control : MonoBehaviour {
 			{
 				if(!SC_invisibler.invisible)
 				{
-					Transform trn11 = Instantiate(particlesEmptyBulb,transform.position,new Quaternion(0f,0f,0f,0f));
+					Transform trn11 = Instantiate(particlesEmptyBulb[4],transform.position,new Quaternion(0f,0f,0f,0f));
 					trn11.GetComponent<SC_seeking>().enabled = true;
 				}
 				int slot = SC_slots.InvChange(63,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/InventoryChange "+connectionID+" 63 -1 "+slot);
-					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 15 0 0");
 				}
 				DamageFLOAT(float.Parse(SC_data.Gameplay[31]));
 			}
@@ -1661,13 +1661,15 @@ public class SC_control : MonoBehaviour {
 				case 10:
 					Instantiate(particlesBossExplosionM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
-				case 11:
-					Transform trn11 = Instantiate(particlesEmptyBulb,particlePos,new Quaternion(0f,0f,0f,0f));
-					trn11.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
-					trn11.GetComponent<SC_seeking>().enabled = true;
-					break;
 				default:
-					Debug.LogWarning("Unknown particles ID: "+put);
+					if(put>=11&&put<=15)
+					{
+						Transform trn11 = Instantiate(particlesEmptyBulb[put-11],particlePos,new Quaternion(0f,0f,0f,0f));
+						trn11.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
+						trn11.GetComponent<SC_seeking>().enabled = true;
+						break;
+					}
+					else Debug.LogWarning("Unknown particles ID: "+put);
 					break;
 			}
 		}

@@ -176,7 +176,7 @@ idk day:
 - destroyer look
 - junk messages
 
-04.04.2023:
+05.04.2023:
 
 - junk messages #2 & #3 removed (cosmic machine)
 - Destroyer->Junkyard & Destroy->Discard
@@ -184,4 +184,10 @@ idk day:
 - spike damage 10->5
 - added potions and their elements
 - added potion craftings
-- potions functional
+- potions functional (killing uses healing variable)
+
+06.04.2023:
+
+- blank element possible to drill from metalic (1%)
+- treasure loottable changed (potion fit & more)
+- potion & element textures & fob21 materials

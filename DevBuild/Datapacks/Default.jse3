@@ -123,7 +123,7 @@ drill_loot
 	magnetic: magnetic_stone(100%);
 	red: red_stone(100%);
 	diamond: small_diamond(2%);
-	metalic: stone(100%);
+	metalic: stone(99%) + blank_element(1%);
 }
 modified_drops
 {
