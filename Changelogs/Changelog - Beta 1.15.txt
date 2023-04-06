@@ -191,3 +191,4 @@ idk day:
 - blank element possible to drill from metalic (1%)
 - treasure loottable changed (potion fit & more)
 - potion & element textures & fob21 materials
+- ShotCooked alpha function

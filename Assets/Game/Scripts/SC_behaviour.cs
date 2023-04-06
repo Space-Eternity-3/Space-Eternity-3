@@ -43,6 +43,16 @@ public class CInfo
         if(PlayerInfo[0].enabled) return PlayerInfo;
         else return new SPlayerInfo[0];
     }
+    public void ShotCooked(float delta_angle_rad, int btype, SC_boss thys)
+    {
+        float lx = thys.ScrdToFloat(thys.dataID[8]);
+        float ly = thys.ScrdToFloat(thys.dataID[9]);
+        float angle = delta_angle_rad + thys.ScrdToFloat(thys.dataID[10])*3.14159f/180f;
+        float[] pak = new float[2]; pak[1]=0;
+        if(btype==9 || btype==10) pak[0]=0.25f; else pak[0]=0.35f;
+        float[] efwing = thys.RotatePoint(pak,angle,false);
+        thys.world.ShotRaw(8f*Mathf.Cos(angle)+thys.deltapos.x+lx,8f*Mathf.Sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
+    }
     public void ShotRaw(float px, float py, float vx, float vy, int typ, int bidf)
     {
         SC_bullet.Shot(
@@ -77,22 +87,6 @@ public class SC_behaviour : MonoBehaviour
     //thys.world // Info about world
     //thys.identifier // Object identifier
 
-    int tempMemBullet = 1;
-    int tempGetBullet()
-    {
-        if(Input.GetKey("1")) tempMemBullet = 1;
-        if(Input.GetKey("2")) tempMemBullet = 2;
-        if(Input.GetKey("3")) tempMemBullet = 3;
-        if(Input.GetKey("4")) tempMemBullet = 4;
-        if(Input.GetKey("5")) tempMemBullet = 5;
-        if(Input.GetKey("6")) tempMemBullet = 6;
-        if(Input.GetKey("7")) tempMemBullet = 7;
-        if(Input.GetKey("8")) tempMemBullet = 8;
-        if(Input.GetKey("9")) tempMemBullet = 9;
-        if(Input.GetKey("0")) tempMemBullet = 10;
-        return tempMemBullet;
-    }
-
     public void _Start()
     {
         
@@ -100,13 +94,8 @@ public class SC_behaviour : MonoBehaviour
     public void _FixedUpdate()
     {
         float angle = (thys.dataID[3]/50f)%(2f*3.14159f);
-        thys.dataID[8] = thys.FloatToScrd(22f*Mathf.Cos(angle));
-        thys.dataID[9] = thys.FloatToScrd(22f*Mathf.Sin(angle));
         thys.dataID[10] = thys.FloatToScrd(angle*180f/3.14159f);
-        
-        float[] pak = new float[2]; pak[0]=0; pak[1]=0.35f;
-        float[] efwing = thys.RotatePoint(pak,angle+3.14159f/2,false);
-        if(thys.dataID[3]%20==0) thys.world.ShotRaw(0+thys.deltapos.x,0+thys.deltapos.y,efwing[0],efwing[1],tempGetBullet(),thys.identifier);
+        if(thys.dataID[3]%20==0) thys.world.ShotCooked(0f,6,thys);
     }
     public void _End()
     {

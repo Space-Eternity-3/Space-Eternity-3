@@ -248,6 +248,16 @@ class CInfo
   {
       return this.players;
   }
+  ShotCooked(delta_angle_rad,btype,thys)
+  {
+    var lx = func.ScrdToFloat(thys.dataY[8-2]);
+    var ly = func.ScrdToFloat(thys.dataY[9-2]);
+    var angle = delta_angle_rad + func.ScrdToFloat(thys.dataY[10-2])*3.14159/180;
+    var pak = ["?",0];
+    if(btype==9 || btype==10) pak[0]=0.25; else pak[0]=0.35;
+    var efwing = func.RotatePoint(pak,angle,false);
+    thys.world.ShotRaw(8*Math.cos(angle)+thys.deltapos.x+lx,8*Math.sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
+  }
   ShotRaw(px,py,vx,vy,type,bidf)
   {
       var tpl = Object.assign({},bulletTemplate);
