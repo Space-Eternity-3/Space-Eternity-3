@@ -200,3 +200,4 @@ idk day:
 - treasure loot changed again
 - metalic asteroid 50% for stone, 4% for better elements (metalic, amethyst)
 - steering cooldown 200 -> 1500 for safety & whole stream sent proof
+- steering angle reduced to 2.14

@@ -180,6 +180,33 @@ gameplay.fill(""); Object.seal(gameplay);
 modifiedDrops.fill(""); Object.seal(modifiedDrops);
 
 //Classes
+class CShooter
+{
+  constructor(bul_typ,angl_deg,deviat_deg,ths) {
+    this.bullet_type = bul_typ;
+    this.angle = angl_deg*3.14159/180;
+    this.max_deviation = deviat_deg*3.14195/180;
+    this.thys = ths;
+    //sendToAllClients("/RetCreateShooter "+ths.+" X X");
+  }
+  CanShoot(x,y)
+  {
+    var pat = func.RotatePoint([x,y],-(this.angle+func.ScrdToFloat(this.thys.dataY[10-2])*3.14159/180),false);
+    x = pat[0]-8; y = pat[1];
+
+    if(x<=0) return false;
+    var target_tg = y/x;
+    var border_tg = Math.tan(this.max_deviation);
+    return (-border_tg < target_tg && border_tg > target_tg);
+  }
+  BestDeviation(x,y)
+  {
+    var pat = func.RotatePoint([x,y],-(this.angle+func.ScrdToFloat(this.thys.dataY[10-2])*3.14159/180),false);
+    x = pat[0]-8; y = pat[1];
+    var best_deviation = Math.atan2(y,x);
+    return best_deviation; 
+  }
+}
 class CShape
 {
   constructor(neme1,shape_description1,default_offset1,col_id) {
@@ -248,14 +275,22 @@ class CInfo
   {
       return this.players;
   }
-  ShotCooked(delta_angle_rad,btype,thys)
+  ShotUsingShooter(shooter,best_deviation,thys)
+  {
+    if(best_deviation==1000) this.ShotCooked(shooter.angle,shooter.bullet_type,thys,shooter.max_deviation,true);
+    else this.ShotCooked(shooter.angle,shooter.bullet_type,thys,best_deviation,false);
+  }
+  ShotCooked(delta_angle_rad,btype,thys,mdev,randomize)
   {
     var lx = func.ScrdToFloat(thys.dataY[8-2]);
     var ly = func.ScrdToFloat(thys.dataY[9-2]);
     var angle = delta_angle_rad + func.ScrdToFloat(thys.dataY[10-2])*3.14159/180;
+    var deviation_angle;
+    if(randomize) deviation_angle = (Math.random()-0.5)*2 * mdev;
+    else deviation_angle = mdev;
     var pak = ["?",0];
     if(btype==9 || btype==10) pak[0]=0.25; else pak[0]=0.35;
-    var efwing = func.RotatePoint(pak,angle,false);
+    var efwing = func.RotatePoint(pak,angle+deviation_angle,false);
     thys.world.ShotRaw(8*Math.cos(angle)+thys.deltapos.x+lx,8*Math.sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
   }
   ShotRaw(px,py,vx,vy,type,bidf)
@@ -294,6 +329,38 @@ class CInfo
     for(i=0;i<lngt;i++)
       if(bulletsT[i].owner==bidf)
         destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], false);
+  }
+
+  //bossy functions
+  GetShootersList(type,thys)
+  {
+    var shooters = [];
+    if(type==1) //Protector
+    {
+      
+    }
+    if(type==2) //Adecodron
+    {
+
+    }
+    if(type==3) //Octogone
+    {
+      shooters = [
+        new CShooter(1,0,45,thys),
+        new CShooter(2,90,45,thys),
+        new CShooter(3,180,45,thys),
+        new CShooter(4,270,45,thys),
+      ];
+    }
+    if(type==4) //Immortality
+    {
+      
+    }
+    if(type==6) //Degenerator
+    {
+
+    }
+    return shooters;
   }
 }
 let visionInfo = new CInfo(plr,bulletsT);
@@ -855,8 +922,8 @@ setInterval(function () { // <interval #2>
           if(c!='0')
           {
               var get, pak = [bulletsT[i].vector.x,bulletsT[i].vector.y];
-              if(c=='L') get = func.RotatePoint(pak,3,true);
-              if(c=='P') get = func.RotatePoint(pak,-3,true);
+              if(c=='L') get = func.RotatePoint(pak,2.14,true);
+              if(c=='P') get = func.RotatePoint(pak,-2.14,true);
               bulletsT[i].vector.x = get[0];
               bulletsT[i].vector.y = get[1];
           }

@@ -12,8 +12,9 @@ class CBoss
         this.deltapos = deltapos; //Delta position of boss center (read only)
         this.dataX = dataX; // General data
         this.dataY = dataY; // Additional data
-        this.world = world; // Info about world
+        this.world = world; // Communication with the world & bossy functions
         this.identifier = -randomInteger(1,1000000000); // Boss object identifier
+        this.shooters = this.world.GetShootersList(this.type,this);
     }
 
     /*--------------------------//
@@ -47,7 +48,15 @@ class CBoss
     {
         var angle = (this.dataY[3-2]/50)%(2*3.14159);
         this.dataY[10-2] = func.FloatToScrd(angle*180/3.14159);
-        if(this.dataY[3-2]%25==0) this.world.ShotCooked(0,10,this);
+
+        var players = this.world.GetPlayers();
+        if(this.dataY[3-2]%15==0) this.shooters.forEach(shooter => {
+          var anyone = false;
+          players.forEach( player => {
+            if(shooter.CanShoot(player.x,player.y)) anyone = true;
+          });
+          if(anyone) this.world.ShotUsingShooter(shooter,1000,this);
+        });
     }
     End() //Executes on battle end directly after last FixedUpdate() Note: dataY will be reseted automatically after execution
     {
