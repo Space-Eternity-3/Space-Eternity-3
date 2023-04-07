@@ -1091,8 +1091,10 @@ setInterval(function () { // <interval #2>
       }
 
       //Steer cooldown
-      for(i=0;i<1024;i++)
+      for(i=0;i<1024;i++) {
+        if(steer_cooldown[i]==5) steer_bulletID[i]=-1;
         if(steer_cooldown[i]>0) steer_cooldown[i]-=5;
+      }
     }
 
     var v2_date_now = Date.now();
@@ -1385,8 +1387,7 @@ function steer_createSeekPointer(bulID)
 
 function steer_removeSeekPointer(pID)
 {
-    steer_bulletID[pID] = -1;
-    steer_cooldown[pID] = 200;
+    steer_cooldown[pID] = 1500;
 }
 
 function steer_tryGet(pID,ind)

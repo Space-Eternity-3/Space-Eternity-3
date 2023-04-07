@@ -47,7 +47,7 @@ class CBoss
     {
         var angle = (this.dataY[3-2]/50)%(2*3.14159);
         this.dataY[10-2] = func.FloatToScrd(angle*180/3.14159);
-        if(this.dataY[3-2]%20==0) this.world.ShotCooked(0,9,this);
+        if(this.dataY[3-2]%25==0) this.world.ShotCooked(0,10,this);
     }
     End() //Executes on battle end directly after last FixedUpdate() Note: dataY will be reseted automatically after execution
     {

@@ -288,7 +288,7 @@ public class SC_control : MonoBehaviour {
 			else InfoUp("Potion blocked",380);
 
 			//Turbo potion
-			if(SC_slots.InvHaving(57)) if(turbo_V<0.95f && !impulse_enabled && !turbo)
+			if(SC_slots.InvHaving(57)) if(turbo_V<0.95f && !impulse_enabled)
 			{
 				if(!SC_invisibler.invisible)
 				{
@@ -855,7 +855,7 @@ public class SC_control : MonoBehaviour {
 			float Fy = FF*mY/Mathf.Sqrt(mX*mX+mY*mY);
 			float Fmul; if(impulse_time-1 >= 5) Fmul = 1;
 			else Fmul = (impulse_time-1) * 0.2f;
-			playerR.velocity = new Vector3(Fx,Fy,0f) * Fmul;
+			playerR.velocity = new Vector3(Fx,Fy,0f) * Fmul * SC_effect.GetSpeedMultiplier();
 		}
 
 		//Red health reduce

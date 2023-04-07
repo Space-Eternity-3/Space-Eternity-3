@@ -95,7 +95,7 @@ public class SC_behaviour : MonoBehaviour
     {
         float angle = (thys.dataID[3]/50f)%(2f*3.14159f);
         thys.dataID[10] = thys.FloatToScrd(angle*180f/3.14159f);
-        if(thys.dataID[3]%20==0) thys.world.ShotCooked(0f,6,thys);
+        if(thys.dataID[3]%20==0) thys.world.ShotCooked(0f,8,thys);
     }
     public void _End()
     {

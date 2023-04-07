@@ -118,12 +118,12 @@ drill_loot
 	copper: copper(92%) + turbo_element(8%);
 	gold: gold(30%);
 	grass: stone(92%) + magic_element(8%);
-	amethyst: small_amethyst(20%) + power_element(2%);
+	amethyst: small_amethyst(20%) + power_element(4%);
 	coal: coal(100%);
 	magnetic: magnetic_stone(100%);
 	red: red_stone(100%);
 	diamond: small_diamond(2%);
-	metalic: stone(99%) + blank_element(1%);
+	metalic: stone(50%) + blank_element(4%);
 }
 modified_drops
 {

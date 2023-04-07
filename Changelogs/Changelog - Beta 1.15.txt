@@ -192,3 +192,11 @@ idk day:
 - treasure loottable changed (potion fit & more)
 - potion & element textures & fob21 materials
 - ShotCooked alpha function
+
+07.04.2023:
+
+- turbo potion allowed when turbo
+- longer effect apply rather than next
+- treasure loot changed again
+- metalic asteroid 50% for stone, 4% for better elements (metalic, amethyst)
+- steering cooldown 200 -> 1500 for safety & whole stream sent proof

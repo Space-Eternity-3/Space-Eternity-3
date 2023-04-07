@@ -19,7 +19,8 @@ public class SC_effect : MonoBehaviour
         if(cycles==0) return;
         if(type==10) type = 6;
         effect = type;
-        damage_cycle_timer = cycles * cycle_period + 49;
+        int candidate = cycles * cycle_period + 49;
+        if(candidate > damage_cycle_timer) damage_cycle_timer = candidate;
     }
     public void EffectClean()
     {
