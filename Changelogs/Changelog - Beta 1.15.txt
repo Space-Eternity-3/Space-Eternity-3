@@ -208,3 +208,7 @@ idk day:
 
 - "bosses in development" info
 - shooters API quite good
+- bullet 11,12,13 default biggers
+- unstable damage -> 8 (players only)
+- unstable damage upgradeable
+- stupid rotation

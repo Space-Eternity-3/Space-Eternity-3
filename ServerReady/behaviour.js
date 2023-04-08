@@ -33,6 +33,7 @@ class CBoss
     dataY[8-2] - actual_position_x [scrd]
     dataY[9-2] - actual_position_y [scrd]
     dataY[10-2] - actual_rotation [scrd]
+    dataY[11-2] - rotation_velocity
     <...>
     dataY[60-2] - {Other variables are empty at this time. Use them as a data storage between frames or ask Kamiloso to do some special tasks using them.}
 
@@ -47,6 +48,12 @@ class CBoss
     FixedUpdate() //Executes 50 times per second after starting frame
     {
         var players = this.world.GetPlayers();
+
+        var rand = Math.random();
+        this.dataY[11-2] += Math.round((rand-0.5)*2*200*(1500-2*Math.abs(this.dataY[11-2]))/500);
+        if(this.dataY[11-2]<-500) this.dataY[11-2]=-500;
+        if(this.dataY[11-2]>500) this.dataY[11-2]=500;
+        this.dataY[10-2] = func.FloatToScrd((func.ScrdToFloat(this.dataY[10-2]) + 0.005*this.dataY[11-2]));
         
         if(this.dataY[3-2]%15==0) this.shooters.forEach(shooter => {
           this.world.ShotCalculate(shooter,players,this);

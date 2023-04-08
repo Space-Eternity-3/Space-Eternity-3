@@ -77,7 +77,7 @@ public class SC_bullet : MonoBehaviour
             if(typ==1) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[3]);
             if(typ==2) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[27]);
             if(typ==3) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[28]);
-            if(!gob.is_unstable) gob.normal_damage *= Mathf.Pow(1.08f,SC_control.SC_upgrades.MTP_levels[3]);
+            /*if(!gob.is_unstable)*/ gob.normal_damage *= Mathf.Pow(1.08f,SC_control.SC_upgrades.MTP_levels[3]);
         }
         else
         {

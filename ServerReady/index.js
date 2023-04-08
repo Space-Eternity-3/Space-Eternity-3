@@ -20,9 +20,9 @@ var hourHeader = "";
 var gpl_number = 33;
 var max_players = 128;
 
-var boss_damages = [0,3.75,5,10,45,4,6,4.5,0,10,6,0,0,0,0,0];
-var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.25,1.2,1.68,0.92,0.92,0.08,0.08,0.08,0.08,0.08];
-var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0];
+var boss_damages = [0,3.75,5,10,45,4,6,4.5,0,10,6,3.75,5,10,0,0];
+var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.08,0.08];
+var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,0];
 
 if(Number.isInteger(config.max_players))
   max_players = config.max_players;
@@ -354,9 +354,9 @@ class CInfo
     if(true) //All bosses (temporary)
     {
       shooters = [
-        new CShooter(1,0,70,7.5,6.5,thys,false),
-        new CShooter(2,90,70,70,6.5,thys,true),
-        new CShooter(3,180,70,7.5,6.5,thys,false),
+        new CShooter(11,0,70,7.5,6.5,thys,false),
+        new CShooter(12,90,70,70,6.5,thys,false),
+        new CShooter(13,180,70,7.5,6.5,thys,false),
         new CShooter(5,270,120,7.5,10,thys,false),
       ];
     }

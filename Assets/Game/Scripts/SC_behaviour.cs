@@ -175,6 +175,12 @@ public class SC_behaviour : MonoBehaviour
     {
         SPlayerInfo[] players = thys.world.GetPlayers();
 
+        System.Random random = new System.Random();
+        thys.dataID[11] += (int)Mathf.Round(((float)random.NextDouble()-0.5f)*2f*200f*(1500f-2f*Mathf.Abs(thys.dataID[11-2]))/500f);
+        if(thys.dataID[11]<-500) thys.dataID[11]=-500;
+        if(thys.dataID[11]>500) thys.dataID[11]=500;
+        thys.dataID[10] = thys.FloatToScrd((thys.ScrdToFloat(thys.dataID[10]) + 0.005f*thys.dataID[11]));
+
         if(thys.dataID[3]%15==0) foreach(CShooter shooter in thys.shooters) {
           thys.world.ShotCalculate(shooter,players,thys);
         }
