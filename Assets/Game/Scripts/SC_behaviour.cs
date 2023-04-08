@@ -16,18 +16,20 @@ public class CShooter
     public int bullet_type;
     public float angle;
     public float max_deviation;
+    public float precision;
     public float radius;
     public SC_boss thys;
+    public bool always;
 
-    public CShooter(int bul_typ,float angl_deg,float deviat_deg,float rad,SC_boss ths)
+    public CShooter(int bul_typ,float angl_deg,float deviat_deg,float precis_deg,float rad,SC_boss ths,bool alway)
     {
         bullet_type = bul_typ;
         angle = angl_deg*3.14159f/180f;
         max_deviation = deviat_deg*3.14159f/180f;
+        precision = precis_deg*3.14159f/180f;
         radius = rad;
         thys = ths;
-
-        //Initialize shooter here
+        always = alway;
     }
     public bool CanShoot(float x,float y)
     {
@@ -43,9 +45,7 @@ public class CShooter
         float[] pat = new float[2];
         pat = thys.RotatePoint(new float[2]{x,y},-(angle+thys.ScrdToFloat(thys.dataID[10])*3.14159f/180f),false);
         x = pat[0]-radius; y = pat[1];
-
-        float best_deviation = Mathf.Atan2(y,x);
-        return best_deviation;
+        return Mathf.Atan2(y,x);
     }
 }
 
@@ -82,26 +82,41 @@ public class CInfo
         if(PlayerInfo[0].enabled) return PlayerInfo;
         else return new SPlayerInfo[0];
     }
+    public void ShotCalculate(CShooter shooter,SPlayerInfo[] players,SC_boss thys)
+    {
+        //Stupid shooter
+        if(shooter.always) {
+            ShotUsingShooter(shooter,0,thys);
+            return;
+        }
+
+        //Intelligent shooter
+        float min_deviation = 10000f;
+        foreach(SPlayerInfo player in players) {
+            if(shooter.CanShoot(player.x,player.y)) {
+                float cand_deviation = shooter.BestDeviation(player.x,player.y);
+                if(Mathf.Abs(cand_deviation) < Mathf.Abs(min_deviation)) min_deviation = cand_deviation;
+            }
+        }
+        if(min_deviation!=10000f) ShotUsingShooter(shooter,min_deviation,thys);
+    }
     public void ShotUsingShooter(CShooter shooter,float best_deviation,SC_boss thys)
     {
-        if(best_deviation==1000f) ShotCooked(shooter.angle,shooter.bullet_type,thys,shooter.max_deviation,shooter.radius,true);
-        else ShotCooked(shooter.angle,shooter.bullet_type,thys,best_deviation,shooter.radius,false);
+        System.Random random = new System.Random();
+        float deviation_angle = ((float)random.NextDouble()-0.5f)*2f*shooter.precision + best_deviation;
+        if(deviation_angle < -shooter.max_deviation) deviation_angle = -2*shooter.max_deviation - deviation_angle;
+        if(deviation_angle > shooter.max_deviation) deviation_angle = 2*shooter.max_deviation - deviation_angle;
+        ShotCooked(shooter.angle,shooter.bullet_type,thys,deviation_angle,shooter.radius);
     }
-    public void ShotCooked(float delta_angle_rad,int btype,SC_boss thys,float mdev,float rad,bool randomize)
+    public void ShotCooked(float delta_angle_rad,int btype,SC_boss thys,float deviation_angle,float rad)
     {
         float lx = thys.ScrdToFloat(thys.dataID[8]);
         float ly = thys.ScrdToFloat(thys.dataID[9]);
         float angle = delta_angle_rad + thys.ScrdToFloat(thys.dataID[10])*3.14159f/180f;
-        float deviation_angle;
-        if(randomize) {
-            System.Random random = new System.Random();
-            deviation_angle = ((float)random.NextDouble()-0.5f)*2f * mdev;
-        }
-        else deviation_angle = mdev;
         float[] pak = new float[2]; pak[1]=0f;
         if(btype==9 || btype==10) pak[0]=0.25f; else pak[0]=0.35f;
         float[] efwing = thys.RotatePoint(pak,angle+deviation_angle,false);
-        thys.world.ShotRaw(rad*Mathf.Cos(angle)+thys.deltapos.x+lx,rad*Mathf.Sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
+        ShotRaw(rad*Mathf.Cos(angle)+thys.deltapos.x+lx,rad*Mathf.Sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
     }
     public void ShotRaw(float px, float py, float vx, float vy, int typ, int bidf)
     {
@@ -132,10 +147,10 @@ public class CInfo
         List<CShooter> shooters = new List<CShooter>();
         if(true) //All bosses (temporary)
         {
-            shooters.Add(new CShooter(1,0f,70f,6.5f,thys));
-            shooters.Add(new CShooter(2,90f,70f,6.5f,thys));
-            shooters.Add(new CShooter(3,180f,70f,6.5f,thys));
-            shooters.Add(new CShooter(4,270f,120f,10f,thys));
+            shooters.Add(new CShooter(1,0f,70f,7.5f,6.5f,thys,false));
+            shooters.Add(new CShooter(2,90f,70f,70f,6.5f,thys,true));
+            shooters.Add(new CShooter(3,180f,70f,7.5f,6.5f,thys,false));
+            shooters.Add(new CShooter(4,270f,120f,7.5f,10f,thys,false));
         }
         return shooters;
     }
@@ -158,16 +173,10 @@ public class SC_behaviour : MonoBehaviour
     }
     public void _FixedUpdate()
     {
-        float angle = (thys.dataID[3]/50f)%(2f*3.14159f);
-        //thys.dataID[10] = thys.FloatToScrd(angle*180f/3.14159f);
-
         SPlayerInfo[] players = thys.world.GetPlayers();
+
         if(thys.dataID[3]%15==0) foreach(CShooter shooter in thys.shooters) {
-          bool anyone = false;
-          foreach(SPlayerInfo player in players) {
-            if(shooter.CanShoot(player.x,player.y)) anyone = true;
-          }
-          if(anyone) thys.world.ShotUsingShooter(shooter,1000f,thys);
+          thys.world.ShotCalculate(shooter,players,thys);
         }
     }
     public void _End()

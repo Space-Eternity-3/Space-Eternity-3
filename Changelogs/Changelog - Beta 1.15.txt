@@ -206,4 +206,5 @@ idk day:
 
 08.04.2023:
 
-Work in progress :)
+- "bosses in development" info
+- shooters API quite good
