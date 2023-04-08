@@ -103,6 +103,8 @@ public class SC_boss : MonoBehaviour
     public int force_give_up_counter = 0;
     Vector3 solidPosition = new Vector3(0f,0f,0f);
     public Transform bossModels;
+    public Transform shooterCenter, shooterCenterOver;
+    public Transform[] ShooterProjections = new Transform[32];
     CSmoothMemory SmoothMemory;
 
     public int bX=0,bY=0,bID=1,sID=1;
@@ -142,6 +144,7 @@ public class SC_boss : MonoBehaviour
     
     public CInfo world;
     public CDeltaPos deltapos;
+    public List<CShooter> shooters;
 
     string GetState(int general, int additional)
     {
@@ -201,6 +204,9 @@ public class SC_boss : MonoBehaviour
         world = new CInfo(SC_control.SC_lists,SC_control.player);
         deltapos = new CDeltaPos(transform.position.x,transform.position.y);
         identifier = -UnityEngine.Random.Range(1,1000000000);
+        shooters = world.GetShootersList(type,this);
+        foreach(CShooter shooter in shooters)
+            CreateShooterProjection(shooter.radius,shooter.angle,shooter.bullet_type);
 
         mother = false;
         multiplayer = ((int)Communtron4.position.y==100);
@@ -320,6 +326,16 @@ public class SC_boss : MonoBehaviour
         int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]),i;
 		for(i=0;i<=60;i++) SC_data.World[a,i,c]=dataID[i]+"";
 	}
+    void CreateShooterProjection(float rad, float angle_rad, int typ)
+    {
+        Transform gob = Instantiate(ShooterProjections[0],shooterCenter.position,Quaternion.identity);
+        gob.parent = shooterCenter;
+        gob.localPosition = new Vector3(rad,0f,0f);
+        shooterCenter.eulerAngles = new Vector3(0f,0f,angle_rad*180f/3.14159f);
+        gob.parent = shooterCenterOver;
+        shooterCenter.rotation = Quaternion.identity;
+
+    }
     void FixedUpdate()
     {
         if(transform.GetComponent<SC_seon_remote>()==null)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public struct SPlayerInfo
 {
@@ -8,6 +9,44 @@ public struct SPlayerInfo
     public float x;
     public float y;
     public bool enabled;
+}
+
+public class CShooter
+{
+    public int bullet_type;
+    public float angle;
+    public float max_deviation;
+    public float radius;
+    public SC_boss thys;
+
+    public CShooter(int bul_typ,float angl_deg,float deviat_deg,float rad,SC_boss ths)
+    {
+        bullet_type = bul_typ;
+        angle = angl_deg*3.14159f/180f;
+        max_deviation = deviat_deg*3.14159f/180f;
+        radius = rad;
+        thys = ths;
+
+        //Initialize shooter here
+    }
+    public bool CanShoot(float x,float y)
+    {
+        float[] pat = new float[2];
+        pat = thys.RotatePoint(new float[2]{x,y},-(angle+thys.ScrdToFloat(thys.dataID[10])*3.14159f/180f),false);
+        x = pat[0]-radius; y = pat[1];
+
+        float target_agl = Mathf.Abs(Mathf.Atan2(y,x));
+        return (target_agl <= max_deviation);
+    }
+    public float BestDeviation(float x,float y)
+    {
+        float[] pat = new float[2];
+        pat = thys.RotatePoint(new float[2]{x,y},-(angle+thys.ScrdToFloat(thys.dataID[10])*3.14159f/180f),false);
+        x = pat[0]-radius; y = pat[1];
+
+        float best_deviation = Mathf.Atan2(y,x);
+        return best_deviation;
+    }
 }
 
 public class CInfo
@@ -43,15 +82,26 @@ public class CInfo
         if(PlayerInfo[0].enabled) return PlayerInfo;
         else return new SPlayerInfo[0];
     }
-    public void ShotCooked(float delta_angle_rad, int btype, SC_boss thys)
+    public void ShotUsingShooter(CShooter shooter,float best_deviation,SC_boss thys)
+    {
+        if(best_deviation==1000f) ShotCooked(shooter.angle,shooter.bullet_type,thys,shooter.max_deviation,shooter.radius,true);
+        else ShotCooked(shooter.angle,shooter.bullet_type,thys,best_deviation,shooter.radius,false);
+    }
+    public void ShotCooked(float delta_angle_rad,int btype,SC_boss thys,float mdev,float rad,bool randomize)
     {
         float lx = thys.ScrdToFloat(thys.dataID[8]);
         float ly = thys.ScrdToFloat(thys.dataID[9]);
         float angle = delta_angle_rad + thys.ScrdToFloat(thys.dataID[10])*3.14159f/180f;
-        float[] pak = new float[2]; pak[1]=0;
+        float deviation_angle;
+        if(randomize) {
+            System.Random random = new System.Random();
+            deviation_angle = ((float)random.NextDouble()-0.5f)*2f * mdev;
+        }
+        else deviation_angle = mdev;
+        float[] pak = new float[2]; pak[1]=0f;
         if(btype==9 || btype==10) pak[0]=0.25f; else pak[0]=0.35f;
-        float[] efwing = thys.RotatePoint(pak,angle,false);
-        thys.world.ShotRaw(8f*Mathf.Cos(angle)+thys.deltapos.x+lx,8f*Mathf.Sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
+        float[] efwing = thys.RotatePoint(pak,angle+deviation_angle,false);
+        thys.world.ShotRaw(rad*Mathf.Cos(angle)+thys.deltapos.x+lx,rad*Mathf.Sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
     }
     public void ShotRaw(float px, float py, float vx, float vy, int typ, int bidf)
     {
@@ -75,6 +125,20 @@ public class CInfo
             }
         }
     }
+
+    //bossy functions
+    public List<CShooter> GetShootersList(int type,SC_boss thys)
+    {
+        List<CShooter> shooters = new List<CShooter>();
+        if(true) //All bosses (temporary)
+        {
+            shooters.Add(new CShooter(1,0f,70f,6.5f,thys));
+            shooters.Add(new CShooter(2,90f,70f,6.5f,thys));
+            shooters.Add(new CShooter(3,180f,70f,6.5f,thys));
+            shooters.Add(new CShooter(4,270f,120f,10f,thys));
+        }
+        return shooters;
+    }
 }
 
 public class SC_behaviour : MonoBehaviour
@@ -86,6 +150,7 @@ public class SC_behaviour : MonoBehaviour
     //thys.dataID // General & Additional data
     //thys.world // Info about world
     //thys.identifier // Object identifier
+    //thys.shooters // Shooters
 
     public void _Start()
     {
@@ -94,8 +159,16 @@ public class SC_behaviour : MonoBehaviour
     public void _FixedUpdate()
     {
         float angle = (thys.dataID[3]/50f)%(2f*3.14159f);
-        thys.dataID[10] = thys.FloatToScrd(angle*180f/3.14159f);
-        if(thys.dataID[3]%20==0) thys.world.ShotCooked(0f,8,thys);
+        //thys.dataID[10] = thys.FloatToScrd(angle*180f/3.14159f);
+
+        SPlayerInfo[] players = thys.world.GetPlayers();
+        if(thys.dataID[3]%15==0) foreach(CShooter shooter in thys.shooters) {
+          bool anyone = false;
+          foreach(SPlayerInfo player in players) {
+            if(shooter.CanShoot(player.x,player.y)) anyone = true;
+          }
+          if(anyone) thys.world.ShotUsingShooter(shooter,1000f,thys);
+        }
     }
     public void _End()
     {

@@ -187,11 +187,7 @@ public class SC_control : MonoBehaviour {
 	
 	public bool public_placed = false;
 	public bool f1 = false;
-
-	public string invCurrent()
-	{
-		return "2";
-	}
+	
 	float V_to_F(float V,bool turboo)
 	{
 		if(V==0f) return 0f;

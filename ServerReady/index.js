@@ -182,27 +182,25 @@ modifiedDrops.fill(""); Object.seal(modifiedDrops);
 //Classes
 class CShooter
 {
-  constructor(bul_typ,angl_deg,deviat_deg,ths) {
+  constructor(bul_typ,angl_deg,deviat_deg,rad,ths) {
     this.bullet_type = bul_typ;
     this.angle = angl_deg*3.14159/180;
-    this.max_deviation = deviat_deg*3.14195/180;
+    this.max_deviation = deviat_deg*3.14159/180;
+    this.radius = rad;
     this.thys = ths;
-    //sendToAllClients("/RetCreateShooter "+ths.+" X X");
   }
   CanShoot(x,y)
   {
     var pat = func.RotatePoint([x,y],-(this.angle+func.ScrdToFloat(this.thys.dataY[10-2])*3.14159/180),false);
-    x = pat[0]-8; y = pat[1];
+    x = pat[0]-this.radius; y = pat[1];
 
-    if(x<=0) return false;
-    var target_tg = y/x;
-    var border_tg = Math.tan(this.max_deviation);
-    return (-border_tg < target_tg && border_tg > target_tg);
+    var target_agl = Math.abs(Math.atan2(y,x));
+    return (target_agl <= this.max_deviation);
   }
   BestDeviation(x,y)
   {
     var pat = func.RotatePoint([x,y],-(this.angle+func.ScrdToFloat(this.thys.dataY[10-2])*3.14159/180),false);
-    x = pat[0]-8; y = pat[1];
+    x = pat[0]-this.radius; y = pat[1];
     var best_deviation = Math.atan2(y,x);
     return best_deviation; 
   }
@@ -277,10 +275,10 @@ class CInfo
   }
   ShotUsingShooter(shooter,best_deviation,thys)
   {
-    if(best_deviation==1000) this.ShotCooked(shooter.angle,shooter.bullet_type,thys,shooter.max_deviation,true);
-    else this.ShotCooked(shooter.angle,shooter.bullet_type,thys,best_deviation,false);
+    if(best_deviation==1000) this.ShotCooked(shooter.angle,shooter.bullet_type,thys,shooter.max_deviation,shooter.radius,true);
+    else this.ShotCooked(shooter.angle,shooter.bullet_type,thys,best_deviation,shooter.radius,false);
   }
-  ShotCooked(delta_angle_rad,btype,thys,mdev,randomize)
+  ShotCooked(delta_angle_rad,btype,thys,mdev,rad,randomize)
   {
     var lx = func.ScrdToFloat(thys.dataY[8-2]);
     var ly = func.ScrdToFloat(thys.dataY[9-2]);
@@ -291,7 +289,7 @@ class CInfo
     var pak = ["?",0];
     if(btype==9 || btype==10) pak[0]=0.25; else pak[0]=0.35;
     var efwing = func.RotatePoint(pak,angle+deviation_angle,false);
-    thys.world.ShotRaw(8*Math.cos(angle)+thys.deltapos.x+lx,8*Math.sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
+    thys.world.ShotRaw(rad*Math.cos(angle)+thys.deltapos.x+lx,rad*Math.sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
   }
   ShotRaw(px,py,vx,vy,type,bidf)
   {
@@ -335,30 +333,14 @@ class CInfo
   GetShootersList(type,thys)
   {
     var shooters = [];
-    if(type==1) //Protector
-    {
-      
-    }
-    if(type==2) //Adecodron
-    {
-
-    }
-    if(type==3) //Octogone
+    if(true) //All bosses (temporary)
     {
       shooters = [
-        new CShooter(1,0,45,thys),
-        new CShooter(2,90,45,thys),
-        new CShooter(3,180,45,thys),
-        new CShooter(4,270,45,thys),
+        new CShooter(1,0,70,6.5,thys),
+        new CShooter(2,90,70,6.5,thys),
+        new CShooter(3,180,70,6.5,thys),
+        new CShooter(5,270,120,10,thys),
       ];
-    }
-    if(type==4) //Immortality
-    {
-      
-    }
-    if(type==6) //Degenerator
-    {
-
     }
     return shooters;
   }

@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ProjectBrowser
+  m_Name: ConsoleWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -242,14 +242,14 @@ MonoBehaviour:
     y: 668
     width: 1408
     height: 279
-  m_MinSize: {x: 231, y: 271}
-  m_MaxSize: {x: 10001, y: 10021}
-  m_ActualView: {fileID: 15}
+  m_MinSize: {x: 101, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
+  m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 15}
   - {fileID: 16}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -408,9 +408,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 9a7d0000
+      m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 2cfbffff
+      m_ExpandedIDs: 16ecffff2cfbffff425800002a6b0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -715,9 +715,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 0, y: 0, z: 4259.83}
+    m_Target: {x: 0.4127423, y: 9.108458, z: 420.02713}
     speed: 2
-    m_Value: {x: 0, y: 0, z: 4259.83}
+    m_Value: {x: 0.4127423, y: 9.108458, z: 420.02713}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -763,13 +763,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.21382515, y: 0.21110588, z: -0.04747782, w: -0.95266366}
+    m_Target: {x: -0.25544968, y: 0.009252025, z: -0.0025339776, w: -0.96683246}
     speed: 2
-    m_Value: {x: -0.2138135, y: 0.21109438, z: -0.047475234, w: -0.95261174}
+    m_Value: {x: -0.25543544, y: 0.009251509, z: -0.0025338363, w: -0.9667785}
   m_Size:
-    m_Target: 11.3077755
+    m_Target: 20.128109
     speed: 2
-    m_Value: 11.3077755
+    m_Value: 20.128109
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -836,21 +836,21 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Game/Scripts
+    - Assets/Game/Materials1
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Game/Scripts
+  - Assets/Game/Materials1
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\Pc\Desktop\unity_projects\Space Eternity 3
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 178}
-    m_SelectedIDs: 9a7d0000
-    m_LastClickedID: 32154
+    scrollPos: {x: 0, y: 95}
+    m_SelectedIDs: a87d0000
+    m_LastClickedID: 32168
     m_ExpandedIDs: 00000000747d0000767d0000787d00007a7d00007c7d00007e7d0000807d0000827d0000847d0000867d0000887d0000987d000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -931,7 +931,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 180}
+    m_ScrollPosition: {x: 0, y: 182}
     m_GridSize: 64
   m_SkipHiddenPackages: 0
   m_DirectoriesAreaWidth: 207

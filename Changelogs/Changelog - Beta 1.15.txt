@@ -201,3 +201,9 @@ idk day:
 - metalic asteroid 50% for stone, 4% for better elements (metalic, amethyst)
 - steering cooldown 200 -> 1500 for safety & whole stream sent proof
 - steering angle reduced to 2.14
+- beta bullet API singleplayer & multiplayer
+- shooters visible (all same)
+
+08.04.2023:
+
+Work in progress :)
