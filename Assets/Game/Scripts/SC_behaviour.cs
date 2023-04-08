@@ -19,7 +19,7 @@ public class CShooter
     public float precision;
     public float radius;
     public SC_boss thys;
-    public bool always;
+    public bool stupid;
 
     public CShooter(int bul_typ,float angl_deg,float deviat_deg,float precis_deg,float rad,SC_boss ths,bool alway)
     {
@@ -29,7 +29,7 @@ public class CShooter
         precision = precis_deg*3.14159f/180f;
         radius = rad;
         thys = ths;
-        always = alway;
+        stupid = alway;
     }
     public bool CanShoot(float x,float y)
     {
@@ -85,7 +85,7 @@ public class CInfo
     public void ShotCalculate(CShooter shooter,SPlayerInfo[] players,SC_boss thys)
     {
         //Stupid shooter
-        if(shooter.always) {
+        if(shooter.stupid) {
             ShotUsingShooter(shooter,0,thys);
             return;
         }
@@ -145,12 +145,32 @@ public class CInfo
     public List<CShooter> GetShootersList(int type,SC_boss thys)
     {
         List<CShooter> shooters = new List<CShooter>();
-        if(true) //All bosses (temporary)
+        if(type==0) //Placeholder
         {
-            shooters.Add(new CShooter(1,0f,70f,7.5f,6.5f,thys,false));
-            shooters.Add(new CShooter(2,90f,70f,70f,6.5f,thys,true));
-            shooters.Add(new CShooter(3,180f,70f,7.5f,6.5f,thys,false));
-            shooters.Add(new CShooter(4,270f,120f,7.5f,10f,thys,false));
+            shooters = new List<CShooter>() {
+                new CShooter(11, 0f,70f,7.5f, 6.5f,thys,false),
+                new CShooter(12, 90f,70f,70f, 6.5f,thys,true),
+                new CShooter(13, 180f,70f,7.5f, 6.5f,thys,false),
+                new CShooter(5, 270f,120f,7.5f, 10f,thys,false),
+            };
+        }
+        if(type!=1) //Protector
+        {
+            shooters = new List<CShooter>() {
+                new CShooter(11, 22.5f,60f,7.5f, 6.5f,thys,false),
+                new CShooter(11, 45f,60f,7.5f, 6.5f,thys,false),
+                new CShooter(11, 135f,60f,7.5f, 6.5f,thys,false),
+                new CShooter(11, 157.5f,60f,7.5f, 6.5f,thys,false),
+                new CShooter(11, 202.5f,60f,7.5f, 6.5f,thys,false),
+                new CShooter(11, 225f,60f,7.5f, 6.5f,thys,false),
+                new CShooter(11, 315f,60f,7.5f, 6.5f,thys,false),
+                new CShooter(11, 337.5f,60f,7.5f, 6.5f,thys,false),
+
+                new CShooter(4, 270f,120f,7.5f, 10f,thys,false),
+                new CShooter(12, 90f,60f,60f, 6.5f,thys,true),
+                new CShooter(9, 0f,60f,7.5f, 6.5f,thys,false),
+                new CShooter(9, 180f,60f,7.5f, 6.5f,thys,false),
+            };
         }
         return shooters;
     }
@@ -174,12 +194,12 @@ public class SC_behaviour : MonoBehaviour
     public void _FixedUpdate()
     {
         SPlayerInfo[] players = thys.world.GetPlayers();
-
+        
         System.Random random = new System.Random();
-        thys.dataID[11] += (int)Mathf.Round(((float)random.NextDouble()-0.5f)*2f*200f*(1500f-2f*Mathf.Abs(thys.dataID[11-2]))/500f);
-        if(thys.dataID[11]<-500) thys.dataID[11]=-500;
-        if(thys.dataID[11]>500) thys.dataID[11]=500;
-        thys.dataID[10] = thys.FloatToScrd((thys.ScrdToFloat(thys.dataID[10]) + 0.005f*thys.dataID[11]));
+        float rand_rot = (float)random.NextDouble();
+        if(thys.dataID[11]==thys.dataID[12] && rand_rot>0.8f) thys.dataID[12] = UnityEngine.Random.Range(-20,21);
+        thys.dataID[11] += (int)Mathf.Sign(thys.dataID[12]-thys.dataID[11]);
+        thys.dataID[10] = thys.FloatToScrd((thys.ScrdToFloat(thys.dataID[10]) + 0.3f*thys.dataID[11]));
 
         if(thys.dataID[3]%15==0) foreach(CShooter shooter in thys.shooters) {
           thys.world.ShotCalculate(shooter,players,thys);

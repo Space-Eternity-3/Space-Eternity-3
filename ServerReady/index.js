@@ -189,7 +189,7 @@ class CShooter
     this.precision = precis_deg*3.14159/180;
     this.radius = rad;
     this.thys = ths;
-    this.always = alway;
+    this.stupid = alway;
   }
   CanShoot(x,y)
   {
@@ -265,7 +265,7 @@ class CInfo
         tpl.y = func.parseFloatU(splitted[1]) - deltapos.y;
         var px = tpl.x;
         var py = tpl.y;
-        if(func.parseIntU(splitted[5].split("&")[1]) % 100 != 1) //not invisible (must be 100)
+        if(func.parseIntU(splitted[5].split("&")[1]) % 100 != 1) //not invisible (must be %100)
         if(px**2 + py**2 <= in_arena_range**2) //in arena range
           this.players.push(tpl);
       }
@@ -277,7 +277,7 @@ class CInfo
   ShotCalculate(shooter,players,thys)
   {
     //Stupid shooter
-    if(shooter.always) {
+    if(shooter.stupid) {
       this.ShotUsingShooter(shooter,0,thys);
       return;
     }
@@ -318,7 +318,7 @@ class CInfo
       tpl.damaged = [];
       tpl.immune = [];
 
-      tpl.ID = randomInteger(0,1000000000);
+      tpl.ID = func.randomInteger(0,1000000000);
       tpl.owner = bidf;
       tpl.type = type;
       tpl.start.x = px;
@@ -353,12 +353,33 @@ class CInfo
     var shooters = [];
     if(true) //All bosses (temporary)
     {
-      shooters = [
-        new CShooter(11,0,70,7.5,6.5,thys,false),
-        new CShooter(12,90,70,70,6.5,thys,false),
-        new CShooter(13,180,70,7.5,6.5,thys,false),
-        new CShooter(5,270,120,7.5,10,thys,false),
-      ];
+      if(type==0) //Placeholder
+      {
+        shooters = [
+          new CShooter(11, 0,70,7.5, 6.5,thys,false),
+          new CShooter(12, 90,70,70, 6.5,thys,true),
+          new CShooter(13, 180,70,7.5, 6.5,thys,false),
+          new CShooter(5, 270,120,7.5, 10,thys,false),
+        ];
+      }
+      if(type==1) //Protector
+      {
+        shooters = [
+          new CShooter(11, 22.5,60,7.5, 6.5,thys,false),
+          new CShooter(11, 45,60,7.5, 6.5,thys,false),
+          new CShooter(11, 135,60,7.5, 6.5,thys,false),
+          new CShooter(11, 157.5,60,7.5, 6.5,thys,false),
+          new CShooter(11, 202.5,60,7.5, 6.5,thys,false),
+          new CShooter(11, 225,60,7.5, 6.5,thys,false),
+          new CShooter(11, 315,60,7.5, 6.5,thys,false),
+          new CShooter(11, 337.5,60,7.5, 6.5,thys,false),
+
+          new CShooter(4, 270,120,7.5, 10,thys,false),
+          new CShooter(12, 90,60,60, 6.5,thys,true),
+          new CShooter(9, 0,60,7.5, 6.5,thys,false),
+          new CShooter(9, 180,60,7.5, 6.5,thys,false),
+        ];
+      }
     }
     return shooters;
   }
@@ -389,7 +410,7 @@ function sendTo(ws,data) {
 //Funny functions
 function getRandomFunnyText()
 {
-  var rfn = randomInteger(0,19);
+  var rfn = func.randomInteger(0,19);
   switch(rfn)
   {
     case 0: return "Eating a dinner..."; case 1: return "Breaking bones...";
@@ -420,9 +441,6 @@ Array.prototype.remove = function (ind) {
   this.splice(ind, 1);
   return this;
 };
-function randomInteger(min, max) {
-  return Math.round(Math.random() * (max - min)) + func.parseIntU(min);
-}
 
 //File functions
 function readF(nate) {
@@ -1816,7 +1834,7 @@ function drillGet(det) {
   var ltdt = drillLoot[typp].split(";");
   var lngt = ltdt.length;
 
-  var rnd = randomInteger(0, 999);
+  var rnd = func.randomInteger(0, 999);
   var i;
 
   for (i = 0; i * 3 + 2 < lngt; i++) {
@@ -1845,7 +1863,7 @@ function growActive(ulam) {
       if (!growT.includes(ulam + "g" + i)) {
         if (chunk_data[det[0]][det[1]][21 + 2 * i] == "") {
           tab = growSolid[block].split(";");
-          tim = randomInteger(tab[0], tab[1]);
+          tim = func.randomInteger(tab[0], tab[1]);
           chunk_data[det[0]][det[1]][21 + 2 * i] = tim;
         }
         growT.push(ulam + "g" + i);
@@ -1860,7 +1878,7 @@ function growActive(ulam) {
         chunk_data[det[0]][det[1]][22 + 2 * i] < 5)
     ) {
       if (!drillT.includes(ulam + "w" + i)) {
-        tim = randomInteger(180, 420);
+        tim = func.randomInteger(180, 420);
         drillT.push(ulam + "w" + i);
         drillW.push(10);
         drillC.push(tim);
@@ -2095,7 +2113,7 @@ function generateAsteroid(saze) {
     typeDatas = (saze.split("t")[1] + ";0;999").split(";");
   } else typeDatas = "0;0;999".split(";");
 
-  var rand = randomInteger(0, 999);
+  var rand = func.randomInteger(0, 999);
   var i = 0,
     j,
     k;
@@ -2110,7 +2128,7 @@ function generateAsteroid(saze) {
 
   for (j = 0; j < how_many; j++) {
     k = 0;
-    rand = randomInteger(0, 999);
+    rand = func.randomInteger(0, 999);
     while (
       !(rand >= typeDatas2[k + 1] && rand <= typeDatas2[k + 2]) &&
       k < 1000
@@ -3747,7 +3765,7 @@ if (!existsF("ServerUniverse/UniverseInfo.se3")) {
 }
 
 if (!existsF("ServerUniverse/Seed.se3")) {
-  seed = randomInteger(0, 10000000);
+  seed = func.randomInteger(0, 10000000);
   writeF("ServerUniverse/Seed.se3", seed + "\r\n");
   console.log("New seed generated: [" + seed + "]");
 }

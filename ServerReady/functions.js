@@ -51,6 +51,12 @@ class cfun
         return src/124;
     }
 
+    randomInteger(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
     AngleBetweenVectorAndOX(dx, dy)
     {
         var angle = Math.atan2(dy, dx) * (180 / Math.PI);

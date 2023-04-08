@@ -211,4 +211,5 @@ idk day:
 - bullet 11,12,13 default biggers
 - unstable damage -> 8 (players only)
 - unstable damage upgradeable
-- stupid rotation
+- stupid rotation, but then good rotation
+- angry boss commit
