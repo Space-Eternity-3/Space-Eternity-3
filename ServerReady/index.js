@@ -182,7 +182,7 @@ modifiedDrops.fill(""); Object.seal(modifiedDrops);
 //Classes
 class CShooter
 {
-  constructor(bul_typ,angl_deg,deviat_deg,precis_deg,rad,ths,alway) {
+  constructor(bul_typ,angl_deg,deviat_deg,precis_deg,rad,ths,alway,freq) {
     this.bullet_type = bul_typ;
     this.angle = angl_deg*3.14159/180;
     this.max_deviation = deviat_deg*3.14159/180;
@@ -190,6 +190,7 @@ class CShooter
     this.radius = rad;
     this.thys = ths;
     this.stupid = alway;
+    this.frequency = freq;
   }
   CanShoot(x,y)
   {
@@ -274,6 +275,12 @@ class CInfo
   {
     return this.players;
   }
+  ShotCalculateIfNow(shooter,players,thys)
+  {
+    //If multiple shooter
+    if(thys.dataY[3-2]%shooter.frequency==0 && thys.dataY[3-2]!=0)
+      this.ShotCalculate(shooter,players,thys);
+  }
   ShotCalculate(shooter,players,thys)
   {
     //Stupid shooter
@@ -353,31 +360,21 @@ class CInfo
     var shooters = [];
     if(true) //All bosses (temporary)
     {
-      if(type==0) //Placeholder
+      if(true) //Protector
       {
         shooters = [
-          new CShooter(11, 0,70,7.5, 6.5,thys,false),
-          new CShooter(12, 90,70,70, 6.5,thys,true),
-          new CShooter(13, 180,70,7.5, 6.5,thys,false),
-          new CShooter(5, 270,120,7.5, 10,thys,false),
-        ];
-      }
-      if(type==1) //Protector
-      {
-        shooters = [
-          new CShooter(11, 22.5,60,7.5, 6.5,thys,false),
-          new CShooter(11, 45,60,7.5, 6.5,thys,false),
-          new CShooter(11, 135,60,7.5, 6.5,thys,false),
-          new CShooter(11, 157.5,60,7.5, 6.5,thys,false),
-          new CShooter(11, 202.5,60,7.5, 6.5,thys,false),
-          new CShooter(11, 225,60,7.5, 6.5,thys,false),
-          new CShooter(11, 315,60,7.5, 6.5,thys,false),
-          new CShooter(11, 337.5,60,7.5, 6.5,thys,false),
+          new CShooter(11, 22.5,60,7.5, 6.5,thys,false, 15),
+          new CShooter(11, 45,60,7.5, 6.5,thys,false, 15),
+          new CShooter(11, 135,60,7.5, 6.5,thys,false, 15),
+          new CShooter(11, 157.5,60,7.5, 6.5,thys,false, 15),
+          new CShooter(11, 202.5,60,7.5, 6.5,thys,false, 15),
+          new CShooter(11, 225,60,7.5, 6.5,thys,false, 15),
+          new CShooter(11, 315,60,7.5, 6.5,thys,false, 15),
+          new CShooter(11, 337.5,60,7.5, 6.5,thys,false, 15),
 
-          new CShooter(4, 270,120,7.5, 10,thys,false),
-          new CShooter(12, 90,60,60, 6.5,thys,true),
-          new CShooter(9, 0,60,7.5, 6.5,thys,false),
-          new CShooter(9, 180,60,7.5, 6.5,thys,false),
+          new CShooter(4, 270,120,7.5, 10,thys,false, 150),
+          new CShooter(9, 0,0,0, 7.5,thys,true, 75),
+          new CShooter(9, 180,0,0, 7.5,thys,true, 75),
         ];
       }
     }

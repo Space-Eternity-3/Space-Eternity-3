@@ -212,4 +212,10 @@ idk day:
 - unstable damage -> 8 (players only)
 - unstable damage upgradeable
 - stupid rotation, but then good rotation
+- randomInteger function reworked (some bugs repaired)
 - angry boss commit
+
+09.04.2023:
+
+- boss rotation much better
+- ShotCalculateIfNow()

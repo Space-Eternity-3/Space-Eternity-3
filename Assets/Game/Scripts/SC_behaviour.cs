@@ -20,16 +20,18 @@ public class CShooter
     public float radius;
     public SC_boss thys;
     public bool stupid;
+    public int frequency;
 
-    public CShooter(int bul_typ,float angl_deg,float deviat_deg,float precis_deg,float rad,SC_boss ths,bool alway)
+    public CShooter(int bul_typ,double angl_deg,double deviat_deg,double precis_deg,double rad,SC_boss ths,bool alway,int freq)
     {
         bullet_type = bul_typ;
-        angle = angl_deg*3.14159f/180f;
-        max_deviation = deviat_deg*3.14159f/180f;
-        precision = precis_deg*3.14159f/180f;
-        radius = rad;
+        angle = ((float)angl_deg)*3.14159f/180f;
+        max_deviation = ((float)deviat_deg)*3.14159f/180f;
+        precision = ((float)precis_deg)*3.14159f/180f;
+        radius = ((float)rad);
         thys = ths;
         stupid = alway;
+        frequency = freq;
     }
     public bool CanShoot(float x,float y)
     {
@@ -81,6 +83,12 @@ public class CInfo
     {
         if(PlayerInfo[0].enabled) return PlayerInfo;
         else return new SPlayerInfo[0];
+    }
+    public void ShotCalculateIfNow(CShooter shooter,SPlayerInfo[] players,SC_boss thys)
+    {
+        //If multiple shooter
+        if(thys.dataID[3]%shooter.frequency==0 && thys.dataID[3]!=0)
+            ShotCalculate(shooter,players,thys);
     }
     public void ShotCalculate(CShooter shooter,SPlayerInfo[] players,SC_boss thys)
     {
@@ -145,31 +153,21 @@ public class CInfo
     public List<CShooter> GetShootersList(int type,SC_boss thys)
     {
         List<CShooter> shooters = new List<CShooter>();
-        if(type==0) //Placeholder
+        if(true) //Protector
         {
             shooters = new List<CShooter>() {
-                new CShooter(11, 0f,70f,7.5f, 6.5f,thys,false),
-                new CShooter(12, 90f,70f,70f, 6.5f,thys,true),
-                new CShooter(13, 180f,70f,7.5f, 6.5f,thys,false),
-                new CShooter(5, 270f,120f,7.5f, 10f,thys,false),
-            };
-        }
-        if(type!=1) //Protector
-        {
-            shooters = new List<CShooter>() {
-                new CShooter(11, 22.5f,60f,7.5f, 6.5f,thys,false),
-                new CShooter(11, 45f,60f,7.5f, 6.5f,thys,false),
-                new CShooter(11, 135f,60f,7.5f, 6.5f,thys,false),
-                new CShooter(11, 157.5f,60f,7.5f, 6.5f,thys,false),
-                new CShooter(11, 202.5f,60f,7.5f, 6.5f,thys,false),
-                new CShooter(11, 225f,60f,7.5f, 6.5f,thys,false),
-                new CShooter(11, 315f,60f,7.5f, 6.5f,thys,false),
-                new CShooter(11, 337.5f,60f,7.5f, 6.5f,thys,false),
+                new CShooter(11, 22.5,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 45,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 135,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 157.5,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 202.5,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 225,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 315,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 337.5,60,7.5, 6.5,thys,false, 15),
 
-                new CShooter(4, 270f,120f,7.5f, 10f,thys,false),
-                new CShooter(12, 90f,60f,60f, 6.5f,thys,true),
-                new CShooter(9, 0f,60f,7.5f, 6.5f,thys,false),
-                new CShooter(9, 180f,60f,7.5f, 6.5f,thys,false),
+                new CShooter(4, 270,120,7.5, 10,thys,false, 150),
+                new CShooter(9, 0,0,0, 7.5,thys,true, 75),
+                new CShooter(9, 180,0,0, 7.5,thys,true, 75),
             };
         }
         return shooters;
@@ -197,12 +195,12 @@ public class SC_behaviour : MonoBehaviour
         
         System.Random random = new System.Random();
         float rand_rot = (float)random.NextDouble();
-        if(thys.dataID[11]==thys.dataID[12] && rand_rot>0.8f) thys.dataID[12] = UnityEngine.Random.Range(-20,21);
+        if(thys.dataID[11]==thys.dataID[12] && rand_rot>0.8f) thys.dataID[12] = UnityEngine.Random.Range(-30,31);
         thys.dataID[11] += (int)Mathf.Sign(thys.dataID[12]-thys.dataID[11]);
-        thys.dataID[10] = thys.FloatToScrd((thys.ScrdToFloat(thys.dataID[10]) + 0.3f*thys.dataID[11]));
+        thys.dataID[10] = thys.FloatToScrd((thys.ScrdToFloat(thys.dataID[10]) + 0.15f*thys.dataID[11]));
 
-        if(thys.dataID[3]%15==0) foreach(CShooter shooter in thys.shooters) {
-          thys.world.ShotCalculate(shooter,players,thys);
+        foreach(CShooter shooter in thys.shooters) {
+          thys.world.ShotCalculateIfNow(shooter,players,thys);
         }
     }
     public void _End()

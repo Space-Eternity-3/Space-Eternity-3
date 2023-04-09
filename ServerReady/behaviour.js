@@ -35,6 +35,7 @@ class CBoss
     dataY[10-2] - actual_rotation [scrd]
     dataY[11-2] - rotation_velocity
     dataY[12-2] - target_rotation_velocity
+    dataY[13-2] - rotation_waiting_timer
     <...>
     dataY[60-2] - {Other variables are empty at this time. Use them as a data storage between frames or ask Kamiloso to do some special tasks using them.}
 
@@ -51,12 +52,12 @@ class CBoss
         var players = this.world.GetPlayers();
         
         var rand_rot = Math.random();
-        if(this.dataY[11-2]==this.dataY[12-2] && rand_rot>0.8) this.dataY[12-2] = func.randomInteger(-20,20);
+        if(this.dataY[11-2]==this.dataY[12-2] && rand_rot>0.8) this.dataY[12-2] = func.randomInteger(-30,30);
         this.dataY[11-2] += Math.sign(this.dataY[12-2]-this.dataY[11-2]);
-        this.dataY[10-2] = func.FloatToScrd((func.ScrdToFloat(this.dataY[10-2]) + 0.3*this.dataY[11-2]));
+        this.dataY[10-2] = func.FloatToScrd((func.ScrdToFloat(this.dataY[10-2]) + 0.15*this.dataY[11-2]));
         
-        if(this.dataY[3-2]%15==0) this.shooters.forEach(shooter => {
-          this.world.ShotCalculate(shooter,players,this);
+        this.shooters.forEach(shooter => {
+          this.world.ShotCalculateIfNow(shooter,players,this);
         });
     }
     End() //Executes on battle end directly after last FixedUpdate() Note: dataY will be reseted automatically after execution
