@@ -219,3 +219,7 @@ idk day:
 
 - boss rotation much better
 - ShotCalculateIfNow()
+
+11.04.2023:
+
+- pseudo implementation of pseudo fights
