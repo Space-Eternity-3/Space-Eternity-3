@@ -223,3 +223,18 @@ idk day:
 11.04.2023:
 
 - pseudo implementation of pseudo fights
+
+12.04.2023:
+
+- steering lifetime: 5s -> 6s
+- health_regenerate_cooldown: 5 -> 2,5
+- health_regenerate_multiplier: 2 -> 4
+- electron damage: 45 -> 35
+- brain damage: 5 -> 4
+- cyclic damage periods: 2,4,6
+- damage potion constant 15f
+- heal potion: 15 -> 20
+- fire damage: 4 -> 5
+- bullet 13 now unstable
+- time size 3:00, health size 100kbhp
+- pseudoBosses beta ready

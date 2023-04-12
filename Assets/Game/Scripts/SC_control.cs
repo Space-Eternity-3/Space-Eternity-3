@@ -345,7 +345,7 @@ public class SC_control : MonoBehaviour {
 					SendMTP("/InventoryChange "+connectionID+" 63 -1 "+slot);
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 15 0 0");
 				}
-				DamageFLOAT(float.Parse(SC_data.Gameplay[31]));
+				DamageFLOAT(15f);
 			}
 			else InfoUp("Potion blocked",380);
 		}

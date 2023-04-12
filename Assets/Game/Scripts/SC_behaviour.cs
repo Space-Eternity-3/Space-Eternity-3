@@ -153,7 +153,7 @@ public class CInfo
     public List<CShooter> GetShootersList(int type,SC_boss thys)
     {
         List<CShooter> shooters = new List<CShooter>();
-        if(false) //Protector
+        if(type==1) //Protector
         {
             shooters = new List<CShooter>() {
                 new CShooter(11, 22.5,60,7.5, 6.5,thys,false, 15),
@@ -170,7 +170,7 @@ public class CInfo
                 new CShooter(9, 180,0,0, 7.5,thys,true, 600),
             };
         }
-        if(false) //Adecodron
+        if(type==2) //Adecodron
         {
             shooters = new List<CShooter>() {
                 new CShooter(10, 0,0,0, 7.5,thys,true, 600),
@@ -178,10 +178,10 @@ public class CInfo
                 new CShooter(10, 180,0,0, 7.5,thys,true, 600),
                 new CShooter(10, 270,0,0, 7.5,thys,true, 600),
 
-                new CShooter(12, 45,60,7.5, 6.5,thys,false, 15),
-                new CShooter(12, 135,60,7.5, 6.5,thys,false, 15),
-                new CShooter(12, 225,60,7.5, 6.5,thys,false, 15),
-                new CShooter(12, 315,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 45,60,7.5, 6.5,thys,false, 20),
+                new CShooter(11, 135,60,7.5, 6.5,thys,false, 20),
+                new CShooter(11, 225,60,7.5, 6.5,thys,false, 20),
+                new CShooter(11, 315,60,7.5, 6.5,thys,false, 20),
                 
                 new CShooter(6, 0,0,0, 6.5,thys,true, 600),
                 new CShooter(6, 20,0,0, 6.5,thys,true, 600),
@@ -203,20 +203,7 @@ public class CInfo
                 new CShooter(6, 340,0,0, 6.5,thys,true, 600),
             };
         }
-        if(false) //Starandus
-        {
-            shooters = new List<CShooter>() {
-                new CShooter(5, 0,60,60, 6.5,thys,true, 35),
-                new CShooter(5, 45,60,60, 6.5,thys,true, 31),
-                new CShooter(5, 90,60,60, 6.5,thys,true, 36),
-                new CShooter(5, 135,60,60, 6.5,thys,true, 38),
-                new CShooter(5, 180,60,60, 6.5,thys,true, 34),
-                new CShooter(5, 225,60,60, 6.5,thys,true, 33),
-                new CShooter(5, 270,60,60, 6.5,thys,true, 37),
-                new CShooter(5, 315,60,60, 6.5,thys,true, 32),
-            };
-        }
-        if(false) //Octogone
+        if(type==3) //Octogone
         {
             shooters = new List<CShooter>() {
                 new CShooter(7, 0,60,15, 6.5,thys,false, 50),
@@ -233,7 +220,20 @@ public class CInfo
                 new CShooter(8, 330,60,7.5, 8.5,thys,false, 500),
             };
         }
-        if(true) //Degenerator
+        if(type==4) //Starandus
+        {
+            shooters = new List<CShooter>() {
+                new CShooter(5, 0,60,60, 6.5,thys,true, 25),
+                new CShooter(5, 45,60,60, 6.5,thys,true, 21),
+                new CShooter(5, 90,60,60, 6.5,thys,true, 26),
+                new CShooter(5, 135,60,60, 6.5,thys,true, 28),
+                new CShooter(5, 180,60,60, 6.5,thys,true, 24),
+                new CShooter(5, 225,60,60, 6.5,thys,true, 23),
+                new CShooter(5, 270,60,60, 6.5,thys,true, 27),
+                new CShooter(5, 315,60,60, 6.5,thys,true, 22),
+            };
+        }
+        if(type==6) //Degenerator
         {
             shooters = new List<CShooter>() {
                 new CShooter(13, 22.5,60,7.5, 6.5,thys,false, 30),

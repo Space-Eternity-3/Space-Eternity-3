@@ -20,7 +20,7 @@ var hourHeader = "";
 var gpl_number = 33;
 var max_players = 128;
 
-var boss_damages = [0,3.75,5,10,45,4,6,4.5,0,10,6,3.75,5,10,0,0];
+var boss_damages = [0,3.75,5,10,35,5,6,4,0,10,6,3.75,5,10,0,0];
 var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.08,0.08];
 var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,0];
 
@@ -336,7 +336,7 @@ class CInfo
       tpl.pos.y = tpl.start.y;
 
       tpl.normal_damage = boss_damages[type] * func.parseFloatU(gameplay[32]);
-      if(type==3) tpl.is_unstable = true;
+      if(type==3||type==13) tpl.is_unstable = true;
       else tpl.is_unstable = false;
 
       if(tpl.vector.x==0) tpl.vector.x = 0.00001;
@@ -360,23 +360,99 @@ class CInfo
     var shooters = [];
     if(true) //All bosses (temporary)
     {
-      if(true) //Protector
-      {
-        shooters = [
-          new CShooter(11, 22.5,60,7.5, 6.5,thys,false, 15),
-          new CShooter(11, 45,60,7.5, 6.5,thys,false, 15),
-          new CShooter(11, 135,60,7.5, 6.5,thys,false, 15),
-          new CShooter(11, 157.5,60,7.5, 6.5,thys,false, 15),
-          new CShooter(11, 202.5,60,7.5, 6.5,thys,false, 15),
-          new CShooter(11, 225,60,7.5, 6.5,thys,false, 15),
-          new CShooter(11, 315,60,7.5, 6.5,thys,false, 15),
-          new CShooter(11, 337.5,60,7.5, 6.5,thys,false, 15),
+        if(type==1) //Protector
+        {
+            shooters = [
+                new CShooter(11, 22.5,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 45,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 135,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 157.5,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 202.5,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 225,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 315,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 337.5,60,7.5, 6.5,thys,false, 15),
 
-          new CShooter(4, 270,120,7.5, 10,thys,false, 150),
-          new CShooter(9, 0,0,0, 7.5,thys,true, 75),
-          new CShooter(9, 180,0,0, 7.5,thys,true, 75),
-        ];
-      }
+                new CShooter(4, 270,120,7.5, 10,thys,false, 300),
+                new CShooter(9, 0,0,0, 7.5,thys,true, 600),
+                new CShooter(9, 180,0,0, 7.5,thys,true, 600),
+            ];
+        }
+        if(type==2) //Adecodron
+        {
+            shooters = [
+                new CShooter(10, 0,0,0, 7.5,thys,true, 600),
+                new CShooter(10, 90,0,0, 7.5,thys,true, 600),
+                new CShooter(10, 180,0,0, 7.5,thys,true, 600),
+                new CShooter(10, 270,0,0, 7.5,thys,true, 600),
+
+                new CShooter(11, 45,60,7.5, 6.5,thys,false, 20),
+                new CShooter(11, 135,60,7.5, 6.5,thys,false, 20),
+                new CShooter(11, 225,60,7.5, 6.5,thys,false, 20),
+                new CShooter(11, 315,60,7.5, 6.5,thys,false, 20),
+                
+                new CShooter(6, 0,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 20,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 40,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 60,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 80,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 100,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 120,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 140,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 160,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 180,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 200,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 220,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 240,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 260,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 280,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 300,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 320,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 340,0,0, 6.5,thys,true, 600),
+            ];
+        }
+        if(type==3) //Octogone
+        {
+            shooters = [
+                new CShooter(7, 0,60,15, 6.5,thys,false, 50),
+                new CShooter(7, 45,60,15, 6.5,thys,false, 50),
+                new CShooter(7, 90,60,15, 6.5,thys,false, 50),
+                new CShooter(7, 135,60,15, 6.5,thys,false, 50),
+                new CShooter(7, 180,60,15, 6.5,thys,false, 50),
+                new CShooter(7, 225,60,15, 6.5,thys,false, 50),
+                new CShooter(7, 270,60,15, 6.5,thys,false, 50),
+                new CShooter(7, 315,60,15, 6.5,thys,false, 50),
+
+                new CShooter(8, 90,60,7.5, 8.5,thys,false, 500),
+                new CShooter(8, 210,60,7.5, 8.5,thys,false, 500),
+                new CShooter(8, 330,60,7.5, 8.5,thys,false, 500),
+            ];
+        }
+        if(type==4) //Starandus
+        {
+            shooters = [
+                new CShooter(5, 0,60,60, 6.5,thys,true, 25),
+                new CShooter(5, 45,60,60, 6.5,thys,true, 21),
+                new CShooter(5, 90,60,60, 6.5,thys,true, 26),
+                new CShooter(5, 135,60,60, 6.5,thys,true, 28),
+                new CShooter(5, 180,60,60, 6.5,thys,true, 24),
+                new CShooter(5, 225,60,60, 6.5,thys,true, 23),
+                new CShooter(5, 270,60,60, 6.5,thys,true, 27),
+                new CShooter(5, 315,60,60, 6.5,thys,true, 22),
+            ];
+        }
+        if(type==6) //Degenerator
+        {
+            shooters = [
+                new CShooter(13, 22.5,60,7.5, 6.5,thys,false, 30),
+                new CShooter(12, 45,60,7.5, 6.5,thys,false, 20),
+                new CShooter(12, 135,60,7.5, 6.5,thys,false, 20),
+                new CShooter(13, 157.5,60,7.5, 6.5,thys,false, 30),
+                new CShooter(13, 202.5,60,7.5, 6.5,thys,false, 30),
+                new CShooter(12, 225,60,7.5, 6.5,thys,false, 20),
+                new CShooter(12, 315,60,7.5, 6.5,thys,false, 20),
+                new CShooter(13, 337.5,60,7.5, 6.5,thys,false, 30),
+            ];
+        }
     }
     return shooters;
   }
@@ -1207,20 +1283,11 @@ function ToTwo(n) {
 }
 function getTimeSize(n)
 {
-  if(n==0) return 9000;
-  if(n==1) return 10500;
-  if(n==2) return 12000;
-  return 3000;
+  return 9000;
 }
 function getBossHealth(n,typ)
 {
-  if(typ==0)
-  {
-    if(n==0) return 160000;
-    if(n==1) return 180000;
-    if(n==2) return 200000;
-  }
-  return 40000;
+  return 100000;
 }
 function resetScr(i)
 {
@@ -1406,7 +1473,7 @@ function spawnBullet(tpl,arg,bow)
     if(tpl.steerPtr!=-1)
     {
       tpl.boss_owner = bow;
-      tpl.max_age = 250;
+      tpl.max_age = 300;
       sendToAllClients("/RetSeekData "+tpl.steerPtr+" "+tpl.ID+" X X");
     }
   }
@@ -2909,7 +2976,7 @@ wss.on("connection", function connection(ws) {
       tpl.pos.y = tpl.start.y;
 
       tpl.normal_damage = func.parseFloatU(arg[8]);
-      if(arg[2]=="3") tpl.is_unstable = true;
+      if(arg[2]=="3"||arg[2]=="13") tpl.is_unstable = true;
       else tpl.is_unstable = false;
 
       if(tpl.vector.x==0) tpl.vector.x = 0.00001;

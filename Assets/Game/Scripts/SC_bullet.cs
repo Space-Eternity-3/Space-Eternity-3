@@ -69,7 +69,7 @@ public class SC_bullet : MonoBehaviour
         if(!multiplayer && (gob.type==9 || gob.type==10))
             gob.seekPointer = SC_seek_data.createSeekPointer(gob.ID);
 
-        if(typ==3) gob.is_unstable = true;
+        if(typ==3||typ==13) gob.is_unstable = true;
         else gob.is_unstable = false;
         if(gun_own==0)
         {
@@ -215,7 +215,7 @@ public class SC_bullet : MonoBehaviour
         //seek check
         if(seekPointer==-1 && (type==9 || type==10))
             seekPointer = SC_seek_data.getSeekPointer(ID);
-        if(seekPointer!=-1) max_age = 250;
+        if(seekPointer!=-1) max_age = 300;
     }
     void BulletRotate()
     {

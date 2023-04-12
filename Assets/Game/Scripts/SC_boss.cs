@@ -92,7 +92,7 @@ public class SC_boss : MonoBehaviour
     public Transform Communtron4;
     Transform CanvP,CanvNick,CanvBar;
     public int type;
-    public int smallest_boss_health = 140000;
+    public int smallest_boss_health;
 
     public string[] BossNames = new string[7];
     public Color32[] arenaColors = new Color32[7];
@@ -460,20 +460,11 @@ public class SC_boss : MonoBehaviour
     }
     int getTimeSize(int n)
     {
-        if(n==0) return 9000;
-        if(n==1) return 10500;
-        if(n==2) return 12000;
-        return 3000;
+        return 9000;
     }
     int getBossHealth(int n, int typ)
     {
-        if(typ==0)
-        {
-            if(n==0) return 160000;
-            if(n==1) return 180000;
-            if(n==2) return 200000;
-        }
-        return 40000;
+        return 100000;
     }
     public void resetScr()
     {
