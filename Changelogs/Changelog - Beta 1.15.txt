@@ -236,5 +236,14 @@ idk day:
 - heal potion: 15 -> 20
 - fire damage: 4 -> 5
 - bullet 13 now unstable
-- time size 3:00, health size 100kbhp
+- time size 3:00, health size 100000 bhp
 - pseudoBosses beta ready
+
+14.04.2023:
+
+- coal & fire bullet textures
+- gameplay variables (33,34) & unstable_matter_damage relocated
+- now possible to create duplication reciepes
+- coal & fire craftings added
+- treasure changed again (fire bullets)
+- coal & fire bullets (64,65)

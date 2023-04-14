@@ -29,7 +29,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 33;
+	int gpl_number = 35;
     
 	bool lockData = false;
 	bool remember = false;
@@ -1096,9 +1096,11 @@ public class SC_data : MonoBehaviour
                     if(psPath[1]=="crash_damage_multiplier") Gameplay[7]=float.Parse(value[i])+"";
                     
                     if(psPath[1]=="spike_damage") Gameplay[8]=float.Parse(value[i])+"";
-                    if(psPath[1]=="unstable_matter_damage") Gameplay[28]=float.Parse(value[i])+"";
                     if(psPath[1]=="copper_bullet_damage") Gameplay[3]=float.Parse(value[i])+"";
                     if(psPath[1]=="red_bullet_damage") Gameplay[27]=float.Parse(value[i])+"";
+                    if(psPath[1]=="unstable_matter_damage") Gameplay[28]=float.Parse(value[i])+"";
+                    if(psPath[1]=="coal_bullet_damage") Gameplay[33]=float.Parse(value[i])+"";
+                    if(psPath[1]=="fire_bullet_damage") Gameplay[34]=float.Parse(value[i])+"";
                     if(psPath[1]=="bullet_owner_push") Gameplay[30]=float.Parse(value[i])+"";
                     if(psPath[1]=="healing_potion_hp") Gameplay[31]=float.Parse(value[i])+"";
 
@@ -1329,7 +1331,7 @@ public class SC_data : MonoBehaviour
 		
 		try{
 			checkDatapackGoodE();
-		}catch(Exception){DatapackError("Unknown error detected."); return;}
+		}catch(Exception exc){DatapackError("Unknown error detected"); return;}
 		
 		//Last
 		if(remember)
@@ -1404,9 +1406,9 @@ public class SC_data : MonoBehaviour
 			if(
 				strT[i+4] == "0" ||
 				strT[i] == "0" ||
-				strT[i] == strT[i+2] ||
-				strT[i+2] == strT[i+4] ||
-				strT[i+4] == strT[i]
+				strT[i] == strT[i+2] //||
+				//strT[i+2] == strT[i+4] ||
+				//strT[i+4] == strT[i]
 			)return false;
 		}
 		return true;

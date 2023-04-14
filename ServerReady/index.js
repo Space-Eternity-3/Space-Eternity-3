@@ -17,12 +17,12 @@ var serverRedVersion = "Beta_1_15";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
-var gpl_number = 33;
+var gpl_number = 35;
 var max_players = 128;
 
-var boss_damages = [0,3.75,5,10,35,5,6,4,0,10,6,3.75,5,10,0,0];
+var boss_damages = [0,0,0,0,35,5,6,4,0,10,6,3.75,5,10,0,0];
 var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.08,0.08];
-var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,0];
+var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,1];
 
 if(Number.isInteger(config.max_players))
   max_players = config.max_players;
@@ -3347,15 +3347,19 @@ function finalTranslate(varN) {
           
           if (psPath[1] == "spike_damage")
             gameplay[8] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "unstable_matter_damage")
-            gameplay[28] = func.parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "copper_bullet_damage")
             gameplay[3] = func.parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "red_bullet_damage")
             gameplay[27] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "unstable_matter_damage")
+            gameplay[28] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "coal_bullet_damage")
+            gameplay[33] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "fire_bullet_damage")
+            gameplay[34] = func.parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "bullet_owner_push")
             gameplay[30] = func.parseFloatE(jse3Dat[i]) + "";
-            if (psPath[1] == "healing_potion_hp")
+          if (psPath[1] == "healing_potion_hp")
             gameplay[31] = func.parseFloatE(jse3Dat[i]) + "";
 
           if (psPath[1] == "player_normal_speed")
@@ -3700,9 +3704,9 @@ function goodItems(str, craft_mode) {
         if (
           strT[i + 4] == "0" ||
           strT[i] == "0" ||
-          strT[i] == strT[i + 2] ||
-          strT[i + 2] == strT[i + 4] ||
-          strT[i + 4] == strT[i]
+          strT[i] == strT[i + 2] //||
+          //strT[i + 2] == strT[i + 4] ||
+          //strT[i + 4] == strT[i]
         )
           return false;
     }

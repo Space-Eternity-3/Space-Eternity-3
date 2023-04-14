@@ -219,7 +219,7 @@ public class SC_control : MonoBehaviour {
 		//SHOT
 		bool wr_tick = (int)Communtron4.position.y!=100 || current_tick!=-1;
 		bool wr_comms = Communtron3.position.y==0f && Communtron2.position.x==0f && Communtron3.position.z==0f;
-		bool wr_have = SC_slots.InvHaving(24) || SC_slots.InvHaving(39) || SC_slots.InvHaving(48);
+		bool wr_have = SC_slots.InvHaving(24) || SC_slots.InvHaving(39) || SC_slots.InvHaving(48) || SC_slots.InvHaving(64) || SC_slots.InvHaving(65);
 		bool wr_cotr = (!Input.GetKey(KeyCode.LeftControl) || !SC_slots.InvHaving(48));
 		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && wr_cotr;
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
@@ -247,6 +247,18 @@ public class SC_control : MonoBehaviour {
 				typ = 3;
 				slot = SC_slots.InvChange(48,-1,true,false,true);
 				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 48 -1 "+slot);
+			}
+			else if(SC_slots.InvHaving(64))
+			{
+				typ = 14;
+				slot = SC_slots.InvChange(64,-1,true,false,true);
+				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 64 -1 "+slot);
+			}
+			else if(SC_slots.InvHaving(65))
+			{
+				typ = 15;
+				slot = SC_slots.InvChange(65,-1,true,false,true);
+				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 65 -1 "+slot);
 			}
 
 			float xpo = Input.mousePosition.x-Screen.width/2, ypo=Input.mousePosition.y-Screen.height/2;
@@ -785,8 +797,9 @@ public class SC_control : MonoBehaviour {
 		if(reg_wait>0) reg_wait--;
 		if(cooldown>0)
 		{
-			if(!SC_slots.InvHaving(48)) cooldown--;
-			else if(livTime%2==0) cooldown--;
+			if(SC_slots.InvHaving(48)) {if(livTime%2==0) cooldown--;}
+			else if(SC_slots.InvHaving(65)) {if(livTime%3!=0) cooldown--;}
+			else cooldown--;
 		}
 		if(licznikD>0) licznikD--;
 		if(dmLicz>0) dmLicz--;

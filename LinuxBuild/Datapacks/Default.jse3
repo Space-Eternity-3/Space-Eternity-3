@@ -48,6 +48,8 @@ craftings
 		title_image: coal;
 		1: coal(5) -> packed_coal;
 		2: packed_coal -> coal(5);
+		3: coal -> coal_bullet(5);
+		4: coal_bullet(3) + fire_bullet -> fire_bullet(3);
 	}
 	<Category>6
 	{
@@ -153,9 +155,11 @@ gameplay
 	drill_brake_speed: -5;
 	
 	spike_damage: 5;
-	unstable_matter_damage: 8;
 	copper_bullet_damage: 3;
 	red_bullet_damage: 4;
+	unstable_matter_damage: 8;
+	coal_bullet_damage: 2;
+	fire_bullet_damage: 2;
 	bullet_owner_push: 1;
 	healing_potion_hp: 20;
 	
@@ -365,6 +369,8 @@ game_translate <low-level settings>
 		61: blank_potion;				<only item>
 		62: blank_element;
 		63: killing_potion;				<only item>
+		64: coal_bullet;				<only item>
+		65: fire_bullet;				<only item>
 	}
 }
 custom_structures <advanced settings>
