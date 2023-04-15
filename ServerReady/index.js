@@ -2983,7 +2983,7 @@ wss.on("connection", function connection(ws) {
       if(tpl.vector.y==0) tpl.vector.y = 0.00001;
 
       arg[8] = "0";
-      if(tpl.type==9 || tpl.type==10) return;
+      //if(tpl.type==9 || tpl.type==10) return;
       spawnBullet(tpl,arg,0);
     }
     if (arg[0] == "/NewBulletRemove") {

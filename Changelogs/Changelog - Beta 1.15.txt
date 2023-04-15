@@ -261,3 +261,4 @@ idk day:
 - kamikadze sound volume decreased
 - brainwave sound created
 - bullet sounds
+- first bug added (9 & 10 blocker server side removed)
