@@ -17,10 +17,10 @@ var serverRedVersion = "Beta_1_15";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
-var gpl_number = 35;
+var gpl_number = 36;
 var max_players = 128;
 
-var boss_damages = [0,0,0,0,35,5,6,4,0,10,6,3.75,5,10,0,0];
+var boss_damages = [0,0,0,0,35,4.25,6,5,0,10,6,3.75,5,8,0,0];
 var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.08,0.08];
 var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,1];
 
@@ -385,10 +385,10 @@ class CInfo
                 new CShooter(10, 180,0,0, 7.5,thys,true, 600),
                 new CShooter(10, 270,0,0, 7.5,thys,true, 600),
 
-                new CShooter(11, 45,60,7.5, 6.5,thys,false, 20),
-                new CShooter(11, 135,60,7.5, 6.5,thys,false, 20),
-                new CShooter(11, 225,60,7.5, 6.5,thys,false, 20),
-                new CShooter(11, 315,60,7.5, 6.5,thys,false, 20),
+                new CShooter(12, 45,60,7.5, 6.5,thys,false, 20),
+                new CShooter(12, 135,60,7.5, 6.5,thys,false, 20),
+                new CShooter(12, 225,60,7.5, 6.5,thys,false, 20),
+                new CShooter(12, 315,60,7.5, 6.5,thys,false, 20),
                 
                 new CShooter(6, 0,0,0, 6.5,thys,true, 600),
                 new CShooter(6, 20,0,0, 6.5,thys,true, 600),
@@ -413,18 +413,18 @@ class CInfo
         if(type==3) //Octogone
         {
             shooters = [
-                new CShooter(7, 0,60,15, 6.5,thys,false, 50),
-                new CShooter(7, 45,60,15, 6.5,thys,false, 50),
-                new CShooter(7, 90,60,15, 6.5,thys,false, 50),
-                new CShooter(7, 135,60,15, 6.5,thys,false, 50),
-                new CShooter(7, 180,60,15, 6.5,thys,false, 50),
-                new CShooter(7, 225,60,15, 6.5,thys,false, 50),
-                new CShooter(7, 270,60,15, 6.5,thys,false, 50),
-                new CShooter(7, 315,60,15, 6.5,thys,false, 50),
+                new CShooter(7, 0,60,10, 6.5,thys,false, 50),
+                new CShooter(7, 45,60,10, 6.5,thys,false, 50),
+                new CShooter(7, 90,60,10, 6.5,thys,false, 50),
+                new CShooter(7, 135,60,10, 6.5,thys,false, 50),
+                new CShooter(7, 180,60,10, 6.5,thys,false, 50),
+                new CShooter(7, 225,60,10, 6.5,thys,false, 50),
+                new CShooter(7, 270,60,10, 6.5,thys,false, 50),
+                new CShooter(7, 315,60,10, 6.5,thys,false, 50),
 
-                new CShooter(8, 90,60,7.5, 8.5,thys,false, 500),
-                new CShooter(8, 210,60,7.5, 8.5,thys,false, 500),
-                new CShooter(8, 330,60,7.5, 8.5,thys,false, 500),
+                new CShooter(8, 90,60,10, 8.5,thys,false, 500),
+                new CShooter(8, 210,60,10, 8.5,thys,false, 500),
+                new CShooter(8, 330,60,10, 8.5,thys,false, 500),
             ];
         }
         if(type==4) //Starandus
@@ -443,14 +443,14 @@ class CInfo
         if(type==6) //Degenerator
         {
             shooters = [
-                new CShooter(13, 22.5,60,7.5, 6.5,thys,false, 30),
+                new CShooter(13, 22.5,60,10, 6.5,thys,false, 35),
                 new CShooter(12, 45,60,7.5, 6.5,thys,false, 20),
                 new CShooter(12, 135,60,7.5, 6.5,thys,false, 20),
-                new CShooter(13, 157.5,60,7.5, 6.5,thys,false, 30),
-                new CShooter(13, 202.5,60,7.5, 6.5,thys,false, 30),
+                new CShooter(13, 157.5,60,10, 6.5,thys,false, 35),
+                new CShooter(13, 202.5,60,10, 6.5,thys,false, 35),
                 new CShooter(12, 225,60,7.5, 6.5,thys,false, 20),
                 new CShooter(12, 315,60,7.5, 6.5,thys,false, 20),
-                new CShooter(13, 337.5,60,7.5, 6.5,thys,false, 30),
+                new CShooter(13, 337.5,60,10, 6.5,thys,false, 35),
             ];
         }
     }
@@ -3361,6 +3361,8 @@ function finalTranslate(varN) {
             gameplay[30] = func.parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "healing_potion_hp")
             gameplay[31] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "killing_potion_hp")
+            gameplay[35] = func.parseFloatE(jse3Dat[i]) + "";
 
           if (psPath[1] == "player_normal_speed")
             gameplay[9] = func.parseFloatE(jse3Dat[i]) + "";

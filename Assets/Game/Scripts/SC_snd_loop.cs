@@ -48,7 +48,7 @@ public class SC_snd_loop : MonoBehaviour
             {
                 if(sound_locked[j] && sound_id[j]==i)
                 {
-                    pom = SC_sounds.GetVolumeRaw(sound_pos[j]);
+                    pom = SC_sounds.GetVolumeDeep(sound_pos[j],0);
                     V += Mathf.Log(Mathf.Pow(log_base[i],pom-V)-Mathf.Pow(log_base[i],-V)+1,log_base[i]);
                 }
             }

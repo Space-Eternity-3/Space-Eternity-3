@@ -247,3 +247,17 @@ idk day:
 - coal & fire craftings added
 - treasure changed again (fire bullets)
 - coal & fire bullets (64,65)
+
+15.04.2023:
+
+- coal damage 2->2,5
+- killing potion gameplay variable: 15
+- adecodron shots red bullets
+- octogone: aim 15/7.5->10, brainwave dmg 5->4.25
+- starandus: fire bullet dmg 5->4.5
+- degenerator: unstable 10->8, unstable freq 30->35, unstable aim 7.5->10
+- MHD 30->40 (max hearing distance)
+- GetVolumeRaw unified with GetVolumeDeep
+- kamikadze sound volume decreased
+- brainwave sound created
+- bullet sounds (without fire sound)

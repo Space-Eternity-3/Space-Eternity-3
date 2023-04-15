@@ -16,16 +16,7 @@ public class SC_sounds : MonoBehaviour
         float dN = nvl;
 		float dG = SC_data.global_volume;
         float dS = float.Parse(SC_data.volume);
-        if(deeprng==0) return GetVolumeRaw(pos) * dS * dN * dG;
-        else return GetVolumeDeep(pos,deeprng) * dS * dN * dG;
-    }
-    public float GetVolumeRaw(Vector3 pos)
-    {
-        //Linear system
-        float dD;
-        dD=(MHD-SC_control.Pitagoras((camera.position - new Vector3(0f,0f,camera.position.z)) - pos))/MHD;
-        if(dD<0f) dD=0f;
-        return dD;
+        return GetVolumeDeep(pos,deeprng) * dS * dN * dG;
     }
     public float GetVolumeDeep(Vector3 pos, float deeprng)
     {
