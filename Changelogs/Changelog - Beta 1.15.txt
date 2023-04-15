@@ -260,4 +260,4 @@ idk day:
 - GetVolumeRaw unified with GetVolumeDeep
 - kamikadze sound volume decreased
 - brainwave sound created
-- bullet sounds (without fire sound)
+- bullet sounds
