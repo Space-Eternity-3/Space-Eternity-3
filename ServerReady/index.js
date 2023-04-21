@@ -12,8 +12,8 @@ const unit = 0.0008;
 const in_arena_range = 37;
 
 //Global variables
-var serverVersion = "Beta 1.15";
-var serverRedVersion = "Beta_1_15";
+var serverVersion = "Beta 2.0";
+var serverRedVersion = "Beta_2_0";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
@@ -194,6 +194,8 @@ class CShooter
   }
   CanShoot(x,y)
   {
+    x -= func.ScrdToFloat(this.thys.dataY[8-2]);
+    y -= func.ScrdToFloat(this.thys.dataY[9-2]);
     var pat = func.RotatePoint([x,y],-(this.angle+func.ScrdToFloat(this.thys.dataY[10-2])*3.14159/180),false);
     x = pat[0]-this.radius; y = pat[1];
 
@@ -202,6 +204,8 @@ class CShooter
   }
   BestDeviation(x,y)
   {
+    x -= func.ScrdToFloat(this.thys.dataY[8-2]);
+    y -= func.ScrdToFloat(this.thys.dataY[9-2]);
     var pat = func.RotatePoint([x,y],-(this.angle+func.ScrdToFloat(this.thys.dataY[10-2])*3.14159/180),false);
     x = pat[0]-this.radius; y = pat[1];
     return Math.atan2(y,x);

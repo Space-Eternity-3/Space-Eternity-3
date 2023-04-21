@@ -1,0 +1,264 @@
+06.09.2022:
+
+- int based storing boss data in RAM (singleplayer)
+- not instant buttons in pause menu
+- server parsing 3 types (P,U,E)
+
+08.09.2022:
+
+- singleplayer bullet collider on boss transitions removed
+- boss can set its look depending on its type
+- changed arena seon: 5 types of bosses
+- int based storing boss data in RAM (multiplayer)
+
+10.09.2022:
+
+- boss variables 21 to 61
+- server parse functions exported
+- generalData and additionalData changed to dataX and dataY
+- boss sending compressed to 4KB/s per player
+- rafael functions (1)
+
+11.09.2022:
+
+- rafael functions (2)
+
+16.09.2022:
+
+- gray button chat again
+- array player smooth reduced
+- error spotted remove raycast
+- boss movement & rotation smooth
+- removed useless colliders
+- magnetic system converted to update
+- android temporary buttons
+
+17.09.2022:
+
+- magnetic update repaired
+- encoding to (int) using ASCII
+
+19.09.2022:
+
+- rafael functions (3)
+
+20.09.2022:
+
+- better server collision system
+- impulse-boss damage range reduced: 8.9 -> 8.7
+- impulse-player damage range increased: 2 -> 2.12
+- added projection when others impulsing
+- bullet projections no longer destroy on walls and asteroids
+- "pseudobody" collider range increased: 0.8 -> 0.92
+- bullet destroy sound on quit removed
+- world.ShotRaw() function
+
+21.09.2022:
+
+- bullet linear collision corrected (bugfix)
+- shape collision (1)
+
+22.09.2022:
+
+- a bit better particles disabling
+- new seon object: StBulcol
+- static shape colliders
+- changed arena seon: added static shape colliders
+- mushroom physics material removed
+- boss unstable matter fly through players
+
+23.09.2022:
+
+- engine colliders returned (bugfix)
+
+16.11.2022:
+
+- auto boss hide, manual change possibility removed
+- bullets send on player join
+
+17.11.2022:
+
+- stuck repaired (teleportation)
+
+10.12.2022:
+
+- bosbul static force
+- error on destroying structure removed
+- sphere local size added
+- capsule bosbul strange behaviour spotted
+- bosbul add command + arena.seon changed
+- gameplay 2.0 attacker variables
+
+16.12.2022:
+
+- safe thread code (Beta 1.14d)
+
+11.01.2023:
+
+- gameplay variables reduced to boss_damage_multiplier
+- boss damage in-code array
+
+20.01.2023:
+
+- bullet damage included
+- boss_damage_multiplier working
+- bullet graphics in script united
+
+23.01.2023
+
+- bullet scaling system
+- electro bullet
+- force destroy effect
+- b1a1 auto boss hide fixed
+- fire bullets (pop sounds)
+
+24.01.2023:
+
+- fire bullet look improved
+- bullet fly through option as bool array
+- effect system (no look)
+- anti-logout (instant effect damage)
+
+25.01.2023:
+
+- effect system visual
+
+04.02.2023:
+
+- fire effect improved
+- spike bullet improved
+- posion effect
+- brainwave bullet
+- sticky bullet alpha
+
+11.03.2023:
+
+- sticky bullet done
+- title change: levels -> achievements
+- Beta 2.0 changed to Beta 1.15
+
+idk day:
+
+- low TPS system on server side
+
+29.03.2023:
+
+- barrier tick client side (low TPS client side)
+
+30.03.2023:
+
+- client side steering bullets
+
+31.03.2023:
+
+- server side steering bullets part 1/2
+- removed strange future bullets feature
+
+01.04.2023:
+
+- player is immune to bullets created before his joining, they are not visible for him
+- server side steering bullets part 2/2
+- kamikadze bullet done
+- all %100 to %25 (artefacts)
+- bullets milk functionality bug removed
+- item destroy system (ugly version)
+- left ctrl + click on Fob21 = instant use
+
+02.04.2023:
+
+- spikeball alpha
+
+03.04.2023:
+
+- melted stone impossible to craft from now
+- boss realistic invisibility (illusion nerf while effects)
+- spikeball done
+- destroyer look
+- junk messages
+
+05.04.2023:
+
+- junk messages #2 & #3 removed (cosmic machine)
+- Destroyer->Junkyard & Destroy->Discard
+- unstable matter as object damage from spikes variable
+- spike damage 10->5
+- added potions and their elements
+- added potion craftings
+- potions functional (killing uses healing variable)
+
+06.04.2023:
+
+- blank element possible to drill from metalic (1%)
+- treasure loottable changed (potion fit & more)
+- potion & element textures & fob21 materials
+- ShotCooked alpha function
+
+07.04.2023:
+
+- turbo potion allowed when turbo
+- longer effect apply rather than next
+- treasure loot changed again
+- metalic asteroid 50% for stone, 4% for better elements (metalic, amethyst)
+- steering cooldown 200 -> 1500 for safety & whole stream sent proof
+- steering angle reduced to 2.14
+- beta bullet API singleplayer & multiplayer
+- shooters visible (all same)
+
+08.04.2023:
+
+- "bosses in development" info
+- shooters API quite good
+- bullet 11,12,13 default biggers
+- unstable damage -> 8 (players only)
+- unstable damage upgradeable
+- stupid rotation, but then good rotation
+- randomInteger function reworked (some bugs repaired)
+- angry boss commit
+
+09.04.2023:
+
+- boss rotation much better
+- ShotCalculateIfNow()
+
+11.04.2023:
+
+- pseudo implementation of pseudo fights
+
+12.04.2023:
+
+- steering lifetime: 5s -> 6s
+- health_regenerate_cooldown: 5 -> 2,5
+- health_regenerate_multiplier: 2 -> 4
+- electron damage: 45 -> 35
+- brain damage: 5 -> 4
+- cyclic damage periods: 2,4,6
+- damage potion constant 15f
+- heal potion: 15 -> 20
+- fire damage: 4 -> 5
+- bullet 13 now unstable
+- time size 3:00, health size 100000 bhp
+- pseudoBosses beta ready
+
+14.04.2023:
+
+- coal & fire bullet textures
+- gameplay variables (33,34) & unstable_matter_damage relocated
+- now possible to create duplication reciepes
+- coal & fire craftings added
+- treasure changed again (fire bullets)
+- coal & fire bullets (64,65)
+
+15.04.2023:
+
+- coal damage 2->2,5
+- killing potion gameplay variable: 15
+- adecodron shots red bullets
+- octogone: aim 15/7.5->10, brainwave dmg 5->4.25
+- starandus: fire bullet dmg 5->4.5
+- degenerator: unstable 10->8, unstable freq 30->35, unstable aim 7.5->10
+- MHD 30->40 (max hearing distance)
+- GetVolumeRaw unified with GetVolumeDeep
+- kamikadze sound volume decreased
+- brainwave sound created
+- bullet sounds
+- first bug added (9 & 10 blocker server side removed)

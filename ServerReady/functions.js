@@ -77,6 +77,44 @@ class cfun
         ];
     }
 
+    GetBounceCoords(x1,y1,x2,y2,bounce_radius)
+    {
+        if(x1==0 && x2==0 && y1==0 && y2==0) return [0,0,0,0];
+
+        var xa,ya,xb,yb,xc=0,yc=0,cnt=0;
+        var x = x2-x1;
+        var y = y2-y1;
+        if(x==0) {
+            xa = x1;
+            ya = Math.sqrt(bounce_radius**2 - xa**2);
+            xb = x1;
+            yb = -Math.sqrt(bounce_radius**2 - xb**2);
+
+            if(Math.sign(y2-ya)==Math.sign(ya-y1)) {xc=xa; yc=ya; cnt++;}
+            if(Math.sign(y2-yb)==Math.sign(yb-y1)) {xc=xb; yc=yb; cnt++;}
+        }
+        else {
+            var a = y/x;
+            var b = y1 - a*x1;
+            xa = (-a*b + Math.sqrt((a**2)*(b**2)-(b**2-bounce_radius**2)*(a**2+1)))/(a**2+1)
+            ya = a*xa+b;
+            xb = (-a*b - Math.sqrt((a**2)*(b**2)-(b**2-bounce_radius**2)*(a**2+1)))/(a**2+1)
+            yb = a*xb+b;
+
+            if(Math.sign(x2-xa)==Math.sign(xa-x1)) {xc=xa; yc=ya; cnt++;}
+            if(Math.sign(x2-xb)==Math.sign(xb-x1)) {xc=xb; yc=yb; cnt++;}
+        }
+
+        if(cnt==0 || x2**2+y2**2<=bounce_radius**2) return [x2,y2,0,0];
+
+        var alpha = Math.atan2(y1-yc,x1-xc);
+        var beta = Math.atan2(-yc,-xc);
+        var gamma = 2*beta - alpha;
+        var c2_d = Math.sqrt((x2-xc)**2+(y2-yc)**2);
+        var get = this.RotatePoint([c2_d,0],gamma,false);
+        return [get[0]+xc,get[1]+yc,gamma,1];
+    }
+
     CollisionLinearBulletSet(xa,ya,xb,yb,r1)
     {
         if(xa==xb) xb+=0.0001;

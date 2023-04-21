@@ -20,9 +20,9 @@ public class SC_long_strings : MonoBehaviour
     6. DEV mode
 
     And:
-    1. Github Website
-    2. Website info
-    3. Changelog
+    1. Branch names
+    2. Website documentation
+    3. Blog
 
     */
 }
