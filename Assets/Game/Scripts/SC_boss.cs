@@ -554,6 +554,46 @@ public class SC_boss : MonoBehaviour
         ret[1] = ( x*Mathf.Sin(alpha) + y*Mathf.Sin(alpha + 3.14159f / 2f) );
         return ret;
     }
+    float Pow2(float f) {
+        return f*f;
+    }
+    public float[] GetBounceCoords(float x1,float y1,float x2,float y2,float bounce_radius)
+    {
+        if(x1==0f && x2==0f && y1==0f && y2==0f) return new float[4]{0f,0f,0f,0f};
+
+        float xa,ya,xb,yb,xc=0f,yc=0f,cnt=0f;
+        float x = x2-x1;
+        float y = y2-y1;
+        if(x==0f) {
+            xa = x1;
+            ya = Mathf.Sqrt(Pow2(bounce_radius) - Pow2(xa));
+            xb = x1;
+            yb = -Mathf.Sqrt(Pow2(bounce_radius) - Pow2(xb));
+
+            if(Mathf.Sign(y2-ya)==Mathf.Sign(ya-y1)) {xc=xa; yc=ya; cnt++;}
+            if(Mathf.Sign(y2-yb)==Mathf.Sign(yb-y1)) {xc=xb; yc=yb; cnt++;}
+        }
+        else {
+            float a = y/x;
+            float b = y1 - a*x1;
+            xa = (-a*b + Mathf.Sqrt(Pow2(a)*Pow2(b)-(Pow2(b)-Pow2(bounce_radius))*(Pow2(a)+1)))/(Pow2(a)+1);
+            ya = a*xa+b;
+            xb = (-a*b - Mathf.Sqrt(Pow2(a)*Pow2(b)-(Pow2(b)-Pow2(bounce_radius))*(Pow2(a)+1)))/(Pow2(a)+1);
+            yb = a*xb+b;
+
+            if(Mathf.Sign(x2-xa)==Mathf.Sign(xa-x1)) {xc=xa; yc=ya; cnt++;}
+            if(Mathf.Sign(x2-xb)==Mathf.Sign(xb-x1)) {xc=xb; yc=yb; cnt++;}
+        }
+
+        if(cnt==0f || Pow2(x2)+Pow2(y2)<=Pow2(bounce_radius)) return new float[4]{x2,y2,0f,0f};
+
+        float alpha = Mathf.Atan2(y1-yc,x1-xc);
+        float beta = Mathf.Atan2(-yc,-xc);
+        float gamma = 2*beta - alpha;
+        float c2_d = Mathf.Sqrt(Pow2(x2-xc)+Pow2(y2-yc));
+        float[] get = RotatePoint(new float[2]{c2_d,0f},gamma,false);
+        return new float[4]{get[0]+xc,get[1]+yc,gamma,1};
+    }
     public void BeforeDestroy()
     {
         if(multiplayer)

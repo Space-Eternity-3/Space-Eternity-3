@@ -96,9 +96,9 @@ class cfun
         else {
             var a = y/x;
             var b = y1 - a*x1;
-            xa = (-a*b + Math.sqrt((a**2)*(b**2)-(b**2-bounce_radius**2)*(a**2+1)))/(a**2+1)
+            xa = (-a*b + Math.sqrt((a**2)*(b**2)-(b**2-bounce_radius**2)*(a**2+1)))/(a**2+1);
             ya = a*xa+b;
-            xb = (-a*b - Math.sqrt((a**2)*(b**2)-(b**2-bounce_radius**2)*(a**2+1)))/(a**2+1)
+            xb = (-a*b - Math.sqrt((a**2)*(b**2)-(b**2-bounce_radius**2)*(a**2+1)))/(a**2+1);
             yb = a*xb+b;
 
             if(Math.sign(x2-xa)==Math.sign(xa-x1)) {xc=xa; yc=ya; cnt++;}

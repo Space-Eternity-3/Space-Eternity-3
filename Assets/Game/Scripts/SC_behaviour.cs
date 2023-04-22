@@ -35,6 +35,8 @@ public class CShooter
     }
     public bool CanShoot(float x,float y)
     {
+        x -= thys.ScrdToFloat(thys.dataID[8]);
+        y -= thys.ScrdToFloat(thys.dataID[9]);
         float[] pat = new float[2];
         pat = thys.RotatePoint(new float[2]{x,y},-(angle+thys.ScrdToFloat(thys.dataID[10])*3.14159f/180f),false);
         x = pat[0]-radius; y = pat[1];
@@ -44,6 +46,8 @@ public class CShooter
     }
     public float BestDeviation(float x,float y)
     {
+        x -= thys.ScrdToFloat(thys.dataID[8]);
+        y -= thys.ScrdToFloat(thys.dataID[9]);
         float[] pat = new float[2];
         pat = thys.RotatePoint(new float[2]{x,y},-(angle+thys.ScrdToFloat(thys.dataID[10])*3.14159f/180f),false);
         x = pat[0]-radius; y = pat[1];
@@ -263,18 +267,74 @@ public class SC_behaviour : MonoBehaviour
 
     public void _Start()
     {
-        
+        System.Random random = new System.Random();
+        thys.dataID[14] = thys.FloatToScrd((float)random.NextDouble() * 2f*3.14159f);
     }
     public void _FixedUpdate()
     {
-        SPlayerInfo[] players = thys.world.GetPlayers();
-        
+        //Pre-defines
         System.Random random = new System.Random();
+        SPlayerInfo[] players = thys.world.GetPlayers();
+        float bounce_radius = 26f;
+        float acceleration = 0.015f;
+        float target_velocity = 0.2f; if(thys.type==2) target_velocity = 0.4f; if(thys.type==4) target_velocity = 0f;
+        float unstable_pulse_force = 0.6f;
+        float unstable_pulse_chance = 0.015f; if(thys.type!=6) unstable_pulse_chance = 0f;
+        
+        //Rotation
         float rand_rot = (float)random.NextDouble();
         if(thys.dataID[11]==thys.dataID[12] && rand_rot>0.8f) thys.dataID[12] = UnityEngine.Random.Range(-30,31);
         thys.dataID[11] += (int)Mathf.Sign(thys.dataID[12]-thys.dataID[11]);
         thys.dataID[10] = thys.FloatToScrd((thys.ScrdToFloat(thys.dataID[10]) + 0.15f*thys.dataID[11]));
 
+        //Movement rotation
+        if(thys.dataID[15]==thys.dataID[16]) thys.dataID[16] = UnityEngine.Random.Range(-30,31);
+        thys.dataID[15] += (int)Mathf.Sign(thys.dataID[16]-thys.dataID[15]);
+        thys.dataID[14] = thys.FloatToScrd((thys.ScrdToFloat(thys.dataID[14]) + 0.3f*thys.dataID[15]*3.14159f/180f));
+
+        //Velocity adjuster
+        float current_velocity = thys.ScrdToFloat(thys.dataID[13]);
+        float velocity_angle = thys.ScrdToFloat(thys.dataID[14]);
+        if(target_velocity > current_velocity) {
+            current_velocity += acceleration;
+            if(target_velocity < current_velocity) current_velocity = target_velocity;
+        } 
+        if(target_velocity < current_velocity) {
+            current_velocity -= acceleration;
+            if(target_velocity > current_velocity) current_velocity = target_velocity;
+        }
+
+        //Unstable pulse
+        float rand_unst = (float)random.NextDouble();
+        if(rand_unst < unstable_pulse_chance)
+        {
+            float vel_x = Mathf.Cos(velocity_angle) * current_velocity;
+            float vel_y = Mathf.Sin(velocity_angle) * current_velocity;
+            float angle_unst = (float)random.NextDouble() * 2f*3.14159f;
+            vel_x += unstable_pulse_force * Mathf.Cos(angle_unst);
+            vel_y += unstable_pulse_force * Mathf.Sin(angle_unst);
+            current_velocity = Mathf.Sqrt(vel_x*vel_x + vel_y*vel_y);
+            velocity_angle = Mathf.Atan2(vel_y,vel_x);
+        }
+        thys.dataID[13] = thys.FloatToScrd(current_velocity);
+        thys.dataID[14] = thys.FloatToScrd(velocity_angle);
+
+        //Movement & Bounce
+        float[] xy = thys.RotatePoint(new float[2]{current_velocity,0},velocity_angle,false);
+        float x1 = thys.ScrdToFloat(thys.dataID[8]); float y1 = thys.ScrdToFloat(thys.dataID[9]);
+        float x2 = x1 + xy[0]; var y2 = y1 + xy[1];
+        float[] ef = thys.GetBounceCoords(x1,y1,x2,y2,bounce_radius);
+        if(ef[0]*ef[0]+ef[1]*ef[1]>=bounce_radius*bounce_radius)
+        {//Position correction
+            float sqrt = Mathf.Sqrt(ef[0]*ef[0]+ef[1]*ef[1]);
+            ef[0] *= (bounce_radius-0.01f)/sqrt;
+            ef[1] *= (bounce_radius-0.01f)/sqrt;
+        }
+        thys.dataID[8] = thys.FloatToScrd(ef[0]);
+        thys.dataID[9] = thys.FloatToScrd(ef[1]);
+        if(ef[3]==1f) thys.dataID[14] = thys.FloatToScrd(ef[2]);
+
+        //Shooting
         foreach(CShooter shooter in thys.shooters) {
           thys.world.ShotCalculateIfNow(shooter,players,thys);
         }

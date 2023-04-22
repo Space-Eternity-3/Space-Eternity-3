@@ -55,39 +55,61 @@ class CBoss
     {
         //Pre-defines
         var players = this.world.GetPlayers();
-        var target_velocity = 0.4;
-        var bounce_radius = 25;
+        var bounce_radius = 26;
+        var acceleration = 0.015;
+        var target_velocity = 0.2; if(this.type==2) target_velocity = 0.4; if(this.type==4) target_velocity = 0;
+        var unstable_pulse_force = 0.6;
+        var unstable_pulse_chance = 0.015; if(this.type!=6) unstable_pulse_chance = 0;
         
         //Rotation
         var rand_rot = Math.random();
         if(this.dataY[11-2]==this.dataY[12-2] && rand_rot>0.8) this.dataY[12-2] = func.randomInteger(-30,30);
         this.dataY[11-2] += Math.sign(this.dataY[12-2]-this.dataY[11-2]);
         this.dataY[10-2] = func.FloatToScrd((func.ScrdToFloat(this.dataY[10-2]) + 0.15*this.dataY[11-2]));
-        
-        //Velocity smoother
+
+        //Movement rotation
+        if(this.dataY[15-2]==this.dataY[16-2]) this.dataY[16-2] = func.randomInteger(-30,30);
+        this.dataY[15-2] += Math.sign(this.dataY[16-2]-this.dataY[15-2]);
+        this.dataY[14-2] = func.FloatToScrd((func.ScrdToFloat(this.dataY[14-2]) + 0.3*this.dataY[15-2]*3.14159/180));
+
+        //Velocity adjuster
         var current_velocity = func.ScrdToFloat(this.dataY[13-2]);
+        var velocity_angle = func.ScrdToFloat(this.dataY[14-2]);
         if(target_velocity > current_velocity) {
-            current_velocity += 0.01;
+            current_velocity += acceleration;
             if(target_velocity < current_velocity) current_velocity = target_velocity;
         } 
         if(target_velocity < current_velocity) {
-            current_velocity -= 0.01;
+            current_velocity -= acceleration;
             if(target_velocity > current_velocity) current_velocity = target_velocity;
         }
-        this.dataY[13-2] = func.FloatToScrd(current_velocity);
 
-        //Movement rotation
-        var rand_rot_vel = Math.random();
-        if(this.dataY[15-2]==this.dataY[16-2] && rand_rot_vel>0.8) this.dataY[16-2] = func.randomInteger(-30,30);
-        this.dataY[15-2] += Math.sign(this.dataY[16-2]-this.dataY[15-2]);
-        this.dataY[14-2] = func.FloatToScrd((func.ScrdToFloat(this.dataY[14-2]) + 0.15*this.dataY[15-2]*3.14159/180));
+        //Unstable pulse
+        var rand_unst = Math.random();
+        if(rand_unst < unstable_pulse_chance)
+        {
+            var vel_x = Math.cos(velocity_angle) * current_velocity;
+            var vel_y = Math.sin(velocity_angle) * current_velocity;
+            var angle_unst = Math.random() * 2*3.14159;
+            vel_x += unstable_pulse_force * Math.cos(angle_unst);
+            vel_y += unstable_pulse_force * Math.sin(angle_unst);
+            current_velocity = Math.sqrt(vel_x**2 + vel_y**2);
+            velocity_angle = Math.atan2(vel_y,vel_x);
+        }
+        this.dataY[13-2] = func.FloatToScrd(current_velocity);
+        this.dataY[14-2] = func.FloatToScrd(velocity_angle);
 
         //Movement & Bounce
-        var velocity_angle = func.ScrdToFloat(this.dataY[14-2]);
         var xy = func.RotatePoint([current_velocity,0],velocity_angle,false);
         var x1 = func.ScrdToFloat(this.dataY[8-2]); var y1 = func.ScrdToFloat(this.dataY[9-2]);
         var x2 = x1 + xy[0]; var y2 = y1 + xy[1];
         var ef = func.GetBounceCoords(x1,y1,x2,y2,bounce_radius);
+        if(ef[0]**2+ef[1]**2>=bounce_radius**2)
+        {//Position correction
+            var sqrt = Math.sqrt(ef[0]**2+ef[1]**2);
+            ef[0] *= (bounce_radius-0.01)/sqrt;
+            ef[1] *= (bounce_radius-0.01)/sqrt;
+        }
         this.dataY[8-2] = func.FloatToScrd(ef[0]);
         this.dataY[9-2] = func.FloatToScrd(ef[1]);
         if(ef[3]==1) this.dataY[14-2] = func.FloatToScrd(ef[2]);

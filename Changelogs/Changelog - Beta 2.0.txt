@@ -1,0 +1,8 @@
+New features:
+
+- added boss movement and bounce system
+
+Bug fixes:
+
+- boss was supposing, that it is in the center of the arena when aiming
+- boss damage particles had different sizes for singleplayer and multiplayer
