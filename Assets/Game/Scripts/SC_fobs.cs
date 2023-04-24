@@ -579,14 +579,13 @@ public class SC_fobs : MonoBehaviour
             if(Input.GetMouseButtonDown(0)&&
             Communtron2.position.x==0f&&Communtron3.position.y==0f)
             {
-                bool bpck = (SC_slots.SC_bp_upg.state == 1 && SC_slots.SC_inv_mover.active);
-                if(SC_slots.InvHaveB(-1,1,true,bpck,true,1))
+                if(SC_slots.InvHaveB(-1,1,true,true,true,1))
                 {
                     string localDrop=getLoot(lootSE3);
                     int ldI=int.Parse(localDrop.Split(';')[0]);
                     int ldC=int.Parse(localDrop.Split(';')[1]);
                     
-                    slot = SC_slots.InvChange(ldI,ldC,true,bpck,false);
+                    slot = SC_slots.InvChange(ldI,ldC,true,true,false);
 
                     if(multiplayer)
                     {

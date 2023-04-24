@@ -176,8 +176,8 @@ gameplay
 	at_illusion_power_use_multiplier: 2;
 					
 	at_unstable_normal_avarage_time: 1,5;
-	at_unstable_special_avarage_time: 3;
-	at_unstable_force: 15;
+	at_unstable_special_avarage_time: 1,5;
+	at_unstable_force: 10;
 	
 	boss_damage_multiplier: 1;
 }
@@ -205,7 +205,7 @@ generator_settings
 	
 		<Size>4: coal(100%);
 		<Size>5: coal(100%);
-		<Size>6: coal(97%) + diamond(3%);
+		<Size>6: coal(98%) + diamond(2%);
 		<Size>7: coal(65%) + red(35%);
 		<Size>8: coal(65%) + red(35%);
 		<Size>9: coal(45%) + red(55%);
@@ -257,7 +257,7 @@ generator_settings
 	}
 	<Cementery structure> 6
 	{
-		chance: 4%;
+		chance: 3%;
 		settings: [
 			structural, cementery,
 			ring.inner.change -> 0, ring.inner.change -> 20,
