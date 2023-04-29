@@ -13,6 +13,9 @@ Default datapack changes:
 - safer and more efficient unstable aretfact
 - cementeries rarer, chance 4% -> 3%
 - diamond asteroid rarer, chance 3% -> 2%
+- new gameplay variable - cyclic_damage_multiplier: 1
+- new gameplay variable - boss_unstable_effectivity: 1,25
+- new gameplay variable - boss_fire_effectivity: 1.75
 
 Bug fixes:
 

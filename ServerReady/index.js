@@ -17,7 +17,7 @@ var serverRedVersion = "Beta_2_0";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
-var gpl_number = 36;
+var gpl_number = 39;
 var max_players = 128;
 
 var boss_damages = [0,0,0,0,35,4.25,6,5,0,10,6,3.75,5,8,0,0];
@@ -898,19 +898,32 @@ function CookedDamage(pid,dmg)
 }
 function getBulletDamage(type,owner,pid,bll)
 {
-  var artid;
+  var artid,is_bos;
   if(pid==-2) { //unstable boss
     artid = 6;
+    is_bos = true;
   }
   else if(pid==-1) { //normal boss
     artid = -41;
+    is_bos = true;
   }
   else { //player
     if(bll.immune.includes(pid+"")) return 0;
     artid = plr.backpack[pid].split(";")[30] - 41;
     if(plr.backpack[pid].split(";")[31]==0) artid = -41;
+    is_bos = false;
   }
-  if(artid!=6 || !bll.is_unstable) return bll.normal_damage;
+  if(artid!=6 || !bll.is_unstable)
+  {
+    if(!is_bos) return bll.normal_damage;
+    else {
+      var damage_modifier = 1;
+      if(bll.type==3) damage_modifier = func.parseFloatU(gameplay[37]);
+      if(bll.type==15) damage_modifier = func.parseFloatU(gameplay[38]);
+      console.log(damage_modifier*bll.normal_damage);
+      return bll.normal_damage*damage_modifier;
+    }
+  }
   else return 0;
 }
 
@@ -3361,6 +3374,10 @@ function finalTranslate(varN) {
             gameplay[33] = func.parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "fire_bullet_damage")
             gameplay[34] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "boss_unstable_effectivity")
+            gameplay[37] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "boss_fire_effectivity")
+            gameplay[38] = func.parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "bullet_owner_push")
             gameplay[30] = func.parseFloatE(jse3Dat[i]) + "";
           if (psPath[1] == "healing_potion_hp")
@@ -3414,6 +3431,8 @@ function finalTranslate(varN) {
           //2.0 attacker data
           if (psPath[1] == "boss_damage_multiplier")
             gameplay[32] = func.parseFloatE(jse3Dat[i]) + "";
+          if (psPath[1] == "cyclic_damage_multiplier")
+            gameplay[36] = func.parseFloatE(jse3Dat[i]) + "";
         } catch {
           datapackError("Error in variable: " + jse3Var[i]);
         }

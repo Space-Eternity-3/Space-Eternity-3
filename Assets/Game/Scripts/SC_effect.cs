@@ -41,7 +41,7 @@ public class SC_effect : MonoBehaviour
     public void OneFrameDamage()
     {
         if(damage_cycle_timer>0)
-            SC_control.DamageFLOAT((damage_cycle_timer/cycle_period)*SC_fun.boss_damages_cyclic[effect]);
+            SC_control.DamageFLOAT((damage_cycle_timer/cycle_period)*SC_fun.boss_damages_cyclic[effect]*float.Parse(SC_fun.SC_data.Gameplay[36]));
         damage_cycle_timer = 0;
     }
     void FixedUpdate()
@@ -51,7 +51,7 @@ public class SC_effect : MonoBehaviour
         {
             if(damage_cycle_timer % cycle_period == 0)
             {
-                SC_control.DamageFLOAT(SC_fun.boss_damages_cyclic[effect]);
+                SC_control.DamageFLOAT(SC_fun.boss_damages_cyclic[effect]*float.Parse(SC_fun.SC_data.Gameplay[36]));
             }
             damage_cycle_timer--;
         }

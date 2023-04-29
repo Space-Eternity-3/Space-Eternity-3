@@ -29,7 +29,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 36;
+	int gpl_number = 39;
     
 	bool lockData = false;
 	bool remember = false;
@@ -1101,6 +1101,8 @@ public class SC_data : MonoBehaviour
                     if(psPath[1]=="unstable_matter_damage") Gameplay[28]=float.Parse(value[i])+"";
                     if(psPath[1]=="coal_bullet_damage") Gameplay[33]=float.Parse(value[i])+"";
                     if(psPath[1]=="fire_bullet_damage") Gameplay[34]=float.Parse(value[i])+"";
+                    if(psPath[1]=="boss_unstable_effectivity") Gameplay[37]=float.Parse(value[i])+"";
+                    if(psPath[1]=="boss_fire_effectivity") Gameplay[38]=float.Parse(value[i])+"";
                     if(psPath[1]=="bullet_owner_push") Gameplay[30]=float.Parse(value[i])+"";
                     if(psPath[1]=="healing_potion_hp") Gameplay[31]=float.Parse(value[i])+"";
                     if(psPath[1]=="killing_potion_hp") Gameplay[35]=float.Parse(value[i])+"";
@@ -1132,6 +1134,7 @@ public class SC_data : MonoBehaviour
 
                     //2.0 attacker data
                     if(psPath[1]=="boss_damage_multiplier") Gameplay[32]=float.Parse(value[i])+"";
+                    if(psPath[1]=="cyclic_damage_multiplier") Gameplay[36]=float.Parse(value[i])+"";
 
                     }catch(Exception){DatapackError("Error in variable: "+variable[i]); return;}
                 }

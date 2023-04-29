@@ -34,7 +34,14 @@ public class SC_colboss : MonoBehaviour
             if(bul.controller && !bul.boss_damaged && bul.gun_owner==0)
             {
                 bul.boss_damaged = true;
-                if(!bul.is_unstable || SC_boss.type!=6) SC_boss.DamageSGP(bul.normal_damage);
+                if(!bul.is_unstable || SC_boss.type!=6)
+                {
+                    float damage_modifier = 1;
+                    if(bul.type==3) damage_modifier = float.Parse(SC_control.SC_data.Gameplay[37]);
+                    if(bul.type==15) damage_modifier = float.Parse(SC_control.SC_data.Gameplay[38]);
+                    Debug.Log(bul.normal_damage*damage_modifier);
+                    SC_boss.DamageSGP(bul.normal_damage*damage_modifier);
+                }
             }
         }
     }

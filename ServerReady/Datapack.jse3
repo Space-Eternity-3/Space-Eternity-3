@@ -160,6 +160,8 @@ gameplay
 	unstable_matter_damage: 8;
 	coal_bullet_damage: 2,5;
 	fire_bullet_damage: 3;
+	boss_unstable_effectivity: 1,25;
+	boss_fire_effectivity: 1,75;
 	bullet_owner_push: 1;
 	healing_potion_hp: 20;
 	killing_potion_hp: 15;
@@ -180,6 +182,7 @@ gameplay
 	at_unstable_force: 10;
 	
 	boss_damage_multiplier: 1;
+	cyclic_damage_multiplier: 1;
 }
 generator_settings
 {
