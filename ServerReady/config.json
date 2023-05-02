@@ -1,5 +1,6 @@
 {
 	"max_players": 25,
 	"port": 27683,
-	"pvp": true
+	"pvp": true,
+	"show_positions": true
 }

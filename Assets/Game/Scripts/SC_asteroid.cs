@@ -13,7 +13,6 @@ public class SC_asteroid : MonoBehaviour {
 	public Transform Drilled_effect;
 	public Transform Communtron1;
 	public Transform Communtron2;
-	public Transform Communtron3;
 	public Transform Communtron4;
 	public Transform CommuntronM1;
 	public Transform player;

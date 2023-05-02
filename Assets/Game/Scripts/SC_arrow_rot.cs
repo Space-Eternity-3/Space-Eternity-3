@@ -43,15 +43,13 @@ public class SC_arrow_rot : MonoBehaviour {
 		
 		if(dX==0f) dX=0.0001f;
 		float alpha=Mathf.Atan(dY/dX)*(180f/3.14159f)-90f;
+		bool other_player_arrow = (!this_main && !silentior);
 		if(dX>=0f) alpha+=180f;
-		if(Mathf.Sqrt(dX*dX+dY*dY)<1f || ((dZ>=100f || dZ<=-100f)&&(!this_main && !silentior)) || ((!this_main && !silentior)&&respawn_point.GetComponent<SC_invisibler>().invisible))
-		{
+
+		if(Mathf.Sqrt(dX*dX+dY*dY)<1f || (other_player_arrow&&(dZ>=100f || dZ<=-100f)) || (other_player_arrow&&respawn_point.GetComponent<SC_invisibler>().invisible) || (!this_main&&!SC_data.SC_control.show_positions))
 			transform.localPosition=new Vector3(1000f,0f,0f);
-		}
 		else
-		{
 			transform.localPosition=sPosNN;
-		}
 		transform.eulerAngles=new Vector3(0f,0f,alpha);
 	}
 	public void ChangePosVisible()

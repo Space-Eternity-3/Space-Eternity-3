@@ -171,6 +171,7 @@ public class SC_control : MonoBehaviour {
 	public bool timeStop = false;
 	public int timeInvisiblePulse;
 	public bool impulse_reset;
+	public bool show_positions;
 	
 	public int unstable_probability;
 	public int unstable_sprobability;
@@ -202,8 +203,6 @@ public class SC_control : MonoBehaviour {
 	}
 	public void LaterUpdate()
 	{
-		if(Communtron3.position.z<0) Communtron3.position=new Vector3(Communtron3.position.x,Communtron3.position.y,0f);
-		
 		Screen1.enabled = !f1;
 		Screen2.enabled = !f1;
 		for(int ji=1;ji<max_players;ji++){
@@ -1327,6 +1326,7 @@ public class SC_control : MonoBehaviour {
 		if(
 		//Fast commands
 		arg[0]=="/RPU"||
+		arg[0]==".RPU"||
 		arg[0]=="R"||
 		arg[0]=="I"||
 		arg[0]=="/RetHeal"||
@@ -1406,10 +1406,12 @@ public class SC_control : MonoBehaviour {
 		if(arg[msl-1]!=livID&&arg[msl-1]!="X") blo=2;
 		if(blo>0) return;
 
-		if(arg[0]=="/RPU")
+		if(arg[0]=="/RPU" || arg[0]==".RPU")
 		{
 			//RPU big variable
 			RPU=cmdThis;
+			if(arg[0][0]=='/') show_positions = true;
+			else show_positions = false;
 			return;
 		}
 
@@ -1716,19 +1718,37 @@ public class SC_control : MonoBehaviour {
 				}
 			}
 		}
-		if(arg[0]=="/RetFobsChange"||
-		arg[0]=="/RetFobsDataChange"||
-		arg[0]=="/RetFobsDataCorrection"||
-		arg[0]=="/RetFobsTurn"||
+		if(arg[0]=="/RetFobsTurn"||
 		arg[0]=="/RetFobsPing"||
 		arg[0]=="/RetGeyzerTurn"||
 		arg[0]=="/RetGrowNow")
 		{
-			//REBUILD IT
+			//Traditional fobs directing
 			List<SC_fobs> SCT_fobs = SC_lists.SC_fobs;
 			foreach(SC_fobs ful in SCT_fobs)
 			{
 				if(ful.onMSG(cmdThis)) break;
+			}
+		}
+		if(arg[0]=="/RetFobsChange"||
+		arg[0]=="/RetFobsDataChange"||
+		arg[0]=="/RetFobsDataCorrection")
+		{
+			//Fast fobs directing
+			List<SC_asteroid> SCT_asteroid = SC_lists.SC_asteroid;
+			foreach(SC_asteroid aul in SCT_asteroid)
+			{
+				bool break_now = false;
+				if(aul.ID+""==arg[1])
+				foreach(Transform trn in aul.GetComponent<Transform>())
+				{
+					SC_fobs ful = trn.GetComponent<SC_fobs>();
+					if(ful!=null) if(ful.onMSG(cmdThis)) {
+						break_now = true;
+						break;
+					}
+				}
+				if(break_now) break;
 			}
 		}
 	}

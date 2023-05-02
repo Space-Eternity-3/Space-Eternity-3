@@ -7,7 +7,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 2.0'; <Don't change>
-name: 'DEFAULT - kopia'; <Rename it>
+name: 'Battle testing'; <Rename it>
 craftings
 {
 	<Category>1
@@ -112,6 +112,15 @@ craftings
 		4: dead_alien + magnetic_stone(3) -> magnetic_alien;
 		5: dead_alien + red_stone(3) -> red_alien;
 	}
+	<Category>14
+	{
+		title_image: golden_drill;
+		1: stone -> small_amethyst(9999);
+		2: stone -> copper_bullet(9999);
+		3: stone -> fire_bullet(9999);
+		4: stone -> unstable_matter(9999);
+		5: stone -> respawn(9999);
+	}
 	<Max 512 categories>
 }
 drill_loot
@@ -160,6 +169,8 @@ gameplay
 	unstable_matter_damage: 8;
 	coal_bullet_damage: 2,5;
 	fire_bullet_damage: 3;
+	boss_unstable_effectivity: 1,25;
+	boss_fire_effectivity: 1,75;
 	bullet_owner_push: 1;
 	healing_potion_hp: 20;
 	killing_potion_hp: 15;
@@ -180,7 +191,7 @@ gameplay
 	at_unstable_force: 10;
 	
 	boss_damage_multiplier: 1;
-	cyclic_damage_multiplier: 0;
+	cyclic_damage_multiplier: 1;
 }
 generator_settings
 {
@@ -267,6 +278,11 @@ generator_settings
 		];
 		
 		all_sizes: stoneB(100%);
+	}
+	<Spawn arena> 7
+	{
+		chance: 0%;
+		settings: structural, arena, centred, spawn, ring.inner.change -> 0, radius = 50;
 	}
 	<max 31 biomes + default>
 }

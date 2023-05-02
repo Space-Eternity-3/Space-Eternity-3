@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SC_resp_blocker : MonoBehaviour
 {
-	public Transform Communtron3;
 	public Transform player;
 	public float radius;
 	public bool blocking;

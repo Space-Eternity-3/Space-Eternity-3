@@ -30,6 +30,9 @@ if(Number.isInteger(config.max_players))
 var pvp = true;
 if(config.pvp==false) pvp = false;
 
+var show_positions = true;
+if(config.show_positions==false) show_positions = false;
+
 var chunk_data = [];
 var chunk_names = [];
 var chunk_waiter = [];
@@ -903,7 +906,7 @@ function getBulletDamage(type,owner,pid,bll)
     artid = 6;
     is_bos = true;
   }
-  else if(pid==-1) { //normal boss
+  else if(pid==-1 || pid==-3) { //normal boss
     artid = -41;
     is_bos = true;
   }
@@ -920,7 +923,7 @@ function getBulletDamage(type,owner,pid,bll)
       var damage_modifier = 1;
       if(bll.type==3) damage_modifier = func.parseFloatU(gameplay[37]);
       if(bll.type==15) damage_modifier = func.parseFloatU(gameplay[38]);
-      console.log(damage_modifier*bll.normal_damage);
+      if(bll.type==15 && pid==-3) damage_modifier = 0;
       return bll.normal_damage*damage_modifier;
     }
   }
@@ -1084,18 +1087,11 @@ setInterval(function () { // <interval #2>
             var yc = scrs[j].posCY + func.ScrdToFloat(scrs[j].dataY[9-2]);
             if(func.CollisionLinearCheck(xc,yc,7.5))
             {
-              if(bulletsT[i].type!=3) {
-                DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1, bulletsT[i]) );
-                destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
-                break;
-              }
-              else if(!bulletsT[i].damaged.includes(-l)) {
-                if(scrs[j].type!=6) DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1, bulletsT[i]) );
-                else DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -2, bulletsT[i]) );
-                bulletsT[i].damaged.push(-l);
-                destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
-                break;
-              }
+              if(scrs[j].type==6) DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -2, bulletsT[i]) );
+              else if(scrs[j].type==4) DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -3, bulletsT[i]) );
+              else DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1, bulletsT[i]) );
+              destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
+              break;
             }
           }
         }
@@ -1392,7 +1388,8 @@ setInterval(function () {  // <interval #2>
   }
 
   //RPU - Dynamic data
-  eff = "/RPU " + max_players + " ";
+  if(show_positions) eff = "/RPU " + max_players + " ";
+  else eff = ".RPU " + max_players + " ";
   eff += GetRPU(plr.players,lngt) + " ";
   eff += current_tick;
   eff += " X X"

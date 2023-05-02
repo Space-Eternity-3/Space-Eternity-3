@@ -192,7 +192,7 @@ public class SC_Fob21 : MonoBehaviour {
 	}
 	bool Req(int mode)
 	{
-		if((int)Communtron1.position.z==0&&(int)Communtron3.position.y==0&&InDistance(15f,new Vector3(0f,0f,0f))&&Communtron3.position.y==0)
+		if((int)Communtron1.position.z==0&&(int)Communtron3.position.y==0&&InDistance(15f,new Vector3(0f,0f,0f)))
 		if(mode==0)
 		{
 			if(count>0)
@@ -290,14 +290,5 @@ public class SC_Fob21 : MonoBehaviour {
 			count++;
 		}
 		SaveSGP();
-	}
-	void OnDestroy()
-	{
-		try{
-			if(Mathf.Abs(player.position.x-transform.position.x)<=25f&&Mathf.Abs(player.position.y-transform.position.y)<=25f)
-			{
-				Communtron3.position-=new Vector3(0f,0f,1f);
-			}
-		}catch(Exception e){}
 	}
 }
