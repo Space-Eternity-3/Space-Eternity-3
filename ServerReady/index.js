@@ -1129,7 +1129,8 @@ setInterval(function () { // <interval #2>
           var sth2 = plr.sHealth[i];
 
           var del = ((sth2-sth1)+"").replaceAll(".",",");
-          sendTo(se3_ws[i],"R "+del+" "+plr.immID[i]+" "+plr.livID[i]); //Medium type message
+          var abl = ((sth2)+"").replaceAll(".",",");
+          sendTo(se3_ws[i],"R "+del+" "+plr.immID[i]+" "+plr.livID[i]+" "+abl); //Medium type message
           
           if(plr.sRegTimer[i]>0)
 	        {
@@ -2920,6 +2921,7 @@ wss.on("connection", function connection(ws) {
 
       var censured = Censure(plr.players[arg[1]],arg[1],cliLivID);
       plr.players[arg[1]] = censured;
+      sendTo(ws,"/RetDamageBalance " + arg[2] + " " + cliLivID + " " + cliImmID + " X X");
     }
     if (arg[0] == "/Craft") {
       //Craft 1[PlaID] 2[Id1] 3[Co1] 4[Sl1] 5[Id2] 6[Co2] 7[Sl2] 8[IdE] 9[CoE] 10[SlE]
@@ -3051,7 +3053,8 @@ wss.on("connection", function connection(ws) {
         var sth2 = plr.sHealth[pid];
 
         var del = ((sth2-sth1)+"").replaceAll(".",",");
-        sendTo(ws,"R "+del+" "+plr.immID[pid]+" "+plr.livID[pid]); //Medium type message
+        var abl = ((sth2)+"").replaceAll(".",",");
+        sendTo(ws,"R "+del+" "+plr.immID[pid]+" "+plr.livID[pid]+" "+abl); //Medium type message
         sendTo(ws,"/RetHeal "+arg[1]+" "+arg[2]+" X X");
       }
     }

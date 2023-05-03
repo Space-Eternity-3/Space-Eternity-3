@@ -98,6 +98,7 @@ public class SC_control : MonoBehaviour {
 	public int bos_num = 0;
 	bool damage_sounds_disabled = false;
 	public int current_tick = -1;
+	public bool absolute_health_sync = true;
 
 	public Color32 HealthNormal;
 
@@ -119,6 +120,7 @@ public class SC_control : MonoBehaviour {
 	public int connectionID=0;
 	public bool living;
 	public float healBalance = 0f;
+	public float damageBalance = 0f;
 	Vector3 solidPos;
 	bool connectWorks=true;
 	public string nick;
@@ -599,6 +601,7 @@ public class SC_control : MonoBehaviour {
 		if((int)Communtron4.position.y==100)
 		{
 			livID=(int.Parse(livID)+1)+"";
+			damageBalance = 0;
 		}
 		Debug.Log("Player died");
 		Screen1.targetDisplay=1;
@@ -642,6 +645,7 @@ public class SC_control : MonoBehaviour {
 		if((int)Communtron4.position.y==100)
 		{
 			immID=(int.Parse(immID)+1)+"";
+			damageBalance = 0;
 		}
 		if(!damage_sounds_disabled) Instantiate(ImmortalParticles,transform.position,transform.rotation);
 		Debug.Log("Player avoided death");
@@ -1246,8 +1250,10 @@ public class SC_control : MonoBehaviour {
 			else info = "I";
 		}
 		
-		if((int)Communtron4.position.y==100)
+		if((int)Communtron4.position.y==100) {
+			damageBalance -= dmg;
 			SendMTP("/ClientDamage "+connectionID+" "+dmg+" "+immID+" "+livID+" "+info);
+		}
 
 		if(info=="K") KillMe();
 		if(info=="I") ImmortalMe();
@@ -1347,6 +1353,7 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RetGrowNow"||
 		arg[0]=="/RetDamageUsing"||
 		arg[0]=="/RetServerDamage"||
+		arg[0]=="/RetDamageBalance"||
 		arg[0]=="/RetNewBulletSend"||
 		arg[0]=="/RetNewBulletDestroy"||
 		arg[0]=="/RetInfoClient"||
@@ -1382,9 +1389,12 @@ public class SC_control : MonoBehaviour {
 			float fValue = float.Parse(arg[1]);
 			string fImmID = arg[2];
 			string fLivID = arg[3];
+			float fValueAbsolute = float.Parse(arg[4]);
 
-			if(immID==fImmID && livID==fLivID)
-				health_V += fValue;
+			if(immID==fImmID && livID==fLivID) {
+				if(!absolute_health_sync) health_V += fValue;
+				else health_V = fValueAbsolute + damageBalance;
+			}
 
 			return;
 		}
@@ -1528,6 +1538,12 @@ public class SC_control : MonoBehaviour {
         			}
       			}
 			}
+		}
+		if(arg[0]=="/RetDamageBalance")
+		{
+			//RetDamageBalance 1[damage] 2[livID] 3[immID]
+			if(livID==arg[2] && immID==arg[3])
+				damageBalance += float.Parse(arg[1]);
 		}
 		if(arg[0]=="/RetUpgrade")
 		{

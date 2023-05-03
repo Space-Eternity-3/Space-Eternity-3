@@ -24,6 +24,8 @@ Configurables:
 
 Bug fixes:
 
-- boss was supposing, that it is in the center of the arena when aiming
+- boss was supposing, that it is in the center of the arena when aiming (it always was)
 - boss damage particles had different sizes for singleplayer and multiplayer
-- buggum ultimatum much weaker from now
+- buggum ultimatum removed (laggy storage + ctrl)
+- SC_podswu (storage/treasure) highlight counter was broken in certain cases
+- client health bar was sometimes unsynced with server
