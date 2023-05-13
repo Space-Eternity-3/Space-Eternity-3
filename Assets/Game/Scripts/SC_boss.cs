@@ -132,7 +132,6 @@ public class SC_boss : MonoBehaviour
 
     public int timer_bar_value = 0;
     public int timer_bar_max = 180;
-    public bool timer_bar_enabled = false;
     public int int_health = 140000;
     public int int_health_max = 220000;
 
@@ -409,12 +408,10 @@ public class SC_boss : MonoBehaviour
         if(in_arena_vision && (ass=="B1"||ass=="B2"||ass=="B3")) {
             timer_bar_value = dataID[4];
             timer_bar_max = dataID[5];
-            timer_bar_enabled = true;
             SC_bars.bos = this;
         }
         else {
-            timer_bar_enabled = false;
-            SC_bars.bos = null;
+            if(SC_bars.bos==this) SC_bars.bos = null;
         }
         SC_bars.LateUpdate();
 

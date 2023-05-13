@@ -577,6 +577,7 @@ public class SC_control : MonoBehaviour {
 	}
 	void KillMe()
 	{
+		SC_effect.EffectClean();
 		solidPos=transform.position+new Vector3(0f,0f,2500f);
 		Communtron1.position+=new Vector3(0f,0f,75f);
 		if(!damage_sounds_disabled)
@@ -609,7 +610,6 @@ public class SC_control : MonoBehaviour {
 		Screen3.targetDisplay=0;
 				
 		SC_invisibler.invisible = false;
-		SC_effect.Remove();
 		RemoveImpulse();
 
 		InLaterUpdateIfNotLiving();
@@ -638,6 +638,7 @@ public class SC_control : MonoBehaviour {
 	}
 	void ImmortalMe()
 	{
+		SC_effect.EffectClean();
 		health_V=1f;
 		SC_slots.BackpackY[15]--; //sureMTP
 		SC_slots.BackpackYA[15]--;
@@ -1236,6 +1237,7 @@ public class SC_control : MonoBehaviour {
 	public void DamageFLOAT(float dmgFLOAT) {if(dmgFLOAT>0f) Damage(dmgFLOAT);}
 	public void Damage(float dmg)
 	{
+		if(!living) return;
 		if(livTime<50 || impulse_enabled || !((livID==sr_livID && immID==sr_immID) || (int)Communtron4.position.y!=100)) return;
 		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;

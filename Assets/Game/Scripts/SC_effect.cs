@@ -7,7 +7,7 @@ public class SC_effect : MonoBehaviour
     public int cycle_period;
     
     public int effect = 0;
-    int damage_cycle_timer = 0;
+    public int damage_cycle_timer = 0;
 
     public SC_seeking eS;
 
@@ -32,11 +32,8 @@ public class SC_effect : MonoBehaviour
     public float GetSpeedMultiplier()
     {
         if(effect==8) return 0.2f;
+        else if(effect==6) return 0.8f;
         else return 1f;
-    }
-    public void Remove()
-    {
-        damage_cycle_timer = 0;
     }
     public void OneFrameDamage()
     {
@@ -46,7 +43,11 @@ public class SC_effect : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if(damage_cycle_timer==0) effect = 0;
+        if(damage_cycle_timer<=0)
+        {
+            damage_cycle_timer = 0;
+            effect = 0;
+        }
         else
         {
             if(damage_cycle_timer % cycle_period == 0)

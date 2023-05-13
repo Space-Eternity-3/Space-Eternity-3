@@ -21,8 +21,12 @@ public class CShooter
     public SC_boss thys;
     public bool stupid;
     public int frequency;
+    public string actives;
+    public int cooldown;
+    public int one_time_id;
+    public bool salvic;
 
-    public CShooter(int bul_typ,double angl_deg,double deviat_deg,double precis_deg,double rad,SC_boss ths,bool alway,int freq)
+    public CShooter(int bul_typ,double angl_deg,double deviat_deg,double precis_deg,double rad,SC_boss ths,bool alway,int freq,string activess,int cld,int otid,bool slvc)
     {
         bullet_type = bul_typ;
         angle = ((float)angl_deg)*3.14159f/180f;
@@ -32,6 +36,10 @@ public class CShooter
         thys = ths;
         stupid = alway;
         frequency = freq;
+        actives = activess;
+        cooldown = cld;
+        one_time_id = otid; //only prime numbers
+        salvic = slvc;
     }
     public bool CanShoot(float x,float y)
     {
@@ -90,9 +98,19 @@ public class CInfo
     }
     public void ShotCalculateIfNow(CShooter shooter,SPlayerInfo[] players,SC_boss thys)
     {
-        //If multiple shooter
-        if(thys.dataID[3]%shooter.frequency==0 && thys.dataID[3]!=0)
-            ShotCalculate(shooter,players,thys);
+        if(shooter.salvic && thys.dataID[3]%250>=175) return;
+        int fram = thys.dataID[19] - thys.dataID[17];
+        int true_frequency = shooter.frequency;
+
+        //Shooter frequency change
+        if( (thys.type==1 && thys.dataID[18]==4) ||
+            (thys.type==2 && thys.dataID[18]==4) ||
+            (thys.type==6 && thys.dataID[18]==4)
+        ) true_frequency = (int)(shooter.frequency*0.67f);
+
+        if(true_frequency<1) true_frequency=1;
+        if(shooter.actives[thys.dataID[18]]=='1' && fram>shooter.cooldown && (fram-shooter.cooldown)%true_frequency==0)
+        if(shooter.one_time_id<0 || thys.dataID[20]%shooter.one_time_id!=0) this.ShotCalculate(shooter,players,thys);
     }
     public void ShotCalculate(CShooter shooter,SPlayerInfo[] players,SC_boss thys)
     {
@@ -118,6 +136,7 @@ public class CInfo
         float deviation_angle = ((float)random.NextDouble()-0.5f)*2f*shooter.precision + best_deviation;
         if(deviation_angle < -shooter.max_deviation) deviation_angle = -2*shooter.max_deviation - deviation_angle;
         if(deviation_angle > shooter.max_deviation) deviation_angle = 2*shooter.max_deviation - deviation_angle;
+        if(shooter.one_time_id>=0) thys.dataID[20] *= shooter.one_time_id;
         ShotCooked(shooter.angle,shooter.bullet_type,thys,deviation_angle,shooter.radius);
     }
     public void ShotCooked(float delta_angle_rad,int btype,SC_boss thys,float deviation_angle,float rad)
@@ -160,94 +179,114 @@ public class CInfo
         if(type==1) //Protector
         {
             shooters = new List<CShooter>() {
-                new CShooter(11, 22.5,60,7.5, 6.5,thys,false, 15),
-                new CShooter(11, 45,60,7.5, 6.5,thys,false, 15),
-                new CShooter(11, 135,60,7.5, 6.5,thys,false, 15),
-                new CShooter(11, 157.5,60,7.5, 6.5,thys,false, 15),
-                new CShooter(11, 202.5,60,7.5, 6.5,thys,false, 15),
-                new CShooter(11, 225,60,7.5, 6.5,thys,false, 15),
-                new CShooter(11, 315,60,7.5, 6.5,thys,false, 15),
-                new CShooter(11, 337.5,60,7.5, 6.5,thys,false, 15),
+                new CShooter(11, 22.5,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
+                new CShooter(11, 45,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
+                new CShooter(11, 135,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
+                new CShooter(11, 157.5,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
+                new CShooter(11, 202.5,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
+                new CShooter(11, 225,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
+                new CShooter(11, 315,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
+                new CShooter(11, 337.5,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
 
-                new CShooter(4, 270,120,7.5, 10,thys,false, 300),
-                new CShooter(9, 0,0,0, 7.5,thys,true, 600),
-                new CShooter(9, 180,0,0, 7.5,thys,true, 600),
+                new CShooter(4, 270,120,7.5, 10,thys,false, 1, "01000",30,2, false),
+                new CShooter(9, 0,0,0, 7.5,thys,true, 40, "00010",1,-1, false),
+                new CShooter(9, 180,0,0, 7.5,thys,true, 40, "00010",1,-1, false),
             };
         }
         if(type==2) //Adecodron
         {
             shooters = new List<CShooter>() {
-                new CShooter(10, 0,0,0, 7.5,thys,true, 600),
-                new CShooter(10, 90,0,0, 7.5,thys,true, 600),
-                new CShooter(10, 180,0,0, 7.5,thys,true, 600),
-                new CShooter(10, 270,0,0, 7.5,thys,true, 600),
+                new CShooter(10, 0,0,0, 7.5,thys,true, 40, "00010",1,-1, false),
+                new CShooter(10, 90,0,0, 7.5,thys,true, 40, "00010",1,-1, false),
+                new CShooter(10, 180,0,0, 7.5,thys,true, 40, "00010",1,-1, false),
+                new CShooter(10, 270,0,0, 7.5,thys,true, 40, "00010",1,-1, false),
 
-                new CShooter(12, 45,60,7.5, 6.5,thys,false, 20),
-                new CShooter(12, 135,60,7.5, 6.5,thys,false, 20),
-                new CShooter(12, 225,60,7.5, 6.5,thys,false, 20),
-                new CShooter(12, 315,60,7.5, 6.5,thys,false, 20),
+                new CShooter(12, 45,60,7.5, 6.5,thys,false, 15, "00100",0,-1, false),
+                new CShooter(12, 135,60,7.5, 6.5,thys,false, 15, "00100",0,-1, false),
+                new CShooter(12, 225,60,7.5, 6.5,thys,false, 15, "00100",0,-1, false),
+                new CShooter(12, 315,60,7.5, 6.5,thys,false, 15, "00100",0,-1, false),
                 
-                new CShooter(6, 0,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 20,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 40,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 60,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 80,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 100,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 120,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 140,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 160,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 180,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 200,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 220,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 240,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 260,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 280,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 300,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 320,0,0, 6.5,thys,true, 600),
-                new CShooter(6, 340,0,0, 6.5,thys,true, 600),
+                new CShooter(6, 0,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 20,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 40,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 60,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 80,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 100,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 120,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 140,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 160,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 180,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 200,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 220,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 240,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 260,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 280,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 300,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 320,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(6, 340,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
             };
         }
         if(type==3) //Octogone
         {
             shooters = new List<CShooter>() {
-                new CShooter(7, 0,60,10, 6.5,thys,false, 50),
-                new CShooter(7, 45,60,10, 6.5,thys,false, 50),
-                new CShooter(7, 90,60,10, 6.5,thys,false, 50),
-                new CShooter(7, 135,60,10, 6.5,thys,false, 50),
-                new CShooter(7, 180,60,10, 6.5,thys,false, 50),
-                new CShooter(7, 225,60,10, 6.5,thys,false, 50),
-                new CShooter(7, 270,60,10, 6.5,thys,false, 50),
-                new CShooter(7, 315,60,10, 6.5,thys,false, 50),
+                new CShooter(7, 0,60,10, 6.5,thys,false, 51, "10111",0,-1, false),
+                new CShooter(7, 45,60,10, 6.5,thys,false, 48, "10111",0,-1, false),
+                new CShooter(7, 90,60,10, 6.5,thys,false, 53, "10111",0,-1, false),
+                new CShooter(7, 135,60,10, 6.5,thys,false, 47, "10111",0,-1, false),
+                new CShooter(7, 180,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
+                new CShooter(7, 225,60,10, 6.5,thys,false, 54, "10111",0,-1, false),
+                new CShooter(7, 270,60,10, 6.5,thys,false, 52, "10111",0,-1, false),
+                new CShooter(7, 315,60,10, 6.5,thys,false, 49, "10111",0,-1, false),
 
-                new CShooter(8, 90,60,10, 8.5,thys,false, 500),
-                new CShooter(8, 210,60,10, 8.5,thys,false, 500),
-                new CShooter(8, 330,60,10, 8.5,thys,false, 500),
+                new CShooter(7, 0,60,60, 6.5,thys,true, 31, "01000",0,-1, false),
+                new CShooter(7, 45,60,60, 6.5,thys,true, 28, "01000",0,-1, false),
+                new CShooter(7, 90,60,60, 6.5,thys,true, 33, "01000",0,-1, false),
+                new CShooter(7, 135,60,60, 6.5,thys,true, 27, "01000",0,-1, false),
+                new CShooter(7, 180,60,60, 6.5,thys,true, 30, "01000",0,-1, false),
+                new CShooter(7, 225,60,60, 6.5,thys,true, 34, "01000",0,-1, false),
+                new CShooter(7, 270,60,60, 6.5,thys,true, 32, "01000",0,-1, false),
+                new CShooter(7, 315,60,60, 6.5,thys,true, 29, "01000",0,-1, false),
+
+                new CShooter(8, 90,60,10, 8.5,thys,false, 1, "00100",30,2, false),
+                new CShooter(8, 210,60,10, 8.5,thys,false, 1, "00100",30,3, false),
+                new CShooter(8, 330,60,10, 8.5,thys,false, 1, "00100",30,5, false),
             };
         }
         if(type==4) //Starandus
         {
             shooters = new List<CShooter>() {
-                new CShooter(5, 0,60,60, 6.5,thys,true, 25),
-                new CShooter(5, 45,60,60, 6.5,thys,true, 21),
-                new CShooter(5, 90,60,60, 6.5,thys,true, 26),
-                new CShooter(5, 135,60,60, 6.5,thys,true, 28),
-                new CShooter(5, 180,60,60, 6.5,thys,true, 24),
-                new CShooter(5, 225,60,60, 6.5,thys,true, 23),
-                new CShooter(5, 270,60,60, 6.5,thys,true, 27),
-                new CShooter(5, 315,60,60, 6.5,thys,true, 22),
+                new CShooter(5, 0,60,60, 6.5,thys,true, 35, "11000",0,-1, false),
+                new CShooter(5, 45,60,60, 6.5,thys,true, 31, "11000",0,-1, false),
+                new CShooter(5, 90,60,5, 6.5,thys,false, 36, "11000",0,-1, false),
+                new CShooter(5, 135,60,60, 6.5,thys,true, 38, "11000",0,-1, false),
+                new CShooter(5, 180,60,60, 6.5,thys,true, 34, "11000",0,-1, false),
+                new CShooter(5, 225,60,5, 6.5,thys,false, 33, "11000",0,-1, false),
+                new CShooter(5, 270,60,60, 6.5,thys,true, 37, "11000",0,-1, false),
+                new CShooter(5, 315,60,5, 6.5,thys,false, 32, "11000",0,-1, false),
+
+                new CShooter(5, 0,60,60, 6.5,thys,true, 14, "00010",0,-1, false),
+                new CShooter(5, 45,60,60, 6.5,thys,true, 16, "00010",0,-1, false),
+                new CShooter(5, 90,60,10, 6.5,thys,false, 14, "00010",0,-1, false),
+                new CShooter(5, 135,60,60, 6.5,thys,true, 16, "00010",0,-1, false),
+                new CShooter(5, 180,60,60, 6.5,thys,true, 15, "00010",0,-1, false),
+                new CShooter(5, 225,60,10, 6.5,thys,false, 14, "00010",0,-1, false),
+                new CShooter(5, 270,60,60, 6.5,thys,true, 15, "00010",0,-1, false),
+                new CShooter(5, 315,60,10, 6.5,thys,false, 16, "00010",0,-1, false),
             };
         }
         if(type==6) //Degenerator
         {
             shooters = new List<CShooter>() {
-                new CShooter(13, 22.5,60,10, 6.5,thys,false, 35),
-                new CShooter(12, 45,60,7.5, 6.5,thys,false, 20),
-                new CShooter(12, 135,60,7.5, 6.5,thys,false, 20),
-                new CShooter(13, 157.5,60,10, 6.5,thys,false, 35),
-                new CShooter(13, 202.5,60,10, 6.5,thys,false, 35),
-                new CShooter(12, 225,60,7.5, 6.5,thys,false, 20),
-                new CShooter(12, 315,60,7.5, 6.5,thys,false, 20),
-                new CShooter(13, 337.5,60,10, 6.5,thys,false, 35),
+                new CShooter(13, 22.5,60,10, 6.5,thys,false, 35, "11011",0,-1, false),
+                new CShooter(12, 45,60,7.5, 6.5,thys,false, 20, "11011",0,-1, true),
+                new CShooter(12, 135,60,7.5, 6.5,thys,false, 20, "11011",0,-1, true),
+                new CShooter(13, 157.5,60,10, 6.5,thys,false, 35, "11011",0,-1, false),
+                new CShooter(13, 202.5,60,10, 6.5,thys,false, 35, "11011",0,-1, false),
+                new CShooter(12, 225,60,7.5, 6.5,thys,false, 20, "11011",0,-1, true),
+                new CShooter(12, 315,60,7.5, 6.5,thys,false, 20, "11011",0,-1, true),
+                new CShooter(13, 337.5,60,10, 6.5,thys,false, 35, "11011",0,-1, false),
+
+                new CShooter(13, 270,80,80, 8,thys,true, 10, "11011",0,-1, true),
             };
         }
         return shooters;
@@ -267,18 +306,50 @@ public class SC_behaviour : MonoBehaviour
 
     public void _Start()
     {
+        //C# must have
         System.Random random = new System.Random();
+
+        //Constants
+        int[] border_times = new int[]{300,500, 250,400, 50, 150}; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for)
+
+        //Pre-defines
         thys.dataID[14] = thys.FloatToScrd((float)random.NextDouble() * 2f*3.14159f);
+        thys.dataID[17] = UnityEngine.Random.Range(border_times[2],border_times[3]+1);
+        thys.dataID[19] = thys.dataID[17];
+        thys.dataID[20] = 1;
     }
     public void _FixedUpdate()
     {
-        //Pre-defines
+        //C# must have
         System.Random random = new System.Random();
-        SPlayerInfo[] players = thys.world.GetPlayers();
+
+        //Constants
         float bounce_radius = 26f;
         float acceleration = 0.015f;
-        float target_velocity = 0.2f; if(thys.type==2) target_velocity = 0.4f; if(thys.type==4) target_velocity = 0f;
         float unstable_pulse_force = 0.6f;
+        int[] border_times = new int[]{300,500, 250,400, 50, 150}; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for)
+        char[] state_types = new char[]{
+            'o', 'o', 'o', 'o', 'o', //Placeholder
+            'o', 'A', 'S', 'X', 'S', //Protector
+            'o', 'X', 'S', 'X', 'S', //Adecodron
+            'o', 'S', 'X', 'S', 'S', //Octogone
+            'o', 'S', 'S', 'S', 'S', //Starandus
+            'o', 'o', 'o', 'o', 'o', //Useless
+            'o', 'S', 'S', 'S', 'S', //Degenerator
+        };
+        float[] state_velocities = new float[]{
+            0.20f, 0.20f, 0.20f, 0.20f, 0.20f, //Placeholder
+            0.20f, 0.10f, 0.10f, 0.10f, 0.40f, //Protector
+            0.40f, 0.20f, 0.40f, 0.20f, 0.60f, //Adecodron
+            0.30f, 0.20f, 0.10f, 0.20f, 0.30f, //Octogone
+            0.00f, 0.00f, 0.00f, 0.00f, 0.00f, //Starandus
+            0.20f, 0.20f, 0.20f, 0.20f, 0.20f, //Useless
+            0.20f, 0.10f, 0.10f, 0.20f, 0.40f, //Degenerator
+        };
+
+        //Pre-defines
+        SPlayerInfo[] players = thys.world.GetPlayers();
+        float target_velocity = state_velocities[thys.type*5+thys.dataID[18]];
         float unstable_pulse_chance = 0.015f; if(thys.type!=6) unstable_pulse_chance = 0f;
         
         //Rotation
@@ -337,6 +408,28 @@ public class SC_behaviour : MonoBehaviour
         //Shooting
         foreach(CShooter shooter in thys.shooters) {
           thys.world.ShotCalculateIfNow(shooter,players,thys);
+        }
+
+        //Battle state update
+        if(thys.dataID[17] > 0) thys.dataID[17]--;
+        else
+        {
+            if(thys.dataID[18]!=0)
+            {
+                thys.dataID[18] = 0;
+                thys.dataID[17] = UnityEngine.Random.Range(border_times[2],border_times[3]+1);
+            }
+            else
+            {
+                thys.dataID[18] = UnityEngine.Random.Range(1,2+thys.dataID[1]+1);
+                char time_letter = state_types[5*thys.type+thys.dataID[18]];
+                if(time_letter=='S') thys.dataID[17] = UnityEngine.Random.Range(border_times[0],border_times[1]+1); //State
+                else if(time_letter=='X') thys.dataID[17] = border_times[4]; //Instant shot
+                else if(time_letter=='A') thys.dataID[17] = border_times[5]; //Waiting for shot
+                else thys.dataID[17] = border_times[4];
+            }
+            thys.dataID[19] = thys.dataID[17];
+            thys.dataID[20] = 1;
         }
     }
     public void _End()

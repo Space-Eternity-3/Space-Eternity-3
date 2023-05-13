@@ -1,6 +1,7 @@
 New features:
 
 - added boss movement and bounce system
+- added boss states
 
 Gameplay/UI changes:
 
@@ -8,12 +9,25 @@ Gameplay/UI changes:
 - treasure loot can turn up in hidden slots now
 - unstable artefact description changed to: "You can't unleash its power"
 - Starandus now immune to fire bullets
+- immortality artefact removes effect now
+- spike bullet effect duration 5s -> 9s
+- sticky bulb effect duration 7s -> 5s
+- poison slows down you by 20% now
 
 Default datapack changes:
 
-- safer and more efficient unstable aretfact
+- safer and more efficient unstable aretfact:
+ - at_unstable_special_avarage_time 3 -> 1,5
+ - at_unstable_force 15 -> 10
 - cementeries rarer, chance 4% -> 3%
 - diamond asteroid rarer, chance 3% -> 2%
+- player speed and vulnerability buff:
+ - crash_minimum_energy 5 -> 6
+ - crash_damage_multiplier 0,7 -> 0,6
+ - player_normal_speed 11 -> 13
+ - player_brake_speed -7 -> -8,5
+ - drill_normal_speed 8 -> 9
+ - drill_brake_speed -5 -> -6
 
 Configurables:
 
@@ -29,3 +43,5 @@ Bug fixes:
 - buggum ultimatum removed (laggy storage + ctrl)
 - SC_podswu (storage/treasure) highlight counter was broken in certain cases
 - client health bar was sometimes unsynced with server
+- effect was lasting forever after respawning, when player was killed by that effect
+- boss timer sometimes wasn't visible when nearby arena was loaded

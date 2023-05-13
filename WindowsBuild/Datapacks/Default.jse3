@@ -143,16 +143,16 @@ gameplay
 	health_regenerate_multiplier: 4;
 	turbo_regenerate_multiplier: 1;
 	turbo_use_multiplier: 2;
-	crash_minimum_energy: 5;
-	crash_damage_multiplier: 0,7;
+	crash_minimum_energy: 6;
+	crash_damage_multiplier: 0,6;
 	
 	vacuum_drag_multiplier: 1;
 	all_speed_multiplier: 1;
-	player_normal_speed: 11;
-	player_brake_speed: -7;
+	player_normal_speed: 13;
+	player_brake_speed: -8,5;
 	player_turbo_speed: 18; <Only if turbo level is 0>
-	drill_normal_speed: 8;
-	drill_brake_speed: -5;
+	drill_normal_speed: 9;
+	drill_brake_speed: -6;
 	
 	spike_damage: 5;
 	copper_bullet_damage: 3;

@@ -60,6 +60,6 @@ public class SC_podswu : MonoBehaviour
     }
     void OnDestroy()
     {
-        if(active) try{Communtron3.position-=new Vector3(0f,0f,1f);}catch(Exception e){}
+        if(active && Cmt3z_plus) try{Communtron3.position-=new Vector3(0f,0f,1f);}catch(Exception e){}
     }
 }

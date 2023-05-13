@@ -39,6 +39,10 @@ class CBoss
     dataY[14-2] - velocity_angle [scrd, rad]
     dataY[15-2] - velocity_rotation_speed
     dataY[16-2] - target_velocity_rotation_speed
+    dataY[17-2] - battle_state_timer
+    dataY[18-2] - battle_state_id
+    dataY[19-2] - starting_battle_state_timer
+    dataY[20-2] - one_time_shooter_bool_storage
     
     <...>
     dataY[60-2] - {Other variables are empty at this time. Use them as a data storage between frames or ask Kamiloso to do some special tasks using them.}
@@ -49,16 +53,44 @@ class CBoss
 
     Start() //Executes on battle start
     {
+        //Constants
+        var border_times = [300,500, 250,400, 50, 150]; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for)
+
+        //Pre-defines
         this.dataY[14-2] = func.FloatToScrd(Math.random() * 2*3.14159);
+        this.dataY[17-2] = func.randomInteger(border_times[2],border_times[3]);
+        this.dataY[19-2] = this.dataY[17-2];
+        this.dataY[20-2] = 1;
     }
     FixedUpdate() //Executes 50 times per second after starting frame
     {
-        //Pre-defines
-        var players = this.world.GetPlayers();
+        //Constants
         var bounce_radius = 26;
         var acceleration = 0.015;
-        var target_velocity = 0.2; if(this.type==2) target_velocity = 0.4; if(this.type==4) target_velocity = 0;
         var unstable_pulse_force = 0.6;
+        var border_times = [300,500, 250,400, 50, 150]; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for)
+        var state_types = [
+            'o', 'o', 'o', 'o', 'o', //Placeholder
+            'o', 'A', 'S', 'X', 'S', //Protector
+            'o', 'X', 'S', 'X', 'S', //Adecodron
+            'o', 'S', 'X', 'S', 'S', //Octogone
+            'o', 'S', 'S', 'S', 'S', //Starandus
+            'o', 'o', 'o', 'o', 'o', //Useless
+            'o', 'S', 'S', 'S', 'S', //Degenerator
+        ];
+        var state_velocities = [
+            0.20, 0.20, 0.20, 0.20, 0.20, //Placeholder
+            0.20, 0.10, 0.10, 0.10, 0.40, //Protector
+            0.40, 0.20, 0.40, 0.20, 0.60, //Adecodron
+            0.30, 0.20, 0.10, 0.20, 0.30, //Octogone
+            0.00, 0.00, 0.00, 0.00, 0.00, //Starandus
+            0.20, 0.20, 0.20, 0.20, 0.20, //Useless
+            0.20, 0.10, 0.10, 0.20, 0.40, //Degenerator
+        ];
+
+        //Pre-defines
+        var players = this.world.GetPlayers();
+        var target_velocity = state_velocities[this.type*5+this.dataY[18-2]];
         var unstable_pulse_chance = 0.015; if(this.type!=6) unstable_pulse_chance = 0;
         
         //Rotation
@@ -118,6 +150,28 @@ class CBoss
         this.shooters.forEach(shooter => {
           this.world.ShotCalculateIfNow(shooter,players,this);
         });
+
+        //Battle state update
+        if(this.dataY[17-2] > 0) this.dataY[17-2]--;
+        else
+        {
+            if(this.dataY[18-2]!=0)
+            {
+                this.dataY[18-2] = 0;
+                this.dataY[17-2] = func.randomInteger(border_times[2],border_times[3]);
+            }
+            else
+            {
+                this.dataY[18-2] = func.randomInteger(1,2+this.dataX[1]);
+                var time_letter = state_types[5*this.type+this.dataY[18-2]];
+                if(time_letter=='S') this.dataY[17-2] = func.randomInteger(border_times[0],border_times[1]); //State
+                else if(time_letter=='X') this.dataY[17-2] = border_times[4]; //Instant shot
+                else if(time_letter=='A') this.dataY[17-2] = border_times[5]; //Waiting for shot
+                else this.dataY[17-2] = border_times[4];
+            }
+            this.dataY[19-2] = this.dataY[17-2];
+            this.dataY[20-2] = 1;
+        }
     }
     End() //Executes on battle end directly after last FixedUpdate() Note: dataY will be reseted automatically after execution
     {

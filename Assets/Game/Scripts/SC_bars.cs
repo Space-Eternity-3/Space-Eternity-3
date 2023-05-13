@@ -50,7 +50,6 @@ public class SC_bars : MonoBehaviour
 		double_left = false;
 		
 		if(bos!=null)
-		if(bos.timer_bar_enabled)
 		{
 			double_left = true;
 			left_value = bos.timer_bar_value;
