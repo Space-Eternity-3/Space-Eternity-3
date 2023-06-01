@@ -2,6 +2,7 @@ New features:
 
 - added boss movement and bounce system
 - added boss states
+- different camera zoom when arena active
 
 Gameplay/UI changes:
 
@@ -13,6 +14,7 @@ Gameplay/UI changes:
 - spike bullet effect duration 5s -> 9s
 - sticky bulb effect duration 7s -> 5s
 - poison slows down you by 20% now
+- artefact slot is always unlocked instead of 3 backpack slots
 
 Default datapack changes:
 
@@ -28,6 +30,7 @@ Default datapack changes:
  - player_brake_speed -7 -> -8,5
  - drill_normal_speed 8 -> 9
  - drill_brake_speed -5 -> -6
+- faster turbo regeneration 1 -> 1,5
 
 Configurables:
 
@@ -45,3 +48,4 @@ Bug fixes:
 - client health bar was sometimes unsynced with server
 - effect was lasting forever after respawning, when player was killed by that effect
 - boss timer sometimes wasn't visible when nearby arena was loaded
+- set artefact button was in the wrong position when artefact couldn't be moved into backpack

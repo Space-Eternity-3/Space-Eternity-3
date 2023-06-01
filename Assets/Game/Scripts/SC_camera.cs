@@ -45,7 +45,6 @@ public class SC_camera : MonoBehaviour {
      		if(camZ<max) camZ+=2.5f;
 			save_zoom(camZ);
  		}
-		transform.position=new Vector3(transform.position.x,transform.position.y,camZ);
 
 		if(Input.GetKeyDown(KeyCode.F11)) fullS=!fullS;
         if(Screen.fullScreen&&!fullS)
@@ -58,6 +57,11 @@ public class SC_camera : MonoBehaviour {
             Screen.SetResolution(1920,1080,true);
             Screen.fullScreen=true;
         }
+	}
+	void LateUpdate()
+	{
+		transform.position=new Vector3(transform.position.x,transform.position.y,camZ+SC_fun.camera_add);
+		SC_fun.camera_add = 0;
 	}
 	void FixedUpdate()
 	{

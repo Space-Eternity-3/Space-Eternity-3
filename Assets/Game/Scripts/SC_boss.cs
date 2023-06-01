@@ -205,7 +205,7 @@ public class SC_boss : MonoBehaviour
         identifier = -UnityEngine.Random.Range(1,1000000000);
         shooters = world.GetShootersList(type,this);
         foreach(CShooter shooter in shooters)
-            CreateShooterProjection(shooter.radius,shooter.angle,shooter.bullet_type);
+            CreateShooterProjection(shooter.radius,shooter.angle,shooter.projection_id,shooter);
 
         mother = false;
         multiplayer = ((int)Communtron4.position.y==100);
@@ -325,15 +325,17 @@ public class SC_boss : MonoBehaviour
         int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]),i;
 		for(i=0;i<=60;i++) SC_data.World[a,i,c]=dataID[i]+"";
 	}
-    void CreateShooterProjection(float rad, float angle_rad, int typ)
+    void CreateShooterProjection(float rad, float angle_rad, int typ, CShooter shooter)
     {
-        Transform gob = Instantiate(ShooterProjections[0],shooterCenter.position,Quaternion.identity);
+        if(typ==0) return;
+        Transform gob = Instantiate(ShooterProjections[typ],shooterCenter.position,Quaternion.identity);
         gob.parent = shooterCenter;
         gob.localPosition = new Vector3(rad,0f,0f);
         shooterCenter.eulerAngles = new Vector3(0f,0f,angle_rad*180f/3.14159f);
         gob.parent = shooterCenterOver;
         shooterCenter.rotation = Quaternion.identity;
-
+        if(gob.GetComponent<SC_shooter>()!=null)
+            gob.GetComponent<SC_shooter>().DeclareAssignment(this,shooter.actives,shooter.one_time_id);
     }
     void FixedUpdate()
     {
@@ -344,9 +346,57 @@ public class SC_boss : MonoBehaviour
             if(transform.GetComponent<SC_seon_remote>().SC_structure==null)
                 FixedUpdateT();
     }
+    void Update()
+    {
+        float fcr = SC_control.Pitagoras(
+            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
+        );
+        bool in_arena_range = (fcr<=37f);
+        if(in_arena_range && dataID2_client==2) SC_control.SC_fun.camera_add = -12.5f;
+        if(in_arena_range && dataID2_client==1) SC_control.SC_fun.camera_add = -12.5f * Mathf.Min(dataID3_client,40)/40f;
+        if(in_arena_range && dataID2_client>=3) SC_control.SC_fun.camera_add = -12.5f * Mathf.Max(40-dataID3_client,0)/40f;
+    }
+    int dataID3_client;
+    int dataID3_before_state;
+    int dataID2_client;
+    public int dataID17_client;
+    int dataID17_before_state;
+    public int dataID18_client;
+    public int dataID19_client;
+    public int dataID20_client;
+    public int dataID21_client;
+    bool dataID3_bool = false;
     public void FixedUpdateT()
     {
         if(mother) return;
+
+        //dataID3_client (only for smooth camera movement)
+        if(!dataID3_bool)
+        {
+            dataID3_bool = true;
+            dataID3_client = dataID[3];
+            dataID3_before_state = dataID[2];
+            dataID2_client = dataID[2];
+            dataID17_client = dataID[17];
+            dataID17_before_state = dataID[18];
+        }
+        if(dataID[2]!=dataID3_before_state)
+        {
+            dataID3_before_state = dataID[2];
+            dataID3_client = 0;
+            dataID2_client = dataID[2];
+        }
+        else dataID3_client++;
+        if(dataID[18]!=dataID17_before_state)
+        {
+            dataID17_before_state = dataID[18];
+            dataID17_client = dataID[19];
+        }
+        else dataID17_client--;
+        dataID18_client = dataID[18];
+        dataID19_client = dataID[19];
+        dataID20_client = dataID[20];
+        dataID21_client = dataID[21];
 
         //Checking player relative position to arena
         float fcr = SC_control.Pitagoras(

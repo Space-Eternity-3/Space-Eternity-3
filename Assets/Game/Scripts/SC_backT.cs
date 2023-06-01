@@ -16,6 +16,8 @@ public class SC_backT : MonoBehaviour
 	public bool special;
 	public bool delta_accept = false;
 	Vector3 delta_pos = new Vector3(0f,27.5f,0f);
+	float startY1 = -123.75f; //up pos
+	float startY2 = -151.25f; //down pos
     
     public Vector3 startPos = new Vector3(0f,0f,0f);
     
@@ -28,8 +30,10 @@ public class SC_backT : MonoBehaviour
     {
 		if(special)
 		{
+			if(SC_slots.SlotY[index-1]==0 || !SC_slots.InvHaveB(SC_slots.SlotX[index-1],1,false,true,false,0)) startPos = new Vector3(startPos.x,startY2,startPos.z);
+			else startPos = new Vector3(startPos.x,startY1,startPos.z);
 			if(SC_slots.SlotY[index-1]==0||SC_slots.BackpackY[15]!=0||!SC_artefacts.IsArtefact(SC_slots.SlotX[index-1])||
-			!SC_inv_mover.active||SC_bp_upg.state!=1||SC_backpack.SC_upgrades.MTP_levels[4]<5) transform.localPosition = new Vector3(10000f,0f,0f);
+			!SC_inv_mover.active||SC_bp_upg.state!=1) transform.localPosition = new Vector3(10000f,0f,0f);
 			else transform.localPosition=startPos;
 			SC2_backT.LaterUpdate();
 		}

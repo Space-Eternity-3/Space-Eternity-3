@@ -112,6 +112,15 @@ craftings
 		4: dead_alien + magnetic_stone(3) -> magnetic_alien;
 		5: dead_alien + red_stone(3) -> red_alien;
 	}
+	<Category>14
+	{
+		title_image: golden_drill;
+		1: stone -> small_amethyst(99999);
+		2: stone -> copper_bullet(99999);
+		3: stone -> healing_potion(99999);
+		4: stone -> killing_potion(99999);
+		5: stone -> immortality_artefact(99999);
+	}
 	<Max 512 categories>
 }
 drill_loot

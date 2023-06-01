@@ -43,6 +43,7 @@ class CBoss
     dataY[18-2] - battle_state_id
     dataY[19-2] - starting_battle_state_timer
     dataY[20-2] - one_time_shooter_bool_storage
+    dataY[21-2] - battle_state_id_before
     
     <...>
     dataY[60-2] - {Other variables are empty at this time. Use them as a data storage between frames or ask Kamiloso to do some special tasks using them.}
@@ -155,6 +156,7 @@ class CBoss
         if(this.dataY[17-2] > 0) this.dataY[17-2]--;
         else
         {
+            this.dataY[21-2] = this.dataY[18-2];
             if(this.dataY[18-2]!=0)
             {
                 this.dataY[18-2] = 0;

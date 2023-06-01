@@ -26,6 +26,8 @@ public class CShooter
     public int one_time_id;
     public bool salvic;
 
+    public int projection_id;
+
     public CShooter(int bul_typ,double angl_deg,double deviat_deg,double precis_deg,double rad,SC_boss ths,bool alway,int freq,string activess,int cld,int otid,bool slvc)
     {
         bullet_type = bul_typ;
@@ -40,6 +42,8 @@ public class CShooter
         cooldown = cld;
         one_time_id = otid; //only prime numbers
         salvic = slvc;
+
+        projection_id = 0;
     }
     public bool CanShoot(float x,float y)
     {
@@ -175,23 +179,28 @@ public class CInfo
     //bossy functions
     public List<CShooter> GetShootersList(int type,SC_boss thys)
     {
+        int i;
         List<CShooter> shooters = new List<CShooter>();
         if(type==1) //Protector
         {
             shooters = new List<CShooter>() {
-                new CShooter(11, 22.5,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
-                new CShooter(11, 45,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
-                new CShooter(11, 135,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
-                new CShooter(11, 157.5,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
-                new CShooter(11, 202.5,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
-                new CShooter(11, 225,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
-                new CShooter(11, 315,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
-                new CShooter(11, 337.5,60,7.5, 6.5,thys,false, 15, "11011",0,-1, true),
+                new CShooter(11, 22.5,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+                new CShooter(11, 45,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+                new CShooter(11, 135,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+                new CShooter(11, 157.5,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+                new CShooter(11, 202.5,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+                new CShooter(11, 225,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+                new CShooter(11, 315,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+                new CShooter(11, 337.5,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
 
-                new CShooter(4, 270,120,7.5, 10,thys,false, 1, "01000",30,2, false),
+                new CShooter(4, 270,120,7.5, 10,thys,false, 1, "01000",50,2, false),
                 new CShooter(9, 0,0,0, 7.5,thys,true, 40, "00010",1,-1, false),
                 new CShooter(9, 180,0,0, 7.5,thys,true, 40, "00010",1,-1, false),
             };
+
+            for(i=0;i<=7;i++) shooters[i].projection_id = 1;
+            shooters[8].projection_id = 4;
+            for(i=9;i<=10;i++) shooters[i].projection_id = 9;
         }
         if(type==2) //Adecodron
         {
@@ -201,10 +210,10 @@ public class CInfo
                 new CShooter(10, 180,0,0, 7.5,thys,true, 40, "00010",1,-1, false),
                 new CShooter(10, 270,0,0, 7.5,thys,true, 40, "00010",1,-1, false),
 
-                new CShooter(12, 45,60,7.5, 6.5,thys,false, 15, "00100",0,-1, false),
-                new CShooter(12, 135,60,7.5, 6.5,thys,false, 15, "00100",0,-1, false),
-                new CShooter(12, 225,60,7.5, 6.5,thys,false, 15, "00100",0,-1, false),
-                new CShooter(12, 315,60,7.5, 6.5,thys,false, 15, "00100",0,-1, false),
+                new CShooter(12, 45,70,7, 8,thys,false, 15, "00100",30,-1, false),
+                new CShooter(12, 135,70,7, 8,thys,false, 15, "00100",30,-1, false),
+                new CShooter(12, 225,70,7, 8,thys,false, 15, "00100",30,-1, false),
+                new CShooter(12, 315,70,7, 8,thys,false, 15, "00100",30,-1, false),
                 
                 new CShooter(6, 0,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
                 new CShooter(6, 20,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
@@ -225,6 +234,9 @@ public class CInfo
                 new CShooter(6, 320,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
                 new CShooter(6, 340,0,0, 6.5,thys,true, 40, "01000",1,-1, false),
             };
+
+            for(i=0;i<=3;i++) shooters[i].projection_id = 10;
+            for(i=4;i<=7;i++) shooters[i].projection_id = 12;
         }
         if(type==3) //Octogone
         {
@@ -247,10 +259,12 @@ public class CInfo
                 new CShooter(7, 270,60,60, 6.5,thys,true, 32, "01000",0,-1, false),
                 new CShooter(7, 315,60,60, 6.5,thys,true, 29, "01000",0,-1, false),
 
-                new CShooter(8, 90,60,10, 8.5,thys,false, 1, "00100",30,2, false),
-                new CShooter(8, 210,60,10, 8.5,thys,false, 1, "00100",30,3, false),
-                new CShooter(8, 330,60,10, 8.5,thys,false, 1, "00100",30,5, false),
+                new CShooter(8, 90,60,10, 8,thys,false, 1, "00100",30,2, false),
+                new CShooter(8, 210,60,10, 8,thys,false, 1, "00100",30,3, false),
+                new CShooter(8, 330,60,10, 8,thys,false, 1, "00100",30,5, false),
             };
+
+            for(i=16;i<=18;i++) shooters[i].projection_id = 8;
         }
         if(type==4) //Starandus
         {
@@ -277,17 +291,22 @@ public class CInfo
         if(type==6) //Degenerator
         {
             shooters = new List<CShooter>() {
-                new CShooter(13, 22.5,60,10, 6.5,thys,false, 35, "11011",0,-1, false),
-                new CShooter(12, 45,60,7.5, 6.5,thys,false, 20, "11011",0,-1, true),
-                new CShooter(12, 135,60,7.5, 6.5,thys,false, 20, "11011",0,-1, true),
-                new CShooter(13, 157.5,60,10, 6.5,thys,false, 35, "11011",0,-1, false),
-                new CShooter(13, 202.5,60,10, 6.5,thys,false, 35, "11011",0,-1, false),
-                new CShooter(12, 225,60,7.5, 6.5,thys,false, 20, "11011",0,-1, true),
-                new CShooter(12, 315,60,7.5, 6.5,thys,false, 20, "11011",0,-1, true),
-                new CShooter(13, 337.5,60,10, 6.5,thys,false, 35, "11011",0,-1, false),
+                new CShooter(12, 45,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
+                new CShooter(12, 135,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
+                new CShooter(12, 225,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
+                new CShooter(12, 315,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
 
-                new CShooter(13, 270,80,80, 8,thys,true, 10, "11011",0,-1, true),
+                new CShooter(13, 22.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
+                new CShooter(13, 157.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
+                new CShooter(13, 202.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
+                new CShooter(13, 337.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
+
+                new CShooter(13, 270,80,80, 7,thys,true, 15, "11011",0,-1, false),
             };
+
+            for(i=0;i<=3;i++) shooters[i].projection_id = 2;
+            for(i=4;i<=7;i++) shooters[i].projection_id = 3;
+            shooters[8].projection_id = 13;
         }
         return shooters;
     }
@@ -414,6 +433,7 @@ public class SC_behaviour : MonoBehaviour
         if(thys.dataID[17] > 0) thys.dataID[17]--;
         else
         {
+            thys.dataID[21] = thys.dataID[18];
             if(thys.dataID[18]!=0)
             {
                 thys.dataID[18] = 0;

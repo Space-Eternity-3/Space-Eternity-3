@@ -86,7 +86,7 @@ public class SC_backpack : MonoBehaviour
 		
 		if(yy>0) yy=1;
 		
-		if(yy==1 && SC_upgrades.MTP_levels[4]>=5 && SC_slots.InvHaveB(xx,-yy,true,false,true,0) && SC_slots.BackpackY[15]==0 && SC_artefacts.IsArtefact(xx))
+		if(yy==1 && SC_slots.InvHaveB(xx,-yy,true,false,true,0) && SC_slots.BackpackY[15]==0 && SC_artefacts.IsArtefact(xx))
 		{
 			int slI = SC_slots.InvChange(xx,-yy,true,false,true);
 			int slB = 15+9;
@@ -172,7 +172,7 @@ public class SC_backpack : MonoBehaviour
     public int Lim()
     {
         int lvl = SC_upgrades.MTP_levels[4];
-        if(lvl<5) return 3*(lvl+1);
+        if(lvl<=5) return 3*lvl;
         else return 3*5;
     }
 }

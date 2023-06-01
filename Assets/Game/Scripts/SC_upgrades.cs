@@ -81,7 +81,7 @@ public class SC_upgrades : MonoBehaviour
         {
             max_frame.localPosition=startMaxFrame;
             max_about.localPosition=startMaxAbout;
-            if(I!=4) about.text=abouts[I];
+            if(true) about.text=abouts[I];
             else
             {
                 if(UPG_levels[I]<4) about.text=abouts[I];
@@ -164,7 +164,7 @@ public class SC_upgrades : MonoBehaviour
             }
         }
 		
-		if(MTP_levels[4]>=5)
+		if(true)
 		{
 			at_disabled.localPosition = at_v3_hidden;
 			at_enabled.localPosition = at_v3_visible;

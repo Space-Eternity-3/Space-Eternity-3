@@ -141,7 +141,7 @@ gameplay
 	
 	health_regenerate_cooldown: 2,5;
 	health_regenerate_multiplier: 4;
-	turbo_regenerate_multiplier: 1;
+	turbo_regenerate_multiplier: 1,5;
 	turbo_use_multiplier: 2;
 	crash_minimum_energy: 6;
 	crash_damage_multiplier: 0,6;
