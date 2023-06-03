@@ -301,12 +301,15 @@ public class CInfo
                 new CShooter(13, 202.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
                 new CShooter(13, 337.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
 
-                new CShooter(13, 270,80,80, 7,thys,true, 15, "11011",0,-1, false),
+                new CShooter(13, 270,80,80, 7,thys,true, 15, "11011",0,-1, true),
+                new CShooter(9, 0,0,0, 7.5,thys,true, 40, "01000",1,-1, false),
+                new CShooter(9, 180,0,0, 7.5,thys,true, 40, "01000",1,-1, false),
             };
 
             for(i=0;i<=3;i++) shooters[i].projection_id = 2;
             for(i=4;i<=7;i++) shooters[i].projection_id = 3;
             shooters[8].projection_id = 13;
+            for(i=9;i<=10;i++) shooters[i].projection_id = 9;
         }
         return shooters;
     }
@@ -346,15 +349,15 @@ public class SC_behaviour : MonoBehaviour
         float bounce_radius = 26f;
         float acceleration = 0.015f;
         float unstable_pulse_force = 0.6f;
-        int[] border_times = new int[]{300,500, 250,400, 50, 150}; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for)
+        int[] border_times = new int[]{300,500, 250,400, 50, 150, 200+thys.dataID[1]*50}; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for), P-6(shield)
         char[] state_types = new char[]{
             'o', 'o', 'o', 'o', 'o', //Placeholder
-            'o', 'A', 'S', 'X', 'S', //Protector
+            'o', 'A', 'P', 'X', 'S', //Protector
             'o', 'X', 'S', 'X', 'S', //Adecodron
             'o', 'S', 'X', 'S', 'S', //Octogone
             'o', 'S', 'S', 'S', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
-            'o', 'S', 'S', 'S', 'S', //Degenerator
+            'o', 'X', 'P', 'A', 'S', //Degenerator
         };
         float[] state_velocities = new float[]{
             0.20f, 0.20f, 0.20f, 0.20f, 0.20f, //Placeholder
@@ -363,7 +366,7 @@ public class SC_behaviour : MonoBehaviour
             0.30f, 0.20f, 0.10f, 0.20f, 0.30f, //Octogone
             0.00f, 0.00f, 0.00f, 0.00f, 0.00f, //Starandus
             0.20f, 0.20f, 0.20f, 0.20f, 0.20f, //Useless
-            0.20f, 0.10f, 0.10f, 0.20f, 0.40f, //Degenerator
+            0.20f, 0.10f, 0.10f, 0.10f, 0.40f, //Degenerator
         };
 
         //Pre-defines
@@ -396,7 +399,7 @@ public class SC_behaviour : MonoBehaviour
 
         //Unstable pulse
         float rand_unst = (float)random.NextDouble();
-        if(rand_unst < unstable_pulse_chance)
+        if(rand_unst < unstable_pulse_chance && (thys.dataID[18]!=2 || thys.type!=6))
         {
             float vel_x = Mathf.Cos(velocity_angle) * current_velocity;
             float vel_y = Mathf.Sin(velocity_angle) * current_velocity;
@@ -446,6 +449,7 @@ public class SC_behaviour : MonoBehaviour
                 if(time_letter=='S') thys.dataID[17] = UnityEngine.Random.Range(border_times[0],border_times[1]+1); //State
                 else if(time_letter=='X') thys.dataID[17] = border_times[4]; //Instant shot
                 else if(time_letter=='A') thys.dataID[17] = border_times[5]; //Waiting for shot
+                else if(time_letter=='P') thys.dataID[17] = border_times[6]; //Shield not constant
                 else thys.dataID[17] = border_times[4];
             }
             thys.dataID[19] = thys.dataID[17];

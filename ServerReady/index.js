@@ -493,7 +493,9 @@ class CInfo
               new CShooter(13, 202.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
               new CShooter(13, 337.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
 
-              new CShooter(13, 270,80,80, 7,thys,true, 15, "11011",0,-1, false),
+              new CShooter(13, 270,80,80, 7,thys,true, 15, "11011",0,-1, true),
+              new CShooter(9, 0,0,0, 7.5,thys,true, 40, "01000",1,-1, false),
+              new CShooter(9, 180,0,0, 7.5,thys,true, 40, "01000",1,-1, false),
             ];
         }
     }
@@ -1398,7 +1400,7 @@ function resetScr(i)
 }
 function DamageBoss(i,dmg)
 {
-  if(scrs[i].dataY[2-2]!=2) return;
+  if(scrs[i].dataY[2-2]!=2 || ((scrs[i].behaviour.type-1)*(scrs[i].behaviour.type-6)==0 && scrs[i].dataY[18-2]==2)) return;
   var actualHealth = scrs[i].dataY[6-2]/100;
   actualHealth -= dmg;
   scrs[i].dataY[6-2] = Math.floor(actualHealth*100);

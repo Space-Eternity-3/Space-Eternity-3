@@ -69,15 +69,15 @@ class CBoss
         var bounce_radius = 26;
         var acceleration = 0.015;
         var unstable_pulse_force = 0.6;
-        var border_times = [300,500, 250,400, 50, 150]; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for)
+        var border_times = [300,500, 250,400, 50, 150, 200+this.dataX[1]*50]; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for), P-6(shield)
         var state_types = [
             'o', 'o', 'o', 'o', 'o', //Placeholder
-            'o', 'A', 'S', 'X', 'S', //Protector
+            'o', 'A', 'P', 'X', 'S', //Protector
             'o', 'X', 'S', 'X', 'S', //Adecodron
             'o', 'S', 'X', 'S', 'S', //Octogone
             'o', 'S', 'S', 'S', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
-            'o', 'S', 'S', 'S', 'S', //Degenerator
+            'o', 'X', 'P', 'A', 'S', //Degenerator
         ];
         var state_velocities = [
             0.20, 0.20, 0.20, 0.20, 0.20, //Placeholder
@@ -86,7 +86,7 @@ class CBoss
             0.30, 0.20, 0.10, 0.20, 0.30, //Octogone
             0.00, 0.00, 0.00, 0.00, 0.00, //Starandus
             0.20, 0.20, 0.20, 0.20, 0.20, //Useless
-            0.20, 0.10, 0.10, 0.20, 0.40, //Degenerator
+            0.20, 0.10, 0.10, 0.10, 0.40, //Degenerator
         ];
 
         //Pre-defines
@@ -119,7 +119,7 @@ class CBoss
 
         //Unstable pulse
         var rand_unst = Math.random();
-        if(rand_unst < unstable_pulse_chance)
+        if(rand_unst < unstable_pulse_chance && (this.dataY[18-2]!=2 || this.type!=6))
         {
             var vel_x = Math.cos(velocity_angle) * current_velocity;
             var vel_y = Math.sin(velocity_angle) * current_velocity;
@@ -169,6 +169,7 @@ class CBoss
                 if(time_letter=='S') this.dataY[17-2] = func.randomInteger(border_times[0],border_times[1]); //State
                 else if(time_letter=='X') this.dataY[17-2] = border_times[4]; //Instant shot
                 else if(time_letter=='A') this.dataY[17-2] = border_times[5]; //Waiting for shot
+                else if(time_letter=='P') this.dataY[17-2] = border_times[6]; //Shield not constant
                 else this.dataY[17-2] = border_times[4];
             }
             this.dataY[19-2] = this.dataY[17-2];

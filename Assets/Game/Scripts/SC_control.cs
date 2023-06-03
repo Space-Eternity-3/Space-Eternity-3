@@ -1285,7 +1285,7 @@ public class SC_control : MonoBehaviour {
     {
 		float CME=float.Parse(SC_data.Gameplay[6]); 
 
-		if(collision.gameObject.name!="mini_crown" && collision.gameObject.name!="aBossScaled0")
+		if(collision.gameObject.name!="mini_crown" && collision.gameObject.name!="aBossScaled0" && collision.gameObject.name!="S-shield")
 		{
 			if(dmLicz<=0)
        		if(collision.impulse.magnitude>CME&&collision.relativeVelocity.magnitude>CME)

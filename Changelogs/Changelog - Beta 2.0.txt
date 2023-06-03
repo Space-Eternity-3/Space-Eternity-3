@@ -1,8 +1,13 @@
 New features:
 
-- added boss movement and bounce system
-- added boss states
 - different camera zoom when arena active
+- boss system improved
+- added bosses:
+ - Protector
+ - Adecodron
+ - Octogone
+ - Starandus
+ - Degenerator
 
 Gameplay/UI changes:
 
@@ -30,7 +35,9 @@ Default datapack changes:
  - player_brake_speed -7 -> -8,5
  - drill_normal_speed 8 -> 9
  - drill_brake_speed -5 -> -6
-- faster turbo regeneration 1 -> 1,5
+- turbo_regenerate_multiplier 1 -> 1,5
+- at_impulse_power_regenerate_multiplier 1 -> 1,5
+- at_illusion_power_regenerate_multiplier 1 -> 1,5
 
 Configurables:
 
@@ -38,6 +45,11 @@ Configurables:
 - new gameplay variable - boss_unstable_effectivity: 1,25
 - new gameplay variable - boss_fire_effectivity: 1.75
 - new server config variable - show_positions (determines whether players' positions are public)
+
+Important technical changes:
+
+- asteroid generation grid expanded from 11x11 to 15x11
+- asteroid disappear range increased 70 -> 110
 
 Bug fixes:
 

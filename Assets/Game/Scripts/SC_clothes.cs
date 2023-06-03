@@ -42,6 +42,7 @@ public class SC_clothes : MonoBehaviour
             if(clothe_index==i && actual_sizes[i] < animation_frames) actual_sizes[i]++;
             if(clothe_index!=i && actual_sizes[i] > 0) actual_sizes[i]--;
             clothes[i].localScale = new Vector3(1f,1f,1f) / animation_frames * actual_sizes[i];
+            if(clothes[i].GetComponent<SC_scacontr>()!=null) clothes[i].GetComponent<SC_scacontr>().ScaleAllNow(1f/animation_frames * actual_sizes[i]);
         }
     }
 }

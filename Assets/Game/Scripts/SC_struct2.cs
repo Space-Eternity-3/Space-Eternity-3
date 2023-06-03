@@ -29,7 +29,7 @@ public class SC_struct2 : MonoBehaviour
 			float llX=Mathf.Round(legs.position.x/10f);
 			float llY=Mathf.Round(legs.position.y/10f);
 			float distance=Mathf.Sqrt((ssX-llX)*(ssX-llX)+(ssY-llY)*(ssY-llY));
-			if(distance>7f&&Communtron1.position.z==0f)
+			if(distance>11f&&Communtron1.position.z==0f)
 			{
 				if(counter_to_destroy==0)
 				{
