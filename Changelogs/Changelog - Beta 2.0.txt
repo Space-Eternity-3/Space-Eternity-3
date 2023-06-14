@@ -1,6 +1,6 @@
 New features:
 
-- different camera zoom when arena active
+- camera zoom out when arena active
 - boss system improved
 - added bosses:
  - Protector
@@ -9,17 +9,18 @@ New features:
  - Starandus
  - Degenerator
 
-Gameplay/UI changes:
+Old feature changes:
 
 - treasure loot updated [paste actual loot here]
 - treasure loot can turn up in hidden slots now
 - unstable artefact description changed to: "You can't unleash its power"
 - Starandus now immune to fire bullets
 - immortality artefact removes effect now
-- spike bullet effect duration 5s -> 9s
-- sticky bulb effect duration 7s -> 5s
-- poison slows down you by 20% now
+- spike bullet effect duration 4 -> 6
+- sticky bulb effect duration 6 -> 4
 - artefact slot is always unlocked instead of 3 backpack slots
+- effect is removed after battle end
+- impulse artefact is more orange (oranger)
 
 Default datapack changes:
 
@@ -36,8 +37,7 @@ Default datapack changes:
  - drill_normal_speed 8 -> 9
  - drill_brake_speed -5 -> -6
 - turbo_regenerate_multiplier 1 -> 1,5
-- at_impulse_power_regenerate_multiplier 1 -> 1,5
-- at_illusion_power_regenerate_multiplier 1 -> 1,5
+- turbo_use_multiplier 2 -> 1,5
 
 Configurables:
 
@@ -50,6 +50,7 @@ Important technical changes:
 
 - asteroid generation grid expanded from 11x11 to 15x11
 - asteroid disappear range increased 70 -> 110
+- removed message name verification when enqueueing
 
 Bug fixes:
 
@@ -61,3 +62,6 @@ Bug fixes:
 - effect was lasting forever after respawning, when player was killed by that effect
 - boss timer sometimes wasn't visible when nearby arena was loaded
 - set artefact button was in the wrong position when artefact couldn't be moved into backpack
+- gray projection wasn't working properly, when ping was bigger than 400ms
+- effect replacement was changing effect id without changing duration, when new duration was smaller than old
+- thread safe code was actually not thread safe

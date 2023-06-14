@@ -33,6 +33,9 @@ if(config.pvp==false) pvp = false;
 var show_positions = true;
 if(config.show_positions==false) show_positions = false;
 
+var universe_name = "ServerUniverse";
+if(config.universe_name) universe_name = config.universe_name;
+
 var chunk_data = [];
 var chunk_names = [];
 var chunk_waiter = [];
@@ -483,19 +486,25 @@ class CInfo
         if(type==6) //Degenerator
         {
             shooters = [
-              new CShooter(12, 45,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
-              new CShooter(12, 135,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
-              new CShooter(12, 225,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
-              new CShooter(12, 315,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
+              new CShooter(12, 45,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+              new CShooter(12, 135,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+              new CShooter(12, 225,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+              new CShooter(12, 315,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
 
-              new CShooter(13, 22.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
-              new CShooter(13, 157.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
-              new CShooter(13, 202.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
-              new CShooter(13, 337.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
+              new CShooter(13, 22.5,60,10, 7,thys,false, 40, "11011",0,-1, false),
+              new CShooter(13, 157.5,60,10, 7,thys,false, 40, "11011",0,-1, false),
+              new CShooter(13, 202.5,60,10, 7,thys,false, 40, "11011",0,-1, false),
+              new CShooter(13, 337.5,60,10, 7,thys,false, 40, "11011",0,-1, false),
 
-              new CShooter(13, 270,80,80, 7,thys,true, 15, "11011",0,-1, true),
+              new CShooter(13, 270,70,70, 7,thys,true, 20, "11011",0,-1, false),
               new CShooter(9, 0,0,0, 7.5,thys,true, 40, "01000",1,-1, false),
               new CShooter(9, 180,0,0, 7.5,thys,true, 40, "01000",1,-1, false),
+
+              new CShooter(13, 22.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
+              new CShooter(13, 157.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
+              new CShooter(13, 202.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
+              new CShooter(13, 337.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
+              new CShooter(13, 270,70,70, 7,thys,true, 10, "00100",0,-1, false),
             ];
         }
     }
@@ -658,12 +667,12 @@ function savePlayer(n) {
     plr.upgrades[n],
   ];
   var effect = effTab.join(";\r\n") + ";\r\n";
-  writeF("ServerUniverse/Players/" + plr.nicks[n] + ".se3", effect);
+  writeF(universe_name + "/Players/" + plr.nicks[n] + ".se3", effect);
 }
 function readPlayer(n) {
   var srcTT, i, dd, di, db, du, eff, lngt;
-  if (existsF("ServerUniverse/Players/" + plr.nicks[n] + ".se3"))
-    srcTT = readF("ServerUniverse/Players/" + plr.nicks[n] + ".se3").split("\r\n");
+  if (existsF(universe_name + "/Players/" + plr.nicks[n] + ".se3"))
+    srcTT = readF(universe_name + "/Players/" + plr.nicks[n] + ".se3").split("\r\n");
   else return;
 
   if (!fileReadablePlayer(srcTT)) return;
@@ -709,9 +718,9 @@ function ulamToXY(ulam) {
 }
 function chunkRead(ind) {
   var i, j, eff = seed + "\r\n";
-  if (existsF("ServerUniverse/Asteroids/Generated_" + ind + ".se3"))
+  if (existsF(universe_name + "/Asteroids/Generated_" + ind + ".se3"))
   {
-    var datT = readF("ServerUniverse/Asteroids/Generated_" + ind + ".se3").split("\r\n");
+    var datT = readF(universe_name + "/Asteroids/Generated_" + ind + ".se3").split("\r\n");
     var pom;
 
     try {
@@ -754,7 +763,7 @@ function chunkSave(n) {
     lines[i] = removeEnds(lines[i]);
   }
   eff += lines.join("\r\n") + "\r\n";
-  writeF("ServerUniverse/Asteroids/Generated_" + chunk_names[n] + ".se3", eff);
+  writeF(universe_name + "/Asteroids/Generated_" + chunk_names[n] + ".se3", eff);
 }
 function asteroidIndex(ulam) {
   var xy = ulamToXY(ulam);
@@ -1400,7 +1409,7 @@ function resetScr(i)
 }
 function DamageBoss(i,dmg)
 {
-  if(scrs[i].dataY[2-2]!=2 || ((scrs[i].behaviour.type-1)*(scrs[i].behaviour.type-6)==0 && scrs[i].dataY[18-2]==2)) return;
+  if(scrs[i].dataY[2-2]!=2 || ((scrs[i].behaviour.type-1)==0 && scrs[i].dataY[18-2]==2)) return;
   var actualHealth = scrs[i].dataY[6-2]/100;
   actualHealth -= dmg;
   scrs[i].dataY[6-2] = Math.floor(actualHealth*100);
@@ -3845,7 +3854,7 @@ function datapackPaste(splitTab) {
     checkDatapackGoodE();
   } catch {
     crash(
-      "Failied loading imported datapack\r\nDelete ServerUniverse/UniverseInfo.se3 file and try again"
+      "Failied loading imported datapack\r\nDelete " + universe_name + "/UniverseInfo.se3 file and try again"
     );
   }
 }
@@ -3853,7 +3862,7 @@ function datapackPaste(splitTab) {
 //Start functions
 console.log("-------------------------------");
 
-if (!existsF("ServerUniverse/UniverseInfo.se3")) {
+if (!existsF(universe_name + "/UniverseInfo.se3")) {
   if (existsF("Datapack.jse3"))
     datapackTranslate("NoName~" + readF("Datapack.jse3"));
   else crash("File Datapack.se3 doesn't exists");
@@ -3863,14 +3872,14 @@ if (!existsF("ServerUniverse/UniverseInfo.se3")) {
   uniMiddle = "Server Copy~" + clientDatapacksVar;
   uniVersion = serverVersion;
   writeF(
-    "ServerUniverse/UniverseInfo.se3",
+    universe_name + "/UniverseInfo.se3",
     [uniTime, uniMiddle, uniVersion, ""].join("\r\n")
   );
 
   console.log("Datapack imported: [" + datName + "]");
 } else {
-  var uiSource = readF("ServerUniverse/UniverseInfo.se3").split("\r\n");
-  if (uiSource.length < 3) crash("Error in ServerUniverse/UniverseInfo.se3");
+  var uiSource = readF(universe_name + "/UniverseInfo.se3").split("\r\n");
+  if (uiSource.length < 3) crash("Error in " + universe_name + "/UniverseInfo.se3");
   if (uiSource[2] != serverVersion)
     crash(
       "Loaded universe has a wrong version: " +
@@ -3880,7 +3889,7 @@ if (!existsF("ServerUniverse/UniverseInfo.se3")) {
     );
 
   var dataGet = uiSource[1].split("~");
-  if (dataGet.length < 2) crash("Error in ServerUniverse/UniverseInfo.se3");
+  if (dataGet.length < 2) crash("Error in " + universe_name + "/UniverseInfo.se3");
   datapackPaste(uiSource[1]);
 
   clientDatapacksVar = clientDatapacks();
@@ -3888,21 +3897,21 @@ if (!existsF("ServerUniverse/UniverseInfo.se3")) {
   uniMiddle = "Server Copy~" + clientDatapacksVar;
   uniVersion = serverVersion;
   writeF(
-    "ServerUniverse/UniverseInfo.se3",
+    universe_name + "/UniverseInfo.se3",
     [uniTime, uniMiddle, uniVersion, ""].join("\r\n")
   );
 
   console.log("Datapack loaded");
 }
 
-if (!existsF("ServerUniverse/Seed.se3")) {
+if (!existsF(universe_name + "/Seed.se3")) {
   seed = func.randomInteger(0, 10000000);
-  writeF("ServerUniverse/Seed.se3", seed + "\r\n");
+  writeF(universe_name + "/Seed.se3", seed + "\r\n");
   console.log("New seed generated: [" + seed + "]");
 }
 else {
-  seed = func.parseIntU(readF("ServerUniverse/Seed.se3").split("\r\n")[0]);
-  writeF("ServerUniverse/Seed.se3", seed + "\r\n");
+  seed = func.parseIntU(readF(universe_name + "/Seed.se3").split("\r\n")[0]);
+  writeF(universe_name + "/Seed.se3", seed + "\r\n");
 }
 
 function laggy_comment(nn)
@@ -3915,6 +3924,7 @@ function laggy_comment(nn)
 }
 
 console.log("Server started on version: [" + serverVersion + "]");
+console.log("Universe directory: [" + universe_name + "]");
 console.log("Max players: [" + max_players + "]");
 console.log("Port: [" + connectionOptions.port + "]" + laggy_comment(max_players));
 console.log("-------------------------------");

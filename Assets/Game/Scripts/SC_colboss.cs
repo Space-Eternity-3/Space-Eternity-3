@@ -23,7 +23,7 @@ public class SC_colboss : MonoBehaviour
         if(collision.gameObject.name=="impulseBody" && SC_control.impulse_enabled && !impulse_used && !SC_boss.multiplayer)
         {
             impulse_used = true;
-            if(!((SC_boss.type-1)*(SC_boss.type-6)==0 && SC_boss.dataID[18]==2)) SC_boss.DamageSGP(float.Parse(SC_control.SC_data.Gameplay[29]));
+            if(!((SC_boss.type-1)==0 && SC_boss.dataID[18]==2)) SC_boss.DamageSGP(float.Parse(SC_control.SC_data.Gameplay[29]));
         }
     }
     void OnTriggerEnter(Collider collision)
@@ -34,7 +34,7 @@ public class SC_colboss : MonoBehaviour
             if(bul.controller && !bul.boss_damaged && bul.gun_owner==0)
             {
                 bul.boss_damaged = true;
-                if(!(bul.is_unstable && SC_boss.type==6) && !(bul.type==15 && SC_boss.type==4) && !((SC_boss.type-1)*(SC_boss.type-6)==0 && SC_boss.dataID[18]==2))
+                if(!(bul.is_unstable && SC_boss.type==6) && !(bul.type==15 && SC_boss.type==4) && !((SC_boss.type-1)==0 && SC_boss.dataID[18]==2))
                 {
                     float damage_modifier = 1;
                     if(bul.type==3) damage_modifier = float.Parse(SC_control.SC_data.Gameplay[37]);

@@ -1,4 +1,5 @@
 {
+	"universe_name": "ServerUniverse",
 	"max_players": 25,
 	"port": 27683,
 	"pvp": true,

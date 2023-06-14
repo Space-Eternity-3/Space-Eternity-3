@@ -8,6 +8,7 @@ public class SC_snd_start : MonoBehaviour
     public SC_control SC_control;
     public int type,id;
     public float deeprange = 0f;
+    public bool lonely_deeprange;
 
     void Start()
     {
@@ -15,6 +16,11 @@ public class SC_snd_start : MonoBehaviour
         {
             if(deeprange==0f)
                 SC_sounds.PlaySound(transform.position,type,id);
+            else if(lonely_deeprange)
+            {
+                SC_sounds.deeprange = deeprange;
+                SC_sounds.PlaySound(transform.position,type,id);
+            }
             else
             {
                 List<SC_boss> boses = SC_control.SC_lists.SC_boss;

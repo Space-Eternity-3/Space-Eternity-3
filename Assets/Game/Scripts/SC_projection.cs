@@ -18,7 +18,7 @@ public class SC_projection : MonoBehaviour
     void Start()
     {
         int i;
-        for(i=0;i<20;i++)
+        for(i=0;i<150;i++)
         {
             memPosition[0] = new Vector3(0f,0f,300f);
             memRotation[0] = 0f;
@@ -27,7 +27,7 @@ public class SC_projection : MonoBehaviour
     void ArrayPusher(Vector3 new_push, float new_rot)
     {
         int i;
-        for(i=19;i>0;i--){
+        for(i=149;i>0;i--){
             memPosition[i]=memPosition[i-1];
             memRotation[i]=memRotation[i-1];
         }
@@ -41,13 +41,13 @@ public class SC_projection : MonoBehaviour
     public void MuchLaterUpdate()
     {
         int Dt = SC_control.intPing;
-        if(Dt!=-1) transform.position = memPosition[Dt];
+        if(Dt>=0) transform.position = memPosition[Dt];
         if(IsVisible()) transform.eulerAngles = new Vector3(memRotation[Dt]-90f,-90f,90f);
         else transform.position = new Vector3(0f,0f,300f);
     }
     bool IsVisible()
     {
-        if((int)SC_control.Communtron4.position.y!=100 || SC_control.intPing==-1) return false;
+        if((int)SC_control.Communtron4.position.y!=100 || SC_control.intPing<0) return false;
 
         if(SC_control.living && SC_control.Pitagoras(transform.position-player.position-new Vector3(0f,0f,transform.position.z-player.position.z)) > minDeltaDistance)
         {

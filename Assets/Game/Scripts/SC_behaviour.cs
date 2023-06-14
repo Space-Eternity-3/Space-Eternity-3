@@ -291,19 +291,25 @@ public class CInfo
         if(type==6) //Degenerator
         {
             shooters = new List<CShooter>() {
-                new CShooter(12, 45,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
-                new CShooter(12, 135,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
-                new CShooter(12, 225,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
-                new CShooter(12, 315,60,7.5, 7,thys,false, 20, "11011",0,-1, false),
+                new CShooter(12, 45,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+                new CShooter(12, 135,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+                new CShooter(12, 225,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
+                new CShooter(12, 315,60,7.5, 7,thys,false, 15, "11011",0,-1, false),
 
-                new CShooter(13, 22.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
-                new CShooter(13, 157.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
-                new CShooter(13, 202.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
-                new CShooter(13, 337.5,60,10, 7,thys,false, 35, "11011",0,-1, false),
+                new CShooter(13, 22.5,60,10, 7,thys,false, 40, "11011",0,-1, false),
+                new CShooter(13, 157.5,60,10, 7,thys,false, 40, "11011",0,-1, false),
+                new CShooter(13, 202.5,60,10, 7,thys,false, 40, "11011",0,-1, false),
+                new CShooter(13, 337.5,60,10, 7,thys,false, 40, "11011",0,-1, false),
 
-                new CShooter(13, 270,80,80, 7,thys,true, 15, "11011",0,-1, true),
+                new CShooter(13, 270,70,70, 7,thys,true, 20, "11011",0,-1, false),
                 new CShooter(9, 0,0,0, 7.5,thys,true, 40, "01000",1,-1, false),
                 new CShooter(9, 180,0,0, 7.5,thys,true, 40, "01000",1,-1, false),
+
+                new CShooter(13, 22.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
+                new CShooter(13, 157.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
+                new CShooter(13, 202.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
+                new CShooter(13, 337.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
+                new CShooter(13, 270,70,70, 7,thys,true, 10, "00100",0,-1, false),
             };
 
             for(i=0;i<=3;i++) shooters[i].projection_id = 2;
@@ -348,7 +354,7 @@ public class SC_behaviour : MonoBehaviour
         //Constants
         float bounce_radius = 26f;
         float acceleration = 0.015f;
-        float unstable_pulse_force = 0.6f;
+        float unstable_pulse_force = 0.4f;
         int[] border_times = new int[]{300,500, 250,400, 50, 150, 200+thys.dataID[1]*50}; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for), P-6(shield)
         char[] state_types = new char[]{
             'o', 'o', 'o', 'o', 'o', //Placeholder
@@ -357,12 +363,12 @@ public class SC_behaviour : MonoBehaviour
             'o', 'S', 'X', 'S', 'S', //Octogone
             'o', 'S', 'S', 'S', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
-            'o', 'X', 'P', 'A', 'S', //Degenerator
+            'o', 'X', 'S', 'A', 'S', //Degenerator
         };
         float[] state_velocities = new float[]{
             0.20f, 0.20f, 0.20f, 0.20f, 0.20f, //Placeholder
             0.20f, 0.10f, 0.10f, 0.10f, 0.40f, //Protector
-            0.40f, 0.20f, 0.40f, 0.20f, 0.60f, //Adecodron
+            0.40f, 0.20f, 0.40f, 0.20f, 0.70f, //Adecodron
             0.30f, 0.20f, 0.10f, 0.20f, 0.30f, //Octogone
             0.00f, 0.00f, 0.00f, 0.00f, 0.00f, //Starandus
             0.20f, 0.20f, 0.20f, 0.20f, 0.20f, //Useless
@@ -399,7 +405,7 @@ public class SC_behaviour : MonoBehaviour
 
         //Unstable pulse
         float rand_unst = (float)random.NextDouble();
-        if(rand_unst < unstable_pulse_chance && (thys.dataID[18]!=2 || thys.type!=6))
+        if(rand_unst < unstable_pulse_chance && (thys.dataID[18]==4 && thys.type==6))
         {
             float vel_x = Mathf.Cos(velocity_angle) * current_velocity;
             float vel_y = Mathf.Sin(velocity_angle) * current_velocity;

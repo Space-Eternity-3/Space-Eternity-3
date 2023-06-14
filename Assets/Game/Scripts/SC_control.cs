@@ -162,7 +162,7 @@ public class SC_control : MonoBehaviour {
 	public List<float> rposY_RPC = new List<float>();
 	public List<string> nick_RPC = new List<string>();
 
-	public Queue cmdList = new Queue();
+	public static Queue cmdList = new Queue();
 	int fixup=0;
 
 	public float health_V=1f, turbo_V=0f, power_V=0f;
@@ -1281,11 +1281,20 @@ public class SC_control : MonoBehaviour {
 	{
 		return SC_fun.Skop(vec3,F);
 	}
+	bool AllowCollisionDamage()
+	{
+		SC_adecodron[] SC_adecodron2 = FindObjectsOfType<SC_adecodron>();
+		foreach(SC_adecodron adc in SC_adecodron2)
+		{
+			if(adc.cooldown!=0) return false;
+		}
+		return true;
+	}
 	void OnCollisionEnter(Collision collision)
     {
 		float CME=float.Parse(SC_data.Gameplay[6]); 
 
-		if(collision.gameObject.name!="mini_crown" && collision.gameObject.name!="aBossScaled0" && collision.gameObject.name!="S-shield")
+		if(collision.gameObject.name!="mini_crown" && collision.gameObject.name!="aBossScaled0")
 		{
 			if(dmLicz<=0)
        		if(collision.impulse.magnitude>CME&&collision.relativeVelocity.magnitude>CME)
@@ -1293,7 +1302,7 @@ public class SC_control : MonoBehaviour {
 				dmLicz=20;
 				float head_ache = head_ache=collision.impulse.magnitude-CME + 3f;
 				float hai=float.Parse(SC_data.Gameplay[7])*head_ache*1.2f;
-				DamageFLOAT(hai);
+				if(AllowCollisionDamage()) DamageFLOAT(hai);
 			}
 		}
     }
@@ -1330,47 +1339,16 @@ public class SC_control : MonoBehaviour {
 	}
 	void Ws_OnMessage(object sender, MessageEventArgs e)
     {
-		string[] arg = e.Data.Split(' ');
-		if(
-		//Fast commands
-		arg[0]=="/RPU"||
-		arg[0]==".RPU"||
-		arg[0]=="R"||
-		arg[0]=="I"||
-		arg[0]=="/RetHeal"||
-		(arg[0])[0]=='P'||
-
-		//Old commands	
-		arg[0]=="/RetUpgrade"||
-		arg[0]=="/RetFobsChange"||
-		arg[0]=="/RetFobsDataChange"||
-		arg[0]=="/RetFobsDataCorrection"||
-		arg[0]=="/RetFobsTurn"||
-		arg[0]=="/RetAsteroidData"||
-		arg[0]=="/RSD"||
-		arg[0]=="/RetGiveUpTeleport"||
-		arg[0]=="/RetFobsPing"||
-		arg[0]=="/RetGeyzerTurn"||
-		arg[0]=="/RetInventory"||
-		arg[0]=="/RetGrowNow"||
-		arg[0]=="/RetDamageUsing"||
-		arg[0]=="/RetServerDamage"||
-		arg[0]=="/RetDamageBalance"||
-		arg[0]=="/RetNewBulletSend"||
-		arg[0]=="/RetNewBulletDestroy"||
-		arg[0]=="/RetInfoClient"||
-		arg[0]=="/RetInvisibilityPulse"||
-		arg[0]=="/RetSeekData"||
-		arg[0]=="/BRP"||
-		arg[0]=="/RPC"||
-		(arg[0]=="/RetEmitParticles" && arg[1]!=connectionID+""))
-		{
-			cmdList.Enqueue(e.Data);
-		}
+		Queue tsList = Queue.Synchronized(cmdList);
+		tsList.Enqueue(e.Data);
     }
 	void cmdDo(string cmdThis)
 	{
-		if(cmdThis==null || cmdThis=="") return;
+		if(cmdThis==null || cmdThis=="")
+		{
+			Debug.LogWarning("Null command detected: "+(cmdThis==null));
+			return;
+		}
 		string[] arg = cmdThis.Split(' ');
 
 		//Fast commands
@@ -1381,7 +1359,9 @@ public class SC_control : MonoBehaviour {
 			string pgg = arg[0],pggn="";
 			int i,lngt=pgg.Length;
 			for(i=1;i<lngt;i++) pggn+=pgg[i];
-			returnedPing = int.Parse(pggn);
+			int new_returnedPing = int.Parse(pggn);
+			if(new_returnedPing < returnedPing) Debug.LogError("Error: Wrong message order confirmed: "+(new_returnedPing-returnedPing));
+			returnedPing = new_returnedPing;
 			
 			return;
 		}
@@ -1392,6 +1372,7 @@ public class SC_control : MonoBehaviour {
 			string fImmID = arg[2];
 			string fLivID = arg[3];
 			float fValueAbsolute = float.Parse(arg[4]);
+			//Debug.Log(fValueAbsolute+"|"+arg[4]+" >---< "+fValue+"|"+arg[1]);
 
 			if(immID==fImmID && livID==fLivID) {
 				if(!absolute_health_sync) health_V += fValue;
@@ -1635,7 +1616,7 @@ public class SC_control : MonoBehaviour {
 			SC_seek_data.bulletID[seek_id] = bul_id;
 			SC_seek_data.steerData[seek_id] = "0000";
 		}
-		if(arg[0]=="/RetEmitParticles")
+		if(arg[0]=="/RetEmitParticles" && arg[1]!=connectionID+"")
 		{
 			Vector3 particlePos;
 			Quaternion quat_foo = new Quaternion(0f,0f,0f,0f);

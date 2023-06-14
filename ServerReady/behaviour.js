@@ -68,7 +68,7 @@ class CBoss
         //Constants
         var bounce_radius = 26;
         var acceleration = 0.015;
-        var unstable_pulse_force = 0.6;
+        var unstable_pulse_force = 0.4;
         var border_times = [300,500, 250,400, 50, 150, 200+this.dataX[1]*50]; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for), P-6(shield)
         var state_types = [
             'o', 'o', 'o', 'o', 'o', //Placeholder
@@ -77,12 +77,12 @@ class CBoss
             'o', 'S', 'X', 'S', 'S', //Octogone
             'o', 'S', 'S', 'S', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
-            'o', 'X', 'P', 'A', 'S', //Degenerator
+            'o', 'X', 'S', 'A', 'S', //Degenerator
         ];
         var state_velocities = [
             0.20, 0.20, 0.20, 0.20, 0.20, //Placeholder
             0.20, 0.10, 0.10, 0.10, 0.40, //Protector
-            0.40, 0.20, 0.40, 0.20, 0.60, //Adecodron
+            0.40, 0.20, 0.40, 0.20, 0.70, //Adecodron
             0.30, 0.20, 0.10, 0.20, 0.30, //Octogone
             0.00, 0.00, 0.00, 0.00, 0.00, //Starandus
             0.20, 0.20, 0.20, 0.20, 0.20, //Useless
@@ -119,7 +119,7 @@ class CBoss
 
         //Unstable pulse
         var rand_unst = Math.random();
-        if(rand_unst < unstable_pulse_chance && (this.dataY[18-2]!=2 || this.type!=6))
+        if(rand_unst < unstable_pulse_chance && (this.dataY[18-2]==4 && this.type==6))
         {
             var vel_x = Math.cos(velocity_angle) * current_velocity;
             var vel_y = Math.sin(velocity_angle) * current_velocity;

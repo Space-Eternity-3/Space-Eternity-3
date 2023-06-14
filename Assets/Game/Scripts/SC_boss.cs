@@ -194,6 +194,7 @@ public class SC_boss : MonoBehaviour
         {
             SC_control.transform.position = NextToRandomGate();
             SC_control.RemoveImpulse();
+            SC_control.SC_effect.EffectClean();
         }
     }
     public void StartFromStructure()
@@ -295,6 +296,7 @@ public class SC_boss : MonoBehaviour
         float fcr = SC_control.Pitagoras(
             (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
         );
+        bool in_arena_range = (fcr<=37f);
         bool in_arena_vision = (fcr<=80f);
 
         if(memory2!=dataID[2] && in_arena_vision)
@@ -302,6 +304,7 @@ public class SC_boss : MonoBehaviour
             if(memory2==1 && dataID[2]==2) SC_control.InfoUp("Battle started!",500);
             if(memory2==2 && dataID[2]==3) SC_control.InfoUp("Boss wins!",500);
             if(memory2==2 && dataID[2]==4) SC_control.InfoUp("Boss defeated!",500);
+            if(memory2==2 && dataID[2]!=2 && in_arena_range) SC_control.SC_effect.EffectClean();
         }
         memory2 = dataID[2];
     }

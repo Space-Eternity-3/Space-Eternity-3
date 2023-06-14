@@ -9,6 +9,7 @@ public class SC_clothes : MonoBehaviour
     public Transform[] clothes = new Transform[35];
     public int[] actual_sizes = new int[35];
     bool[] at_least_once = new bool[35];
+    public int get_actual_clothe = -1;
 
     void Awake()
     {
@@ -44,5 +45,7 @@ public class SC_clothes : MonoBehaviour
             clothes[i].localScale = new Vector3(1f,1f,1f) / animation_frames * actual_sizes[i];
             if(clothes[i].GetComponent<SC_scacontr>()!=null) clothes[i].GetComponent<SC_scacontr>().ScaleAllNow(1f/animation_frames * actual_sizes[i]);
         }
+
+        get_actual_clothe = clothe_index;
     }
 }
