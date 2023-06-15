@@ -1360,7 +1360,7 @@ public class SC_control : MonoBehaviour {
 			int i,lngt=pgg.Length;
 			for(i=1;i<lngt;i++) pggn+=pgg[i];
 			int new_returnedPing = int.Parse(pggn);
-			if(new_returnedPing < returnedPing) Debug.LogError("Error: Wrong message order confirmed: "+(new_returnedPing-returnedPing));
+			if(new_returnedPing < returnedPing && new_returnedPing!=0) Debug.LogError("Error: Wrong message order confirmed: "+(new_returnedPing-returnedPing)+" : "+new_returnedPing+" : "+returnedPing);
 			returnedPing = new_returnedPing;
 			
 			return;
