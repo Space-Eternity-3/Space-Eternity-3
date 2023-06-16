@@ -62,6 +62,7 @@ public class SC_artefacts : MonoBehaviour
 	public bool IsArtefact(int n)
 	{
 		int i;
+		if(n==41) return true;
 		for(i=1;i<7;i++)
 			if(objIDs[i]==n) return true;
 		return false;
@@ -76,6 +77,11 @@ public class SC_artefacts : MonoBehaviour
 		}
 		if(i==7) i=0;
 		return i;
+	}
+	public bool IsUnchargedImmortality()
+	{
+		if(SC_slots.BackpackX[15]==41 && SC_slots.BackpackY[15]>0) return true;
+		return false;
 	}
 	public int GetArtSource(int n)
 	{
@@ -114,10 +120,16 @@ public class SC_artefacts : MonoBehaviour
 	void LateUpdate()
 	{
 		int n = GetArtefactID();
+		bool un = IsUnchargedImmortality();
 		
 		namet.text = namets[n];
 		description.text = descriptions[n];
 		SC_bars.double_right = bar3[n];
+
+		if(un) {
+			namet.text = namets[7];
+			description.text = descriptions[7];
+		}
 		
 		SC_control.HealthNormal = Color1N[n];
 		

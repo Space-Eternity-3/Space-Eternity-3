@@ -8,6 +8,8 @@ New features:
  - Octogone
  - Starandus
  - Degenerator
+- added stars
+- added fire bullet physical version (generates next to stars)
 
 Old feature changes:
 
@@ -38,6 +40,8 @@ Default datapack changes:
  - drill_brake_speed -5 -> -6
 - turbo_regenerate_multiplier 1 -> 1,5
 - turbo_use_multiplier 2 -> 1,5
+- new star structure
+- golden asteroids are 2 times more common in alien biomes (they didn't spawn there before)
 
 Configurables:
 
@@ -45,12 +49,14 @@ Configurables:
 - new gameplay variable - boss_unstable_effectivity: 1,25
 - new gameplay variable - boss_fire_effectivity: 1.75
 - new server config variable - show_positions (determines whether players' positions are public)
+- added new seon object: star
+- added new biome tag: star
 
 Important technical changes:
 
 - asteroid generation grid expanded from 11x11 to 15x11
 - asteroid disappear range increased 70 -> 110
-- removed message name verification when enqueueing
+- removed message name verification when enqueueing and truly thread safe code
 
 Bug fixes:
 

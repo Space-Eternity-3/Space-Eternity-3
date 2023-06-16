@@ -221,7 +221,7 @@ public class SC_control : MonoBehaviour {
 		bool wr_tick = (int)Communtron4.position.y!=100 || current_tick!=-1;
 		bool wr_comms = Communtron3.position.y==0f && Communtron2.position.x==0f && Communtron3.position.z==0f;
 		bool wr_have = SC_slots.InvHaving(24) || SC_slots.InvHaving(39) || SC_slots.InvHaving(48) || SC_slots.InvHaving(64) || SC_slots.InvHaving(65);
-		bool wr_cotr = (!Input.GetKey(KeyCode.LeftControl) || !SC_slots.InvHaving(48));
+		bool wr_cotr = !(Input.GetKey(KeyCode.LeftControl) && (SC_slots.InvHaving(48) || SC_slots.InvHaving(65)));
 		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && wr_cotr;
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
 		
@@ -643,6 +643,13 @@ public class SC_control : MonoBehaviour {
 		SC_slots.BackpackY[15]--; //sureMTP
 		SC_slots.BackpackYA[15]--;
 		SC_slots.BackpackYB[15]--;
+		if(SC_slots.BackpackY[15]==0)
+		{
+			SC_slots.BackpackX[15] = 41;
+			SC_slots.BackpackY[15]++;
+			SC_slots.BackpackYA[15]++;
+			SC_slots.BackpackYB[15]++;
+		}
 		if((int)Communtron4.position.y==100)
 		{
 			immID=(int.Parse(immID)+1)+"";

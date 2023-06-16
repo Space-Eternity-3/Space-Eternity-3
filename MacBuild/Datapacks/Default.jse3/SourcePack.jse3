@@ -230,6 +230,8 @@ generator_settings
 		settings: [];
 	
 		all_sizes: grass(60%) + magnetic(40%);
+		<Size>4: grass(55%) + magnetic(35%) + gold(10%);
+		<Size>5: grass(55%) + magnetic(35%) + gold(10%);
 	}
 	
 	<---STRUCTURES--->
@@ -270,6 +272,18 @@ generator_settings
 		
 		all_sizes: stoneB(100%);
 	}
+	<Star structure> 7
+	{
+		chance: 1,5%;
+		settings: [
+			structural, star,
+			ring.inner.change -> 0, ring.inner.change -> 20,
+			radius = 40,
+			density = 100%,
+		];
+		
+		all_sizes: coalB(100%);
+	}
 	<max 31 biomes + default>
 }
 objects_generate
@@ -282,6 +296,7 @@ objects_generate
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%);
 	amethyst: small_amethyst(20%) + medium_amethyst(20%) + large_amethyst(20%);
 	coal: coal(45%);
+	coalB: coal(45%) + fire_bullet(20%);
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
 	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
@@ -374,7 +389,7 @@ game_translate <low-level settings>
 		62: blank_element;
 		63: killing_potion;				<only item>
 		64: coal_bullet;				<only item>
-		65: fire_bullet;				<only item>
+		65: fire_bullet;
 	}
 }
 custom_structures <advanced settings>

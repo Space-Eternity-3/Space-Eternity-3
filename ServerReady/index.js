@@ -2215,6 +2215,11 @@ function immortal(pid)
 
   var bpck = plr.backpack[pid].split(";");
   bpck[31] -= 1;
+  if(bpck[31] == 0)
+  {
+    bpck[30] = 41;
+    bpck[31] += 1;
+  }
   plr.backpack[pid] = bpck.join(";");
 
   if(plr.players[pid]=="0" || plr.players[pid]=="1") return;

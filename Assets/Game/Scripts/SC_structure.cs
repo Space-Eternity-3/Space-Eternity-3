@@ -18,6 +18,7 @@ public class SC_structure : MonoBehaviour
 	public Transform stboss;
 	public Transform emptyobject;
 	public Transform bosbul;
+	public Transform star;
 	
     public int X=0,Y=0,ID=1,overrand=0;
 	public string actual_state = "default";
@@ -403,6 +404,12 @@ public class SC_structure : MonoBehaviour
 						if(prshape=="sphere") bbl.GetChild(0).GetComponent<SphereCollider>().enabled = true;
 						if(prshape=="cylinder") bbl.GetChild(0).GetComponent<BoxCollider>().enabled = true;
 						if(prshape=="capsule") bbl.GetChild(0).GetComponent<CapsuleCollider>().enabled = true;
+					}
+					else if(arg[i]=="star")
+					{
+						Transform sta = Instantiate(star,transform.position,Quaternion.identity);
+						sta.parent = transform;
+						st_structs[current] = sta;
 					}
 					else throw(new Exception());
 				}
