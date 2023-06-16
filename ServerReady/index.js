@@ -2888,6 +2888,12 @@ wss.on("connection", function connection(ws) {
         fobChange(tgrUlam, tgrPlace, "40");
         sendToAllClients("/RetGeyzerTurn " + tgrUlam + " " + tgrPlace + " X X");
       }
+      if (
+        checkFobChange(tgrUlam, tgrPlace, "41", "-1")
+      ) {
+        fobChange(tgrUlam, tgrPlace, "45");
+        sendToAllClients("/RetGeyzerTurn " + tgrUlam + " " + tgrPlace + " X X");
+      }
     }
     if (arg[0] == "/FobsPing") {
       //FobsPing 1[id]

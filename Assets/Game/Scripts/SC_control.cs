@@ -1315,7 +1315,8 @@ public class SC_control : MonoBehaviour {
     }
 	void OnTriggerStay(Collider collision)
 	{
-		if(collision.gameObject.name=="damager2"||(collision.gameObject.name=="damager3"&&SC_artefacts.GetArtefactID()!=6))
+		if(collision.gameObject.name=="damager2"||collision.gameObject.name=="star_collider_big"||collision.gameObject.name=="star_collider"||
+		(collision.gameObject.name=="damager3"&&SC_artefacts.GetArtefactID()!=6))
 		{
 			if(licznikD==0) licznikD=5;
 			else if(licznikD<=5)
@@ -1323,8 +1324,9 @@ public class SC_control : MonoBehaviour {
 				string neme = collision.gameObject.name;
 				licznikD=25;
 				float dmgg = 0f;
-				/*if(neme=="damager2")*/ dmgg = float.Parse(SC_data.Gameplay[8]); //spikes always
-				//if(neme=="damager3") dmgg = float.Parse(SC_data.Gameplay[28]); //unstable matter
+				dmgg = float.Parse(SC_data.Gameplay[8]);
+				if(collision.gameObject.name=="star_collider_big") SC_effect.SetEffect(5,5);
+				if(collision.gameObject.name=="star_collider") SC_effect.SetEffect(5,2);
 				if(dmgg!=0f) DamageFLOAT(dmgg);
 			}
 		}

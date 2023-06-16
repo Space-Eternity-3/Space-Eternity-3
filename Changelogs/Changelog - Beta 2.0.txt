@@ -10,6 +10,8 @@ New features:
  - Degenerator
 - added stars
 - added fire bullet physical version (generates next to stars)
+- immortality artefact turns into gray artefact when used
+- gray artefact turns back into immortality artefact when exposed to star wind
 
 Old feature changes:
 
@@ -40,7 +42,7 @@ Default datapack changes:
  - drill_brake_speed -5 -> -6
 - turbo_regenerate_multiplier 1 -> 1,5
 - turbo_use_multiplier 2 -> 1,5
-- new star structure
+- new star structure 1,5%
 - golden asteroids are 2 times more common in alien biomes (they didn't spawn there before)
 
 Configurables:
@@ -71,3 +73,4 @@ Bug fixes:
 - gray projection wasn't working properly, when ping was bigger than 400ms
 - effect replacement was changing effect id without changing duration, when new duration was smaller than old
 - thread safe code was actually not thread safe
+- respawn point was in certain cases impossible to break manually
