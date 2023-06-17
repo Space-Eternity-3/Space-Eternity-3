@@ -13,6 +13,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _ALPHAPREMULTIPLY_ON
+  - _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -43,12 +44,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 4, y: 3}
-        m_Offset: {x: 0, y: 0}
+        m_Scale: {x: 3.5, y: 0.6}
+        m_Offset: {x: 0, y: 0.19}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 16af85089cde2e148919eac7624c2851, type: 3}
-        m_Scale: {x: 4, y: 3}
-        m_Offset: {x: 0, y: 0}
+        m_Texture: {fileID: 2800000, guid: 5261143fe5e837043adf5f15f70a3699, type: 3}
+        m_Scale: {x: 3.5, y: 0.6}
+        m_Offset: {x: 0, y: 0.19}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -67,19 +68,19 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
-    - _GlossMapScale: 1
-    - _Glossiness: 0.43
+    - _GlossMapScale: 0.157
+    - _Glossiness: 0.146
     - _GlossyReflections: 1
-    - _Metallic: 0.266
+    - _Metallic: 0.494
     - _Mode: 3
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _SmoothnessTextureChannel: 0
+    - _SmoothnessTextureChannel: 1
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 0
     m_Colors:
-    - _Color: {r: 0.69411755, g: 0, b: 1, a: 0.8}
+    - _Color: {r: 0.7463784, g: 0, b: 1, a: 0.3372549}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

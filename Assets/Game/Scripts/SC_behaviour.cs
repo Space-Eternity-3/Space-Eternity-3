@@ -305,11 +305,11 @@ public class CInfo
                 new CShooter(9, 0,0,0, 7.5,thys,true, 40, "01000",1,-1, false),
                 new CShooter(9, 180,0,0, 7.5,thys,true, 40, "01000",1,-1, false),
 
-                new CShooter(13, 22.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
-                new CShooter(13, 157.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
-                new CShooter(13, 202.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
-                new CShooter(13, 337.5,20,20, 7,thys,true, 20, "00100",0,-1, false),
-                new CShooter(13, 270,70,70, 7,thys,true, 10, "00100",0,-1, false),
+                new CShooter(13, 22.5,20,20, 7,thys,true, 15, "00100",0,-1, false),
+                new CShooter(13, 157.5,20,20, 7,thys,true, 15, "00100",0,-1, false),
+                new CShooter(13, 202.5,20,20, 7,thys,true, 15, "00100",0,-1, false),
+                new CShooter(13, 337.5,20,20, 7,thys,true, 15, "00100",0,-1, false),
+                new CShooter(13, 270,70,70, 7,thys,true, 8, "00100",0,-1, false),
             };
 
             for(i=0;i<=3;i++) shooters[i].projection_id = 2;

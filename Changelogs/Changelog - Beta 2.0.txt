@@ -26,6 +26,8 @@ Old feature changes:
 - effect is removed after battle end
 - impulse artefact is more orange (oranger)
 - when you exit game when you have effect, you won't get the remaining damage
+- boss rocket bullet damage: 10 -> 12
+- boss unstable bullet damage: 8 -> 6.25
 
 Default datapack changes:
 

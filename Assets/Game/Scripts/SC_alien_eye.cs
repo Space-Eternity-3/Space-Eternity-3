@@ -11,6 +11,9 @@ public class SC_alien_eye : MonoBehaviour {
 	public int min_time;
 	public int max_time;
 
+	public bool advanced_pointing;
+	public Transform advanced_pointer;
+
 	void Start()
 	{
 		eye=gameObject.GetComponent<Transform>();
@@ -33,7 +36,9 @@ public class SC_alien_eye : MonoBehaviour {
 			Fn=Mn*0.2f;
 			eye.localPosition=new Vector3(Fn,0.18f,0f);
 			for(i=0;i<eyeslength;i++)
-				eyes[i].localPosition=new Vector3(Fn,0.18f,0f);
+				eyes[i].localPosition = new Vector3(Fn,0.18f,0f);
 		}
+		if(advanced_pointer)
+			transform.parent.eulerAngles = new Vector3(-90f,0f,0f);
 	}
 }
