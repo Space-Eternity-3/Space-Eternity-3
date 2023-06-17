@@ -1313,22 +1313,33 @@ public class SC_control : MonoBehaviour {
 			}
 		}
     }
+	float max_framal_damage = 0f;
 	void OnTriggerStay(Collider collision)
 	{
 		if(collision.gameObject.name=="damager2"||collision.gameObject.name=="star_collider_big"||collision.gameObject.name=="star_collider"||
 		(collision.gameObject.name=="damager3"&&SC_artefacts.GetArtefactID()!=6))
 		{
-			if(licznikD==0) licznikD=5;
-			else if(licznikD<=5)
+			if(licznikD==0)
 			{
 				string neme = collision.gameObject.name;
-				licznikD=25;
+				
 				float dmgg = 0f;
-				dmgg = float.Parse(SC_data.Gameplay[8]);
-				if(collision.gameObject.name=="star_collider_big") SC_effect.SetEffect(5,5);
+				if(collision.gameObject.name=="damager3") dmgg = float.Parse(SC_data.Gameplay[28]); //unstable matter
+				else if(collision.gameObject.name=="star_collider") dmgg = float.Parse(SC_data.Gameplay[34]); //fire bullet
+				else dmgg = float.Parse(SC_data.Gameplay[8]); //spikes & stars
+
 				if(collision.gameObject.name=="star_collider") SC_effect.SetEffect(5,2);
-				if(dmgg!=0f) DamageFLOAT(dmgg);
+				else if(collision.gameObject.name=="star_collider_big") SC_effect.SetEffect(5,5);
+				if(dmgg > max_framal_damage) max_framal_damage = dmgg;
 			}
+		}
+	}
+	void LateUpdate()
+	{
+		if(max_framal_damage!=0f) {
+			DamageFLOAT(max_framal_damage);
+			max_framal_damage = 0f;
+			licznikD=25;
 		}
 	}
 	public void InfoUp(string info, int tim)

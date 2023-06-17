@@ -211,7 +211,7 @@ public class SC_boss : MonoBehaviour
         mother = false;
         multiplayer = ((int)Communtron4.position.y==100);
         solidPosition = transform.position;
-        bossModels.localPosition = new Vector3(0f,0f,-4000f*type);
+        bossModels.localPosition = new Vector3(0f,0f,-8000f*type);
 
         CanvP = Instantiate(CanvPS,new Vector3(0f,0f,0f),Quaternion.identity);
         CanvP.SetParent(TestBossNick,false); CanvP.name = "CanvBS";

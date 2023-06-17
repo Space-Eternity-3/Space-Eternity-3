@@ -69,7 +69,7 @@ class CBoss
         var bounce_radius = 26;
         var acceleration = 0.015;
         var unstable_pulse_force = 0.4;
-        var border_times = [300,500, 250,400, 50, 150, 200+this.dataX[1]*50]; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for), P-6(shield)
+        var border_times = [300,500, 250,400, 50, 150, 200+this.dataX[1]*50, 300]; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for), P-6(shield), R-7(remote)
         var state_types = [
             'o', 'o', 'o', 'o', 'o', //Placeholder
             'o', 'A', 'P', 'X', 'S', //Protector
@@ -77,17 +77,18 @@ class CBoss
             'o', 'S', 'X', 'S', 'S', //Octogone
             'o', 'S', 'S', 'S', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
-            'o', 'X', 'S', 'A', 'S', //Degenerator
+            'o', 'X', 'S', 'R', 'S', //Degenerator
         ];
         var state_velocities = [
             0.20, 0.20, 0.20, 0.20, 0.20, //Placeholder
             0.20, 0.10, 0.10, 0.10, 0.40, //Protector
             0.40, 0.20, 0.40, 0.20, 0.70, //Adecodron
-            0.30, 0.20, 0.10, 0.20, 0.30, //Octogone
+            0.30, 0.15, 0.10, 0.15, 0.50, //Octogone
             0.00, 0.00, 0.00, 0.00, 0.00, //Starandus
             0.20, 0.20, 0.20, 0.20, 0.20, //Useless
             0.20, 0.10, 0.10, 0.10, 0.40, //Degenerator
         ];
+        var i;
 
         //Pre-defines
         var players = this.world.GetPlayers();
@@ -152,6 +153,12 @@ class CBoss
           this.world.ShotCalculateIfNow(shooter,players,this);
         });
 
+        //Remote damage
+        var reduced_frame = this.dataY[19-2] - this.dataY[17-2];
+        if(this.type==6 && this.dataY[18-2]==3 && reduced_frame%20==0 && reduced_frame!=300)
+            for(i=0;i<players.length;i++)
+                this.world.RemoteDamage(players[i].id);
+
         //Battle state update
         if(this.dataY[17-2] > 0) this.dataY[17-2]--;
         else
@@ -170,6 +177,7 @@ class CBoss
                 else if(time_letter=='X') this.dataY[17-2] = border_times[4]; //Instant shot
                 else if(time_letter=='A') this.dataY[17-2] = border_times[5]; //Waiting for shot
                 else if(time_letter=='P') this.dataY[17-2] = border_times[6]; //Shield not constant
+                else if(time_letter=='R') this.dataY[17-2] = border_times[7]; //Remote
                 else this.dataY[17-2] = border_times[4];
             }
             this.dataY[19-2] = this.dataY[17-2];

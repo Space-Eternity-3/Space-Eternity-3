@@ -16,6 +16,8 @@ public class SC_snd_loop : MonoBehaviour
     public SC_sounds SC_sounds;
     public SC_control SC_control;
 
+    int starter = 5;
+
     public int AddToLoop(int n, Vector3 vec)
     {
         int i;
@@ -38,6 +40,11 @@ public class SC_snd_loop : MonoBehaviour
     }
     void Update()
     {
+        if(starter > 0) {
+            starter--;
+            return;
+        }
+
         int i,j;
         float max,pom,V;
 

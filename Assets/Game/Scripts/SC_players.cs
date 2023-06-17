@@ -150,7 +150,7 @@ public class SC_players : MonoBehaviour
     public void AfterFixedUpdate()
     {
         bool actual = SC_fun.SC_control.NUL[IDP_phys];
-        bool inrange = (SC_fun.SC_control.Pitagoras(sourcedPosition-SC_fun.SC_control.transform.position)<100f);
+        bool inrange = true;
         if(actual)
         {
             sleeping = false;

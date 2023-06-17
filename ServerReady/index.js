@@ -289,6 +289,10 @@ class CInfo
   {
     return this.players;
   }
+  RemoteDamage(id)
+  {
+    DamageFLOAT(id,1*gameplay[32]);
+  }
   ShotCalculateIfNow(shooter,players,thys)
   {
     if(shooter.salvic && thys.dataY[3-2]%250>=175) return;

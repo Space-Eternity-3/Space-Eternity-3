@@ -355,7 +355,7 @@ public class SC_behaviour : MonoBehaviour
         float bounce_radius = 26f;
         float acceleration = 0.015f;
         float unstable_pulse_force = 0.4f;
-        int[] border_times = new int[]{300,500, 250,400, 50, 150, 200+thys.dataID[1]*50}; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for), P-6(shield)
+        int[] border_times = new int[]{300,500, 250,400, 50, 150, 200+thys.dataID[1]*50, 300}; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for), P-6(shield), R-7(remote)
         char[] state_types = new char[]{
             'o', 'o', 'o', 'o', 'o', //Placeholder
             'o', 'A', 'P', 'X', 'S', //Protector
@@ -363,13 +363,13 @@ public class SC_behaviour : MonoBehaviour
             'o', 'S', 'X', 'S', 'S', //Octogone
             'o', 'S', 'S', 'S', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
-            'o', 'X', 'S', 'A', 'S', //Degenerator
+            'o', 'X', 'S', 'R', 'S', //Degenerator
         };
         float[] state_velocities = new float[]{
             0.20f, 0.20f, 0.20f, 0.20f, 0.20f, //Placeholder
             0.20f, 0.10f, 0.10f, 0.10f, 0.40f, //Protector
             0.40f, 0.20f, 0.40f, 0.20f, 0.70f, //Adecodron
-            0.30f, 0.20f, 0.10f, 0.20f, 0.30f, //Octogone
+            0.30f, 0.15f, 0.10f, 0.15f, 0.50f, //Octogone
             0.00f, 0.00f, 0.00f, 0.00f, 0.00f, //Starandus
             0.20f, 0.20f, 0.20f, 0.20f, 0.20f, //Useless
             0.20f, 0.10f, 0.10f, 0.10f, 0.40f, //Degenerator
@@ -438,6 +438,11 @@ public class SC_behaviour : MonoBehaviour
           thys.world.ShotCalculateIfNow(shooter,players,thys);
         }
 
+        //Remote damage
+        int reduced_frame = thys.dataID[19] - thys.dataID[17];
+        if(thys.type==6 && thys.dataID[18]==3 && reduced_frame%20==0 && reduced_frame!=300)
+            if(players.Length>0) thys.SC_control.DamageFLOAT(1f * float.Parse(thys.SC_data.Gameplay[32]));
+
         //Battle state update
         if(thys.dataID[17] > 0) thys.dataID[17]--;
         else
@@ -456,6 +461,7 @@ public class SC_behaviour : MonoBehaviour
                 else if(time_letter=='X') thys.dataID[17] = border_times[4]; //Instant shot
                 else if(time_letter=='A') thys.dataID[17] = border_times[5]; //Waiting for shot
                 else if(time_letter=='P') thys.dataID[17] = border_times[6]; //Shield not constant
+                else if(time_letter=='R') thys.dataID[17] = border_times[7]; //Remote
                 else thys.dataID[17] = border_times[4];
             }
             thys.dataID[19] = thys.dataID[17];
