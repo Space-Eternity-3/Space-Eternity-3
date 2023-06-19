@@ -106,9 +106,10 @@ public class CInfo
         int fram = thys.dataID[19] - thys.dataID[17];
         int true_frequency = shooter.frequency;
 
-        //Shooter frequency change
+        //Shooter frequency change (quakes)
         if( (thys.type==1 && thys.dataID[18]==4) ||
             (thys.type==2 && thys.dataID[18]==4) ||
+            (thys.type==3 && thys.dataID[18]==4) ||
             (thys.type==6 && thys.dataID[18]==4)
         ) true_frequency = (int)(shooter.frequency*0.67f);
 
@@ -352,7 +353,6 @@ public class SC_behaviour : MonoBehaviour
         System.Random random = new System.Random();
 
         //Constants
-        float bounce_radius = 26f;
         float acceleration = 0.015f;
         float unstable_pulse_force = 0.4f;
         int[] border_times = new int[]{300,500, 250,400, 50, 150, 200+thys.dataID[1]*50, 300}; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for), P-6(shield), R-7(remote)
@@ -360,7 +360,7 @@ public class SC_behaviour : MonoBehaviour
             'o', 'o', 'o', 'o', 'o', //Placeholder
             'o', 'A', 'P', 'X', 'S', //Protector
             'o', 'X', 'S', 'X', 'S', //Adecodron
-            'o', 'S', 'X', 'S', 'S', //Octogone
+            'o', 'S', 'X', 'X', 'S', //Octogone
             'o', 'S', 'S', 'S', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
             'o', 'X', 'S', 'R', 'S', //Degenerator
@@ -369,7 +369,7 @@ public class SC_behaviour : MonoBehaviour
             0.20f, 0.20f, 0.20f, 0.20f, 0.20f, //Placeholder
             0.20f, 0.10f, 0.10f, 0.10f, 0.40f, //Protector
             0.40f, 0.20f, 0.40f, 0.20f, 0.70f, //Adecodron
-            0.30f, 0.15f, 0.10f, 0.15f, 0.50f, //Octogone
+            0.30f, 0.15f, 0.15f, 0.15f, 0.50f, //Octogone
             0.00f, 0.00f, 0.00f, 0.00f, 0.00f, //Starandus
             0.20f, 0.20f, 0.20f, 0.20f, 0.20f, //Useless
             0.20f, 0.10f, 0.10f, 0.10f, 0.40f, //Degenerator
@@ -379,6 +379,7 @@ public class SC_behaviour : MonoBehaviour
         SPlayerInfo[] players = thys.world.GetPlayers();
         float target_velocity = state_velocities[thys.type*5+thys.dataID[18]];
         float unstable_pulse_chance = 0.015f; if(thys.type!=6) unstable_pulse_chance = 0f;
+        float bounce_radius = 26f; if(thys.type==3) bounce_radius = 20f;
         
         //Rotation
         float rand_rot = (float)random.NextDouble();

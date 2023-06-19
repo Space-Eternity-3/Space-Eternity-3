@@ -33,6 +33,7 @@ public class SC_fun : MonoBehaviour
     public float biome_sector_size;
 	public float seek_default_angle;
 	public float camera_add;
+	public bool arms_did = false;
 
 	public float[] boss_damages = new float[16];
 	public float[] boss_damages_cyclic = new float[16];

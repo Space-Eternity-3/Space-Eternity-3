@@ -66,7 +66,6 @@ class CBoss
     FixedUpdate() //Executes 50 times per second after starting frame
     {
         //Constants
-        var bounce_radius = 26;
         var acceleration = 0.015;
         var unstable_pulse_force = 0.4;
         var border_times = [300,500, 250,400, 50, 150, 200+this.dataX[1]*50, 300]; // S-0/1(state), o-2/3(empty), X-4(boom-state), A-5(wait-for), P-6(shield), R-7(remote)
@@ -74,7 +73,7 @@ class CBoss
             'o', 'o', 'o', 'o', 'o', //Placeholder
             'o', 'A', 'P', 'X', 'S', //Protector
             'o', 'X', 'S', 'X', 'S', //Adecodron
-            'o', 'S', 'X', 'S', 'S', //Octogone
+            'o', 'S', 'X', 'X', 'S', //Octogone
             'o', 'S', 'S', 'S', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
             'o', 'X', 'S', 'R', 'S', //Degenerator
@@ -83,7 +82,7 @@ class CBoss
             0.20, 0.20, 0.20, 0.20, 0.20, //Placeholder
             0.20, 0.10, 0.10, 0.10, 0.40, //Protector
             0.40, 0.20, 0.40, 0.20, 0.70, //Adecodron
-            0.30, 0.15, 0.10, 0.15, 0.50, //Octogone
+            0.30, 0.15, 0.15, 0.15, 0.50, //Octogone
             0.00, 0.00, 0.00, 0.00, 0.00, //Starandus
             0.20, 0.20, 0.20, 0.20, 0.20, //Useless
             0.20, 0.10, 0.10, 0.10, 0.40, //Degenerator
@@ -94,6 +93,7 @@ class CBoss
         var players = this.world.GetPlayers();
         var target_velocity = state_velocities[this.type*5+this.dataY[18-2]];
         var unstable_pulse_chance = 0.015; if(this.type!=6) unstable_pulse_chance = 0;
+        var bounce_radius = 26; if(this.type==3) bounce_radius = 20;
         
         //Rotation
         var rand_rot = Math.random();

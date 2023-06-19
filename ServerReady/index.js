@@ -299,9 +299,11 @@ class CInfo
     var fram = thys.dataY[19-2] - thys.dataY[17-2];
     var true_frequency = shooter.frequency;
 
-    //Shooter frequency change
-    if( (thys.type==1 && thys.dataY[18-2]==4) ||
+    //Shooter frequency change (quakes)
+    if(
+      (thys.type==1 && thys.dataY[18-2]==4) ||
       (thys.type==2 && thys.dataY[18-2]==4) ||
+      (thys.type==3 && thys.dataY[18-2]==4) ||
       (thys.type==6 && thys.dataY[18-2]==4)
     ) true_frequency = Math.floor(shooter.frequency*0.67);
 
