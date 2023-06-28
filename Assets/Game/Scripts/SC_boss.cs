@@ -82,6 +82,14 @@ public class CSmoothMemory
 
         return currentAngle;
     }
+    public Vector3 LastPosition()
+    {
+        return position[0];
+    }
+    public float LastRotation()
+    {
+        return rotation[0];
+    }
 }
 
 public class SC_boss : MonoBehaviour
@@ -433,8 +441,14 @@ public class SC_boss : MonoBehaviour
                 0f
             ),ScrdToFloat(dataID[10]));
 
-            Boss.position = SmoothMemory.AveragePosition();
-            Boss.eulerAngles = new Vector3(0f,0f,SmoothMemory.AverageRotation());
+            if(type==3 && dataID[18]==3 && dataID[19]-dataID[17]>25) { //sharp
+                Boss.position = SmoothMemory.LastPosition();
+                Boss.eulerAngles = new Vector3(0f,0f,SmoothMemory.AverageRotation());
+            }
+            else { //smooth
+                Boss.position = SmoothMemory.AveragePosition();
+                Boss.eulerAngles = new Vector3(0f,0f,SmoothMemory.AverageRotation());
+            }
         }
         else
         {

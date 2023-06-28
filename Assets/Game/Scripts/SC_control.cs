@@ -194,7 +194,7 @@ public class SC_control : MonoBehaviour {
 	float V_to_F(float V,bool turboo)
 	{
 		if(V==0f) return 0f;
-		V=Engines*V*SC_effect.GetSpeedMultiplier();
+		V=Engines*V;
 		if(turboo) V=V*Mathf.Pow(1.08f,SC_upgrades.MTP_levels[1]);
 		if(V>=0f) return V*(V+15f)/1000f;
 		else
@@ -329,7 +329,7 @@ public class SC_control : MonoBehaviour {
 			else InfoUp("Potion blocked",380);
 
 			//Blank potion
-			if(SC_slots.InvHaving(61)) if(SC_effect.effect!=0 && !impulse_enabled)
+			if(SC_slots.InvHaving(61)) if((SC_effect.effect!=0 || (Mathf.Round(health_V*10000f)/10000f+healBalance)<1f) && !impulse_enabled)
 			{
 				//if(!SC_invisibler.invisible)
 				//{
@@ -339,8 +339,11 @@ public class SC_control : MonoBehaviour {
 				int slot = SC_slots.InvChange(61,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/InventoryChange "+connectionID+" 61 -1 "+slot);
+					SendMTP("/Heal "+connectionID+" 1");
 					/*if(!SC_invisibler.invisible)*/ SendMTP("/EmitParticles "+connectionID+" 14 0 0");
+					healBalance += float.Parse(SC_data.Gameplay[31]);
 				}
+				else HealSGP();
 				SC_effect.EffectClean();
 			}
 			else InfoUp("Potion blocked",380);
@@ -842,8 +845,8 @@ public class SC_control : MonoBehaviour {
 		float pX=0f,pY=0f;
 		if(engineON||turbo||brake)
 		{
-			X=mX*F/Pitagoras(new Vector3(mX,mY,0f));
-			Y=mY*F/Pitagoras(new Vector3(mX,mY,0f));
+			X=mX*F*SC_effect.GetSpeedFMultiplier()/Pitagoras(new Vector3(mX,mY,0f));
+			Y=mY*F*SC_effect.GetSpeedFMultiplier()/Pitagoras(new Vector3(mX,mY,0f));
 			pX+=X; pY+=Y;
 
 			if(turbo&&turbo_V<=0f)
@@ -859,10 +862,10 @@ public class SC_control : MonoBehaviour {
 		//force generate
 		float dX=0f,dY=0f,DragSize=float.Parse(SC_data.Gameplay[14]);
 		
-		dX-=0.001f*VacuumDrag*DragSize*playerR.velocity.x*Mathf.Abs(playerR.velocity.x);
-		dY-=0.001f*VacuumDrag*DragSize*playerR.velocity.y*Mathf.Abs(playerR.velocity.y);
-		dX-=0.015f*VacuumDrag*DragSize*playerR.velocity.x;
-		dY-=0.015f*VacuumDrag*DragSize*playerR.velocity.y;
+		dX-=0.001f*VacuumDrag*DragSize*SC_effect.GetVacuumMultiplier()*playerR.velocity.x*Mathf.Abs(playerR.velocity.x);
+		dY-=0.001f*VacuumDrag*DragSize*SC_effect.GetVacuumMultiplier()*playerR.velocity.y*Mathf.Abs(playerR.velocity.y);
+		dX-=0.015f*VacuumDrag*DragSize*SC_effect.GetVacuumMultiplier()*playerR.velocity.x;
+		dY-=0.015f*VacuumDrag*DragSize*SC_effect.GetVacuumMultiplier()*playerR.velocity.y;
 
 		if(Mathf.Abs(dX)>Mathf.Abs(playerR.velocity.x)) dX=playerR.velocity.x;
 		if(Mathf.Abs(dY)>Mathf.Abs(playerR.velocity.y)) dY=playerR.velocity.y;
@@ -1644,10 +1647,10 @@ public class SC_control : MonoBehaviour {
 			int pid = int.Parse(arg[1]);
 			if(pid==0) pid = connectionID;
 			
-			if((put>=6 && put<=8) || put==11)
+			if((put>=6 && put<=8) || (put>=11 && put<=15))
 			{
 				particlePos = PL[pid].GetComponent<Transform>().position;
-				if(put==7||false)
+				if(put==7)
 				{
 					quat_foo.eulerAngles = new Vector3(0f,0f,90f+float.Parse(arg[3]));
 				}
@@ -1656,39 +1659,39 @@ public class SC_control : MonoBehaviour {
 		
 			switch(put)
 			{
-				case 1: //explosion
+				case 1:
 					SC_sounds.PlaySound(particlePos,2,2);
 					Instantiate(explosionM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 2:
 					Instantiate(explosion2M,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
-				case 3:
+				case 3: //respawn set
 					Instantiate(respawn2M,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 4:
 					Instantiate(receiveParticles,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
-				case 5:
+				case 5: //immortality used
 					Instantiate(ImmortalParticles,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				case 6:
 					Instantiate(InvisiPart,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
-				case 7:
+				case 7: //unstable small pulse
 					Transform trn7 = Instantiate(unstablePart,particlePos,quat_foo);
 					trn7.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
 					trn7.GetComponent<SC_seeking>().enabled = true;
 					break;
-				case 8: //impulse hidden
+				case 8: //impulse (hidden)
 					Transform trn8 = Instantiate(impulseHidden,particlePos,quat_foo);
 					trn8.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
 					trn8.GetComponent<SC_seeking>().enabled = true;
 					break;
-				case 9:
+				case 9: //boss damage
 					Instantiate(particlesBossDamageM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
-				case 10:
+				case 10: //boss explosion
 					Instantiate(particlesBossExplosionM,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				default:

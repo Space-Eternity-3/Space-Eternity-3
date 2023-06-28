@@ -242,14 +242,14 @@ public class CInfo
         if(type==3) //Octogone
         {
             shooters = new List<CShooter>() {
-                new CShooter(7, 0,60,10, 6.5,thys,false, 51, "10111",0,-1, false),
-                new CShooter(7, 45,60,10, 6.5,thys,false, 48, "10111",0,-1, false),
-                new CShooter(7, 90,60,10, 6.5,thys,false, 53, "10111",0,-1, false),
-                new CShooter(7, 135,60,10, 6.5,thys,false, 47, "10111",0,-1, false),
-                new CShooter(7, 180,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
-                new CShooter(7, 225,60,10, 6.5,thys,false, 54, "10111",0,-1, false),
-                new CShooter(7, 270,60,10, 6.5,thys,false, 52, "10111",0,-1, false),
-                new CShooter(7, 315,60,10, 6.5,thys,false, 49, "10111",0,-1, false),
+                new CShooter(7, 0,60,10, 6.5,thys,false, 51, "10101",0,-1, false),
+                new CShooter(7, 45,60,10, 6.5,thys,false, 48, "10101",0,-1, false),
+                new CShooter(7, 90,60,10, 6.5,thys,false, 53, "10101",0,-1, false),
+                new CShooter(7, 135,60,10, 6.5,thys,false, 47, "10101",0,-1, false),
+                new CShooter(7, 180,60,10, 6.5,thys,false, 50, "10101",0,-1, false),
+                new CShooter(7, 225,60,10, 6.5,thys,false, 54, "10101",0,-1, false),
+                new CShooter(7, 270,60,10, 6.5,thys,false, 52, "10101",0,-1, false),
+                new CShooter(7, 315,60,10, 6.5,thys,false, 49, "10101",0,-1, false),
 
                 new CShooter(7, 0,60,60, 6.5,thys,true, 31, "01000",0,-1, false),
                 new CShooter(7, 45,60,60, 6.5,thys,true, 28, "01000",0,-1, false),
@@ -360,7 +360,7 @@ public class SC_behaviour : MonoBehaviour
             'o', 'o', 'o', 'o', 'o', //Placeholder
             'o', 'A', 'P', 'X', 'S', //Protector
             'o', 'X', 'S', 'X', 'S', //Adecodron
-            'o', 'S', 'X', 'X', 'S', //Octogone
+            'o', 'S', 'X', 'S', 'S', //Octogone
             'o', 'S', 'S', 'S', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
             'o', 'X', 'S', 'R', 'S', //Degenerator
@@ -380,12 +380,19 @@ public class SC_behaviour : MonoBehaviour
         float target_velocity = state_velocities[thys.type*5+thys.dataID[18]];
         float unstable_pulse_chance = 0.015f; if(thys.type!=6) unstable_pulse_chance = 0f;
         float bounce_radius = 26f; if(thys.type==3) bounce_radius = 20f;
+        int telep_min = 10, telep_max = 40;
         
         //Rotation
         float rand_rot = (float)random.NextDouble();
         if(thys.dataID[11]==thys.dataID[12] && rand_rot>0.8f) thys.dataID[12] = UnityEngine.Random.Range(-30,31);
         thys.dataID[11] += (int)Mathf.Sign(thys.dataID[12]-thys.dataID[11]);
         thys.dataID[10] = thys.FloatToScrd((thys.ScrdToFloat(thys.dataID[10]) + 0.15f*thys.dataID[11]));
+
+        //Scary telep force
+        if(thys.type==3 && thys.dataID[18]==3 && thys.dataID[17]>10 && thys.dataID[19]-thys.dataID[17]>=30) {
+            thys.dataID[10] = thys.FloatToScrd(22.5f);
+            thys.dataID[13] = thys.FloatToScrd(0f);
+        }
 
         //Movement rotation
         if(thys.dataID[15]==thys.dataID[16]) thys.dataID[16] = UnityEngine.Random.Range(-30,31);
@@ -444,11 +451,28 @@ public class SC_behaviour : MonoBehaviour
         if(thys.type==6 && thys.dataID[18]==3 && reduced_frame%20==0 && reduced_frame!=300)
             if(players.Length>0) thys.SC_control.DamageFLOAT(1f * float.Parse(thys.SC_data.Gameplay[32]));
 
+        //Octogone teleportation
+        float new_x=0, new_y=0;
+        if(thys.dataID[22]==0 && thys.type==3 && thys.dataID[18]==3 &&
+        thys.dataID[17]>10 && thys.dataID[19]-thys.dataID[17]>=30)
+        { 
+            thys.dataID[23] = 1;
+            thys.dataID[22] = UnityEngine.Random.Range(telep_min,telep_max+1);
+            do {
+                new_x = ((float)random.NextDouble()*2-1) * bounce_radius;
+                new_y = ((float)random.NextDouble()*2-1) * bounce_radius;
+            } while(new_x*new_x + new_y*new_y >= bounce_radius*bounce_radius);
+            thys.dataID[8] = thys.FloatToScrd(new_x);
+            thys.dataID[9] = thys.FloatToScrd(new_y);
+        }
+        if(thys.dataID[22]>0) thys.dataID[22]--;
+
         //Battle state update
         if(thys.dataID[17] > 0) thys.dataID[17]--;
         else
         {
             thys.dataID[21] = thys.dataID[18];
+            thys.dataID[23] = 0;
             if(thys.dataID[18]!=0)
             {
                 thys.dataID[18] = 0;

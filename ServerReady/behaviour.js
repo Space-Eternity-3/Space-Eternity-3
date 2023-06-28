@@ -44,6 +44,8 @@ class CBoss
     dataY[19-2] - starting_battle_state_timer
     dataY[20-2] - one_time_shooter_bool_storage
     dataY[21-2] - battle_state_id_before
+    dataY[22-2] - octogone_telep_counter
+    dataY[23-2] - octogone_telep_effect_controller
     
     <...>
     dataY[60-2] - {Other variables are empty at this time. Use them as a data storage between frames or ask Kamiloso to do some special tasks using them.}
@@ -73,7 +75,7 @@ class CBoss
             'o', 'o', 'o', 'o', 'o', //Placeholder
             'o', 'A', 'P', 'X', 'S', //Protector
             'o', 'X', 'S', 'X', 'S', //Adecodron
-            'o', 'S', 'X', 'X', 'S', //Octogone
+            'o', 'S', 'X', 'S', 'S', //Octogone
             'o', 'S', 'S', 'S', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
             'o', 'X', 'S', 'R', 'S', //Degenerator
@@ -94,12 +96,19 @@ class CBoss
         var target_velocity = state_velocities[this.type*5+this.dataY[18-2]];
         var unstable_pulse_chance = 0.015; if(this.type!=6) unstable_pulse_chance = 0;
         var bounce_radius = 26; if(this.type==3) bounce_radius = 20;
+        var telep_min = 10, telep_max = 40;
         
         //Rotation
         var rand_rot = Math.random();
         if(this.dataY[11-2]==this.dataY[12-2] && rand_rot>0.8) this.dataY[12-2] = func.randomInteger(-30,30);
         this.dataY[11-2] += Math.sign(this.dataY[12-2]-this.dataY[11-2]);
         this.dataY[10-2] = func.FloatToScrd((func.ScrdToFloat(this.dataY[10-2]) + 0.15*this.dataY[11-2]));
+
+        //Scary telep force
+        if(this.type==3 && this.dataY[18-2]==3 && this.dataY[17-2]>10 && this.dataY[19-2]-this.dataY[17-2]>=30) {
+            this.dataY[10-2] = func.FloatToScrd(22.5);
+            this.dataY[13-2] = func.FloatToScrd(0);
+        }
 
         //Movement rotation
         if(this.dataY[15-2]==this.dataY[16-2]) this.dataY[16-2] = func.randomInteger(-30,30);
@@ -159,11 +168,28 @@ class CBoss
             for(i=0;i<players.length;i++)
                 this.world.RemoteDamage(players[i].id);
 
+        //Octogone teleportation
+        var new_x=0, new_y=0;
+        if(this.dataY[22-2]==0 && this.type==3 && this.dataY[18-2]==3 &&
+        this.dataY[17-2]>10 && this.dataY[19-2]-this.dataY[17-2]>=30)
+        { 
+            this.dataY[23-2] = 1;
+            this.dataY[22-2] = func.randomInteger(telep_min,telep_max);
+            do {
+                new_x = (Math.random()*2-1) * bounce_radius;
+                new_y = (Math.random()*2-1) * bounce_radius;
+            } while(new_x*new_x + new_y*new_y >= bounce_radius*bounce_radius);
+            this.dataY[8-2] = func.FloatToScrd(new_x);
+            this.dataY[9-2] = func.FloatToScrd(new_y);
+        }
+        if(this.dataY[22-2]>0) this.dataY[22-2]--;
+
         //Battle state update
         if(this.dataY[17-2] > 0) this.dataY[17-2]--;
         else
         {
             this.dataY[21-2] = this.dataY[18-2];
+            this.dataY[23-2] = 0;
             if(this.dataY[18-2]!=0)
             {
                 this.dataY[18-2] = 0;

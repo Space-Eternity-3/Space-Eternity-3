@@ -32,7 +32,16 @@ public class SC_effect : MonoBehaviour
     public float GetSpeedMultiplier()
     {
         if(effect==8) return 0.2f;
-        //else if(effect==6) return 0.8f;
+        else return 1f;
+    }
+    public float GetSpeedFMultiplier()
+    {
+        if(effect==8) return 0.12f;
+        else return 1f;
+    }
+    public float GetVacuumMultiplier()
+    {
+        if(effect==8) return 2f;
         else return 1f;
     }
     public void OneFrameDamage()

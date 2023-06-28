@@ -444,14 +444,14 @@ class CInfo
         if(type==3) //Octogone
         {
             shooters = [
-              new CShooter(7, 0,60,10, 6.5,thys,false, 51, "10111",0,-1, false),
-              new CShooter(7, 45,60,10, 6.5,thys,false, 48, "10111",0,-1, false),
-              new CShooter(7, 90,60,10, 6.5,thys,false, 53, "10111",0,-1, false),
-              new CShooter(7, 135,60,10, 6.5,thys,false, 47, "10111",0,-1, false),
-              new CShooter(7, 180,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
-              new CShooter(7, 225,60,10, 6.5,thys,false, 54, "10111",0,-1, false),
-              new CShooter(7, 270,60,10, 6.5,thys,false, 52, "10111",0,-1, false),
-              new CShooter(7, 315,60,10, 6.5,thys,false, 49, "10111",0,-1, false),
+              new CShooter(7, 0,60,10, 6.5,thys,false, 51, "10101",0,-1, false),
+              new CShooter(7, 45,60,10, 6.5,thys,false, 48, "10101",0,-1, false),
+              new CShooter(7, 90,60,10, 6.5,thys,false, 53, "10101",0,-1, false),
+              new CShooter(7, 135,60,10, 6.5,thys,false, 47, "10101",0,-1, false),
+              new CShooter(7, 180,60,10, 6.5,thys,false, 50, "10101",0,-1, false),
+              new CShooter(7, 225,60,10, 6.5,thys,false, 54, "10101",0,-1, false),
+              new CShooter(7, 270,60,10, 6.5,thys,false, 52, "10101",0,-1, false),
+              new CShooter(7, 315,60,10, 6.5,thys,false, 49, "10101",0,-1, false),
 
               new CShooter(7, 0,60,60, 6.5,thys,true, 31, "01000",0,-1, false),
               new CShooter(7, 45,60,60, 6.5,thys,true, 28, "01000",0,-1, false),

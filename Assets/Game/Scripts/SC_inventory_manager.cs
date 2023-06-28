@@ -85,7 +85,7 @@ public class SC_inventory_manager : MonoBehaviour {
 						sImg.texture=SC_fun.Item57u;
 					if(pvNum==59f) if(SC_fun.SC_control.power_V<0.95f && !SC_fun.SC_control.SC_invisibler.invisible && (SC_fun.SC_control.SC_artefacts.GetArtefactID()==2 || SC_fun.SC_control.SC_artefacts.GetArtefactID()==3))
 						sImg.texture=SC_fun.Item59u;
-					if(pvNum==61f) if(SC_fun.SC_control.SC_effect.effect!=0)
+					if(pvNum==61f) if(SC_fun.SC_control.SC_effect.effect!=0 || (Mathf.Round(SC_fun.SC_control.health_V*10000f)/10000f+SC_fun.SC_control.healBalance)<1f)
 						sImg.texture=SC_fun.Item61u;
 					if(pvNum==63f)
 						sImg.texture=SC_fun.Item63u;

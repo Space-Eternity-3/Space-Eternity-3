@@ -18,12 +18,16 @@ public class SC_camera : MonoBehaviour {
 	public SC_data SC_data;
 	public Transform player;
 	public Transform respawn;
+	public Transform background;
 
 	int sCounter=50;
 	public int TotalTime=0;
 	bool fullS;
 
 	int worldID=0;
+
+	int is_rolling = 0;
+	public int roll_step;
 
 	void save_zoom(float localZ)
 	{
