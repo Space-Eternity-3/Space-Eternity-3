@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SC_snd_loop : MonoBehaviour
 {
+    public int SoundAmount;
+
     public AudioSource[] sounds = new AudioSource[3];
     public float[] sound_nvl_ = new float[3];
     public float[] sound_ptc_ = new float[3];
@@ -48,7 +50,7 @@ public class SC_snd_loop : MonoBehaviour
         int i,j;
         float max,pom,V;
 
-        for(i=0;i<3;i++)
+        for(i=0;i<SoundAmount;i++)
         {
             V = 0f;
             for(j=0;j<2048;j++)

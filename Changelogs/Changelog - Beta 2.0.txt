@@ -2,12 +2,12 @@ New features:
 
 - camera zoom out when arena active
 - boss system improved
-- added bosses:
- - Protector
- - Adecodron
- - Octogone
- - Starandus
- - Degenerator
+- bosses finished:
+ - Protector [description and image here]
+ - Adecodron [description and image here]
+ - Octogone [description and image here]
+ - Starandus [description and image here]
+ - Degenerator [description and image here]
 - added stars
 - added fire bullet physical version (generates next to stars)
 - immortality artefact turns into gray artefact when used
@@ -15,7 +15,7 @@ New features:
 
 Old feature changes:
 
-- treasure loot updated [paste actual loot here]
+- treasure loot updated [actual loot here]
 - treasure loot can turn up in hidden slots now
 - unstable artefact description changed to: "You can't unleash its power"
 - Starandus now immune to fire bullets
@@ -29,7 +29,7 @@ Old feature changes:
 - boss rocket bullet damage: 10 -> 12
 - boss unstable bullet damage: 8 -> 6.25
 - blank potion acts like healing potion, but also removes effect
-- adjusted sticky bulb on player color
+- adjusted sticky bulb material (more transparent and same on player and as bullet)
 
 Default datapack changes:
 

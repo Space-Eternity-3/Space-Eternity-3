@@ -357,6 +357,7 @@ public class SC_boss : MonoBehaviour
             if(transform.GetComponent<SC_seon_remote>().SC_structure==null)
                 FixedUpdateT();
     }
+
     void Update()
     {
         float fcr = SC_control.Pitagoras(
@@ -367,6 +368,8 @@ public class SC_boss : MonoBehaviour
         if(in_arena_range && dataID2_client==1) SC_control.SC_fun.camera_add = -12.5f * Mathf.Min(dataID3_client,40)/40f;
         if(in_arena_range && dataID2_client>=3) SC_control.SC_fun.camera_add = -12.5f * Mathf.Max(40-dataID3_client,0)/40f;
     }
+
+    //Strange data, do not touch, no one understands, even creator
     int dataID3_client;
     int dataID3_before_state;
     int dataID2_client;
@@ -377,6 +380,7 @@ public class SC_boss : MonoBehaviour
     public int dataID20_client;
     public int dataID21_client;
     bool dataID3_bool = false;
+
     public void FixedUpdateT()
     {
         if(mother) return;
@@ -599,6 +603,9 @@ public class SC_boss : MonoBehaviour
         if(rand==2) posit += new Vector3(0f,41.5f,0f);
         if(rand==3) posit += new Vector3(0f,-41.5f,0f);
         return posit;
+    }
+    public void CreateTelepPulse(float lx, float ly) {
+        Instantiate(SC_control.TelepParticles,bossModels.position-new Vector3(0f,0f,bossModels.position.z),Quaternion.identity);
     }
     public int FloatToScrd(float src) {
         return (int)(src*124);

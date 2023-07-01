@@ -104,12 +104,6 @@ class CBoss
         this.dataY[11-2] += Math.sign(this.dataY[12-2]-this.dataY[11-2]);
         this.dataY[10-2] = func.FloatToScrd((func.ScrdToFloat(this.dataY[10-2]) + 0.15*this.dataY[11-2]));
 
-        //Scary telep force
-        if(this.type==3 && this.dataY[18-2]==3 && this.dataY[17-2]>10 && this.dataY[19-2]-this.dataY[17-2]>=30) {
-            this.dataY[10-2] = func.FloatToScrd(22.5);
-            this.dataY[13-2] = func.FloatToScrd(0);
-        }
-
         //Movement rotation
         if(this.dataY[15-2]==this.dataY[16-2]) this.dataY[16-2] = func.randomInteger(-30,30);
         this.dataY[15-2] += Math.sign(this.dataY[16-2]-this.dataY[15-2]);
@@ -125,6 +119,12 @@ class CBoss
         if(target_velocity < current_velocity) {
             current_velocity -= acceleration;
             if(target_velocity > current_velocity) current_velocity = target_velocity;
+        }
+
+        //Scary telep force
+        if(this.type==3 && this.dataY[18-2]==3 && this.dataY[17-2]>10 && this.dataY[19-2]-this.dataY[17-2]>=30) {
+            this.dataY[10-2] = func.FloatToScrd(22.5);
+            current_velocity = 0;
         }
 
         //Unstable pulse
@@ -143,6 +143,7 @@ class CBoss
         this.dataY[14-2] = func.FloatToScrd(velocity_angle);
 
         //Movement & Bounce
+        if(current_velocity!=0) {
         var xy = func.RotatePoint([current_velocity,0],velocity_angle,false);
         var x1 = func.ScrdToFloat(this.dataY[8-2]); var y1 = func.ScrdToFloat(this.dataY[9-2]);
         var x2 = x1 + xy[0]; var y2 = y1 + xy[1];
@@ -156,6 +157,7 @@ class CBoss
         this.dataY[8-2] = func.FloatToScrd(ef[0]);
         this.dataY[9-2] = func.FloatToScrd(ef[1]);
         if(ef[3]==1) this.dataY[14-2] = func.FloatToScrd(ef[2]);
+        }
         
         //Shooting
         this.shooters.forEach(shooter => {
@@ -175,6 +177,7 @@ class CBoss
         { 
             this.dataY[23-2] = 1;
             this.dataY[22-2] = func.randomInteger(telep_min,telep_max);
+            this.world.CreateTelepPulse(this.deltapos.x-0+func.ScrdToFloat(this.dataY[8-2]),this.deltapos.y-0+func.ScrdToFloat(this.dataY[9-2]));
             do {
                 new_x = (Math.random()*2-1) * bounce_radius;
                 new_y = (Math.random()*2-1) * bounce_radius;

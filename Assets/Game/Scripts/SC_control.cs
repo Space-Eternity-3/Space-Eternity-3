@@ -35,6 +35,7 @@ public class SC_control : MonoBehaviour {
 	public Transform particlesBossDamageM;
 	public Transform particlesBossExplosion;
 	public Transform particlesBossExplosionM;
+	public Transform TelepParticles;
 	public Transform[] particlesEmptyBulb = new Transform[5];
 	public Rigidbody playerR;
 	public Transform drill3T;
@@ -331,16 +332,16 @@ public class SC_control : MonoBehaviour {
 			//Blank potion
 			if(SC_slots.InvHaving(61)) if((SC_effect.effect!=0 || (Mathf.Round(health_V*10000f)/10000f+healBalance)<1f) && !impulse_enabled)
 			{
-				//if(!SC_invisibler.invisible)
-				//{
+				if(!SC_invisibler.invisible)
+				{
 					Transform trn11 = Instantiate(particlesEmptyBulb[3],transform.position,new Quaternion(0f,0f,0f,0f));
 					trn11.GetComponent<SC_seeking>().enabled = true;
-				//}
+				}
 				int slot = SC_slots.InvChange(61,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/InventoryChange "+connectionID+" 61 -1 "+slot);
 					SendMTP("/Heal "+connectionID+" 1");
-					/*if(!SC_invisibler.invisible)*/ SendMTP("/EmitParticles "+connectionID+" 14 0 0");
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 14 0 0");
 					healBalance += float.Parse(SC_data.Gameplay[31]);
 				}
 				else HealSGP();
@@ -1693,6 +1694,9 @@ public class SC_control : MonoBehaviour {
 					break;
 				case 10: //boss explosion
 					Instantiate(particlesBossExplosionM,particlePos,new Quaternion(0f,0f,0f,0f));
+					break;
+				case 16: //telep (hidden)
+					Instantiate(TelepParticles,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				default:
 					if(put>=11&&put<=15)

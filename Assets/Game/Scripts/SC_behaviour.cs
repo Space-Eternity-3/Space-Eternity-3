@@ -242,14 +242,14 @@ public class CInfo
         if(type==3) //Octogone
         {
             shooters = new List<CShooter>() {
-                new CShooter(7, 0,60,10, 6.5,thys,false, 51, "10101",0,-1, false),
-                new CShooter(7, 45,60,10, 6.5,thys,false, 48, "10101",0,-1, false),
-                new CShooter(7, 90,60,10, 6.5,thys,false, 53, "10101",0,-1, false),
-                new CShooter(7, 135,60,10, 6.5,thys,false, 47, "10101",0,-1, false),
-                new CShooter(7, 180,60,10, 6.5,thys,false, 50, "10101",0,-1, false),
-                new CShooter(7, 225,60,10, 6.5,thys,false, 54, "10101",0,-1, false),
-                new CShooter(7, 270,60,10, 6.5,thys,false, 52, "10101",0,-1, false),
-                new CShooter(7, 315,60,10, 6.5,thys,false, 49, "10101",0,-1, false),
+                new CShooter(7, 0,60,10, 6.5,thys,false, 51, "10111",0,-1, false),
+                new CShooter(7, 45,60,10, 6.5,thys,false, 48, "10111",0,-1, false),
+                new CShooter(7, 90,60,10, 6.5,thys,false, 53, "10111",0,-1, false),
+                new CShooter(7, 135,60,10, 6.5,thys,false, 47, "10111",0,-1, false),
+                new CShooter(7, 180,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
+                new CShooter(7, 225,60,10, 6.5,thys,false, 54, "10111",0,-1, false),
+                new CShooter(7, 270,60,10, 6.5,thys,false, 52, "10111",0,-1, false),
+                new CShooter(7, 315,60,10, 6.5,thys,false, 49, "10111",0,-1, false),
 
                 new CShooter(7, 0,60,60, 6.5,thys,true, 31, "01000",0,-1, false),
                 new CShooter(7, 45,60,60, 6.5,thys,true, 28, "01000",0,-1, false),
@@ -388,12 +388,6 @@ public class SC_behaviour : MonoBehaviour
         thys.dataID[11] += (int)Mathf.Sign(thys.dataID[12]-thys.dataID[11]);
         thys.dataID[10] = thys.FloatToScrd((thys.ScrdToFloat(thys.dataID[10]) + 0.15f*thys.dataID[11]));
 
-        //Scary telep force
-        if(thys.type==3 && thys.dataID[18]==3 && thys.dataID[17]>10 && thys.dataID[19]-thys.dataID[17]>=30) {
-            thys.dataID[10] = thys.FloatToScrd(22.5f);
-            thys.dataID[13] = thys.FloatToScrd(0f);
-        }
-
         //Movement rotation
         if(thys.dataID[15]==thys.dataID[16]) thys.dataID[16] = UnityEngine.Random.Range(-30,31);
         thys.dataID[15] += (int)Mathf.Sign(thys.dataID[16]-thys.dataID[15]);
@@ -409,6 +403,12 @@ public class SC_behaviour : MonoBehaviour
         if(target_velocity < current_velocity) {
             current_velocity -= acceleration;
             if(target_velocity > current_velocity) current_velocity = target_velocity;
+        }
+
+        //Scary telep force
+        if(thys.type==3 && thys.dataID[18]==3 && thys.dataID[17]>10 && thys.dataID[19]-thys.dataID[17]>=30) {
+            thys.dataID[10] = thys.FloatToScrd(22.5f);
+            current_velocity = 0f;
         }
 
         //Unstable pulse
@@ -427,6 +427,7 @@ public class SC_behaviour : MonoBehaviour
         thys.dataID[14] = thys.FloatToScrd(velocity_angle);
 
         //Movement & Bounce
+        if(current_velocity!=0) {
         float[] xy = thys.RotatePoint(new float[2]{current_velocity,0},velocity_angle,false);
         float x1 = thys.ScrdToFloat(thys.dataID[8]); float y1 = thys.ScrdToFloat(thys.dataID[9]);
         float x2 = x1 + xy[0]; var y2 = y1 + xy[1];
@@ -440,6 +441,7 @@ public class SC_behaviour : MonoBehaviour
         thys.dataID[8] = thys.FloatToScrd(ef[0]);
         thys.dataID[9] = thys.FloatToScrd(ef[1]);
         if(ef[3]==1f) thys.dataID[14] = thys.FloatToScrd(ef[2]);
+        }
 
         //Shooting
         foreach(CShooter shooter in thys.shooters) {
@@ -458,6 +460,7 @@ public class SC_behaviour : MonoBehaviour
         { 
             thys.dataID[23] = 1;
             thys.dataID[22] = UnityEngine.Random.Range(telep_min,telep_max+1);
+            thys.CreateTelepPulse(thys.deltapos.x+thys.ScrdToFloat(thys.dataID[8]),thys.deltapos.y+thys.ScrdToFloat(thys.dataID[9]));
             do {
                 new_x = ((float)random.NextDouble()*2-1) * bounce_radius;
                 new_y = ((float)random.NextDouble()*2-1) * bounce_radius;

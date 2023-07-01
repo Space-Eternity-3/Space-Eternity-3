@@ -274,7 +274,7 @@ generator_settings
 	
 	<Arena structure> 4
 	{
-		chance: 5%;
+		chance: 30%;
 		settings: [
 			structural, arena, spawn, centred,
 			ring.inner.change -> 0, ring.inner.change -> 50,
@@ -310,7 +310,7 @@ generator_settings
 	}
 	<Star structure> 7
 	{
-		chance: 20%;
+		chance: 1,5%;
 		settings: [
 			structural, star,
 			ring.inner.change -> 0, ring.inner.change -> 20,
