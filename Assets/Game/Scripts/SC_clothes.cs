@@ -10,6 +10,7 @@ public class SC_clothes : MonoBehaviour
     public int[] actual_sizes = new int[35];
     bool[] at_least_once = new bool[35];
     public int get_actual_clothe = -1;
+    public Transform star_normal_particles;
 
     void Awake()
     {
@@ -46,6 +47,11 @@ public class SC_clothes : MonoBehaviour
             if(clothes[i].GetComponent<SC_scacontr>()!=null) clothes[i].GetComponent<SC_scacontr>().ScaleAllNow(1f/animation_frames * actual_sizes[i]);
             if(SC_boss.type*5+SC_boss.dataID[18]==3*5+3 && SC_boss.dataID[23]==0) clothes[i].gameObject.SetActive(false);
         }
+
+        ParticleSystem pss = star_normal_particles.GetComponent<ParticleSystem>();
+        var emissionModule = pss.emission;
+        if(SC_boss.type==4 && SC_boss.dataID[18]<3) emissionModule.enabled = true;
+        else emissionModule.enabled = false;
 
         get_actual_clothe = clothe_index;
     }

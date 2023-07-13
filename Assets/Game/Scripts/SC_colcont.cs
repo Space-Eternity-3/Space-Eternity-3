@@ -18,6 +18,7 @@ public class SC_colcont : MonoBehaviour
                 bul.boss_damaged = true;
                 int effector_time = SC_fun.bullet_effector[bul.type];
                 if(effector_time!=0) SC_effect.SetEffect(bul.type,effector_time);
+                if(bul.type==16) SC_control.GravitonCatch();
                 if(!bul.is_unstable || SC_control.SC_artefacts.GetArtefactID()!=6) SC_control.DamageFLOAT(bul.normal_damage);
                 if(!SC_control.SC_fun.bullet_air_consistence[bul.type])
                 {

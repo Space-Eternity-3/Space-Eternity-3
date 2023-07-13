@@ -20,9 +20,9 @@ var hourHeader = "";
 var gpl_number = 39;
 var max_players = 128;
 
-var boss_damages = [0,0,0,0,35,4.25,6,5,0,12,6,3.75,5,6.25,0,0];
-var other_bullets_colliders = [0,0.08,0.08,0.08,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.08,0.08];
-var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,1];
+var boss_damages = [0,0,0,0,35,3,6,5,0,12,6,3.75,5,6.25,0,0 ,3.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var other_bullets_colliders = [0,0.14,0.14,0.12,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.14,0.08 ,1.68,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
+var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,1 ,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 if(Number.isInteger(config.max_players))
   max_players = config.max_players;
@@ -450,14 +450,14 @@ class CInfo
         if(type==3) //Octogone
         {
             shooters = [
-              new CShooter(7, 0,60,10, 6.5,thys,false, 51, "10111",0,-1, false),
-              new CShooter(7, 45,60,10, 6.5,thys,false, 48, "10111",0,-1, false),
-              new CShooter(7, 90,60,10, 6.5,thys,false, 53, "10111",0,-1, false),
-              new CShooter(7, 135,60,10, 6.5,thys,false, 47, "10111",0,-1, false),
+              new CShooter(7, 0,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
+              new CShooter(7, 45,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
+              new CShooter(7, 90,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
+              new CShooter(7, 135,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
               new CShooter(7, 180,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
-              new CShooter(7, 225,60,10, 6.5,thys,false, 54, "10111",0,-1, false),
-              new CShooter(7, 270,60,10, 6.5,thys,false, 52, "10111",0,-1, false),
-              new CShooter(7, 315,60,10, 6.5,thys,false, 49, "10111",0,-1, false),
+              new CShooter(7, 225,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
+              new CShooter(7, 270,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
+              new CShooter(7, 315,60,10, 6.5,thys,false, 50, "10111",0,-1, false),
 
               new CShooter(7, 0,60,60, 6.5,thys,true, 31, "01000",0,-1, false),
               new CShooter(7, 45,60,60, 6.5,thys,true, 28, "01000",0,-1, false),
@@ -476,23 +476,41 @@ class CInfo
         if(type==4) //Starandus
         {
             shooters = [
-              new CShooter(5, 0,60,60, 6.5,thys,true, 35, "11000",0,-1, false),
-              new CShooter(5, 45,60,60, 6.5,thys,true, 31, "11000",0,-1, false),
-              new CShooter(5, 90,60,5, 6.5,thys,false, 36, "11000",0,-1, false),
-              new CShooter(5, 135,60,60, 6.5,thys,true, 38, "11000",0,-1, false),
-              new CShooter(5, 180,60,60, 6.5,thys,true, 34, "11000",0,-1, false),
-              new CShooter(5, 225,60,5, 6.5,thys,false, 33, "11000",0,-1, false),
-              new CShooter(5, 270,60,60, 6.5,thys,true, 37, "11000",0,-1, false),
-              new CShooter(5, 315,60,5, 6.5,thys,false, 32, "11000",0,-1, false),
+                new CShooter(5, 30,60,12, 6.5,thys,false, 30, "10000",15,-1, false), //Normal
+                new CShooter(5, 60,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
+                new CShooter(5, 120,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
+                new CShooter(5, 150,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
+                new CShooter(5, 210,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
+                new CShooter(5, 240,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
+                new CShooter(5, 300,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
+                new CShooter(5, 330,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
 
-              new CShooter(5, 0,60,60, 6.5,thys,true, 14, "00010",0,-1, false),
-              new CShooter(5, 45,60,60, 6.5,thys,true, 16, "00010",0,-1, false),
-              new CShooter(5, 90,60,10, 6.5,thys,false, 14, "00010",0,-1, false),
-              new CShooter(5, 135,60,60, 6.5,thys,true, 16, "00010",0,-1, false),
-              new CShooter(5, 180,60,60, 6.5,thys,true, 15, "00010",0,-1, false),
-              new CShooter(5, 225,60,10, 6.5,thys,false, 14, "00010",0,-1, false),
-              new CShooter(5, 270,60,60, 6.5,thys,true, 15, "00010",0,-1, false),
-              new CShooter(5, 315,60,10, 6.5,thys,false, 16, "00010",0,-1, false),
+                new CShooter(5, 30,60,60, 6.5,thys,true, 34, "01000",18,-1, false), //Fire
+                new CShooter(5, 60,60,60, 6.5,thys,true, 37, "01000",0,-1, false),
+                new CShooter(5, 120,60,60, 6.5,thys,true, 35, "01000",18,-1, false),
+                new CShooter(5, 150,60,60, 6.5,thys,true, 36, "01000",0,-1, false),
+                new CShooter(5, 210,60,60, 6.5,thys,true, 35, "01000",18,-1, false),
+                new CShooter(5, 240,60,60, 6.5,thys,true, 34, "01000",0,-1, false),
+                new CShooter(5, 300,60,60, 6.5,thys,true, 37, "01000",18,-1, false),
+                new CShooter(5, 330,60,60, 6.5,thys,true, 36, "01000",0,-1, false),
+
+                new CShooter(5, 30,60,60, 6.5,thys,true, 14, "00100",8,-1, false), //Supernova
+                new CShooter(5, 60,60,60, 6.5,thys,true, 17, "00100",0,-1, false),
+                new CShooter(5, 120,60,60, 6.5,thys,true, 15, "00100",8,-1, false),
+                new CShooter(5, 150,60,60, 6.5,thys,true, 16, "00100",0,-1, false),
+                new CShooter(5, 210,60,60, 6.5,thys,true, 15, "00100",8,-1, false),
+                new CShooter(5, 240,60,60, 6.5,thys,true, 14, "00100",0,-1, false),
+                new CShooter(5, 300,60,60, 6.5,thys,true, 17, "00100",8,-1, false),
+                new CShooter(5, 330,60,60, 6.5,thys,true, 16, "00100",0,-1, false),
+
+                new CShooter(16, 45,60,60, 6.5,thys,true, 24, "00010",13,-1, false), //Gravitons
+                new CShooter(16, 90,60,60, 6.5,thys,true, 27, "00010",0,-1, false),
+                new CShooter(16, 135,60,60, 6.5,thys,true, 25, "00010",13,-1, false),
+                new CShooter(16, 180,60,60, 6.5,thys,true, 26, "00010",0,-1, false),
+                new CShooter(16, 225,60,60, 6.5,thys,true, 25, "00010",13,-1, false),
+                new CShooter(16, 270,60,60, 6.5,thys,true, 24, "00010",0,-1, false),
+                new CShooter(16, 315,60,60, 6.5,thys,true, 27, "00010",13,-1, false),
+                new CShooter(16, 360,60,60, 6.5,thys,true, 26, "00010",0,-1, false),
             ];
         }
         if(type==6) //Degenerator

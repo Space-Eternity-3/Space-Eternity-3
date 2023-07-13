@@ -9,6 +9,7 @@ public class SC_wind : MonoBehaviour
 
     void OnTriggerStay(Collider collision)
     {
+        //Like FixedUpdate
         if(collision.gameObject.name=="pseudoBody")
         {
             float dX,dY,distance;
@@ -18,7 +19,7 @@ public class SC_wind : MonoBehaviour
             distance-=2f; if(distance<1f) distance=1f;
 
             float rot=180f-transform.rotation.eulerAngles.z;
-            player.velocity-=Time.deltaTime*force*(2f/distance)*new Vector3(Mathf.Sin(rot*(3.14159f/180f)),Mathf.Cos(rot*(3.14159f/180f)),0f);
+            player.velocity-=0.02f*force*(2f/distance)*new Vector3(Mathf.Sin(rot*(3.14159f/180f)),Mathf.Cos(rot*(3.14159f/180f)),0f);
         }
     }
 }

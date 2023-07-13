@@ -300,19 +300,13 @@ public class SC_boss : MonoBehaviour
                         SC_structure.st_structs[i].GetComponent<SC_seon_remote>().jump = true;
         }
         SC_structure.actual_state = GetState(dataID[1],dataID[2]);
-        
-        float fcr = SC_control.Pitagoras(
-            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
-        );
-        bool in_arena_range = (fcr<=37f);
-        bool in_arena_vision = (fcr<=80f);
 
-        if(memory2!=dataID[2] && in_arena_vision)
+        if(memory2!=dataID[2] && InArena("vision"))
         {
             if(memory2==1 && dataID[2]==2) SC_control.InfoUp("Battle started!",500);
             if(memory2==2 && dataID[2]==3) SC_control.InfoUp("Boss wins!",500);
             if(memory2==2 && dataID[2]==4) SC_control.InfoUp("Boss defeated!",500);
-            if(memory2==2 && dataID[2]!=2 && in_arena_range) SC_control.SC_effect.EffectClean();
+            if(memory2==2 && dataID[2]!=2 && InArena("range")) SC_control.SC_effect.EffectClean();
         }
         memory2 = dataID[2];
     }
@@ -360,10 +354,7 @@ public class SC_boss : MonoBehaviour
 
     void Update()
     {
-        float fcr = SC_control.Pitagoras(
-            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
-        );
-        bool in_arena_range = (fcr<=37f);
+        bool in_arena_range = InArena("range");
         if(in_arena_range && dataID2_client==2) SC_control.SC_fun.camera_add = -12.5f;
         if(in_arena_range && dataID2_client==1) SC_control.SC_fun.camera_add = -12.5f * Mathf.Min(dataID3_client,40)/40f;
         if(in_arena_range && dataID2_client>=3) SC_control.SC_fun.camera_add = -12.5f * Mathf.Max(40-dataID3_client,0)/40f;
@@ -414,15 +405,10 @@ public class SC_boss : MonoBehaviour
         dataID21_client = dataID[21];
 
         //Checking player relative position to arena
-        float fcr = SC_control.Pitagoras(
-            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
-        );
-        bool in_arena_range = (fcr<=37f);
-        bool in_arena_vision = (fcr<=80f);
-        string iar="F"; if(in_arena_range) iar="T";
+        string iar="F"; if(InArena("range")) iar="T";
 
         //Force give up counter
-        if(!multiplayer && !in_arena_range && dataID[2]==2) force_give_up_counter++;
+        if(!multiplayer && !InArena("range") && dataID[2]==2) force_give_up_counter++;
         else force_give_up_counter = 0;
         if(force_give_up_counter>=50) GiveUpSGP();
 
@@ -465,18 +451,18 @@ public class SC_boss : MonoBehaviour
         }
 
         //Give up allow checker
-        if((in_arena_range && (dataID[2]==2)) && !bosnumed) {
+        if((InArena("range") && (dataID[2]==2)) && !bosnumed) {
             SC_control.bos_num++;
             bosnumed = true;
         }
-        if(!(in_arena_range && (dataID[2]==2)) && bosnumed) {
+        if(!(InArena("range") && (dataID[2]==2)) && bosnumed) {
             SC_control.bos_num--;
             bosnumed = false;
         }
 
         //Time bar controller
         string ass = SC_structure.actual_state;
-        if(in_arena_vision && (ass=="B1"||ass=="B2"||ass=="B3")) {
+        if(InArena("vision") && (ass=="B1"||ass=="B2"||ass=="B3")) {
             timer_bar_value = dataID[4];
             timer_bar_max = dataID[5];
             SC_bars.bos = this;
@@ -583,6 +569,20 @@ public class SC_boss : MonoBehaviour
         }
 
         StateUpdate();
+    }
+    public bool InArena(string rngvs)
+    {
+        if(mother) return false;
+        
+        float fcr = SC_control.Pitagoras(
+            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
+        );
+        bool in_arena_range = (fcr<=37f);
+        bool in_arena_vision = (fcr<=80f);
+
+        if(rngvs=="range") return in_arena_range;
+        if(rngvs=="vision") return in_arena_vision;
+        return false;
     }
     public void GiveUpSGP()
     {

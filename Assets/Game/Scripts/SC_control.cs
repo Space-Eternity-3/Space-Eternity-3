@@ -179,6 +179,7 @@ public class SC_control : MonoBehaviour {
 	public int unstable_probability;
 	public int unstable_sprobability;
 	public float unstable_force;
+	public float graviton_force;
 	
 	bool escaped = false;
 	string RPU = "XXX";
@@ -202,6 +203,19 @@ public class SC_control : MonoBehaviour {
 		{
 			V=Mathf.Abs(V);
 			return -V*(V+15f)/1000f;
+		}
+	}
+	public void GravitonCatch()
+	{
+		foreach(SC_boss bos in SC_lists.SC_boss) {
+			if(bos.InArena("range"))
+			{
+				Vector3 vect = bos.bossModels.position - player.position;
+				vect = new Vector3(vect.x,vect.y,0f);
+				playerR.velocity /= 2;
+				playerR.velocity += graviton_force * Vector3.Normalize(vect);
+				return;
+			}
 		}
 	}
 	public void LaterUpdate()
@@ -1317,23 +1331,36 @@ public class SC_control : MonoBehaviour {
 			}
 		}
     }
+	bool IsAnyBossFight()
+	{
+		foreach(SC_boss bos in SC_lists.SC_boss) {
+			if(bos.InArena("range")) return true;
+		}
+		return false;
+	}
 	float max_framal_damage = 0f;
 	void OnTriggerStay(Collider collision)
 	{
-		if(collision.gameObject.name=="damager2"||collision.gameObject.name=="star_collider_big"||collision.gameObject.name=="star_collider"||
-		(collision.gameObject.name=="damager3"&&SC_artefacts.GetArtefactID()!=6))
+		string neme = collision.gameObject.name;
+		if(neme=="damager2"||
+		neme=="star_collider_big"||
+		neme=="star_collider"||
+		(neme=="S-fire" && IsAnyBossFight())||
+		(neme=="damager3" && SC_artefacts.GetArtefactID()!=6))
 		{
 			if(licznikD==0)
 			{
-				string neme = collision.gameObject.name;
-				
 				float dmgg = 0f;
-				if(collision.gameObject.name=="damager3") dmgg = float.Parse(SC_data.Gameplay[28]); //unstable matter
-				else if(collision.gameObject.name=="star_collider") dmgg = float.Parse(SC_data.Gameplay[34]); //fire bullet
-				else dmgg = float.Parse(SC_data.Gameplay[8]); //spikes & stars
+				if(neme=="damager3") 				dmgg = float.Parse(SC_data.Gameplay[28]); //unstable matter
+				else if(neme=="star_collider") 		dmgg = float.Parse(SC_data.Gameplay[34]); //fire bullet
+				else if(neme=="star_collider_big") 	dmgg = 2f * float.Parse(SC_data.Gameplay[34]); //stars
+				else if(neme=="S-fire") 			dmgg = 4f * float.Parse(SC_data.Gameplay[32]); //S-fire
+				else 								dmgg = float.Parse(SC_data.Gameplay[8]); //spikes
 
-				if(collision.gameObject.name=="star_collider") SC_effect.SetEffect(5,2);
-				else if(collision.gameObject.name=="star_collider_big") SC_effect.SetEffect(5,5);
+				if(neme=="star_collider") 			SC_effect.SetEffect(5,2);
+				else if(neme=="star_collider_big") 	SC_effect.SetEffect(5,5);
+				else if(neme=="S-fire") 			SC_effect.SetEffect(5,4);
+				
 				if(dmgg > max_framal_damage) max_framal_damage = dmgg;
 			}
 		}
@@ -1511,6 +1538,7 @@ public class SC_control : MonoBehaviour {
 		{
 			int effectID = int.Parse(arg[1]);
 			SC_effect.SetEffect(effectID,SC_fun.bullet_effector[effectID]);
+			if(effectID==16) GravitonCatch();
 		}
 		if(arg[0]=="/RetServerDamage")
 		{

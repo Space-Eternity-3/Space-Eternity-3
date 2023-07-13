@@ -100,7 +100,7 @@ craftings
 		1: bush(3) + magic_element -> healing_potion;
 		2: copper(3) + turbo_element -> turbo_potion;
 		3: small_amethyst(3) + power_element -> power_potion;
-		4: bone(3) + blank_element -> blank_potion;
+		4: healing_potion + blank_element -> blank_potion;
 		5: red_stone(3) + unstable_matter -> killing_potion;
 	}
 	<Category>13
@@ -119,7 +119,7 @@ drill_loot
 	stone: stone(100%);
 	copper: copper(92%) + turbo_element(8%);
 	gold: gold(30%);
-	grass: stone(92%) + magic_element(8%);
+	grass: bush(70%) + stone(22%) + magic_element(8%);
 	amethyst: small_amethyst(20%) + power_element(4%);
 	coal: coal(100%);
 	magnetic: magnetic_stone(100%);

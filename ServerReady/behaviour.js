@@ -76,7 +76,7 @@ class CBoss
             'o', 'A', 'P', 'X', 'S', //Protector
             'o', 'X', 'S', 'X', 'S', //Adecodron
             'o', 'S', 'X', 'S', 'S', //Octogone
-            'o', 'S', 'S', 'S', 'S', //Starandus
+            'o', 'S', 'S', 'R', 'S', //Starandus
             'o', 'o', 'o', 'o', 'o', //Useless
             'o', 'X', 'S', 'R', 'S', //Degenerator
         ];
@@ -85,7 +85,7 @@ class CBoss
             0.20, 0.10, 0.10, 0.10, 0.40, //Protector
             0.40, 0.20, 0.40, 0.20, 0.70, //Adecodron
             0.30, 0.15, 0.15, 0.15, 0.50, //Octogone
-            0.00, 0.00, 0.00, 0.00, 0.00, //Starandus
+            0.15, 0.10, 0.10, 0.10, 0.10, //Starandus
             0.20, 0.20, 0.20, 0.20, 0.20, //Useless
             0.20, 0.10, 0.10, 0.10, 0.40, //Degenerator
         ];
@@ -193,14 +193,14 @@ class CBoss
         {
             this.dataY[21-2] = this.dataY[18-2];
             this.dataY[23-2] = 0;
-            if(this.dataY[18-2]!=0)
+            if(this.dataY[18-2]==0 || (this.dataY[18-2]==3 && this.type==4))
             {
-                this.dataY[18-2] = 0;
-                this.dataY[17-2] = func.randomInteger(border_times[2],border_times[3]);
-            }
-            else
-            {
-                this.dataY[18-2] = func.randomInteger(1,2+this.dataX[1]);
+                if(this.dataY[18-2]!=3) this.dataY[18-2] = func.randomInteger(1,2+this.dataX[1]);
+                else {
+                    this.dataY[18-2] = func.randomInteger(1,1+this.dataX[1]);
+                    if(this.dataY[18-2]==3) this.dataY[18-2] = 2+this.dataX[1];
+                }
+
                 var time_letter = state_types[5*this.type+this.dataY[18-2]];
                 if(time_letter=='S') this.dataY[17-2] = func.randomInteger(border_times[0],border_times[1]); //State
                 else if(time_letter=='X') this.dataY[17-2] = border_times[4]; //Instant shot
@@ -208,6 +208,11 @@ class CBoss
                 else if(time_letter=='P') this.dataY[17-2] = border_times[6]; //Shield not constant
                 else if(time_letter=='R') this.dataY[17-2] = border_times[7]; //Remote
                 else this.dataY[17-2] = border_times[4];
+            }
+            else
+            {
+                this.dataY[18-2] = 0;
+                this.dataY[17-2] = func.randomInteger(border_times[2],border_times[3]);
             }
             this.dataY[19-2] = this.dataY[17-2];
             this.dataY[20-2] = 1;

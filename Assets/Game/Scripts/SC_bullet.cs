@@ -26,6 +26,7 @@ public class SC_bullet : MonoBehaviour
     public int[] LoopSounds = new int[16];
     public int[] EndSounds = new int[16];
     public Transform[] BulletEnd = new Transform[16];
+    public float[] BulletSpeeds = new float[16];
 
     public SC_fun SC_fun;
     public SC_sounds SC_sounds;
@@ -63,7 +64,7 @@ public class SC_bullet : MonoBehaviour
         gob.mode = "present";
         gob.gun_owner = gun_own;
         gob.controller = true;
-        gob.st_vect = SC_fun.Skop(vector, bullet_speed) + delta;
+        gob.st_vect = SC_fun.Skop(vector, BulletSpeeds[typ]) + delta;
         gob.ID = UnityEngine.Random.Range(0,1000000000);
 
         if(!multiplayer && (gob.type==9 || gob.type==10))
