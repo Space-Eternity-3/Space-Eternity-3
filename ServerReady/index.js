@@ -20,8 +20,8 @@ var hourHeader = "";
 var gpl_number = 39;
 var max_players = 128;
 
-var boss_damages = [0,0,0,0,35,3,6,5,0,12,6,3.75,5,6.25,0,0 ,3.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var other_bullets_colliders = [0,0.14,0.14,0.12,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.14,0.08 ,1.68,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
+var boss_damages = [0,0,0,0,35,3,6,5,0,12,6,3.75,5,6.25,0,0 ,3.5,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var other_bullets_colliders = [0,0.14,0.14,0.12,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.14,0.08 ,1.68,0.25,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
 var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,1 ,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 if(Number.isInteger(config.max_players))
@@ -476,11 +476,11 @@ class CInfo
         if(type==4) //Starandus
         {
             shooters = [
-                new CShooter(5, 30,60,12, 6.5,thys,false, 30, "10000",15,-1, false), //Normal
+                new CShooter(17, 30,60,12, 6.5,thys,false, 30, "10000",15,-1, false), //Normal
                 new CShooter(5, 60,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
-                new CShooter(5, 120,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
+                new CShooter(17, 120,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
                 new CShooter(5, 150,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
-                new CShooter(5, 210,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
+                new CShooter(17, 210,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
                 new CShooter(5, 240,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
                 new CShooter(5, 300,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
                 new CShooter(5, 330,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
