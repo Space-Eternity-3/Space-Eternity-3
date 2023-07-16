@@ -303,8 +303,8 @@ public class CInfo
                 new CShooter(16, 315,60,60, 6.5,thys,true, 27, "00010",13,-1, false),
                 new CShooter(16, 360,60,60, 6.5,thys,true, 26, "00010",0,-1, false),
 
-                new CShooter(17, 0,0,0, 5,thys,true, 10, "00001",0,-1, false), //Electrons
-                new CShooter(17, 180,0,0, 5,thys,true, 10, "00001",0,-1, false),
+                new CShooter(17, 0,15,15, 5,thys,true, 10, "00001",0,-1, false), //Electrons
+                new CShooter(17, 180,15,15, 5,thys,true, 10, "00001",0,-1, false),
             };
 
             for(i=0;i<=7;i++) shooters[i].projection_id = 5;

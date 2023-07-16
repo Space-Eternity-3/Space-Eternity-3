@@ -476,41 +476,44 @@ class CInfo
         if(type==4) //Starandus
         {
             shooters = [
-                new CShooter(17, 30,60,12, 6.5,thys,false, 30, "10000",15,-1, false), //Normal
-                new CShooter(5, 60,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
-                new CShooter(17, 120,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
-                new CShooter(5, 150,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
-                new CShooter(17, 210,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
-                new CShooter(5, 240,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
-                new CShooter(5, 300,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
-                new CShooter(5, 330,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
+              new CShooter(5, 30,60,12, 6.5,thys,false, 30, "10000",15,-1, false), //Normal
+              new CShooter(5, 60,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
+              new CShooter(5, 120,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
+              new CShooter(5, 150,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
+              new CShooter(5, 210,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
+              new CShooter(5, 240,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
+              new CShooter(5, 300,60,12, 6.5,thys,false, 30, "10000",15,-1, false),
+              new CShooter(5, 330,60,12, 6.5,thys,false, 30, "10000",0,-1, false),
 
-                new CShooter(5, 30,60,60, 6.5,thys,true, 34, "01000",18,-1, false), //Fire
-                new CShooter(5, 60,60,60, 6.5,thys,true, 37, "01000",0,-1, false),
-                new CShooter(5, 120,60,60, 6.5,thys,true, 35, "01000",18,-1, false),
-                new CShooter(5, 150,60,60, 6.5,thys,true, 36, "01000",0,-1, false),
-                new CShooter(5, 210,60,60, 6.5,thys,true, 35, "01000",18,-1, false),
-                new CShooter(5, 240,60,60, 6.5,thys,true, 34, "01000",0,-1, false),
-                new CShooter(5, 300,60,60, 6.5,thys,true, 37, "01000",18,-1, false),
-                new CShooter(5, 330,60,60, 6.5,thys,true, 36, "01000",0,-1, false),
+              new CShooter(5, 30,60,60, 6.5,thys,true, 34, "01000",18,-1, false), //Fire
+              new CShooter(5, 60,60,60, 6.5,thys,true, 37, "01000",0,-1, false),
+              new CShooter(5, 120,60,60, 6.5,thys,true, 35, "01000",18,-1, false),
+              new CShooter(5, 150,60,60, 6.5,thys,true, 36, "01000",0,-1, false),
+              new CShooter(5, 210,60,60, 6.5,thys,true, 35, "01000",18,-1, false),
+              new CShooter(5, 240,60,60, 6.5,thys,true, 34, "01000",0,-1, false),
+              new CShooter(5, 300,60,60, 6.5,thys,true, 37, "01000",18,-1, false),
+              new CShooter(5, 330,60,60, 6.5,thys,true, 36, "01000",0,-1, false),
 
-                new CShooter(5, 30,60,60, 6.5,thys,true, 14, "00100",8,-1, false), //Supernova
-                new CShooter(5, 60,60,60, 6.5,thys,true, 17, "00100",0,-1, false),
-                new CShooter(5, 120,60,60, 6.5,thys,true, 15, "00100",8,-1, false),
-                new CShooter(5, 150,60,60, 6.5,thys,true, 16, "00100",0,-1, false),
-                new CShooter(5, 210,60,60, 6.5,thys,true, 15, "00100",8,-1, false),
-                new CShooter(5, 240,60,60, 6.5,thys,true, 14, "00100",0,-1, false),
-                new CShooter(5, 300,60,60, 6.5,thys,true, 17, "00100",8,-1, false),
-                new CShooter(5, 330,60,60, 6.5,thys,true, 16, "00100",0,-1, false),
+              new CShooter(5, 30,60,60, 6.5,thys,true, 14, "00100",8,-1, false), //Supernova
+              new CShooter(5, 60,60,60, 6.5,thys,true, 17, "00100",0,-1, false),
+              new CShooter(5, 120,60,60, 6.5,thys,true, 15, "00100",8,-1, false),
+              new CShooter(5, 150,60,60, 6.5,thys,true, 16, "00100",0,-1, false),
+              new CShooter(5, 210,60,60, 6.5,thys,true, 15, "00100",8,-1, false),
+              new CShooter(5, 240,60,60, 6.5,thys,true, 14, "00100",0,-1, false),
+              new CShooter(5, 300,60,60, 6.5,thys,true, 17, "00100",8,-1, false),
+              new CShooter(5, 330,60,60, 6.5,thys,true, 16, "00100",0,-1, false),
 
-                new CShooter(16, 45,60,60, 6.5,thys,true, 24, "00010",13,-1, false), //Gravitons
-                new CShooter(16, 90,60,60, 6.5,thys,true, 27, "00010",0,-1, false),
-                new CShooter(16, 135,60,60, 6.5,thys,true, 25, "00010",13,-1, false),
-                new CShooter(16, 180,60,60, 6.5,thys,true, 26, "00010",0,-1, false),
-                new CShooter(16, 225,60,60, 6.5,thys,true, 25, "00010",13,-1, false),
-                new CShooter(16, 270,60,60, 6.5,thys,true, 24, "00010",0,-1, false),
-                new CShooter(16, 315,60,60, 6.5,thys,true, 27, "00010",13,-1, false),
-                new CShooter(16, 360,60,60, 6.5,thys,true, 26, "00010",0,-1, false),
+              new CShooter(16, 45,60,60, 6.5,thys,true, 24, "00010",13,-1, false), //Gravitons
+              new CShooter(16, 90,60,60, 6.5,thys,true, 27, "00010",0,-1, false),
+              new CShooter(16, 135,60,60, 6.5,thys,true, 25, "00010",13,-1, false),
+              new CShooter(16, 180,60,60, 6.5,thys,true, 26, "00010",0,-1, false),
+              new CShooter(16, 225,60,60, 6.5,thys,true, 25, "00010",13,-1, false),
+              new CShooter(16, 270,60,60, 6.5,thys,true, 24, "00010",0,-1, false),
+              new CShooter(16, 315,60,60, 6.5,thys,true, 27, "00010",13,-1, false),
+              new CShooter(16, 360,60,60, 6.5,thys,true, 26, "00010",0,-1, false),
+
+              new CShooter(17, 0,15,15, 5,thys,true, 10, "00001",0,-1, false), //Electrons
+              new CShooter(17, 180,15,15, 5,thys,true, 10, "00001",0,-1, false),
             ];
         }
         if(type==6) //Degenerator

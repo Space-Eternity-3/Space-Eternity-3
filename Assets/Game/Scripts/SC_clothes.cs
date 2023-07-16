@@ -10,7 +10,9 @@ public class SC_clothes : MonoBehaviour
     public int[] actual_sizes = new int[35];
     bool[] at_least_once = new bool[35];
     public int get_actual_clothe = -1;
+
     public Transform star_normal_particles;
+    public Transform anti_clothe_4_4;
 
     void Awake()
     {
@@ -44,6 +46,7 @@ public class SC_clothes : MonoBehaviour
             if(clothe_index==i && actual_sizes[i] < animation_frames) actual_sizes[i]++;
             if(clothe_index!=i && actual_sizes[i] > 0) actual_sizes[i]--;
             clothes[i].localScale = new Vector3(1f,1f,1f) / animation_frames * actual_sizes[i];
+            if(i==4*5+4 && SC_boss.SC_control.livTime>100) anti_clothe_4_4.localScale = new Vector3(1f,1f,1f) / animation_frames * (animation_frames - actual_sizes[i]);
             if(clothes[i].GetComponent<SC_scacontr>()!=null) clothes[i].GetComponent<SC_scacontr>().ScaleAllNow(1f/animation_frames * actual_sizes[i]);
             if(SC_boss.type*5+SC_boss.dataID[18]==3*5+3 && SC_boss.dataID[23]==0) clothes[i].gameObject.SetActive(false);
         }
