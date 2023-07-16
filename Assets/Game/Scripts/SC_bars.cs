@@ -25,10 +25,15 @@ public class SC_bars : MonoBehaviour
 	public bool swap_left;
 	public bool swap_right;
 
-	public Image left_slider;
 	public Text left_text;
 	int left_max = 0;
 	int left_value = 0;
+
+	public SC_ui_bar_amount health_ui_bar;
+	public SC_ui_bar_amount turbo_ui_bar;
+	public SC_ui_bar_amount boss_ui_bar;
+	public SC_ui_bar_amount power_ui_bar;
+	public SC_ui_bar_amount healthold_ui_bar;
 
 	public SC_boss bos;
 	
@@ -56,52 +61,53 @@ public class SC_bars : MonoBehaviour
 			left_max = bos.timer_bar_max;
 			left_text.text = "Time " + ConvertToTime((left_value+49)/50);
 			if(left_max==0) left_max=1;
-			left_slider.fillAmount = 0.112f + (left_value*0.788f/left_max);
-			if(left_value==0) left_slider.fillAmount = 0f;
+			boss_ui_bar.value = left_value*1f/left_max;
 		}
+
+		Vector3 left = pos_center - dx + ndx;
+		Vector3 right = pos_center + dx + ndx;
+		Vector3 left_up = pos_center - dx + dy;
+		Vector3 left_down = pos_center - dx - dy;
+		Vector3 right_up = pos_center + dx + dy;
+		Vector3 right_down = pos_center + dx - dy;
 
 		if(double_left)
 		{
-			if(!swap_left)
-			{
-				going_H = pos_center - dx + dy;
-				going_B = pos_center - dx - dy;
-			}
-			else
-			{
-				going_H = pos_center - dx - dy;
-				going_B = pos_center - dx + dy;
-			}
-		}
-		else
-		{
-			going_H = pos_center - dx + ndx;
-			going_B = pos_center - dx + ndx;
+			if(!swap_left) {
+				going_H = left_up;
+				going_B = left_down;
+			} else {
+				going_H = left_down;
+				going_B = left_up;
+			} } else {
+				going_H = left;
+				going_B = left;
 		}
 		
 		if(double_right)
 		{
-			if(!swap_right)
-			{
-				going_F = pos_center + dx + dy;
-				going_P = pos_center + dx - dy;
-			}
-			else
-			{
-				going_F = pos_center + dx - dy;
-				going_P = pos_center + dx + dy;
-			}
-		}
-		else
-		{
-			going_F = pos_center + dx + ndx;
-			going_P = pos_center + dx + ndx;
+			if(!swap_right) {
+				going_F = right_up;
+				going_P = right_down;
+			} else {
+				going_F = right_down;
+				going_P = right_up;
+			} } else {
+				going_F = right;
+				going_P = right;
 		}
 		
-		//TEMP
 		UI_health.localPosition = going_H;
 		UI_boss.localPosition = going_B;
 		UI_fuel.localPosition = going_F;
 		UI_power.localPosition = going_P;
+	}
+	public void MuchLaterUpdate()
+	{
+		health_ui_bar.MuchLaterUpdate();
+		turbo_ui_bar.MuchLaterUpdate();
+		power_ui_bar.MuchLaterUpdate();
+		boss_ui_bar.MuchLaterUpdate();
+		healthold_ui_bar.MuchLaterUpdate();
 	}
 }

@@ -111,9 +111,6 @@ public class SC_control : MonoBehaviour {
 	public Color32 PowerBurning;
 	public Color32 PowerBlocked;
 
-	public Transform darkner;
-	Vector3 darknerV;
-
 	string worldDIR="";
 	int worldID=1;
 
@@ -144,6 +141,7 @@ public class SC_control : MonoBehaviour {
 	public SC_camera SC_camera;
 	public SC_effect SC_effect;
 	public SC_seek_data SC_seek_data;
+	public SC_bars SC_bars;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -592,6 +590,8 @@ public class SC_control : MonoBehaviour {
 			Debug.LogWarning("Ping over 2.50s");
 			MenuReturn();
 		}
+
+		SC_bars.MuchLaterUpdate();
 	}
 	void KillMe()
 	{
@@ -897,19 +897,19 @@ public class SC_control : MonoBehaviour {
 		}
 
 		//Red health reduce
-		healthOld.fillAmount=(health_V*0.8f)+0.1f;
-		rocket_fuel.fillAmount=(turbo_V*0.8f)+0.1f;
-		power.fillAmount=(power_V*0.8f)+0.1f;
+		SC_bars.healthold_ui_bar.value=health_V;
+		SC_bars.turbo_ui_bar.value=turbo_V;
+		SC_bars.power_ui_bar.value=power_V;
 
-		if(healthOld.fillAmount<health.fillAmount)
+		if(SC_bars.healthold_ui_bar.value<SC_bars.health_ui_bar.value)
 		{
 			if(licznikC<0)
-			health.fillAmount-=0.05f;
+			SC_bars.health_ui_bar.value-=0.0625f;
 			licznikC--;
 		}
 		else
 		{
-			health.fillAmount=healthOld.fillAmount;
+			SC_bars.health_ui_bar.value=SC_bars.healthold_ui_bar.value;
 			licznikC=10;
 		}
 		
@@ -1008,13 +1008,6 @@ public class SC_control : MonoBehaviour {
 		if(turbo_V<0f) turbo_V=0f;
 		if(power_V>1f) power_V=1f;
 		if(power_V<0f) power_V=0f;
-
-		if(rocket_fuel.fillAmount<0.1f) rocket_fuel.fillAmount=0.1f;
-		if(rocket_fuel.fillAmount>0.9f) rocket_fuel.fillAmount=0.9f;
-		if(healthOld.fillAmount<0.12f) healthOld.fillAmount=0.12f;
-		if(healthOld.fillAmount>0.9f) healthOld.fillAmount=0.9f;
-		if(power.fillAmount<0.1f) power.fillAmount=0.1f;
-		if(power.fillAmount>0.9f) power.fillAmount=0.9f;
 
 		//Cmd list activator
 		Queue tsList = Queue.Synchronized(cmdList);
@@ -1834,7 +1827,6 @@ public class SC_control : MonoBehaviour {
 
 		worldID=(int)Communtron4.position.y;
 		worldDIR=SC_data.savesDIR+"UniverseData"+worldID+"/";
-		darknerV=darkner.localPosition;
 
 		if((int)Communtron4.position.y==100)
 		{
@@ -1943,10 +1935,10 @@ public class SC_control : MonoBehaviour {
 
 		servername.text=CommuntronM1.name;
 
-		healthOld.fillAmount=(health_V*0.8f)+0.1f;
-		health.fillAmount=healthOld.fillAmount;
-		rocket_fuel.fillAmount=(turbo_V*0.8f)+0.1f;
-		power.fillAmount=(power_V*0.8f)+0.1f;
+		SC_bars.healthold_ui_bar.value=health_V;
+		SC_bars.health_ui_bar.value=SC_bars.healthold_ui_bar.value;
+		SC_bars.turbo_ui_bar.value=turbo_V;
+		SC_bars.power_ui_bar.value=power_V;
 
 		SC_slots.ResetYAB();
 		Debug.Log("Joined");
