@@ -1324,10 +1324,10 @@ public class SC_control : MonoBehaviour {
 			}
 		}
     }
-	bool IsAnyBossFight()
+	public bool IsAnyBossFight(string rngvs)
 	{
 		foreach(SC_boss bos in SC_lists.SC_boss) {
-			if(bos.InArena("range")) return true;
+			if(bos.InArena(rngvs)) return true;
 		}
 		return false;
 	}
@@ -1338,7 +1338,7 @@ public class SC_control : MonoBehaviour {
 		if(neme=="damager2"||
 		neme=="star_collider_big"||
 		neme=="star_collider"||
-		(neme=="S-fire" && IsAnyBossFight())||
+		(neme=="S-fire" && IsAnyBossFight("range"))||
 		(neme=="damager3" && SC_artefacts.GetArtefactID()!=6))
 		{
 			if(licznikD==0)

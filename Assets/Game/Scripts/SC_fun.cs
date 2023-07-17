@@ -114,6 +114,18 @@ public class SC_fun : MonoBehaviour
     	if(angle < 0) angle += 360;
     	return angle;
 	}
+	public bool AreCoordinatesInsideRect(RectTransform trn, float x, float y)
+    {//ChatGPT function
+        Vector3[] corners = new Vector3[4];
+        trn.GetWorldCorners(corners);
+
+        float minX = Mathf.Min(corners[0].x, corners[1].x, corners[2].x, corners[3].x);
+        float maxX = Mathf.Max(corners[0].x, corners[1].x, corners[2].x, corners[3].x);
+        float minY = Mathf.Min(corners[0].y, corners[1].y, corners[2].y, corners[3].y);
+        float maxY = Mathf.Max(corners[0].y, corners[1].y, corners[2].y, corners[3].y);
+
+        return (x >= minX && x <= maxX && y >= minY && y <= maxY);
+    }
     int MakeID(int ID,int sed)
     {
         int sid=sed*2;

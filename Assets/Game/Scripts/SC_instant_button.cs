@@ -12,6 +12,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public bool ASAC; //Allow Spam After Cooldown
     public int ASAC_cooldown;
     public int ASAC_mode;
+    public bool is_clocker_activer;
 
     bool ASAC_pressed=false;
     int press_time=0;
@@ -28,6 +29,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public SC_Fob21 SC_Fob21;
     public SC_control SC_control;
     public SC_bp_upg SC_bp_upg;
+    public SC_bars SC_bars;
 
     public void OnPointerDown(PointerEventData eventData)
     {

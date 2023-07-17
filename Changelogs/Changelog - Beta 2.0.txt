@@ -26,6 +26,7 @@ Old feature changes:
 - when you exit game when you have effect, you won't get the remaining damage
 - blank potion acts like healing potion, but also removes effect
 - adjusted sticky bulb material (more transparent and same on player and as bullet)
+- health, turbo, power and time bars reworked to be more rectangular
 - spike bullet effect duration 4s -> 6s
 - sticky bulb effect duration 6s -> 4s
 - boss rocket bullet damage: 10 -> 12

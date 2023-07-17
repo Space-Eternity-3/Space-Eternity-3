@@ -34,9 +34,16 @@ public class SC_bars : MonoBehaviour
 	public SC_ui_bar_amount boss_ui_bar;
 	public SC_ui_bar_amount power_ui_bar;
 	public SC_ui_bar_amount healthold_ui_bar;
+	
+	public Image Time;
+	public SC_clock_arrow DynamicClockArrow;
+	public Text BossHealthText;
+	public RectTransform butter;
+	public Transform CompassInfo, TimeInfo;
 
 	public SC_boss bos;
-	
+	public SC_data SC_data;
+
 	string ConvertToTime(int seconds)
 	{
 		int minutes = seconds/60;
@@ -51,17 +58,41 @@ public class SC_bars : MonoBehaviour
 		}
 	}
 	public void LateUpdate()
-	{
+	{	
+		bool middle_remove = false;
 		double_left = false;
-		
+
 		if(bos!=null)
 		{
-			double_left = true;
+			//Boss time clock
+			middle_remove = true;
 			left_value = bos.timer_bar_value;
 			left_max = bos.timer_bar_max;
-			left_text.text = "Time " + ConvertToTime((left_value+49)/50);
+			left_text.text = ConvertToTime((left_value+49)/50);
 			if(left_max==0) left_max=1;
-			boss_ui_bar.value = left_value*1f/left_max;
+			Time.fillAmount = left_value*1f/left_max;
+			DynamicClockArrow.LaterUpdate();
+
+			Vector2 mousePosition = Input.mousePosition;
+			if(!SC_data.SC_control.SC_fun.AreCoordinatesInsideRect(butter,mousePosition.x,mousePosition.y)) {
+				CompassInfo.localPosition = new Vector3(10000f,0f,0f);
+				TimeInfo.localPosition = new Vector3(0f,0f,0f);
+			} else {
+				CompassInfo.localPosition = new Vector3(0f,0f,0f);
+				TimeInfo.localPosition = new Vector3(10000f,0f,0f);	
+			}
+
+			//Boss health bar
+			double_left = true;
+			float max_health = bos.dataID[7] / 100f;
+			float act_health = bos.dataID[6] / 100f;
+			BossHealthText.text = "Boss "+act_health+"/"+max_health;
+			boss_ui_bar.value = act_health / max_health;
+		}
+		else
+		{
+			CompassInfo.localPosition = new Vector3(0f,0f,0f);
+			TimeInfo.localPosition = new Vector3(10000f,0f,0f);
 		}
 
 		Vector3 left = pos_center - dx + ndx;
