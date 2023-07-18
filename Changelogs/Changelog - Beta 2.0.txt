@@ -59,7 +59,7 @@ Frozen variables changes:
 - boss rocket bullet damage: 10 -> 12
 - boss unstable bullet damage: 8 -> 6.25
 - fire boss bullet damage 4.25 -> 3
-- player bullets speeds and colliders updated, note, that colliders aren't exactly what is being displayed:
+- player bullets speeds and colliders updated, note, that colliders aren't exactly what is being displayed, note, that bullet travel distance didn't change:
  - copper, red & coal bullet: speed (0.35 -> 0.45), collider (0.08 -> 0.14)
  - unstable bullet: speed (0.35 no change), collider (0.08 -> 0.12)
  - fire bullet: speed (0.35 -> 0.40), collider (0.08 no change)

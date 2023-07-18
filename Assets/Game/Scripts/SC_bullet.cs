@@ -123,6 +123,20 @@ public class SC_bullet : MonoBehaviour
 
         return gob;
     }
+    int MaxAgeOfPlayerBullet(int n)
+    {
+        float ret = 0f;
+        if(n==1) ret = SC_fun.SC_data.GplGet("copper_bullet_speed");
+        if(n==2) ret = SC_fun.SC_data.GplGet("red_bullet_speed");
+        if(n==3) ret = SC_fun.SC_data.GplGet("unstable_bullet_speed");
+        if(n==14) ret = SC_fun.SC_data.GplGet("coal_bullet_speed");
+        if(n==15) ret = SC_fun.SC_data.GplGet("fire_bullet_speed");
+        if(ret==0f) ret = 0.001f;
+        int ret2 = (int)(35f/ret) + 1;
+        if(ret2>=300) return 300;
+        else if(ret2<=1) return 1;
+        else return ret2;
+    }
     public void CheckAge()
     {
         if (age >= max_age)
@@ -214,6 +228,9 @@ public class SC_bullet : MonoBehaviour
 
         //start tick set
         start_tick = SC_control.current_tick - age;
+
+        if(type==1 || type==2 || type==3 || type==14 || type==15)
+            max_age = MaxAgeOfPlayerBullet(type);
 
         //seek check
         if(seekPointer==-1 && (type==9 || type==10))

@@ -1587,8 +1587,25 @@ function kick(i) {
 }
 
 //Bullet functions
+function MaxAgeOfPlayerBullet(n)
+{
+  var ret = 0;
+  if(n==1) ret = GplGet("copper_bullet_speed");
+  if(n==2) ret = GplGet("red_bullet_speed");
+  if(n==3) ret = GplGet("unstable_bullet_speed");
+  if(n==14) ret = GplGet("coal_bullet_speed");
+  if(n==15) ret = GplGet("fire_bullet_speed");
+  if(ret==0) ret = 0.001;
+  ret = Math.floor(35/ret) + 1;
+  if(ret>=300) return 300;
+  else if(ret<=1) return 1;
+  else return ret;
+}
 function spawnBullet(tpl,arg,bow)
 {
+  if(tpl.type==1 || tpl.type==2 || tpl.type==3 || tpl.type==14 || tpl.type==15)
+    tpl.max_age = MaxAgeOfPlayerBullet(tpl.type);
+
   if(tpl.type==9 || tpl.type==10)
   {
     tpl.steerPtr = steer_createSeekPointer(tpl.ID);
