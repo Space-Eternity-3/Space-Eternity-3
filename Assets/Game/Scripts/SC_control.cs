@@ -142,6 +142,7 @@ public class SC_control : MonoBehaviour {
 	public SC_effect SC_effect;
 	public SC_seek_data SC_seek_data;
 	public SC_bars SC_bars;
+	public SC_gameplay_set SC_gameplay_set;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -215,6 +216,18 @@ public class SC_control : MonoBehaviour {
 				return;
 			}
 		}
+	}
+	public bool HealBalanceGood()
+	{
+		float heal = GetHealthFraction(healBalance);
+		return (Mathf.Round(health_V*10000f)/10000f+heal)<1f;
+	}
+	public float GetHealthFraction(float hp)
+	{
+		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
+		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
+		float heal=0.02f*hp/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
+		return heal;
 	}
 	public void LaterUpdate()
 	{
@@ -291,7 +304,7 @@ public class SC_control : MonoBehaviour {
 		if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f)
 		{
 			//Healing potion
-			if(SC_slots.InvHaving(55)) if((Mathf.Round(health_V*10000f)/10000f+healBalance)<1f && !impulse_enabled)
+			if(SC_slots.InvHaving(55)) if(HealBalanceGood() && !impulse_enabled)
 			{
 				if(!SC_invisibler.invisible)
 				{
@@ -305,7 +318,7 @@ public class SC_control : MonoBehaviour {
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
 					healBalance += float.Parse(SC_data.Gameplay[31]);
 				}
-				else HealSGP();
+				else HealSGP("1");
 			}
 			else InfoUp("Potion blocked",380);
 
@@ -342,7 +355,7 @@ public class SC_control : MonoBehaviour {
 			else InfoUp("Potion blocked",380);
 
 			//Blank potion
-			if(SC_slots.InvHaving(61)) if((SC_effect.effect!=0 || (Mathf.Round(health_V*10000f)/10000f+healBalance)<1f) && !impulse_enabled)
+			if(SC_slots.InvHaving(61)) if((SC_effect.effect!=0 || HealBalanceGood()) && !impulse_enabled)
 			{
 				if(!SC_invisibler.invisible)
 				{
@@ -352,11 +365,11 @@ public class SC_control : MonoBehaviour {
 				int slot = SC_slots.InvChange(61,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/InventoryChange "+connectionID+" 61 -1 "+slot);
-					SendMTP("/Heal "+connectionID+" 1");
+					SendMTP("/Heal "+connectionID+" 2");
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 14 0 0");
-					healBalance += float.Parse(SC_data.Gameplay[31]);
+					healBalance += float.Parse(SC_data.Gameplay[39]);
 				}
-				else HealSGP();
+				else HealSGP("2");
 				SC_effect.EffectClean();
 			}
 			else InfoUp("Potion blocked",380);
@@ -1285,11 +1298,15 @@ public class SC_control : MonoBehaviour {
 		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
 		if(!damage_sounds_disabled) Instantiate(explosion2,transform.position,transform.rotation);
 	}
-	public void HealSGP()
+	public void HealSGP(string arg2)
 	{
+		string heal_size = "0";
+		if(arg2=="1") heal_size = SC_data.Gameplay[31];
+		if(arg2=="2") heal_size = SC_data.Gameplay[39];
+
 		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
-		float heal=0.02f*float.Parse(SC_data.Gameplay[31])/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
+		float heal=0.02f*float.Parse(heal_size)/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
 
 		if(heal<0) heal=0;
 		health_V += heal;
@@ -1346,13 +1363,13 @@ public class SC_control : MonoBehaviour {
 				float dmgg = 0f;
 				if(neme=="damager3") 				dmgg = float.Parse(SC_data.Gameplay[28]); //unstable matter
 				else if(neme=="star_collider") 		dmgg = float.Parse(SC_data.Gameplay[34]); //fire bullet
-				else if(neme=="star_collider_big") 	dmgg = 2f * float.Parse(SC_data.Gameplay[34]); //stars
-				else if(neme=="S-fire") 			dmgg = 4f * float.Parse(SC_data.Gameplay[32]); //S-fire
+				else if(neme=="star_collider_big") 	dmgg = SC_data.GplGet("star_collider_damage"); //stars
+				else if(neme=="S-fire") 			dmgg = SC_data.GplGet("boss_starandus_geyzer_damage") * float.Parse(SC_data.Gameplay[32]); //S-fire
 				else 								dmgg = float.Parse(SC_data.Gameplay[8]); //spikes
 
-				if(neme=="star_collider") 			SC_effect.SetEffect(5,2);
-				else if(neme=="star_collider_big") 	SC_effect.SetEffect(5,5);
-				else if(neme=="S-fire") 			SC_effect.SetEffect(5,4);
+				if(neme=="star_collider") 			SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_fire_time"));
+				else if(neme=="star_collider_big") 	SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_fire_time"));
+				else if(neme=="S-fire") 			SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_fire_time"));
 				
 				if(dmgg > max_framal_damage) max_framal_damage = dmgg;
 			}
@@ -1433,8 +1450,9 @@ public class SC_control : MonoBehaviour {
 
 			return;
 		}
-		if(arg[0]=="/RetHeal" && arg[1]==connectionID+"" && arg[2]=="1") {
-			healBalance -= float.Parse(SC_data.Gameplay[31]);
+		if(arg[0]=="/RetHeal" && arg[1]==connectionID+"") {
+			if(arg[2]=="1") healBalance -= float.Parse(SC_data.Gameplay[31]);
+			if(arg[2]=="2") healBalance -= float.Parse(SC_data.Gameplay[39]);
 		}
 
 		int msl=arg.Length;
@@ -1814,6 +1832,10 @@ public class SC_control : MonoBehaviour {
 			SC_slots.SlotX[i] = invdata[i*2];
 			SC_slots.SlotY[i] = invdata[i*2+1];
 		}
+	}
+	public void LoadSomeGameplayData()
+	{
+		SC_gameplay_set.GameplayAwakeSet();
 	}
 	public void AfterAwake()
 	{

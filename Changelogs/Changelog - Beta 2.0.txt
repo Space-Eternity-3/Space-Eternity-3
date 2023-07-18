@@ -1,7 +1,6 @@
 New features:
 
 - camera zoom out when arena active
-- boss system improved
 - bosses finished:
  - Protector [description and image here]
  - Adecodron [description and image here]
@@ -16,7 +15,7 @@ New features:
 Old feature changes:
 
 - treasure loot updated [actual loot here]
-- treasure loot can turn up in hidden slots now
+- treasure loot can appear in hidden slots now
 - unstable artefact description changed to: "You can't unleash its power"
 - Starandus now immune to fire bullets
 - immortality artefact removes effect
@@ -24,18 +23,10 @@ Old feature changes:
 - effect is removed after battle end
 - impulse artefact is more orange (oranger)
 - when you exit game when you have effect, you won't get the remaining damage
-- blank potion acts like healing potion, but also removes effect
+- blank potion acts like a bit weaker healing potion, but also removes effect
 - adjusted sticky bulb material (more transparent and same on player and as bullet)
-- health, turbo, power and time bars reworked to be more rectangular
-- spike bullet effect duration 4s -> 6s
-- sticky bulb effect duration 6s -> 4s
-- boss rocket bullet damage: 10 -> 12
-- boss unstable bullet damage: 8 -> 6.25
-- fire boss bullet damage 4.25 -> 3
-- player bullets speeds and colliders updated, note, that colliders aren't exactly what is being displayed:
- - copper, red & coal bullet: speed (0.35 -> 0.45), collider (0.08 -> 0.14)
- - unstable bullet: speed (0.35 no change), collider (0.08 -> 0.12)
- - fire bullet: speed (0.35 -> 0.40), collider (0.08 no change)
+- health, turbo, and power bars reworked to be more rectangular
+- replaced time bar with always visible boss health rectangular bar and added time clock
 
 Default datapack changes:
 
@@ -53,16 +44,27 @@ Default datapack changes:
  - drill_brake_speed -5 -> -6
 - turbo_regenerate_multiplier 1 -> 1,5
 - turbo_use_multiplier 2 -> 1,5
+- 51 new gameplay variables added, all variables [here]
 - new star structure 1,5%
 - golden asteroids are 2 times more common in alien biomes (they didn't spawn there before)
-- blank potion recipe changed: "bone(3)" changed to "healing_potion"
-- grass asteroid dillable items changed: "stone(92%) + magic_element(8%)" changed to "bush(70%) + stone(22%) + magic_element(8%)"
+- grass asteroid drillable items changed: "stone(92%) + magic_element(8%)" changed to "bush(70%) + stone(22%) + magic_element(8%)"
+
+Frozen variables changes:
+(some of them are now possible to modify through datapacks, more info [here])
+
+- spike bullet effect duration 4s -> 6s
+- sticky bulb effect duration 6s -> 4s
+- boss rocket bullet damage: 10 -> 12
+- boss unstable bullet damage: 8 -> 6.25
+- fire boss bullet damage 4.25 -> 3
+- player bullets speeds and colliders updated, note, that colliders aren't exactly what is being displayed:
+ - copper, red & coal bullet: speed (0.35 -> 0.45), collider (0.08 -> 0.14)
+ - unstable bullet: speed (0.35 no change), collider (0.08 -> 0.12)
+ - fire bullet: speed (0.35 -> 0.40), collider (0.08 no change)
 
 Configurables:
 
-- new gameplay variable - cyclic_damage_multiplier: 1
-- new gameplay variable - boss_unstable_effectivity: 1,25
-- new gameplay variable - boss_fire_effectivity: 1.75
+- 51 new gameplay variables possible to configure from datapack level, all variables [here]
 - new server config variable - show_positions (determines whether players' positions are public)
 - added new seon object: star
 - added new biome tag: star
@@ -74,13 +76,9 @@ Important technical changes:
 - generation grid generates procedurally now
 - health bar synchronizes with the server constantly
 - removed message name verification when enqueueing and truly thread safe code
-- reworked static damage system and its damages:
- - "damager2", spikes, dmg:[gpl-8]
- - "damager3", unstable matter, dmg:[gpl-28] or 0
- - "star_collider", fire bullet, dmg:[gpl-34], fire effect 2s
- - "star_collider_big", star, dmg:2*[gpl-34], fire effect 5s
- - "S-fire", Starandus geyzer, dmg:4*[gpl-32], fire effect 4s (not exactly "static" damage)
+- reworked static damage system and its damages
 - world size reduced from 1M to 400k due to integer 32 bit asteroid ID errors
+- gameplay variable system reworked, easier to access and add variables
 
 Bug fixes:
 
@@ -100,3 +98,4 @@ Bug fixes:
 - sticky bulb was not always reducing velocity, velocity reduction changed because of technical reasons
 - there were integer 32 bit asteroid ID errors when over 200k coordinates from the center of the universe
 - pause menu wasn't blocking raycast, so it was possible to interact with certain things during pause
+- healing potion use was blocking healing even if it was not necessary when waiting for server response

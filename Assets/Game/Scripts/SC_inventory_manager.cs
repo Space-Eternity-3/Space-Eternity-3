@@ -79,13 +79,13 @@ public class SC_inventory_manager : MonoBehaviour {
 
 				if(!SC_fun.SC_control.impulse_enabled)
 				{
-					if(pvNum==55f) if((Mathf.Round(SC_fun.SC_control.health_V*10000f)/10000f+SC_fun.SC_control.healBalance)<1f)
+					if(pvNum==55f) if(SC_fun.SC_control.HealBalanceGood())
 						sImg.texture=SC_fun.Item55u;
 					if(pvNum==57f) if(SC_fun.SC_control.turbo_V<0.95f)
 						sImg.texture=SC_fun.Item57u;
 					if(pvNum==59f) if(SC_fun.SC_control.power_V<0.95f && !SC_fun.SC_control.SC_invisibler.invisible && (SC_fun.SC_control.SC_artefacts.GetArtefactID()==2 || SC_fun.SC_control.SC_artefacts.GetArtefactID()==3))
 						sImg.texture=SC_fun.Item59u;
-					if(pvNum==61f) if(SC_fun.SC_control.SC_effect.effect!=0 || (Mathf.Round(SC_fun.SC_control.health_V*10000f)/10000f+SC_fun.SC_control.healBalance)<1f)
+					if(pvNum==61f) if(SC_fun.SC_control.SC_effect.effect!=0 || SC_fun.SC_control.HealBalanceGood())
 						sImg.texture=SC_fun.Item61u;
 					if(pvNum==63f)
 						sImg.texture=SC_fun.Item63u;

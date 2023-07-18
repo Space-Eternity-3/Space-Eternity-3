@@ -1,0 +1,472 @@
+<This is a comment>
+
+<
+Datapack documentation:
+https://se3.page/docs/Beta-2.0/SE3Documentation/
+Edit file and select it in your SE3 browser.
+>
+
+version: 'Beta 2.0'; <Don't change>
+name: 'Developer'; <Rename it>
+craftings
+{
+	<Category>1
+	{
+		title_image: stone;
+		1: stone(5) -> packed_stone;
+		2: packed_stone -> stone(5);
+		3: stone(2) -> stone_drill;
+		4: stone_drill -> stone(2);
+		5: geyzer -> stone(3);
+	}
+	<Category>2
+	{
+		title_image: copper;
+		1: copper(5) -> packed_copper;
+		2: packed_copper -> copper(5);
+		3: copper -> copper_bullet(5);
+	}
+	<Category>3
+	{
+		title_image: gold;
+		1: gold(5) -> packed_gold;
+		2: packed_gold -> gold(5);
+		3: gold(2) -> golden_drill;
+		4: golden_drill -> gold(2);
+	}
+	<Category>4
+	{
+		title_image: magnetic_stone;
+		1: magnetic_stone(5) -> packed_magnetic_stone;
+		2: packed_magnetic_stone -> magnetic_stone(5);
+		3: magnetic_stone(3) -> magnetic_lamp;
+		4: magnetic_lamp -> magnetic_stone(3);
+		5: mega_geyzer -> magnetic_stone(4);
+	}
+	<Category>5
+	{
+		title_image: coal;
+		1: coal(5) -> packed_coal;
+		2: packed_coal -> coal(5);
+		3: coal -> coal_bullet(6);
+		4: coal_bullet(3) + fire_bullet -> fire_bullet(3);
+	}
+	<Category>6
+	{
+		title_image: red_stone;
+		1: red_stone(5) -> packed_red;
+		2: packed_red -> red_stone(5);
+		3: red_stone -> red_bullet(3);
+	}
+	<Category>7
+	{
+		title_image: bush;
+		1: bush(3) -> big_bush;
+		2: big_bush -> bush(3);
+	}
+	<Category>8
+	{
+		title_image: medium_amethyst;
+		1: small_amethyst(2) -> medium_amethyst;
+		2: small_amethyst(3) -> large_amethyst;
+		3: medium_amethyst -> small_amethyst(2);
+		4: large_amethyst -> small_amethyst(3);
+	}
+	<Category>9
+	{
+		title_image: medium_diamond;
+		1: stone(3) + small_diamond -> stone_with_crystals;
+		2: stone_with_crystals -> small_diamond;
+		3: small_diamond(2) -> medium_diamond;
+		4: medium_diamond -> small_diamond(2);
+	}
+	<Category>10
+	{
+		title_image: storage;
+		1: stone(4) + copper(2) -> storage;
+		2: stone_with_crystals(3) + stone_drill -> driller;
+		3: stone(5) + dead_alien -> stone_tomb;
+		4: stone_tomb -> dead_alien;
+	}
+	<Category>11
+	{
+		title_image: respawn;
+		1: gold(3) + copper(2) -> respawn;
+		2: respawn -> gold(3);
+	}
+	<Category>12
+	{
+		title_image: healing_potion;
+		1: bush(3) + magic_element -> healing_potion;
+		2: copper(3) + turbo_element -> turbo_potion;
+		3: small_amethyst(3) + power_element -> power_potion;
+		4: bone(3) + blank_element -> blank_potion;
+		5: red_stone(3) + unstable_matter -> killing_potion;
+	}
+	<Category>13
+	{
+		title_image: bone;
+		1: bone(4) + unstable_matter -> dead_alien;
+		2: dead_alien -> bone(4);
+		3: dead_alien + bush(3) -> alien;
+		4: dead_alien + magnetic_stone(3) -> magnetic_alien;
+		5: dead_alien + red_stone(3) -> red_alien;
+	}
+	<Category>14
+	{
+		title_image: golden_drill;
+		1: stone -> small_amethyst(99999);
+		2: stone -> copper_bullet(99999);
+		3: stone -> immortality_artefact(99999);
+		4: stone -> blank_potion(99999);
+		5: stone -> turbo_potion(99999);
+	}
+	<Max 512 categories>
+}
+drill_loot
+{
+	stone: stone(100%);
+	copper: copper(92%) + turbo_element(8%);
+	gold: gold(30%);
+	grass: bush(70%) + stone(22%) + magic_element(8%);
+	amethyst: small_amethyst(20%) + power_element(4%);
+	coal: coal(100%);
+	magnetic: magnetic_stone(100%);
+	red: red_stone(100%);
+	diamond: small_diamond(2%);
+	metalic: stone(50%) + blank_element(4%);
+}
+modified_drops
+{
+	medium_amethyst: small_amethyst(2);
+	large_amethyst: small_amethyst(3);
+	big_bush: bush(3);
+	medium_diamond: small_diamond(2);
+}
+gameplay
+{
+	health_level_add: 0;
+	drill_level_add: 0;
+	
+	health_regenerate_cooldown: 2,5;
+	health_regenerate_multiplier: 4;
+	turbo_regenerate_multiplier: 1,5;
+	turbo_use_multiplier: 1,5;
+	crash_minimum_energy: 6;
+	crash_damage_multiplier: 0,6;
+	
+	vacuum_drag_multiplier: 1;
+	all_speed_multiplier: 1;
+	player_normal_speed: 13;
+	player_brake_speed: -8,5;
+	player_turbo_speed: 18; <Only if turbo level is 0>
+	drill_normal_speed: 9;
+	drill_brake_speed: -6;
+	
+	spike_damage: 5;
+	copper_bullet_damage: 3;
+	red_bullet_damage: 4;
+	unstable_matter_damage: 8;
+	coal_bullet_damage: 2,5;
+	fire_bullet_damage: 3;
+	boss_unstable_effectivity: 1,25;
+	boss_fire_effectivity: 1,75;
+	bullet_owner_push: 1;
+	healing_potion_hp: 20;
+	killing_potion_hp: 15;
+	
+	at_protection_health_level_add: 2,272;
+	at_protection_health_regenerate_multiplier: 1,5;	<relative variable>
+					
+	at_impulse_power_regenerate_multiplier: 1;
+	at_impulse_time: 0,4;
+	at_impulse_speed: 70;
+	at_impulse_damage: 15;
+					
+	at_illusion_power_regenerate_multiplier: 1;
+	at_illusion_power_use_multiplier: 2;
+					
+	at_unstable_normal_avarage_time: 1,5;
+	at_unstable_special_avarage_time: 1,5;
+	at_unstable_force: 10;
+	
+	boss_damage_multiplier: 1;
+	cyclic_damage_multiplier: 1;
+	
+	<new variables temporary comment>
+	
+	blank_potion_hp: 15;
+	stone_geyzer_force_multiplier: 1;
+	magnetic_geyzer_force_multiplier: 4;
+	amethyst_grow_time_min: 4500;
+	amethyst_grow_time_max: 12000;
+	magnetic_alien_grow_time: 150;
+
+	copper_bullet_speed: 0,45;
+	red_bullet_speed: 0,45;
+	unstable_bullet_speed: 0,35;
+	fire_bullet_speed: 0,4;
+	coal_bullet_speed: 0,45;
+	boss_bullet_speed: 0,35;
+	boss_seeker_speed: 0,25;
+
+	cyclic_fire_damage: 2;
+	cyclic_poison_damage: 1;
+	cyclic_remote_damage: 1;
+
+	cyclic_fire_time: 2;
+	cyclic_spike_time: 6;
+	cyclic_spikeball_time: 4;
+	cyclic_stickybulb_time: 4;
+
+	star_collider_damage: 5;
+
+	boss_starandus_geyzer_damage: 4;
+	boss_adecodron_sphere_damage: 12;
+	boss_octogone_sphere_damage: 8;
+
+	boss_bullet_electron_damage: 35;
+	boss_bullet_fire_damage: 3;
+	boss_bullet_spike_damage: 6;
+	boss_bullet_brainwave_damage: 5;
+	boss_bullet_rocket_damage: 12;
+	boss_bullet_spikeball_damage: 6;
+	boss_bullet_copper_damage: 3,75;
+	boss_bullet_red_damage: 5;
+	boss_bullet_unstable_damage: 6,25;
+	boss_bullet_graviton_damage: 3,5;
+	boss_bullet_neutronium_damage: 15;
+
+	boss_battle_time: 180;
+	boss_hp_protector_1: 700;
+	boss_hp_protector_2: 1000;
+	boss_hp_protector_3: 1200;
+	boss_hp_adecodron_1: 700;
+	boss_hp_adecodron_2: 1000;
+	boss_hp_adecodron_3: 1200;
+	boss_hp_octogone_1: 700;
+	boss_hp_octogone_2: 1000;
+	boss_hp_octogone_3: 1200;
+	boss_hp_starandus_1: 700;
+	boss_hp_starandus_2: 1000;
+	boss_hp_starandus_3: 1200;
+	boss_hp_degenerator_1: 700;
+	boss_hp_degenerator_2: 1000;
+	boss_hp_degenerator_3: 1200;
+}
+generator_settings
+{
+	<Default generation> 0
+	{
+		settings: [];
+		
+		<Size>4: stone(50%) + copper(45%) + gold(5%);
+		<Size>5: stone(50%) + copper(45%) + gold(5%);
+		<Size>6: stone(50%) + copper(20%) + coal(23,5%) + gold(5%) + amethyst(1,5%);
+		<Size>7: stone(50%) + copper(30%) + coal(20%);
+		<Size>8: stone(50%) + copper(30%) + coal(20%);
+		<Size>9: stone(50%) + coal(20%) + grass(15%) + magnetic(15%);
+		<Size>10: stone(35%) + coal(15%) + grass(25%) + magnetic(25%);
+	}
+	
+	<---BIOMES--->
+	
+	<Hell biome> 1
+	{
+		chance: 8%;
+		settings: [];
+	
+		<Size>4: coal(100%);
+		<Size>5: coal(100%);
+		<Size>6: coal(98%) + diamond(2%);
+		<Size>7: coal(65%) + red(35%);
+		<Size>8: coal(65%) + red(35%);
+		<Size>9: coal(45%) + red(55%);
+		<Size>10: coal(45%) + red(55%);
+	}
+	<Geyzer biome> 2
+	{
+		chance: 8%;
+		settings: [];
+	
+		all_sizes: stoneA(100%);
+		<Size>5: stoneA(70%) + magneticA(30%);
+		<Size>6: stoneA(70%) + magneticA(30%);
+		<Size>7: stoneA(70%) + magneticA(30%);
+	}
+	<Alien biome> 3
+	{
+		chance: 8%;
+		settings: [];
+	
+		all_sizes: grass(60%) + magnetic(40%);
+		<Size>4: grass(55%) + magnetic(35%) + gold(10%);
+		<Size>5: grass(55%) + magnetic(35%) + gold(10%);
+	}
+	
+	<---STRUCTURES--->
+	
+	<Arena structure> 4
+	{
+		chance: 5%;
+		settings: [
+			structural, arena, spawn, centred,
+			ring.inner.change -> 0, ring.inner.change -> 50,
+			radius = 80,
+			density = 100%,
+		];
+		
+		all_sizes: metalic(100%);
+	}
+	<Catastrophic arena structure> 5
+	{
+		chance: 0,5%;
+		settings: [
+			structural, catastrophic.arena,
+			ring.inner.change -> 0, ring.inner.change -> 50,
+			radius = 80,
+			density = 100%,
+		];
+		
+		all_sizes: metalicA(100%);
+	}
+	<Cementery structure> 6
+	{
+		chance: 3%;
+		settings: [
+			structural, cementery,
+			ring.inner.change -> 0, ring.inner.change -> 20,
+			radius = 50,
+			density = 100%,
+		];
+		
+		all_sizes: stoneB(100%);
+	}
+	<Star structure> 7
+	{
+		chance: 1,5%;
+		settings: [
+			structural, star,
+			ring.inner.change -> 0, ring.inner.change -> 20,
+			radius = 40,
+			density = 100%,
+		];
+		
+		all_sizes: coalB(100%);
+	}
+	<max 31 biomes + default>
+}
+objects_generate
+{
+	stone: stone(35%);
+	stoneA: stone(30%) + geyzer(20%);
+	stoneB: stone(15%) + bone(20%) + stone_tomb(24%) + treasure(6%) + dead_alien(1%) + pumpkin(1%);
+	copper: copper(35%);
+	gold: gold(25%);
+	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%);
+	amethyst: small_amethyst(20%) + medium_amethyst(20%) + large_amethyst(20%);
+	coal: coal(45%);
+	coalB: coal(45%) + fire_bullet(20%);
+	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
+	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
+	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
+	redA: unstable_matter(20%); <actually not designed to be red>
+	diamond: medium_diamond(15%) + small_diamond(25%);
+	metalic: stone(35%) + metal_piece(25%);
+	metalicA: stone(35%) + metal_piece(25%) + unstable_matter(8%);
+	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
+	bedrockA: bedrock_stone(30%) + packed_bedrock(15%) + unstable_matter(20%);
+}
+game_translate <low-level settings>
+{
+	Asteroids
+	{
+		0: stone;
+		3: copper;
+		4: gold;
+		5: grass;
+		6: amethyst;
+		7: coal;
+		8: magnetic;
+		9: red;
+		10: diamond;
+		11: metalic;
+		12: bedrock;
+	}
+	Items_and_objects
+	{
+		1: stone_with_crystals;
+		2: driller;
+		3: mega_geyzer;
+		4: pumpkin;
+		5: small_amethyst;
+		6: medium_amethyst;
+		7: large_amethyst;
+		8: stone;
+		9: copper;
+		10: gold;
+		11: coal;
+		12: bush;
+		13: alien;
+		14: big_bush;
+		15: old_pumpkin;				<not used>
+		16: magnetic_stone;
+		17: packed_stone;
+		18: packed_copper;
+		19: packed_gold;
+		20: respawn;					<only item>
+		21: storage;
+		22: packed_magnetic_stone;
+		23: magnetic_alien_activated;	<only object>
+		24: copper_bullet;				<only item>
+		25: magnetic_alien;
+		26: packed_coal;
+		27: red_alien;
+		28: red_spikes;
+		29: stone_tomb;
+		30: red_stone;
+		31: packed_red;
+		32: medium_diamond;
+		33: small_diamond;
+		34: stone_drill;
+		35: magnetic_lamp;
+		36: golden_drill;
+		37: treasure;
+		38: geyzer;
+		39: red_bullet;					<only item>
+		40: dead_alien;
+		41: gray_artefact;
+		42: protection_artefact;
+		43: impulse_artefact;
+		44: illusion_artefact;
+		45: immortality_artefact;
+		46: useless_artefact;
+		47: unstable_artefact;
+		48: unstable_matter;
+		49: packed_bedrock;				<only object>
+		50: bedrock_stone;				<only object>
+		51: metal_piece;
+		52: bedrock_storage;			<only arena object>
+		53: bedrock_alien;				<only object>
+		54: bone;
+		55: healing_potion;				<only item>
+		56: magic_element;
+		57: turbo_potion;				<only item>
+		58: turbo_element;
+		59: power_potion;				<only item>
+		60: power_element;
+		61: blank_potion;				<only item>
+		62: blank_element;
+		63: killing_potion;				<only item>
+		64: coal_bullet;				<only item>
+		65: fire_bullet;
+	}
+}
+custom_structures <advanced settings>
+{
+	1: '[
+	
+		<seon code here>
+	
+	]';
+}

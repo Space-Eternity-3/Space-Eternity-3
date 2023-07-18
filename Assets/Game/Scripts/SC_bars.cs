@@ -58,7 +58,7 @@ public class SC_bars : MonoBehaviour
 		}
 	}
 	public void LateUpdate()
-	{	
+	{
 		bool middle_remove = false;
 		double_left = false;
 
@@ -86,7 +86,9 @@ public class SC_bars : MonoBehaviour
 			double_left = true;
 			float max_health = bos.dataID[7] / 100f;
 			float act_health = bos.dataID[6] / 100f;
-			BossHealthText.text = "Boss "+act_health+"/"+max_health;
+			int int_act = (int)act_health;
+			if(int_act==0) int_act=1;
+			BossHealthText.text = "Boss "+int_act+"/"+(int)max_health;
 			boss_ui_bar.value = act_health / max_health;
 		}
 		else

@@ -8,6 +8,102 @@ class cfun
 {
     constructor() {
         this.lps = new CLinearPreset();
+        this.gpl_info = [
+            
+            //[0] - variable name
+            //[1] - variable filter (*)all or (+)positive
+
+            "turbo_regenerate_multiplier:+", //0
+            "turbo_use_multiplier:+", //1
+            "drill_level_add:*", //2
+            "copper_bullet_damage:+", //3
+            "health_regenerate_cooldown:+", //4
+            "health_regenerate_multiplier:+", //5
+            "crash_minimum_energy:+", //6
+            "crash_damage_multiplier:+", //7
+            "spike_damage:+", //8
+            "player_normal_speed:*", //9
+            "player_brake_speed:*", //10
+            "player_turbo_speed:*", //11
+            "drill_normal_speed:*", //12
+            "drill_brake_speed:*", //13
+            "vacuum_drag_multiplier:*", //14
+            "all_speed_multiplier:*", //15
+            "at_protection_health_level_add:*", //16
+            "at_protection_health_regenerate_multiplier:+", //17
+            "at_impulse_power_regenerate_multiplier:+", //18
+            "at_impulse_time:+", //19
+            "at_impulse_speed:*", //20
+            "at_illusion_power_regenerate_multiplier:+", //21
+            "at_illusion_power_use_multiplier:+", //22
+            "at_unstable_normal_avarage_time:+", //23
+            "at_unstable_special_avarage_time:+", //24
+            "at_unstable_force:*", //25
+            "health_level_add:*", //26
+            "red_bullet_damage:+", //27
+            "unstable_matter_damage:+", //28
+            "at_impulse_damage:+", //29
+            "bullet_owner_push:*", //30
+            "healing_potion_hp:+", //31
+            "boss_damage_multiplier:+", //32
+            "coal_bullet_damage:+", //33
+            "fire_bullet_damage:+", //34
+            "killing_potion_hp:+", //35
+            "cyclic_damage_multiplier:+", //36
+            "boss_unstable_effectivity:+", //37
+            "boss_fire_effectivity:+", //38
+            "blank_potion_hp:+", //39
+            "stone_geyzer_force_multiplier:*", //40
+            "magnetic_geyzer_force_multiplier:*", //41
+            "amethyst_grow_time_min:+", //42
+            "amethyst_grow_time_max:+", //43
+            "magnetic_alien_grow_time:+", //44
+            "copper_bullet_speed:*", //45
+            "red_bullet_speed:*", //46
+            "unstable_bullet_speed:*", //47
+            "fire_bullet_speed:*", //48
+            "coal_bullet_speed:*", //49
+            "boss_bullet_speed:+", //50
+            "boss_seeker_speed:+", //51
+            "cyclic_fire_damage:+", //52
+            "cyclic_poison_damage:+", //53
+            "cyclic_remote_damage:+", //54
+            "cyclic_fire_time:+", //55
+            "cyclic_spike_time:+", //56
+            "cyclic_spikeball_time:+", //57
+            "cyclic_stickybulb_time:+", //58
+            "star_collider_damage:+", //59
+            "boss_starandus_geyzer_damage:+", //60
+            "boss_adecodron_sphere_damage:+", //61
+            "boss_octogone_sphere_damage:+", //62
+            "boss_bullet_electron_damage:+", //63
+            "boss_bullet_fire_damage:+", //64
+            "boss_bullet_spike_damage:+", //65
+            "boss_bullet_brainwave_damage:+", //66
+            "boss_bullet_rocket_damage:+", //67
+            "boss_bullet_spikeball_damage:+", //68
+            "boss_bullet_copper_damage:+", //69
+            "boss_bullet_red_damage:+", //70
+            "boss_bullet_unstable_damage:+", //71
+            "boss_bullet_graviton_damage:+", //72
+            "boss_bullet_neutronium_damage:+", //73
+            "boss_battle_time:+", //74
+            "boss_hp_protector_1:+", //75
+            "boss_hp_protector_2:+", //76
+            "boss_hp_protector_3:+", //77
+            "boss_hp_adecodron_1:+", //78
+            "boss_hp_adecodron_2:+", //79
+            "boss_hp_adecodron_3:+", //80
+            "boss_hp_octogone_1:+", //81
+            "boss_hp_octogone_2:+", //82
+            "boss_hp_octogone_3:+", //83
+            "boss_hp_starandus_1:+", //84
+            "boss_hp_starandus_2:+", //85
+            "boss_hp_starandus_3:+", //86
+            "boss_hp_degenerator_1:+", //87
+            "boss_hp_degenerator_2:+", //88
+            "boss_hp_degenerator_3:+", //89
+        ];
     }
 
     parseFloatE(str)
@@ -160,6 +256,22 @@ class cfun
     {
         var r = r1 + r2;
         return ((xt-xa)**2 + (yt-ya)**2 <= r**2);
+    }
+
+    //Gameplay variables functions
+    VarNumber(str,gnome)
+    {
+        var i;
+        for(i=0;i<gnome;i++)
+            if(this.gpl_info[i].split(":")[0]==str) return i;
+        return -1;
+    }
+    FilterValue(n,value)
+    {
+        var spl = this.gpl_info[n].split(":");
+        var parsed = this.parseFloatE(value);
+        if(parsed<0 && spl[1]=="+") parsed*=-1;
+        return parsed;
     }
 }
 class CLinearPreset

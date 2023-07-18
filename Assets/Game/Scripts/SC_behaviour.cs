@@ -150,7 +150,7 @@ public class CInfo
         float ly = thys.ScrdToFloat(thys.dataID[9]);
         float angle = delta_angle_rad + thys.ScrdToFloat(thys.dataID[10])*3.14159f/180f;
         float[] pak = new float[2]; pak[1]=0f;
-        if(btype==9 || btype==10) pak[0]=0.25f; else pak[0]=0.35f;
+        if(btype==9 || btype==10) pak[0]=thys.SC_data.GplGet("boss_seeker_speed"); else pak[0]=thys.SC_data.GplGet("boss_bullet_speed");
         float[] efwing = thys.RotatePoint(pak,angle+deviation_angle,false);
         ShotRaw(rad*Mathf.Cos(angle)+thys.deltapos.x+lx,rad*Mathf.Sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
     }
@@ -471,7 +471,7 @@ public class SC_behaviour : MonoBehaviour
         //Remote damage
         int reduced_frame = thys.dataID[19] - thys.dataID[17];
         if(thys.type==6 && thys.dataID[18]==3 && reduced_frame%20==0 && reduced_frame!=300)
-            if(players.Length>0) thys.SC_control.DamageFLOAT(1f * float.Parse(thys.SC_data.Gameplay[32]));
+            if(players.Length>0) thys.SC_control.DamageFLOAT(thys.SC_data.GplGet("cyclic_remote_damage") * float.Parse(thys.SC_data.Gameplay[36]));
 
         //Octogone teleportation
         float new_x=0, new_y=0;

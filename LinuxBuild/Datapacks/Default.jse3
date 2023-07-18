@@ -100,7 +100,7 @@ craftings
 		1: bush(3) + magic_element -> healing_potion;
 		2: copper(3) + turbo_element -> turbo_potion;
 		3: small_amethyst(3) + power_element -> power_potion;
-		4: healing_potion + blank_element -> blank_potion;
+		4: bone(3) + blank_element -> blank_potion;
 		5: red_stone(3) + unstable_matter -> killing_potion;
 	}
 	<Category>13
@@ -183,6 +183,67 @@ gameplay
 	
 	boss_damage_multiplier: 1;
 	cyclic_damage_multiplier: 1;
+	
+	<new variables temporary comment>
+	
+	blank_potion_hp: 15;
+	stone_geyzer_force_multiplier: 1;
+	magnetic_geyzer_force_multiplier: 4;
+	amethyst_grow_time_min: 60;
+	amethyst_grow_time_max: 180;
+	magnetic_alien_grow_time: 3;
+
+	copper_bullet_speed: 0,45;
+	red_bullet_speed: 0,45;
+	unstable_bullet_speed: 0,35;
+	fire_bullet_speed: 0,4;
+	coal_bullet_speed: 0,45;
+	boss_bullet_speed: 0,35;
+	boss_seeker_speed: 0,25;
+
+	cyclic_fire_damage: 2;
+	cyclic_poison_damage: 1;
+	cyclic_remote_damage: 1;
+
+	cyclic_fire_time: 2;
+	cyclic_spike_time: 6;
+	cyclic_spikeball_time: 4;
+	cyclic_stickybulb_time: 4;
+
+	star_collider_damage: 5;
+
+	boss_starandus_geyzer_damage: 4;
+	boss_adecodron_sphere_damage: 12;
+	boss_octogone_sphere_damage: 8;
+
+	boss_bullet_electron_damage: 35;
+	boss_bullet_fire_damage: 3;
+	boss_bullet_spike_damage: 6;
+	boss_bullet_brainwave_damage: 5;
+	boss_bullet_rocket_damage: 12;
+	boss_bullet_spikeball_damage: 6;
+	boss_bullet_copper_damage: 3,75;
+	boss_bullet_red_damage: 5;
+	boss_bullet_unstable_damage: 6,25;
+	boss_bullet_graviton_damage: 3,5;
+	boss_bullet_neutronium_damage: 15;
+
+	boss_battle_time: 180;
+	boss_hp_protector_1: 700;
+	boss_hp_protector_2: 1000;
+	boss_hp_protector_3: 1200;
+	boss_hp_adecodron_1: 700;
+	boss_hp_adecodron_2: 1000;
+	boss_hp_adecodron_3: 1200;
+	boss_hp_octogone_1: 700;
+	boss_hp_octogone_2: 1000;
+	boss_hp_octogone_3: 1200;
+	boss_hp_starandus_1: 700;
+	boss_hp_starandus_2: 1000;
+	boss_hp_starandus_3: 1200;
+	boss_hp_degenerator_1: 700;
+	boss_hp_degenerator_2: 1000;
+	boss_hp_degenerator_3: 1200;
 }
 generator_settings
 {

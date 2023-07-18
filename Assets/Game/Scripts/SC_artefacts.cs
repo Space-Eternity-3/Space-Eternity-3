@@ -58,6 +58,8 @@ public class SC_artefacts : MonoBehaviour
 		SC_control.unstable_sprobability = (int)(float.Parse(SC_data.Gameplay[24])*50+1);
 		if(SC_control.unstable_sprobability < 1) SC_control.unstable_sprobability = 1;
 		SC_control.unstable_force = float.Parse(SC_data.Gameplay[25]);
+
+		SC_control.LoadSomeGameplayData();
 	}
 	public bool IsArtefact(int n)
 	{

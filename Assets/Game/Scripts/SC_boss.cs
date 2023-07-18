@@ -514,11 +514,38 @@ public class SC_boss : MonoBehaviour
     }
     int getTimeSize(int n)
     {
-        return 9000;
+        return (int)(SC_data.GplGet("boss_battle_time") * 50);
     }
     int getBossHealth(int n, int typ)
     {
-        return 100000;
+        int ret = 10000;
+        if(typ==1) {
+            if(n==0) ret = (int)(SC_data.GplGet("boss_hp_protector_1") * 100);
+            if(n==1) ret = (int)(SC_data.GplGet("boss_hp_protector_2") * 100);
+            if(n==2) ret = (int)(SC_data.GplGet("boss_hp_protector_3") * 100);
+        }
+        if(typ==2) {
+            if(n==0) ret = (int)(SC_data.GplGet("boss_hp_adecodron_1") * 100);
+            if(n==1) ret = (int)(SC_data.GplGet("boss_hp_adecodron_2") * 100);
+            if(n==2) ret = (int)(SC_data.GplGet("boss_hp_adecodron_3") * 100);
+        }
+        if(typ==3) {
+            if(n==0) ret = (int)(SC_data.GplGet("boss_hp_octogone_1") * 100);
+            if(n==1) ret = (int)(SC_data.GplGet("boss_hp_octogone_2") * 100);
+            if(n==2) ret = (int)(SC_data.GplGet("boss_hp_octogone_3") * 100);
+        }
+        if(typ==4) {
+            if(n==0) ret = (int)(SC_data.GplGet("boss_hp_starandus_1") * 100);
+            if(n==1) ret = (int)(SC_data.GplGet("boss_hp_starandus_2") * 100);
+            if(n==2) ret = (int)(SC_data.GplGet("boss_hp_starandus_3") * 100);
+        }
+        if(typ==6) {
+            if(n==0) ret = (int)(SC_data.GplGet("boss_hp_degenerator_1") * 100);
+            if(n==1) ret = (int)(SC_data.GplGet("boss_hp_degenerator_2") * 100);
+            if(n==2) ret = (int)(SC_data.GplGet("boss_hp_degenerator_3") * 100);
+        }
+        if(ret<=0) return 1;
+        else return ret;
     }
     public void resetScr()
     {

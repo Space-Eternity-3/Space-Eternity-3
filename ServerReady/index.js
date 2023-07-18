@@ -17,10 +17,10 @@ var serverRedVersion = "Beta_2_0";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
-var gpl_number = 39;
+var gpl_number = 90;
 var max_players = 128;
 
-var boss_damages = [0,0,0,0,35,3,6,5,0,12,6,3.75,5,6.25,0,0 ,3.5,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var boss_damages = [0,0,0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,0,0 ,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var other_bullets_colliders = [0,0.14,0.14,0.12,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.14,0.08 ,1.68,0.25,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
 var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,1 ,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
@@ -148,9 +148,9 @@ var bulletsT = [];
 var scrs = [];
 
 var growSolid = [];
-growSolid[5] = "4500;12000;6";
-growSolid[6] = "4500;12000;7";
-growSolid[25] = "150;150;23";
+growSolid[5] = "-1;-1;6";
+growSolid[6] = "-1;-1;7";
+growSolid[25] = "-1;-1;23";
 
 var jse3Var = [];
 var jse3Dat = [];
@@ -165,7 +165,7 @@ var fobGenerate = new Array(64);
 var biomeTags = new Array(32);
 var customStructures = new Array(32);
 var typeSet = new Array(224);
-var gameplay = new Array(64);
+var gameplay = new Array(256);
 var modifiedDrops = new Array(128);
 var translateFob = [];
 var translateAsteroid = [];
@@ -297,7 +297,7 @@ class CInfo
   }
   RemoteDamage(id)
   {
-    DamageFLOAT(id,1*gameplay[32]);
+    DamageFLOAT(id,GplGet("cyclic_remote_damage")*gameplay[36]);
   }
   ShotCalculateIfNow(shooter,players,thys)
   {
@@ -349,7 +349,7 @@ class CInfo
     var ly = func.ScrdToFloat(thys.dataY[9-2]);
     var angle = delta_angle_rad + func.ScrdToFloat(thys.dataY[10-2])*3.14159/180;
     var pak = ["?",0];
-    if(btype==9 || btype==10) pak[0]=0.25; else pak[0]=0.35;
+    if(btype==9 || btype==10) pak[0]=GplGet("boss_seeker_speed"); else pak[0]=GplGet("boss_bullet_speed");
     var efwing = func.RotatePoint(pak,angle+deviation_angle,false);
     this.ShotRaw(rad*Math.cos(angle)+thys.deltapos.x+lx,rad*Math.sin(angle)+thys.deltapos.y+ly,efwing[0],efwing[1],btype,thys.identifier);
   }
@@ -1377,11 +1377,38 @@ function ToTwo(n) {
 }
 function getTimeSize(n)
 {
-  return 9000;
+  return Math.floor(GplGet("boss_battle_time") * 50);
 }
 function getBossHealth(n,typ)
 {
-  return 100000;
+  var ret = 10000;
+  if(typ==1) {
+      if(n==0) ret = Math.floor(GplGet("boss_hp_protector_1") * 100);
+      if(n==1) ret = Math.floor(GplGet("boss_hp_protector_2") * 100);
+      if(n==2) ret = Math.floor(GplGet("boss_hp_protector_3") * 100);
+  }
+  if(typ==2) {
+      if(n==0) ret = Math.floor(GplGet("boss_hp_adecodron_1") * 100);
+      if(n==1) ret = Math.floor(GplGet("boss_hp_adecodron_2") * 100);
+      if(n==2) ret = Math.floor(GplGet("boss_hp_adecodron_3") * 100);
+  }
+  if(typ==3) {
+      if(n==0) ret = Math.floor(GplGet("boss_hp_octogone_1") * 100);
+      if(n==1) ret = Math.floor(GplGet("boss_hp_octogone_2") * 100);
+      if(n==2) ret = Math.floor(GplGet("boss_hp_octogone_3") * 100);
+  }
+  if(typ==4) {
+      if(n==0) ret = Math.floor(GplGet("boss_hp_starandus_1") * 100);
+      if(n==1) ret = Math.floor(GplGet("boss_hp_starandus_2") * 100);
+      if(n==2) ret = Math.floor(GplGet("boss_hp_starandus_3") * 100);
+  }
+  if(typ==6) {
+      if(n==0) ret = Math.floor(GplGet("boss_hp_degenerator_1") * 100);
+      if(n==1) ret = Math.floor(GplGet("boss_hp_degenerator_2") * 100);
+      if(n==2) ret = Math.floor(GplGet("boss_hp_degenerator_3") * 100);
+  }
+  if(ret<=0) return 1;
+  else return ret;
 }
 function resetScr(i)
 {
@@ -3126,16 +3153,20 @@ wss.on("connection", function connection(ws) {
 
       var pid=arg[1];
 
-      if(arg[2]=="1")
+      if(arg[2]=="1" || arg[2]=="2")
       {
         var artid = plr.backpack[pid].split(";")[30] - 41;
         if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
 
         var sth1 = plr.sHealth[pid];
 
+        var heal_size;
+        if(arg[2]=="1") heal_size = gameplay[31];
+        if(arg[2]=="2") heal_size = gameplay[39];
+
         var potHHH = func.parseFloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + func.parseFloatU(gameplay[26]);
 		    if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
-		    var heal=0.02*func.parseFloatU(gameplay[31])/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
+		    var heal=0.02*func.parseFloatU(heal_size)/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
         if(heal<0) heal=0;
         
         plr.sHealth[pid] += heal;
@@ -3433,97 +3464,13 @@ function finalTranslate(varN) {
     } else if (lgt == 2) {
       if (psPath[0] == "gameplay") {
         try {
-          //Normal gameplay
-          if (psPath[1] == "turbo_regenerate_multiplier")
-            gameplay[0] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "turbo_use_multiplier")
-            gameplay[1] = func.parseFloatE(jse3Dat[i]) + "";
 
-          if (psPath[1] == "health_level_add")
-            gameplay[26] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "drill_level_add")
-            gameplay[2] = func.parseFloatE(jse3Dat[i]) + "";
+          //Gameplay variable set
+          var gp_num = func.VarNumber(psPath[1],gpl_number);
+          if(gp_num!=-1) {
+            gameplay[gp_num] = func.FilterValue(gp_num,jse3Dat[i])+"";
+          }
 
-          if (psPath[1] == "health_regenerate_cooldown")
-            gameplay[4] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "health_regenerate_multiplier")
-            gameplay[5] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "crash_minimum_energy")
-            gameplay[6] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "crash_damage_multiplier")
-            gameplay[7] = func.parseFloatE(jse3Dat[i]) + "";
-          
-          if (psPath[1] == "spike_damage")
-            gameplay[8] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "copper_bullet_damage")
-            gameplay[3] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "red_bullet_damage")
-            gameplay[27] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "unstable_matter_damage")
-            gameplay[28] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "coal_bullet_damage")
-            gameplay[33] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "fire_bullet_damage")
-            gameplay[34] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "boss_unstable_effectivity")
-            gameplay[37] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "boss_fire_effectivity")
-            gameplay[38] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "bullet_owner_push")
-            gameplay[30] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "healing_potion_hp")
-            gameplay[31] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "killing_potion_hp")
-            gameplay[35] = func.parseFloatE(jse3Dat[i]) + "";
-
-          if (psPath[1] == "player_normal_speed")
-            gameplay[9] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "player_brake_speed")
-            gameplay[10] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "player_turbo_speed")
-            gameplay[11] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "drill_normal_speed")
-            gameplay[12] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "drill_brake_speed")
-            gameplay[13] = func.parseFloatE(jse3Dat[i]) + "";
-
-          if (psPath[1] == "vacuum_drag_multiplier")
-            gameplay[14] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "all_speed_multiplier")
-            gameplay[15] = func.parseFloatE(jse3Dat[i]) + "";
-
-          //Artefact gameplay
-          if (psPath[1] == "at_protection_health_level_add")
-            gameplay[16] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "at_protection_health_regenerate_multiplier")
-            gameplay[17] = func.parseFloatE(jse3Dat[i]) + "";
-
-          if (psPath[1] == "at_impulse_power_regenerate_multiplier")
-            gameplay[18] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "at_impulse_time")
-            gameplay[19] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "at_impulse_speed")
-            gameplay[20] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "at_impulse_damage")
-            gameplay[29] = func.parseFloatE(jse3Dat[i]) + "";
-
-          if (psPath[1] == "at_illusion_power_regenerate_multiplier")
-            gameplay[21] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "at_illusion_power_use_multiplier")
-            gameplay[22] = func.parseFloatE(jse3Dat[i]) + "";
-
-          if (psPath[1] == "at_unstable_normal_avarage_time")
-            gameplay[23] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "at_unstable_special_avarage_time")
-            gameplay[24] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "at_unstable_force")
-            gameplay[25] = func.parseFloatE(jse3Dat[i]) + "";
-
-          //2.0 attacker data
-          if (psPath[1] == "boss_damage_multiplier")
-            gameplay[32] = func.parseFloatE(jse3Dat[i]) + "";
-          if (psPath[1] == "cyclic_damage_multiplier")
-            gameplay[36] = func.parseFloatE(jse3Dat[i]) + "";
         } catch {
           datapackError("Error in variable: " + jse3Var[i]);
         }
@@ -3903,6 +3850,11 @@ function datapackPaste(splitTab) {
   }
 }
 
+function GplGet(str)
+{
+    return func.parseFloatU(gameplay[func.VarNumber(str,gpl_number)]);
+}
+
 //Start functions
 console.log("-------------------------------");
 
@@ -3967,6 +3919,39 @@ function laggy_comment(nn)
   if(nn>=501) return "\r\nWarning: Too many players! Shut it down! Your device might explode, but of course you can try joining ;)";
 }
 
+//Awake gameplay set
+boss_damages[4] = GplGet("boss_bullet_electron_damage");
+boss_damages[5] = GplGet("boss_bullet_fire_damage");
+boss_damages[6] = GplGet("boss_bullet_spike_damage");
+boss_damages[7] = GplGet("boss_bullet_brainwave_damage");
+boss_damages[9] = GplGet("boss_bullet_rocket_damage");
+boss_damages[10] = GplGet("boss_bullet_spikeball_damage");
+boss_damages[11] = GplGet("boss_bullet_copper_damage");
+boss_damages[12] = GplGet("boss_bullet_red_damage");
+boss_damages[13] = GplGet("boss_bullet_unstable_damage");
+boss_damages[16] = GplGet("boss_bullet_graviton_damage");
+boss_damages[17] = GplGet("boss_bullet_neutronium_damage");
+
+var gsol5a = 50 * Math.floor(GplGet("amethyst_grow_time_min"));
+var gsol5b = 50 * Math.floor(GplGet("amethyst_grow_time_max"));
+var gsol25 = 50 * Math.floor(GplGet("magnetic_alien_grow_time"));
+
+if(gsol5a<=0) gsol5a = 50;
+if(gsol5b<=0) gsol5b = 50;
+if(gsol25<=0) gsol25 = 50;
+
+if(gsol5a > gsol5b)
+{
+  var gsolpom = gsol5a;
+  gsol5a = gsol5b;
+  gsol5b = gsolpom;
+}
+
+growSolid[5] = gsol5a +";"+ gsol5b +";6";
+growSolid[6] = gsol5a +";"+ gsol5b +";7";
+growSolid[25] = gsol25 +";"+ gsol25 +";23";
+
+//Starting ending
 console.log("Server started on version: [" + serverVersion + "]");
 console.log("Universe directory: [" + universe_name + "]");
 console.log("Max players: [" + max_players + "]");
