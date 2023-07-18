@@ -46,6 +46,8 @@ Default datapack changes:
 - turbo_use_multiplier 2 -> 1,5
 - 51 new gameplay variables added, all variables [here]
 - new star structure 1,5%
+- arena rarer, chance 5% -> 4%
+- golden asteroids generate 40% less common than before
 - golden asteroids are 2 times more common in alien biomes (they didn't spawn there before)
 - grass asteroid drillable items changed: "stone(92%) + magic_element(8%)" changed to "bush(70%) + stone(22%) + magic_element(8%)"
 

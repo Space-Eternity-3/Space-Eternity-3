@@ -114,12 +114,39 @@ craftings
 	}
 	<Category>14
 	{
-		title_image: golden_drill;
-		1: stone -> small_amethyst(99999);
-		2: stone -> copper_bullet(99999);
-		3: stone -> immortality_artefact(99999);
-		4: stone -> blank_potion(99999);
+		title_image: red_bullet;
+		1: stone -> copper_bullet(99999);
+		2: stone -> red_bullet(99999);
+		3: stone -> coal_bullet(99999);
+		4: stone -> fire_bullet(99999);
+		5: stone -> unstable_matter(99999);
+	}
+	<Category>15
+	{
+		title_image: packed_gold;
+		1: stone -> gold(99999);
+		2: stone -> small_amethyst(99999);
+		3: stone -> small_diamond(99999);
+		4: stone -> healing_potion(99999);
 		5: stone -> turbo_potion(99999);
+	}
+	<Category>16
+	{
+		title_image: power_potion;
+		1: stone -> power_potion(99999);
+		2: stone -> blank_potion(99999);
+		3: stone -> protection_artefact(99999);
+		4: stone -> impulse_artefact(99999);
+		5: stone -> illusion_artefact(99999);
+	}
+	<Category>17
+	{
+		title_image: useless_artefact;
+		1: stone -> immortality_artefact(99999);
+		2: stone -> useless_artefact(99999);
+		3: stone -> unstable_artefact(99999);
+		4: stone -> killing_potion(99999);
+		5: stone -> stone(99999);
 	}
 	<Max 512 categories>
 }
@@ -145,63 +172,67 @@ modified_drops
 }
 gameplay
 {
+	<PLAYER SETTINGS>
 	health_level_add: 0;
 	drill_level_add: 0;
-	
 	health_regenerate_cooldown: 2,5;
 	health_regenerate_multiplier: 4;
 	turbo_regenerate_multiplier: 1,5;
 	turbo_use_multiplier: 1,5;
-	crash_minimum_energy: 6;
-	crash_damage_multiplier: 0,6;
 	
-	vacuum_drag_multiplier: 1;
+	<PLAYER MOVEMENT>
 	all_speed_multiplier: 1;
+	vacuum_drag_multiplier: 1;
 	player_normal_speed: 13;
 	player_brake_speed: -8,5;
 	player_turbo_speed: 18; <Only if turbo level is 0>
 	drill_normal_speed: 9;
 	drill_brake_speed: -6;
+	bullet_owner_push: 1;
+	stone_geyzer_force_multiplier: 1;
+	magnetic_geyzer_force_multiplier: 4;
 	
-	spike_damage: 5;
+	<CRASH DAMAGE>
+	crash_minimum_energy: 6;
+	crash_damage_multiplier: 0,6;
+	
+	<PLAYER BULLET AND STATIC COLLIDER DAMAGES>
 	copper_bullet_damage: 3;
 	red_bullet_damage: 4;
-	unstable_matter_damage: 8;
-	coal_bullet_damage: 2,5;
+	coal_bullet_damage: 2;
 	fire_bullet_damage: 3;
-	boss_unstable_effectivity: 1,25;
-	boss_fire_effectivity: 1,75;
-	bullet_owner_push: 1;
+	unstable_matter_damage: 8;
+	spike_damage: 5;
+	star_collider_damage: 5;
+	
+	<BULLET EFFECTIVITY MODIFIERS>
+	boss_fire_effectivity: 2;
+	boss_unstable_effectivity: 1;
+	
+	<HEALING>
 	healing_potion_hp: 20;
+	blank_potion_hp: 15;
 	killing_potion_hp: 15;
 	
+	<GROW TIMES>
+	amethyst_grow_time_min: 60;
+	amethyst_grow_time_max: 180;
+	magnetic_alien_grow_time: 3;
+	
+	<ARTEFACTS>
 	at_protection_health_level_add: 2,272;
-	at_protection_health_regenerate_multiplier: 1,5;	<relative variable>
-					
+	at_protection_health_regenerate_multiplier: 1,5;	<relative variable>	
 	at_impulse_power_regenerate_multiplier: 1;
 	at_impulse_time: 0,4;
 	at_impulse_speed: 70;
-	at_impulse_damage: 15;
-					
+	at_impulse_damage: 8;
 	at_illusion_power_regenerate_multiplier: 1;
 	at_illusion_power_use_multiplier: 2;
-					
 	at_unstable_normal_avarage_time: 1,5;
 	at_unstable_special_avarage_time: 1,5;
 	at_unstable_force: 10;
-	
-	boss_damage_multiplier: 1;
-	cyclic_damage_multiplier: 1;
-	
-	<new variables temporary comment>
-	
-	blank_potion_hp: 15;
-	stone_geyzer_force_multiplier: 1;
-	magnetic_geyzer_force_multiplier: 4;
-	amethyst_grow_time_min: 4500;
-	amethyst_grow_time_max: 12000;
-	magnetic_alien_grow_time: 150;
 
+	<BULLET SPEEDS>
 	copper_bullet_speed: 0,45;
 	red_bullet_speed: 0,45;
 	unstable_bullet_speed: 0,35;
@@ -210,47 +241,48 @@ gameplay
 	boss_bullet_speed: 0,35;
 	boss_seeker_speed: 0,25;
 
+	<CYCLIC DAMAGES>
+	cyclic_damage_multiplier: 1;
 	cyclic_fire_damage: 2;
 	cyclic_poison_damage: 1;
 	cyclic_remote_damage: 1;
-
 	cyclic_fire_time: 2;
 	cyclic_spike_time: 6;
 	cyclic_spikeball_time: 4;
 	cyclic_stickybulb_time: 4;
 
-	star_collider_damage: 5;
-
+	<BOSS DAMAGES>
+	boss_damage_multiplier: 1;
+	boss_bullet_electron_damage: 35;
+	boss_bullet_fire_damage: 4;
+	boss_bullet_spike_damage: 6;
+	boss_bullet_brainwave_damage: 6;
+	boss_bullet_rocket_damage: 12;
+	boss_bullet_spikeball_damage: 7;
+	boss_bullet_copper_damage: 4;
+	boss_bullet_red_damage: 5;
+	boss_bullet_unstable_damage: 6;
+	boss_bullet_graviton_damage: 3;
+	boss_bullet_neutronium_damage: 15;
 	boss_starandus_geyzer_damage: 4;
-	boss_adecodron_sphere_damage: 12;
+	boss_adecodron_sphere_damage: 10;
 	boss_octogone_sphere_damage: 8;
 
-	boss_bullet_electron_damage: 35;
-	boss_bullet_fire_damage: 3;
-	boss_bullet_spike_damage: 6;
-	boss_bullet_brainwave_damage: 5;
-	boss_bullet_rocket_damage: 12;
-	boss_bullet_spikeball_damage: 6;
-	boss_bullet_copper_damage: 3,75;
-	boss_bullet_red_damage: 5;
-	boss_bullet_unstable_damage: 6,25;
-	boss_bullet_graviton_damage: 3,5;
-	boss_bullet_neutronium_damage: 15;
-
+	<BOSS BATTLE SETTINGS>
 	boss_battle_time: 180;
-	boss_hp_protector_1: 700;
+	boss_hp_protector_1: 800;
 	boss_hp_protector_2: 1000;
 	boss_hp_protector_3: 1200;
-	boss_hp_adecodron_1: 700;
+	boss_hp_adecodron_1: 800;
 	boss_hp_adecodron_2: 1000;
 	boss_hp_adecodron_3: 1200;
-	boss_hp_octogone_1: 700;
+	boss_hp_octogone_1: 800;
 	boss_hp_octogone_2: 1000;
 	boss_hp_octogone_3: 1200;
-	boss_hp_starandus_1: 700;
+	boss_hp_starandus_1: 800;
 	boss_hp_starandus_2: 1000;
 	boss_hp_starandus_3: 1200;
-	boss_hp_degenerator_1: 700;
+	boss_hp_degenerator_1: 800;
 	boss_hp_degenerator_2: 1000;
 	boss_hp_degenerator_3: 1200;
 }
