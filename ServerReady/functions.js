@@ -103,6 +103,19 @@ class cfun
             "boss_hp_degenerator_1:+", //87
             "boss_hp_degenerator_2:+", //88
             "boss_hp_degenerator_3:+", //89
+            "cyclic_star_time:+", //90
+            "cyclic_starandus_geyzer_time:+", //91
+            "copper_bullet_defrange:+", //92
+            "red_bullet_defrange:+", //93
+            "coal_bullet_defrange:+", //94
+            "fire_bullet_defrange:+", //95
+            "unstable_bullet_defrange:+", //96
+            "copper_bullet_cooldown:+", //97
+            "red_bullet_cooldown:+", //98
+            "coal_bullet_cooldown:+", //99
+            "fire_bullet_cooldown:+", //100
+            "unstable_bullet_cooldown:+", //101
+            "impulse_cooldown:+", //102
         ];
     }
 

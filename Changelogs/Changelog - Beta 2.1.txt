@@ -6,24 +6,34 @@ Old feature changes:
 
 - third menu button title changed to "Account"
 - treasure loottable changed LINK(how to play)
+- fire bullet DPS changed:
+  - to bosses 23.86
+  - to players 18.18
+- unstable bullet DPS to players and bosses unified 35.71
+- impulses have a small cooldown now (0.2s)
 
-Default datapack changes:
+Default datapack changes: MODIFY DEFAULT VALUES
 
 - blank element drill chance 4% -> 5,5%
 - diamond asteroid chance 2% -> 1,5%
-- impulse damage 8 -> 10
 - unstable damage 8 -> 10
 - boss unstable effectivity 1,25 -> 1
-- boss fire effectivity 2 -> 1,75
+- fire bullet damage 3 -> 4
+- boss fire effectivity 2 -> 1,3125
 - coal bullet crafting product amount reduced 6 -> 3
+- bullet owner push 1 -> 0,6
 
 Configurables:
 
-
+- added 13 new gameplay variables, more info [here] EXPLAIN ON PAGE
+  - impulse cooldown (x1)
+  - bullet cooldowns (x5)
+  - bullet default ranges (x5)
+  - other sources fire cyclic time (x2)
 
 Important technical changes:
 
-
+- bullet cooldown system reworked to be configurable
 
 Bug fixes:
 

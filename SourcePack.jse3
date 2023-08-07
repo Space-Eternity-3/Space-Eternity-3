@@ -152,7 +152,7 @@ gameplay
 	player_turbo_speed: 18; <Only if turbo level is 0>
 	drill_normal_speed: 9;
 	drill_brake_speed: -6;
-	bullet_owner_push: 1;
+	bullet_owner_push: 0,6;
 	stone_geyzer_force_multiplier: 1;
 	magnetic_geyzer_force_multiplier: 4;
 	
@@ -164,13 +164,13 @@ gameplay
 	copper_bullet_damage: 3;
 	red_bullet_damage: 4;
 	coal_bullet_damage: 2;
-	fire_bullet_damage: 3;
+	fire_bullet_damage: 4;
 	unstable_matter_damage: 10;
 	spike_damage: 5;
 	star_collider_damage: 5;
 	
 	<BULLET EFFECTIVITY MODIFIERS>
-	boss_fire_effectivity: 1,75;
+	boss_fire_effectivity: 1,3125;
 	boss_unstable_effectivity: 1;
 	
 	<HEALING>
@@ -189,7 +189,7 @@ gameplay
 	at_impulse_power_regenerate_multiplier: 1;
 	at_impulse_time: 0,4;
 	at_impulse_speed: 70;
-	at_impulse_damage: 10;
+	at_impulse_damage: 8;
 	at_illusion_power_regenerate_multiplier: 1;
 	at_illusion_power_use_multiplier: 2;
 	at_unstable_normal_avarage_time: 1,5;
@@ -204,6 +204,21 @@ gameplay
 	coal_bullet_speed: 0,45;
 	boss_bullet_speed: 0,35;
 	boss_seeker_speed: 0,25;
+	
+	<BULLET RANGE MULTIPLIERS>
+	copper_bullet_defrange: 1;
+    red_bullet_defrange: 1;
+    coal_bullet_defrange: 1;
+    fire_bullet_defrange: 1;
+    unstable_bullet_defrange: 1;
+	
+	<COOLDOWNS>
+	copper_bullet_cooldown: 7;
+    red_bullet_cooldown: 7;
+    coal_bullet_cooldown: 7;
+    fire_bullet_cooldown: 11;
+    unstable_bullet_cooldown: 14;
+    impulse_cooldown: 10;
 
 	<CYCLIC DAMAGES>
 	cyclic_damage_multiplier: 1;
@@ -211,6 +226,8 @@ gameplay
 	cyclic_poison_damage: 1;
 	cyclic_remote_damage: 1;
 	cyclic_fire_time: 2;
+	cyclic_starandus_geyzer_time: 2;
+	cyclic_star_time: 2;
 	cyclic_spike_time: 6;
 	cyclic_spikeball_time: 4;
 	cyclic_stickybulb_time: 4;
@@ -248,7 +265,7 @@ gameplay
 	boss_hp_starandus_3: 1200;
 	boss_hp_degenerator_1: 800;
 	boss_hp_degenerator_2: 1000;
-	boss_hp_degenerator_3: 1200;
+	boss_hp_degenerator_3: 1200;            
 }
 generator_settings
 {

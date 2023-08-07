@@ -17,7 +17,7 @@ var serverRedVersion = "Beta_2_1";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
-var gpl_number = 90;
+var gpl_number = 103;
 var max_players = 128;
 
 var boss_damages = [0,0,0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,0,0 ,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
@@ -1590,16 +1590,23 @@ function kick(i) {
 function MaxAgeOfPlayerBullet(n)
 {
   var ret = 0;
-  if(n==1) ret = GplGet("copper_bullet_speed");
+  if(n==1) ret =GplGet("copper_bullet_speed");
   if(n==2) ret = GplGet("red_bullet_speed");
   if(n==3) ret = GplGet("unstable_bullet_speed");
   if(n==14) ret = GplGet("coal_bullet_speed");
   if(n==15) ret = GplGet("fire_bullet_speed");
   if(ret==0) ret = 0.001;
-  ret = Math.floor(35/ret) + 1;
-  if(ret>=300) return 300;
-  else if(ret<=1) return 1;
-  else return ret;
+        
+  var ret2 = 100;
+  if(n==1) ret2 = Math.floor(35*GplGet("copper_bullet_defrange")/ret) + 1;
+  if(n==2) ret2 = Math.floor(35*GplGet("red_bullet_defrange")/ret) + 1;
+  if(n==3) ret2 = Math.floor(35*GplGet("unstable_bullet_defrange")/ret) + 1;
+  if(n==14) ret2 = Math.floor(35*GplGet("coal_bullet_defrange")/ret) + 1;
+  if(n==15) ret2 = Math.floor(35*GplGet("fire_bullet_defrange")/ret) + 1;
+
+  if(ret2>=10000) return 10000;
+  else if(ret2<=1) return 1;
+  else return ret2;
 }
 function spawnBullet(tpl,arg,bow)
 {

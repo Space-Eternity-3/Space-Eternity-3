@@ -159,10 +159,12 @@ public class SC_artefacts : MonoBehaviour
 		}
 		if(n!=3) SC_invisibler.invisible = false;
 		
-		if(n==2 && Input.GetKeyDown(KeyCode.A) && !SC_control.pause && !SC_control.drill3B)
+		if(n==2 && Input.GetKeyDown(KeyCode.A) && SC_control.imp_cooldown==0 && !SC_control.pause && !SC_control.drill3B)
 		{
 			if(SC_control.power_V >= SC_control.IM_barrier)
 			{
+				SC_control.imp_cooldown = (int)SC_data.GplGet("impulse_cooldown");
+
 				SC_control.impulse_enabled = true;
 				SC_control.impulse_time = ImpulseTime;
 				SC_control.power_V -= SC_control.IM_barrier;

@@ -72,6 +72,7 @@ public class SC_control : MonoBehaviour {
 	public int livTime=0;
 	int reg_wait=0;
 	int cooldown=0;
+	public int imp_cooldown=0;
 	int presed=-25;
 	int dmLicz=0;
 	int saveCo=0;
@@ -253,7 +254,6 @@ public class SC_control : MonoBehaviour {
 		
 		if(SC_effect.effect!=8 && wr_tick && wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
 		{
-			cooldown=7;
 			int slot, typ = 1;
 
 			//Bullet types
@@ -287,6 +287,15 @@ public class SC_control : MonoBehaviour {
 				slot = SC_slots.InvChange(65,-1,true,false,true);
 				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 65 -1 "+slot);
 			}
+
+			int coltyp = 0;
+			if(typ==1) coltyp = 0;
+			if(typ==2) coltyp = 1;
+			if(typ==3) coltyp = 4;
+			if(typ==14) coltyp = 2;
+			if(typ==15) coltyp = 3;
+			
+			cooldown = (int)float.Parse(SC_data.Gameplay[97+coltyp]);
 
 			float xpo = Input.mousePosition.x-Screen.width/2, ypo=Input.mousePosition.y-Screen.height/2;
 			if(typ!=3) playerR.velocity += Skop(float.Parse(SC_data.Gameplay[30]),new Vector3(-xpo,-ypo,0f));
@@ -837,12 +846,8 @@ public class SC_control : MonoBehaviour {
 	void FixedUpdate()
 	{
 		if(reg_wait>0) reg_wait--;
-		if(cooldown>0)
-		{
-			if(SC_slots.InvHaving(48)) {if(livTime%2==0) cooldown--;}
-			else if(SC_slots.InvHaving(65)) {if(livTime%3!=0) cooldown--;}
-			else cooldown--;
-		}
+		if(cooldown>0) cooldown--;
+		if(imp_cooldown>0) imp_cooldown--;
 		if(licznikD>0) licznikD--;
 		if(dmLicz>0) dmLicz--;
 		if(saveCo>0) saveCo--;
@@ -1368,8 +1373,8 @@ public class SC_control : MonoBehaviour {
 				else 								dmgg = float.Parse(SC_data.Gameplay[8]); //spikes
 
 				if(neme=="star_collider") 			SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_fire_time"));
-				else if(neme=="star_collider_big") 	SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_fire_time"));
-				else if(neme=="S-fire") 			SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_fire_time"));
+				else if(neme=="star_collider_big") 	SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_star_time"));
+				else if(neme=="S-fire") 			SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_starandus_geyzer_time"));
 				
 				if(dmgg > max_framal_damage) max_framal_damage = dmgg;
 			}
