@@ -1,0 +1,29 @@
+New features:
+
+
+
+Old feature changes:
+
+- third menu button title changed to "Account"
+- treasure loottable changed LINK(how to play)
+
+Default datapack changes:
+
+- blank element drill chance 4% -> 5,5%
+- diamond asteroid chance 2% -> 1,5%
+- impulse damage 8 -> 10
+- unstable damage 8 -> 10
+- boss unstable effectivity 1,25 -> 1
+- boss fire effectivity 2 -> 1,75
+- coal bullet crafting product amount reduced 6 -> 3
+
+Configurables:
+
+
+
+Important technical changes:
+
+
+
+Bug fixes:
+

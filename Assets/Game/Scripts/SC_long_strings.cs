@@ -17,7 +17,6 @@ public class SC_long_strings : MonoBehaviour
     3. Client data
     4. Server data
     5. Unity settings
-    6. DEV mode
 
     And:
     1. Branch names

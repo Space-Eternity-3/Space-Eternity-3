@@ -2,11 +2,11 @@
 
 <
 Datapack documentation:
-https://se3.page/docs/Beta-2.0/SE3Documentation/
+https://se3.page/docs/Beta-2.1/SE3Documentation/
 Edit file and select it in your SE3 browser.
 >
 
-version: 'Beta 2.0'; <Don't change>
+version: 'Beta 2.1'; <Don't change>
 name: 'DEFAULT'; <Rename it>
 craftings
 {
@@ -48,7 +48,7 @@ craftings
 		title_image: coal;
 		1: coal(5) -> packed_coal;
 		2: packed_coal -> coal(5);
-		3: coal -> coal_bullet(6);
+		3: coal -> coal_bullet(3);
 		4: coal_bullet(3) + fire_bullet -> fire_bullet(3);
 	}
 	<Category>6
@@ -125,7 +125,7 @@ drill_loot
 	magnetic: magnetic_stone(100%);
 	red: red_stone(100%);
 	diamond: small_diamond(2%);
-	metalic: stone(50%) + blank_element(4%);
+	metalic: stone(50%) + blank_element(5,5%);
 }
 modified_drops
 {
@@ -165,13 +165,13 @@ gameplay
 	red_bullet_damage: 4;
 	coal_bullet_damage: 2;
 	fire_bullet_damage: 3;
-	unstable_matter_damage: 8;
+	unstable_matter_damage: 10;
 	spike_damage: 5;
 	star_collider_damage: 5;
 	
 	<BULLET EFFECTIVITY MODIFIERS>
-	boss_fire_effectivity: 2;
-	boss_unstable_effectivity: 1,25;
+	boss_fire_effectivity: 1,75;
+	boss_unstable_effectivity: 1;
 	
 	<HEALING>
 	healing_potion_hp: 20;
@@ -189,7 +189,7 @@ gameplay
 	at_impulse_power_regenerate_multiplier: 1;
 	at_impulse_time: 0,4;
 	at_impulse_speed: 70;
-	at_impulse_damage: 8;
+	at_impulse_damage: 10;
 	at_illusion_power_regenerate_multiplier: 1;
 	at_illusion_power_use_multiplier: 2;
 	at_unstable_normal_avarage_time: 1,5;
@@ -274,7 +274,7 @@ generator_settings
 	
 		<Size>4: coal(100%);
 		<Size>5: coal(100%);
-		<Size>6: coal(98%) + diamond(2%);
+		<Size>6: coal(98,5%) + diamond(1,5%);
 		<Size>7: coal(65%) + red(35%);
 		<Size>8: coal(65%) + red(35%);
 		<Size>9: coal(45%) + red(55%);
