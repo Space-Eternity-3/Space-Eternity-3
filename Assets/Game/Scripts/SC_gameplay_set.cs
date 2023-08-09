@@ -11,9 +11,12 @@ public class SC_gameplay_set : MonoBehaviour
     public SC_adecodron Octogone;
     public SC_wind stone_geyzer;
     public SC_wind magnetic_geyzer;
+    public SC_wind lava_geyzer;
     public SC_fobs small_amethyst;
     public SC_fobs medium_amethyst;
     public SC_fobs magnetic_alien;
+    public SC_fobs treasure;
+    public SC_fobs dark_treasure;
 
     public void GameplayAwakeSet()
     {
@@ -49,6 +52,7 @@ public class SC_gameplay_set : MonoBehaviour
 
         stone_geyzer.force = 50f * SC_data.GplGet("stone_geyzer_force_multiplier");
         magnetic_geyzer.force = 50f * SC_data.GplGet("magnetic_geyzer_force_multiplier");
+        lava_geyzer.force = 50f * SC_data.GplGet("lava_geyzer_force_multiplier");
 
         magnetic_alien.GrowTimeMin = 50 * (int)SC_data.GplGet("magnetic_alien_grow_time");
         if(magnetic_alien.GrowTimeMin<=0) magnetic_alien.GrowTimeMin = 50;
@@ -65,5 +69,8 @@ public class SC_gameplay_set : MonoBehaviour
         }
         medium_amethyst.GrowTimeMin = small_amethyst.GrowTimeMin;
         medium_amethyst.GrowTimeMax = small_amethyst.GrowTimeMax;
+
+        treasure.lootSE3 = SC_data.Gameplay[105];
+        dark_treasure.lootSE3 = SC_data.Gameplay[106];
     }
 }

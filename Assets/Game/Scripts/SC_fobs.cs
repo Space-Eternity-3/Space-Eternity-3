@@ -84,16 +84,18 @@ public class SC_fobs : MonoBehaviour
     }
     string getLoot(string str)
     {
-        int[] marray = new int[5];
-        int i,j,rander=UnityEngine.Random.Range(0,10000);
-        int lngt=str.Split(';').Length/5;
-        for(i=0;i<lngt;i++)
-        {
-            for(j=0;j<5;j++) marray[j]=int.Parse(str.Split(';')[5*i+j]);
-            if(rander>=marray[3]&&rander<=marray[4]) return marray[0]+";"+UnityEngine.Random.Range(marray[1],marray[2]+1);
-        }
-        Debug.Log("Game crashed! Error in loot nbt.");
-        return "0;0";
+        try {
+            int[] marray = new int[5];
+            int i,j,rander=UnityEngine.Random.Range(0,10000);
+            string[] arra = str.Split('-');
+            int lngt=arra.Length/5;
+            for(i=0;i<lngt;i++)
+            {
+                for(j=0;j<5;j++) marray[j]=int.Parse(arra[5*i+j]);
+                if(rander>=marray[3]&&rander<=marray[4]) return marray[0]+";"+UnityEngine.Random.Range(marray[1],marray[2]+1);
+            }
+        } catch (Exception) { return "8;1"; }
+        return "8;1";
     }
     void MTPsend(int st1, int st2, int ed, int di, int dc, int sl)
     {
@@ -190,6 +192,7 @@ public class SC_fobs : MonoBehaviour
         if(b>=53&&b<=54) return true; //55, 57, 59, 61, 63 -> potions
         if(b==56||b==58||b==60||b==62) return true; //64 -> coal bullet
         if(b==65&&Input.GetKey(KeyCode.LeftControl)) return true;
+        if(b>=66&&b<=70) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)
@@ -218,7 +221,7 @@ public class SC_fobs : MonoBehaviour
         GameObject gobT=SC_asteroid.GenPlaceT[0];
         int tid=id; //tid -> Physical ID
 
-        if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50&&tid!=51)
+        if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50&&tid!=51&&tid!=66)
         {
             if(tid==21||tid==2) SC_asteroid.GenPlaceT[tid].name=potFob21Name;
             
@@ -242,6 +245,7 @@ public class SC_fobs : MonoBehaviour
 				tud=7;
 				rand = UnityEngine.Random.Range(0,2);
 			}
+            if(tid==66) tud=8;
 			
 			gobT=Instantiate(SC_asteroid.GenPlaceM[tud*3+rand],transform.position,transform.rotation);
         }

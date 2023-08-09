@@ -29,7 +29,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 103;
+	int gpl_number = 107;
     
 	bool lockData = false;
 	bool remember = false;
@@ -207,6 +207,10 @@ public class SC_data : MonoBehaviour
             "fire_bullet_cooldown:+", //100
             "unstable_bullet_cooldown:+", //101
             "impulse_cooldown:+", //102
+            "lava_geyzer_force_multiplier:*", //103
+            "lava_geyzer_damage:+", //104
+            "treasure_loot:s", //105
+            "dark_treasure_loot:s", //106
         };
         public int VarNumber(string str,int gnome)
         {
@@ -215,12 +219,21 @@ public class SC_data : MonoBehaviour
                 if(gpl_info[i].Split(':')[0]==str) return i;
             return -1;
         }
-        public float FilterValue(int n,string value)
+        public string FilterValue(int n,string value)
         {
             string[] spl = gpl_info[n].Split(':');
-            float parsed = float.Parse(value);
-            if(parsed<0 && spl[1]=="+") parsed*=-1;
-            return parsed;
+            if(spl[1]!="s") {
+                float parsed = float.Parse(value);
+                if(parsed<0 && spl[1]=="+") parsed*=-1;
+                return parsed+"";
+            }
+            else {
+                string ret="", str=value+"";
+                int i,lngt=str.Length;
+                for(i=0;i<lngt;i++)
+                    if(new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-" }.Contains(str[i].ToString())) ret+=str[i];
+                return ret;
+            }
         }
         public float GplGet(string str)
         {
@@ -1214,7 +1227,7 @@ public class SC_data : MonoBehaviour
                     //Gameplay variable set
                     int gp_num = VarNumber(psPath[1],gpl_number);
                     if(gp_num!=-1) {
-                        Gameplay[gp_num] = FilterValue(gp_num,value[i])+"";
+                        Gameplay[gp_num] = FilterValue(gp_num,value[i]);
                     }
 
                     }catch(Exception){DatapackError("Error in variable: "+variable[i]); return;}
@@ -1552,7 +1565,7 @@ public class SC_data : MonoBehaviour
             for(i=0;i<224;i++) TypeSet[i] = raws[4].Split('\'')[i];
             for(i=0;i<gpl_number;i++)
             {
-                if(false) Gameplay[i] = int.Parse(raws[5].Split('\'')[i])+"";
+                if(i==105||i==106) Gameplay[i] = raws[5].Split('\'')[i];
                 else Gameplay[i] = float.Parse(raws[5].Split('\'')[i])+"";
             }
             for(i=0;i<128;i++) ModifiedDrops[i] = raws[6].Split('\'')[i];

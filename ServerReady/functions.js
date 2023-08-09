@@ -116,6 +116,10 @@ class cfun
             "fire_bullet_cooldown:+", //100
             "unstable_bullet_cooldown:+", //101
             "impulse_cooldown:+", //102
+            "lava_geyzer_force_multiplier:*", //103
+            "lava_geyzer_damage:+", //104
+            "treasure_loot:s", //105
+            "dark_treasure_loot:s", //106
         ];
     }
 
@@ -282,9 +286,18 @@ class cfun
     FilterValue(n,value)
     {
         var spl = this.gpl_info[n].split(":");
-        var parsed = this.parseFloatE(value);
-        if(parsed<0 && spl[1]=="+") parsed*=-1;
-        return parsed;
+        if(spl[1]!="s") {
+            var parsed = this.parseFloatE(value);
+            if(parsed<0 && spl[1]=="+") parsed*=-1;
+            return parsed+"";
+        }
+        else {
+            var ret="", str=value+"";
+            var i,lngt=str.length;
+            for(i=0;i<lngt;i++)
+                if(["0","1","2","3","4","5","6","7","8","9","-"].includes(str[i])) ret+=str[i];
+            return ret;
+        }
     }
 }
 class CLinearPreset

@@ -17,7 +17,7 @@ var serverRedVersion = "Beta_2_1";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
-var gpl_number = 103;
+var gpl_number = 107;
 var max_players = 128;
 
 var boss_damages = [0,0,0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,0,0 ,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
@@ -1590,19 +1590,19 @@ function kick(i) {
 function MaxAgeOfPlayerBullet(n)
 {
   var ret = 0;
-  if(n==1) ret =GplGet("copper_bullet_speed");
-  if(n==2) ret = GplGet("red_bullet_speed");
-  if(n==3) ret = GplGet("unstable_bullet_speed");
-  if(n==14) ret = GplGet("coal_bullet_speed");
-  if(n==15) ret = GplGet("fire_bullet_speed");
+  if(n==1) ret = func.parseFloatU(gameplay[45]);
+  if(n==2) ret = func.parseFloatU(gameplay[46]);
+  if(n==3) ret = func.parseFloatU(gameplay[47]);
+  if(n==14) ret = func.parseFloatU(gameplay[49]);
+  if(n==15) ret = func.parseFloatU(gameplay[48]);
   if(ret==0) ret = 0.001;
         
   var ret2 = 100;
-  if(n==1) ret2 = Math.floor(35*GplGet("copper_bullet_defrange")/ret) + 1;
-  if(n==2) ret2 = Math.floor(35*GplGet("red_bullet_defrange")/ret) + 1;
-  if(n==3) ret2 = Math.floor(35*GplGet("unstable_bullet_defrange")/ret) + 1;
-  if(n==14) ret2 = Math.floor(35*GplGet("coal_bullet_defrange")/ret) + 1;
-  if(n==15) ret2 = Math.floor(35*GplGet("fire_bullet_defrange")/ret) + 1;
+  if(n==1) ret2 = Math.floor(35*func.parseFloatU(gameplay[92])/ret) + 1;
+  if(n==2) ret2 = Math.floor(35*func.parseFloatU(gameplay[93])/ret) + 1;
+  if(n==3) ret2 = Math.floor(35*func.parseFloatU(gameplay[96])/ret) + 1;
+  if(n==14) ret2 = Math.floor(35*func.parseFloatU(gameplay[94])/ret) + 1;
+  if(n==15) ret2 = Math.floor(35*func.parseFloatU(gameplay[95])/ret) + 1;
 
   if(ret2>=10000) return 10000;
   else if(ret2<=1) return 1;
@@ -3177,7 +3177,7 @@ wss.on("connection", function connection(ws) {
 
       var pid=arg[1];
 
-      if(arg[2]=="1" || arg[2]=="2")
+      if(arg[2]=="1" || arg[2]=="2" || arg[2]=="3")
       {
         var artid = plr.backpack[pid].split(";")[30] - 41;
         if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
@@ -3187,6 +3187,7 @@ wss.on("connection", function connection(ws) {
         var heal_size;
         if(arg[2]=="1") heal_size = gameplay[31];
         if(arg[2]=="2") heal_size = gameplay[39];
+        if(arg[2]=="3") heal_size = "10000";
 
         var potHHH = func.parseFloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + func.parseFloatU(gameplay[26]);
 		    if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
@@ -3492,7 +3493,7 @@ function finalTranslate(varN) {
           //Gameplay variable set
           var gp_num = func.VarNumber(psPath[1],gpl_number);
           if(gp_num!=-1) {
-            gameplay[gp_num] = func.FilterValue(gp_num,jse3Dat[i])+"";
+            gameplay[gp_num] = func.FilterValue(gp_num,jse3Dat[i]);
           }
 
         } catch {
@@ -3859,7 +3860,7 @@ function datapackPaste(splitTab) {
     for (i = 0; i < 64; i++) fobGenerate[i] = raws[3].split("'")[i];
     for (i = 0; i < 224; i++) typeSet[i] = raws[4].split("'")[i];
     for (i = 0; i < gpl_number; i++) {
-      if (false) gameplay[i] = func.parseIntE(raws[5].split("'")[i]) + "";
+      if (i==105||i==106) gameplay[i] = raws[5].split("'")[i];
       else gameplay[i] = func.parseFloatE(raws[5].split("'")[i]) + "";
     }
     for (i = 0; i < 128; i++) modifiedDrops[i] = raws[6].split("'")[i];

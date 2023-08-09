@@ -1,0 +1,4 @@
+summon #1 asteroid 10 1 x scale 2 2 1,2
+summon #2 asteroid 10 1 x scale 2 2 1,2 asteroid hide
+catch children 0 19 from #1 to #2 scale children 0.5 0.5 0.8333
+catch #2 rotate 9

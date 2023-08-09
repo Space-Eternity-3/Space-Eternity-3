@@ -22,6 +22,7 @@ public class SC_asteroid : MonoBehaviour {
 	public int asteroid_lim = 16;
 	public Material[] texture = new Material[16];
 	public Material[] textureStone;
+	public Material[] textureDark;
 	public Material textureERROR;
 	public GameObject[] GenPlaceT = new GameObject[128];
 	public GameObject[] GenPlaceM = new GameObject[18];
@@ -308,11 +309,16 @@ public class SC_asteroid : MonoBehaviour {
 			float alpha=180f/S;
 			int times=2*S;
 			try{
-				if(type>0) asteroidR.material=texture[type];
-				else
+				if(type>1) asteroidR.material=texture[type];
+				else if(type==0)
 				{
 					int rand2=UnityEngine.Random.Range(0,textureStone.Length);
 					asteroidR.material=textureStone[rand2];
+				}
+				else if(type==1)
+				{
+					int rand2=UnityEngine.Random.Range(0,textureDark.Length);
+					asteroidR.material=textureDark[rand2];
 				}
 			}
 			catch(Exception){
@@ -345,7 +351,7 @@ public class SC_asteroid : MonoBehaviour {
 
 				int tid=objectID[ii]; //tid -> Physical ID
 
-				if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50&&tid!=51)
+				if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50&&tid!=51&&tid!=66)
 				{
 					if(tid==21||tid==2||tid==52) GenPlaceT[tid].name=objectData[ii]+";";
 					try{gobT=Instantiate(GenPlaceT[tid],rotation_place,quat_angle);}catch(Exception)
@@ -366,6 +372,7 @@ public class SC_asteroid : MonoBehaviour {
 						tud=7;
 						rand=UnityEngine.Random.Range(0,2);
 					}
+					if(tid==66) tud=8;
 					gobT = Instantiate(GenPlaceM[tud*3+rand],rotation_place,quat_angle);
 				}
 				gobT.transform.parent = gameObject.transform;

@@ -125,6 +125,8 @@ public class SC_bullet : MonoBehaviour
     }
     int MaxAgeOfPlayerBullet(int n)
     {
+        //Quite good at client side
+
         float ret = 0f;
         if(n==1) ret = SC_fun.SC_data.GplGet("copper_bullet_speed");
         if(n==2) ret = SC_fun.SC_data.GplGet("red_bullet_speed");

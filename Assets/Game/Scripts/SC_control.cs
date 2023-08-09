@@ -36,7 +36,7 @@ public class SC_control : MonoBehaviour {
 	public Transform particlesBossExplosion;
 	public Transform particlesBossExplosionM;
 	public Transform TelepParticles;
-	public Transform[] particlesEmptyBulb = new Transform[5];
+	public Transform[] particlesEmptyBulb = new Transform[6];
 	public Rigidbody playerR;
 	public Transform drill3T;
 	public Transform respawn_point;
@@ -313,7 +313,7 @@ public class SC_control : MonoBehaviour {
 		if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f)
 		{
 			//Healing potion
-			if(SC_slots.InvHaving(55)) if(HealBalanceGood() && !impulse_enabled)
+			if(SC_slots.InvHaving(55)) if(AllowingPotion("healing"))
 			{
 				if(!SC_invisibler.invisible)
 				{
@@ -332,7 +332,7 @@ public class SC_control : MonoBehaviour {
 			else InfoUp("Potion blocked",380);
 
 			//Turbo potion
-			if(SC_slots.InvHaving(57)) if(turbo_V<0.95f && !impulse_enabled)
+			if(SC_slots.InvHaving(57)) if(AllowingPotion("turbo"))
 			{
 				if(!SC_invisibler.invisible)
 				{
@@ -349,22 +349,24 @@ public class SC_control : MonoBehaviour {
 			else InfoUp("Potion blocked",380);
 
 			//Power potion
-			if(SC_slots.InvHaving(59)) if(power_V<0.95f && (SC_artefacts.GetArtefactID()==2 || SC_artefacts.GetArtefactID()==3) && !SC_invisibler.invisible && !impulse_enabled)
+			if(SC_slots.InvHaving(59)) if(AllowingPotion("power"))
 			{
-				Transform trn11 = Instantiate(particlesEmptyBulb[2],transform.position,new Quaternion(0f,0f,0f,0f));
-				trn11.GetComponent<SC_seeking>().enabled = true;
-
+				if(!SC_invisibler.invisible)
+				{
+					Transform trn11 = Instantiate(particlesEmptyBulb[2],transform.position,new Quaternion(0f,0f,0f,0f));
+					trn11.GetComponent<SC_seeking>().enabled = true;
+				}
 				int slot = SC_slots.InvChange(59,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/InventoryChange "+connectionID+" 59 -1 "+slot);
-					SendMTP("/EmitParticles "+connectionID+" 13 0 0");
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 13 0 0");
 				}
 				power_V = 1f;
 			}
 			else InfoUp("Potion blocked",380);
 
 			//Blank potion
-			if(SC_slots.InvHaving(61)) if((SC_effect.effect!=0 || HealBalanceGood()) && !impulse_enabled)
+			if(SC_slots.InvHaving(61)) if((AllowingPotion("blank")))
 			{
 				if(!SC_invisibler.invisible)
 				{
@@ -384,7 +386,7 @@ public class SC_control : MonoBehaviour {
 			else InfoUp("Potion blocked",380);
 
 			//Killing potion
-			if(SC_slots.InvHaving(63)) if(!impulse_enabled)
+			if(SC_slots.InvHaving(63)) if(AllowingPotion("killing"))
 			{
 				if(!SC_invisibler.invisible)
 				{
@@ -397,6 +399,28 @@ public class SC_control : MonoBehaviour {
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 15 0 0");
 				}
 				DamageFLOAT(float.Parse(SC_data.Gameplay[35]));
+			}
+			else InfoUp("Potion blocked",380);
+
+			//Max potion
+			if(SC_slots.InvHaving(71)) if(AllowingPotion("max"))
+			{
+				if(!SC_invisibler.invisible)
+				{
+					Transform trn11 = Instantiate(particlesEmptyBulb[5],transform.position,new Quaternion(0f,0f,0f,0f));
+					trn11.GetComponent<SC_seeking>().enabled = true;
+				}
+				int slot = SC_slots.InvChange(71,-1,true,false,true);
+				if((int)Communtron4.position.y==100) {
+					SendMTP("/InventoryChange "+connectionID+" 71 -1 "+slot);
+					SendMTP("/Heal "+connectionID+" 3");
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 17 0 0");
+					healBalance += 10000f;
+				}
+				else HealSGP("3");
+				SC_effect.EffectClean();
+				turbo_V = 1f;
+				if(AllowingPotion("power-unlocked")) power_V = 1f;
 			}
 			else InfoUp("Potion blocked",380);
 		}
@@ -614,6 +638,29 @@ public class SC_control : MonoBehaviour {
 		}
 
 		SC_bars.MuchLaterUpdate();
+	}
+	public bool AllowingPotion(string potname)
+	{
+		bool power_unlocked = (SC_artefacts.GetArtefactID()==2 || SC_artefacts.GetArtefactID()==3);
+		if(potname=="power-unlocked") return power_unlocked;
+
+		if(impulse_enabled) return false;
+
+		bool hB = HealBalanceGood();
+		bool tB = turbo_V<0.95f;
+		bool pB = power_V<0.95f && power_unlocked;
+		bool eB = SC_effect.effect!=0;
+
+		switch(potname)
+		{
+			case "healing": return hB;
+			case "turbo": return tB;
+			case "power": return pB;
+			case "blank": return hB || eB;
+			case "killing": return true;
+			case "max": return hB || tB || pB || eB;
+			default: return false;
+		}
 	}
 	void KillMe()
 	{
@@ -1308,6 +1355,7 @@ public class SC_control : MonoBehaviour {
 		string heal_size = "0";
 		if(arg2=="1") heal_size = SC_data.Gameplay[31];
 		if(arg2=="2") heal_size = SC_data.Gameplay[39];
+		if(arg2=="3") heal_size = "10000";
 
 		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
@@ -1360,6 +1408,7 @@ public class SC_control : MonoBehaviour {
 		if(neme=="damager2"||
 		neme=="star_collider_big"||
 		neme=="star_collider"||
+		neme=="lava_wind"||
 		(neme=="S-fire" && IsAnyBossFight("range"))||
 		(neme=="damager3" && SC_artefacts.GetArtefactID()!=6))
 		{
@@ -1370,6 +1419,7 @@ public class SC_control : MonoBehaviour {
 				else if(neme=="star_collider") 		dmgg = float.Parse(SC_data.Gameplay[34]); //fire bullet
 				else if(neme=="star_collider_big") 	dmgg = SC_data.GplGet("star_collider_damage"); //stars
 				else if(neme=="S-fire") 			dmgg = SC_data.GplGet("boss_starandus_geyzer_damage") * float.Parse(SC_data.Gameplay[32]); //S-fire
+				else if(neme=="lava_wind") 			dmgg = SC_data.GplGet("lava_geyzer_damage"); //lava geyzer
 				else 								dmgg = float.Parse(SC_data.Gameplay[8]); //spikes
 
 				if(neme=="star_collider") 			SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_fire_time"));
@@ -1458,6 +1508,7 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="/RetHeal" && arg[1]==connectionID+"") {
 			if(arg[2]=="1") healBalance -= float.Parse(SC_data.Gameplay[31]);
 			if(arg[2]=="2") healBalance -= float.Parse(SC_data.Gameplay[39]);
+			if(arg[2]=="3") healBalance -= 10000;
 		}
 
 		int msl=arg.Length;
@@ -1692,7 +1743,7 @@ public class SC_control : MonoBehaviour {
 			int pid = int.Parse(arg[1]);
 			if(pid==0) pid = connectionID;
 			
-			if((put>=6 && put<=8) || (put>=11 && put<=15))
+			if((put>=6 && put<=8) || (put>=11 && put<=15) || put==17)
 			{
 				particlePos = PL[pid].GetComponent<Transform>().position;
 				if(put==7)
@@ -1743,9 +1794,11 @@ public class SC_control : MonoBehaviour {
 					Instantiate(TelepParticles,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				default:
-					if(put>=11&&put<=15)
+					if((put>=11&&put<=15)||put==17)
 					{
-						Transform trn11 = Instantiate(particlesEmptyBulb[put-11],particlePos,new Quaternion(0f,0f,0f,0f));
+						int put2 = put;
+						if(put==17) put2=16;
+						Transform trn11 = Instantiate(particlesEmptyBulb[put2-11],particlePos,new Quaternion(0f,0f,0f,0f));
 						trn11.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
 						trn11.GetComponent<SC_seeking>().enabled = true;
 						break;

@@ -20,7 +20,7 @@ public class SC_fun : MonoBehaviour
     public Transform Communtron1;
     public Material[] M = new Material[128];
     public Texture[] Item = new Texture[128];
-    public Texture Item20u, Item55u, Item57u, Item59u, Item61u, Item63u;
+    public Texture Item20u, Item55u, Item57u, Item59u, Item61u, Item63u, Item71u;
 	
     public float volume;
     public int seed;
@@ -752,6 +752,7 @@ public class SC_fun : MonoBehaviour
 			if(TagContains(tags,"cementery")) bC[i]=2;
 			if(TagContains(tags,"catastrophic.arena")) bC[i]=3;
 			if(TagContains(tags,"star")) bC[i]=4;
+			if(TagContains(tags,"dark.cementery")) bC[i]=5;
 		}
 		
 		bP[0] = 0;
