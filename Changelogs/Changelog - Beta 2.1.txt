@@ -20,6 +20,8 @@ Old feature changes:
 Default datapack changes:
 
 - blank element drill chance 4% -> 5,5%
+- power element drill chance 4% -> 5,5%
+- amethyst drill chance 20% -> 30%
 - diamond asteroid chance 2% -> 1,5%
 - unstable damage 8 -> 10
 - fire and unstable damages changed:
@@ -34,6 +36,7 @@ Default datapack changes:
 - coal bullet crafting product amount reduced 6 -> 3
 - bullet owner push 1 -> 0,6
 - cementery chance 3% -> 2%, but added dark cementery chance 1%
+- catastrophic arena chance 0,5% -> 0,4%
 
 Configurables:
 
