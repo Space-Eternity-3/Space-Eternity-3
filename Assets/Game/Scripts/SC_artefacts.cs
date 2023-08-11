@@ -39,6 +39,8 @@ public class SC_artefacts : MonoBehaviour
 	public SC_seeking SC_seeking;
 	public SC_seeking SC_seeking2;
 	public SC_invisibler SC_invisibler;
+
+	public bool unstabling;
 	
 	public void LoadDataArt()
 	{
@@ -52,6 +54,8 @@ public class SC_artefacts : MonoBehaviour
 		
 		powerRM[3] = float.Parse(SC_data.Gameplay[21]);
 		powerUM[3] = float.Parse(SC_data.Gameplay[22]);
+
+		powerRM[6] = float.Parse(SC_data.Gameplay[107]);
 		
 		SC_control.unstable_probability = (int)(float.Parse(SC_data.Gameplay[23])*50+1);
 		if(SC_control.unstable_probability < 1) SC_control.unstable_probability = 1;
@@ -92,6 +96,7 @@ public class SC_artefacts : MonoBehaviour
 		{
 			eff = n*100;
 			if(SC_control.impulse_enabled) eff+=2;
+			else if(unstabling) eff+=3;
 			else {} //something
 			return eff;
 		}
@@ -102,6 +107,7 @@ public class SC_artefacts : MonoBehaviour
 		0 - default
 		1 - invisible (modified)
 		2 - impulse
+		3 - unstabling
 		
 		*/
 	}
@@ -186,6 +192,13 @@ public class SC_artefacts : MonoBehaviour
 				}
 			}
 		}
+
+		if(n==6 && !SC_control.pause)
+		{
+			if(Input.GetKeyDown(KeyCode.A) && SC_control.power_V>=0.2f)
+				unstabling = true;
+		}
+		if(SC_control.power_V==0f || n!=6) unstabling = false;
 		
 		if(SC_invisibler.invisible) SC_seeking.offset = new Vector3(0f,0f,450f);
 		else SC_seeking.offset = new Vector3(0f,0f,-450f*n); //normal projection

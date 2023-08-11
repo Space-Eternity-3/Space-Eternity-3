@@ -29,7 +29,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 107;
+	int gpl_number = 112;
     
 	bool lockData = false;
 	bool remember = false;
@@ -211,6 +211,11 @@ public class SC_data : MonoBehaviour
             "lava_geyzer_damage:+", //104
             "treasure_loot:s", //105
             "dark_treasure_loot:s", //106
+            "at_unstable_power_regenerate_multiplier:+", //107
+	        "at_unstable_power_normal_eat:+", //108
+	        "at_unstable_power_special_eat:+", //109
+	        "at_unstable_power_killpot_give:+", //110
+	        "at_unstable_max_unstabling_deviation:+", //111
         };
         public int VarNumber(string str,int gnome)
         {

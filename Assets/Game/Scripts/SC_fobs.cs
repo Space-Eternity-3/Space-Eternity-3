@@ -411,7 +411,7 @@ public class SC_fobs : MonoBehaviour
         ){
             SC_bullet bul = collision.gameObject.GetComponent<SC_bullet>();
 			bul.turn_used = true; bul.MakeDestroy(false);
-            if(bul.type==BulletID || BulletID==0)
+            if((bul.type==BulletID || BulletID==0) && (ShotID!=48 || !bul.virtuall))
             {
                 if(multiplayer)
                     SC_control.SendMTP("/FobsTurn "+SC_control.connectionID+" "+ID+" "+index+" "+ObjID+" "+ObjID2+" "+ShotID);

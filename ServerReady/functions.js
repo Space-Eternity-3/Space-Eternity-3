@@ -120,6 +120,11 @@ class cfun
             "lava_geyzer_damage:+", //104
             "treasure_loot:s", //105
             "dark_treasure_loot:s", //106
+            "at_unstable_power_regenerate_multiplier:+", //107
+	        "at_unstable_power_normal_eat:+", //108
+	        "at_unstable_power_special_eat:+", //109
+	        "at_unstable_power_killpot_give:+", //110
+	        "at_unstable_max_unstabling_deviation:+", //111
         ];
     }
 

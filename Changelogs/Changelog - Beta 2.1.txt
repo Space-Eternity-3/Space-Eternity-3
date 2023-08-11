@@ -8,14 +8,21 @@ New features:
   - dark treasure, loot [here]
   - lava geyzer
 - added max potions, impossible to craft, obtainable only from dark cementeries, they completely regenerate all your bars and remove effect
+- unstable artefact updated, you can access unstabling state by pressing A when having enough power
 
 Old feature changes:
 
-- third menu button title changed to "Account"
 - treasure loottable changed, actual loot [here]
 - dark treasure loottable added, actual loot [here]
 - impulses have a small cooldown now (0.2s)
 - power potion is now possible to use when being invisible
+
+UI changes:
+
+- third menu button title changed to "Account"
+- universe description font size changed 35 -> 32
+- "Ether" changed to "Power" when using illusion artefact
+- unstable artefact description changed to "Press A but do not kill anyone"
 
 Default datapack changes:
 
@@ -40,12 +47,13 @@ Default datapack changes:
 
 Configurables:
 
-- added 17 new gameplay variables, more info [here]
+- added 22 new gameplay variables, more info [here]
   - impulse cooldown (x1)
   - bullet cooldowns (x5)
   - bullet default ranges (x5)
   - other sources fire cyclic time (x2)
   - lava geyzer force & damage (x2)
+  - unstable artefact configurables (x5)
   - treasure & dark treasure loottables (x2)
 - added new biome tag: dark.cementery
 
@@ -57,3 +65,4 @@ Important technical changes:
 
 Bug fixes:
 
+- pop sound was behaving strangely in certain situations

@@ -107,6 +107,7 @@ craftings
 		1: dark_stone(5) -> packed_dark_stone;
 		2: packed_dark_stone -> dark_stone(5);
 		3: lava_geyzer -> dark_stone(3);
+		4: dark_stone(5) + unstable_matter -> red_stone(5);
 	}
 	<Category>14
 	{
@@ -211,6 +212,11 @@ gameplay
 	at_unstable_normal_avarage_time: 1,5;
 	at_unstable_special_avarage_time: 1,5;
 	at_unstable_force: 10;
+	at_unstable_power_regenerate_multiplier: 2;
+	at_unstable_power_normal_eat: 1;
+	at_unstable_power_special_eat: 2;
+	at_unstable_power_killpot_give: 10;
+	at_unstable_max_unstabling_deviation: 15;
 
 	<BULLET SPEEDS>
 	copper_bullet_speed: 0,45;

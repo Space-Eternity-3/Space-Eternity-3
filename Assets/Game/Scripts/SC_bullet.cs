@@ -47,6 +47,8 @@ public class SC_bullet : MonoBehaviour
     bool destroyed = false;
     public bool boss_damaged = false;
     public bool block_graphics = false;
+    public bool next_bullet_virtual = false;
+    public bool virtuall = false;
     int looper = 0;
     int loopSndID = -1;
 
@@ -86,6 +88,12 @@ public class SC_bullet : MonoBehaviour
         {
             //Boss pre-define
             gob.normal_damage = SC_fun.boss_damages[typ] * float.Parse(SC_fun.SC_data.Gameplay[32]);
+        }
+
+        if(next_bullet_virtual)
+        {
+            next_bullet_virtual = false;
+            gob.virtuall = true;
         }
 
         SC_bullet bul = ShotProjection(

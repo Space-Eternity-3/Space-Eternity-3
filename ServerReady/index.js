@@ -17,7 +17,7 @@ var serverRedVersion = "Beta_2_1";
 var clientDatapacksVar = "";
 var seed;
 var hourHeader = "";
-var gpl_number = 107;
+var gpl_number = 112;
 var max_players = 128;
 
 var boss_damages = [0,0,0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,0,0 ,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];

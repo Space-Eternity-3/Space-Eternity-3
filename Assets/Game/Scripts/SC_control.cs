@@ -180,6 +180,11 @@ public class SC_control : MonoBehaviour {
 	public int unstable_sprobability;
 	public float unstable_force;
 	public float graviton_force;
+
+	public float at_unstable_regen1;
+	public float at_unstable_regen2;
+	public float at_unstable_regen3;
+	public float unstabling_max_deviation;
 	
 	bool escaped = false;
 	string RPU = "XXX";
@@ -251,8 +256,9 @@ public class SC_control : MonoBehaviour {
 		bool wr_cotr = !(Input.GetKey(KeyCode.LeftControl) && (SC_slots.InvHaving(48) || SC_slots.InvHaving(65)));
 		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && wr_cotr;
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
+		bool wr_unstabling = (!SC_artefacts.unstabling);
 		
-		if(SC_effect.effect!=8 && wr_tick && wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
+		if(SC_effect.effect!=8 && wr_tick && wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100) && wr_unstabling)
 		{
 			int slot, typ = 1;
 
@@ -308,6 +314,31 @@ public class SC_control : MonoBehaviour {
 				0
 			);
 			SC_invisibler.invisible = false;
+		}
+
+		if(SC_artefacts.unstabling && cooldown==0)
+		{
+			cooldown = (int)float.Parse(SC_data.Gameplay[97+4]);
+
+			power_V += (at_unstable_regen2)/50f;
+
+			float xpo = Input.mousePosition.x-Screen.width/2, ypo=Input.mousePosition.y-Screen.height/2;
+			float angle = Mathf.Atan2(ypo,xpo);
+			int dever = UnityEngine.Random.Range(-10,11);
+			float dever2 = dever/10f;
+			angle += (dever2 * unstabling_max_deviation) * Mathf.PI / 180f;
+
+			xpo = Mathf.Cos(angle);
+			ypo = Mathf.Sin(angle);
+			
+			SC_bullet.next_bullet_virtual = true;
+			SC_bullet.Shot(
+				transform.position,
+				new Vector3(xpo,ypo,0f),
+				playerR.velocity*0.02f,
+				3,
+				0
+			);
 		}
 
 		if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f)
@@ -399,6 +430,7 @@ public class SC_control : MonoBehaviour {
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 15 0 0");
 				}
 				DamageFLOAT(float.Parse(SC_data.Gameplay[35]));
+				if(SC_artefacts.GetArtefactID()==6) power_V += at_unstable_regen3/50f;
 			}
 			else InfoUp("Potion blocked",380);
 
@@ -426,6 +458,7 @@ public class SC_control : MonoBehaviour {
 		}
 		
 		}
+		if(power_V<0f) power_V=0f; if(power_V>1f) power_V=1f;
 		
 		//bar colors {1,2,3}	
 		healthOld.color = HealthNormal;
@@ -441,6 +474,10 @@ public class SC_control : MonoBehaviour {
 			if(power_V<IL_barrier) power.color=PowerBlocked;
 			else power.color=PowerNormal;
 		}
+
+		if(SC_artefacts.GetArtefactID()==6)
+			if(!SC_artefacts.unstabling) power.color=PowerNormal;
+			else power.color=PowerBurning;
 		
 		if(turbo && !impulse_enabled) rocket_fuel.color=FuelBurning;
 		else
@@ -641,7 +678,7 @@ public class SC_control : MonoBehaviour {
 	}
 	public bool AllowingPotion(string potname)
 	{
-		bool power_unlocked = (SC_artefacts.GetArtefactID()==2 || SC_artefacts.GetArtefactID()==3);
+		bool power_unlocked = (SC_artefacts.GetArtefactID()==2 || SC_artefacts.GetArtefactID()==3 || SC_artefacts.GetArtefactID()==6);
 		if(potname=="power-unlocked") return power_unlocked;
 
 		if(impulse_enabled) return false;
@@ -898,6 +935,7 @@ public class SC_control : MonoBehaviour {
 		if(licznikD>0) licznikD--;
 		if(dmLicz>0) dmLicz--;
 		if(saveCo>0) saveCo--;
+
 		impulse_time--;
 		if(impulse_time==1) RemoveImpulse();
 		for(int ij=0;ij<max_players;ij++)
@@ -993,6 +1031,8 @@ public class SC_control : MonoBehaviour {
 				Transform trn = Instantiate(unstablePart,transform.position,quat_foo);
 				trn.GetComponent<SC_seeking>().enabled = true;
 				SendMTP("/EmitParticles "+connectionID+" 7 "+alp+" 0");
+
+				power_V += at_unstable_regen1/50f;
 			}
 			if(UnityEngine.Random.Range(0,unstable_sprobability)==0)
 			{
@@ -1015,6 +1055,8 @@ public class SC_control : MonoBehaviour {
 				Transform trn = Instantiate(unstablePart,transform.position,quat_foo);
 				trn.GetComponent<SC_seeking>().enabled = true;
 				SendMTP("/EmitParticles "+connectionID+" 7 "+alp+" 0");
+
+				power_V += at_unstable_regen2/50f;
 			}
 		}
 
@@ -1044,7 +1086,7 @@ public class SC_control : MonoBehaviour {
 			(nn==2 && !impulse_enabled)||
 			(nn==3 && !SC_invisibler.invisible)||
 			(nn==5 && false)||
-			(nn==6 && false)
+			(nn==6 && !SC_artefacts.unstabling)
 			
 		) power_V += unit * SC_artefacts.powerRM[nn];
 		
@@ -1060,7 +1102,7 @@ public class SC_control : MonoBehaviour {
 			(mm==2 && false)||
 			(mm==3 && SC_invisibler.invisible)||
 			(nn==5 && false)||
-			(mm==6 && false)
+			(mm==6 && SC_artefacts.unstabling)
 			
 		) power_V -= unit * SC_artefacts.powerUM[mm];
 		
