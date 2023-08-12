@@ -7,7 +7,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 2.1'; <Don't change>
-name: '0'; <Rename it>
+name: 'DEFAULT'; <Rename it>
 craftings
 {
 	<Category>1

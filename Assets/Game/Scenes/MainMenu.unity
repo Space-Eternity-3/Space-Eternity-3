@@ -4395,7 +4395,8 @@ MonoBehaviour:
   TX_connect: {fileID: 1419062975}
   Screen3: {fileID: 1738348583}
   connectionState: 0
-  UpdatableVersions: []
+  UpdatableVersions:
+  - Beta 2.1-
 --- !u!1 &39346224
 GameObject:
   m_ObjectHideFlags: 0

@@ -63,6 +63,7 @@ Important technical changes:
 - bullet cooldown system reworked to be configurable
 - bulet sending by player is a bit more optimized on server side
 - biome IDs are saved to file "Biomes.se3" when generated
+- universes copied from the server are no longer marked as server copies
 
 Bug fixes:
 

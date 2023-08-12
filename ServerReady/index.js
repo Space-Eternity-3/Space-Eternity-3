@@ -20,6 +20,7 @@ var biome_memories = "";
 var hourHeader = "";
 var gpl_number = 112;
 var max_players = 128;
+var verF;
 
 var boss_damages = [0,0,0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,0,0 ,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var other_bullets_colliders = [0,0.14,0.14,0.12,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.14,0.08 ,1.68,0.25,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
@@ -3899,22 +3900,33 @@ function GplGet(str)
 //Start functions
 console.log("-------------------------------");
 
-if (!existsF(universe_name + "/UniverseInfo.se3")) {
-  if (existsF("Datapack.jse3"))
-    datapackTranslate("NoName~" + readF("Datapack.jse3"));
-  else crash("File Datapack.se3 doesn't exists");
+if (!existsF(universe_name + "/UniverseInfo.se3"))
+{
+  var datapackjse3, defaultjse3 = readF("server_technicals/DefaultDatapack.jse3");
+  if(existsF("Datapack.jse3"))
+  {
+    datapackjse3 = readF("Datapack.jse3");
+    datapackTranslate("NoName~" + datapackjse3);
+  }
+  else crash("File Datapack.se3 doesn't exist");
+
+  if(datapackjse3==defaultjse3) verF = "DEFAULT";
+  else verF = "Custom Data";
 
   clientDatapacksVar = clientDatapacks();
   uniTime = 0;
-  uniMiddle = "Server Copy~" + clientDatapacksVar;
+  uniMiddle = verF + "~" + clientDatapacksVar;
   uniVersion = serverVersion;
   writeF(
     universe_name + "/UniverseInfo.se3",
     [uniTime, uniMiddle, uniVersion, ""].join("\r\n")
   );
 
-  console.log("Datapack imported: [" + datName + "]");
-} else {
+  if(verF=="Custom Data" && datName=="DEFAULT") console.log("Datapack imported: [CUSTOM]");
+  else console.log("Datapack imported: [" + datName + "]");
+}
+else
+{
   var uiSource = readF(universe_name + "/UniverseInfo.se3").split("\r\n");
   if (uiSource.length < 3) crash("Error in " + universe_name + "/UniverseInfo.se3");
   if (uiSource[2] != serverVersion)
@@ -3923,8 +3935,9 @@ if (!existsF(universe_name + "/UniverseInfo.se3")) {
         uiSource[2] +
         " != " +
         serverVersion +
-        "\r\nYou can update your universe by changing version manually to \""+serverVersion+"\" in file " + universe_name + "/UniverseInfo.se3" +
-        "\r\nNote that universe updating is supported only when updating Beta 2.1 or newer universes."
+        "\r\nYou can update your universe by removing file " + universe_name + "/UniverseInfo.se3" +
+        "\r\nBe sure that file Datapack.jse3 contains a default datapack before updating." +
+        "\r\nNote that universe updating is supported only when updating Beta 2.1 or newer universes\r\nand only when they use a default datapack."
     );
 
   var dataGet = uiSource[1].split("~");
@@ -3933,7 +3946,7 @@ if (!existsF(universe_name + "/UniverseInfo.se3")) {
 
   clientDatapacksVar = clientDatapacks();
   uniTime = 0;
-  uniMiddle = "Server Copy~" + clientDatapacksVar;
+  uniMiddle = uiSource[1];
   uniVersion = serverVersion;
   writeF(
     universe_name + "/UniverseInfo.se3",
