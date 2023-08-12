@@ -9,6 +9,7 @@ New features:
   - lava geyzer
 - added max potions, impossible to craft, obtainable only from dark cementeries, they completely regenerate all your bars and remove effect
 - unstable artefact updated, you can access unstabling state by pressing A when having enough power
+- universes created in Beta 2.1 will be possible to update to newer versions
 
 Old feature changes:
 
@@ -61,7 +62,7 @@ Important technical changes:
 
 - bullet cooldown system reworked to be configurable
 - bulet sending by player is a bit more optimized on server side
-- potion condition code is now prettier
+- biome IDs are saved to file "Biomes.se3" when generated
 
 Bug fixes:
 

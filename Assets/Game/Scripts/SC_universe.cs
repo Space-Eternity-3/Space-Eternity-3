@@ -17,6 +17,7 @@ public class SC_universe : MonoBehaviour
     public Button createBu;
     public Transform Communtron1;
     public SC_data SC_data;
+    public SC_connection SC_connection;
 
     bool crB=true;
     bool plB=false;
@@ -60,6 +61,13 @@ public class SC_universe : MonoBehaviour
         if(hours>0) return hours+":"+minS+":"+secS;
         else return minS+":"+secS;
     }
+    bool IsUpdatableVersion(string that_version)
+    {
+        foreach(string ver in SC_connection.UpdatableVersions) {
+            if(ver==that_version) return true;
+        }
+        return false;
+    }
     void Start()
     {
         playBu.enabled=false;
@@ -77,14 +85,24 @@ public class SC_universe : MonoBehaviour
             versionF=SC_data.UniverseX[WorldID-1,2];
             crB=false; plB=true;
 		}
+
         info.text="Time: "+TimeConvert(int.Parse(timeF))+"\nVersion: "+versionF;
-        if(scoreF!="DEFAULT"&&scoreF!="0") info.text=info.text+"\n"+scoreF;
-        if(!(SC_data.DEV_mode||versionF=="NA"||(versionF=="DEV"&&SC_data.DEV_mode)||(versionF==SC_data.clientVersion)))
+        if(scoreF!="DEFAULT") info.text=info.text+"\n"+scoreF;
+
+        bool iuv = IsUpdatableVersion(versionF) && scoreF=="DEFAULT";
+        if((versionF == SC_data.clientVersion) || iuv)
+        {
+            playBu.enabled=true;
+            if(iuv) {
+                playT.text="Update";
+                playT.fontSize=42;
+            }
+        }
+        else
         {
             playT.text="Incompatible";
             playT.fontSize=38;
         }
-        else playBu.enabled=true;
     }
     void Update()
     {

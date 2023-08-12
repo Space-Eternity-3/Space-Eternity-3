@@ -89,7 +89,9 @@ public class SC_fun : MonoBehaviour
         }
         else
         {
-            if(SC_data.TempFileConID[8]!="") seed=int.Parse(SC_data.TempFileConID[8]);
+			string raw = SC_data.TempFileConID[8];
+			string[] rw = raw.Split('&');
+            if(rw[0]!="") seed=int.Parse(rw[0]);
             else SC_control.MenuReturn();
         }
     }
@@ -543,6 +545,38 @@ public class SC_fun : MonoBehaviour
 	{
 		return SC_data.BiomeTags[int.Parse(GetBiomeString(ulam).Split('b')[1])];
 	}
+	public int FindBiome(int ulam)
+	{
+		try {
+
+			string[] tab = SC_data.biome_memories.Split('|');
+			int i,lngt = tab.Length-1;
+			for(i=0;i<lngt;i++)
+			{
+				string[] tb = tab[i].Split(';');
+				int ret;
+				if(tb[0]==ulam+"")
+				{
+					ret = int.Parse(tb[1]);
+					if(ret<0 || ret>31) return -1;
+					else return ret;
+				}
+			}
+
+		} catch(Exception) {
+			Debug.LogWarning("FindBiome error");
+			return -1;
+		}
+
+		return -1;
+	}
+	public void InsertBiome(int ulam, int biome)
+	{
+		if((int)SC_control.Communtron4.position.y!=100)
+			SC_data.biome_memories += ulam+";"+biome+"|";
+		else
+			SC_control.SendMTP("/TryInsertBiome "+SC_control.connectionID+" "+ulam+" "+biome);
+	}
     public string GetBiomeStringR(int ulam)
     {
 		int i;
@@ -555,25 +589,35 @@ public class SC_fun : MonoBehaviour
 
 		if(ulam>=1 && ulam<=9) return "b0";
 		if(ulam%2==0) return "b0";
+
+		int foundUlam = FindBiome(ulam);
+		string ret;
+
+		if(foundUlam==-1) {
+
+			//BIOME BASED ON DATAPACK PROBABILITY
+        	int IDm=ulam+seed;
+			int pr=pseudoRandom1000(IDm);
+			string[] bcSourced = SC_data.biomeChances.Split(';');
+			int lngt=bcSourced.Length/3;
 		
-        int IDm=ulam+seed;
-		int pr=pseudoRandom1000(IDm);
-		string[] bcSourced = SC_data.biomeChances.Split(';');
-		int lngt=bcSourced.Length/3;
-		
-		for(i=0;i<lngt;i++)
-		{
-			int min = int.Parse(bcSourced[3*i+1]);
-			int max = int.Parse(bcSourced[3*i+2]);
-			if(pr>=min && pr<=max)
+			for(i=0;i<lngt;i++)
 			{
-				int bb = int.Parse(bcSourced[3*i]);
-				if(bb>=1 && bb<=31) return "b"+bb;
-				else return "b0";
+				int min = int.Parse(bcSourced[3*i+1]);
+				int max = int.Parse(bcSourced[3*i+2]);
+				if(pr>=min && pr<=max)
+				{
+					int bb = int.Parse(bcSourced[3*i]);
+					if(bb>=1 && bb<=31) {ret = "b"+bb; break;}
+					else {ret = "b0"; break;}
+				}
 			}
+			
+			ret = "b0";
+			InsertBiome(ulam,int.Parse(ret.Split('b')[1]));
+			return ret;
 		}
-		
-		return "b0";
+		else return "b"+foundUlam;
     }
 	public bool TagContains(string tags, string tag)
 	{

@@ -853,6 +853,8 @@ public class SC_control : MonoBehaviour {
 		SC_data.UniverseX[worldID-1,0]=SC_camera.TotalTime+"";
 		SC_data.Save("universeX");
 
+		SC_data.Save("biomes");
+
 		while(SC_data.ArchivedWorld.Count>0) SC_data.ArchiveSave(0);
 		for(z=0;z<16;z++) SC_data.SaveAsteroid(z);
 	}
@@ -1964,6 +1966,9 @@ public class SC_control : MonoBehaviour {
 			conID=SC_data.TempFileConID[10];
 			MTP_InventoryLoad();
 			TextConstYou.text = nick;
+
+			string[] rw = SC_data.TempFileConID[8].Split('&');
+			if(rw.Length>=2) SC_data.biome_memories = rw[1];
 		}
 
 		Engines*=float.Parse(SC_data.Gameplay[15]);

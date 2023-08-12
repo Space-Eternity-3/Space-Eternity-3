@@ -22,6 +22,8 @@ public class SC_connection : MonoBehaviour
     int BTc=0,BTd=2,BTj=2;
     public int connectionState=0;
     int connect_in_update=0;
+
+    public List<string> UpdatableVersions = new List<string>();
     
     //0 - Disconnected
     //1 - Connecting

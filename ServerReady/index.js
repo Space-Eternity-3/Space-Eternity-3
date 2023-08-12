@@ -16,6 +16,7 @@ var serverVersion = "Beta 2.1";
 var serverRedVersion = "Beta_2_1";
 var clientDatapacksVar = "";
 var seed;
+var biome_memories = "";
 var hourHeader = "";
 var gpl_number = 112;
 var max_players = 128;
@@ -896,6 +897,7 @@ function SaveAllNow() {
     lngt = chunk_data.length;
   for (i = 0; i < max_players; i++) if (checkPlayer(i, plr.conID[i])) savePlayer(i);
   for (i = 0; i < lngt; i++) chunkSave(i);
+  writeF(universe_name + "/Biomes.se3", biome_memories + "\r\n");
 }
 
 //Save all once per 15 seconds (or less if lags)
@@ -2515,7 +2517,7 @@ wss.on("connection", function connection(ws) {
               " " +
               plr.backpack[i] +
               " " +
-              seed +
+              seed+"&"+biome_memories +
               " X X"
           );
           se3_ws[i] = ws;
@@ -3226,6 +3228,20 @@ wss.on("connection", function connection(ws) {
       plr.backpack[bpPlaID] = safeCopyB;
       kick(bpPlaID);
     }
+    if (arg[0] == "/TryInsertBiome") {
+      //Backpack 1[PlayerID] 2[Ulam] 3[Biome]
+      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      
+      var tab = biome_memories.split("|");
+      var i,lngt = tab.length;
+      for(i=0;i<lngt;i++)
+        if(tab[i].split(";")[0]==arg[2]+"") return;
+      
+      var biome = func.parseIntU(arg[3]);
+      if(biome<0 || biome>31) biome = 0;
+
+      biome_memories += arg[2]+";"+biome+"|";
+    }
     if (arg[0] == "/ImJoined") {
       //ImJoined 1[PlayerID] 2[immID] 3[livID]
       var imkConID = arg[1];
@@ -3906,7 +3922,9 @@ if (!existsF(universe_name + "/UniverseInfo.se3")) {
       "Loaded universe has a wrong version: " +
         uiSource[2] +
         " != " +
-        serverVersion
+        serverVersion +
+        "\r\nYou can update your universe by changing version manually to \""+serverVersion+"\" in file " + universe_name + "/UniverseInfo.se3" +
+        "\r\nNote that universe updating is supported only when updating Beta 2.1 or newer universes."
     );
 
   var dataGet = uiSource[1].split("~");
@@ -3925,6 +3943,7 @@ if (!existsF(universe_name + "/UniverseInfo.se3")) {
   console.log("Datapack loaded");
 }
 
+//Seed read
 if (!existsF(universe_name + "/Seed.se3")) {
   seed = func.randomInteger(0, 10000000);
   writeF(universe_name + "/Seed.se3", seed + "\r\n");
@@ -3933,6 +3952,11 @@ if (!existsF(universe_name + "/Seed.se3")) {
 else {
   seed = func.parseIntU(readF(universe_name + "/Seed.se3").split("\r\n")[0]);
   writeF(universe_name + "/Seed.se3", seed + "\r\n");
+}
+
+//Biome memories read
+if (existsF(universe_name + "/Biomes.se3")) {
+  biome_memories = readF(universe_name + "/Biomes.se3").split("\r\n")[0];
 }
 
 function laggy_comment(nn)

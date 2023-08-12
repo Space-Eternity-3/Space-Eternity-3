@@ -1394,6 +1394,7 @@ MonoBehaviour:
   - 
   - 
   - 
+  biome_memories: 
   asteroidCounter: 0
   WorldSector:
   - 
@@ -4394,6 +4395,7 @@ MonoBehaviour:
   TX_connect: {fileID: 1419062975}
   Screen3: {fileID: 1738348583}
   connectionState: 0
+  UpdatableVersions: []
 --- !u!1 &39346224
 GameObject:
   m_ObjectHideFlags: 0
@@ -9842,6 +9844,7 @@ MonoBehaviour:
   createBu: {fileID: 54893948}
   Communtron1: {fileID: 739574448}
   SC_data: {fileID: 35467493}
+  SC_connection: {fileID: 35467495}
   WorldID: 4
 --- !u!1 &420350967
 GameObject:
@@ -10413,6 +10416,7 @@ MonoBehaviour:
   createBu: {fileID: 82399045}
   Communtron1: {fileID: 739574448}
   SC_data: {fileID: 35467493}
+  SC_connection: {fileID: 35467495}
   WorldID: 3
 --- !u!1 &475044749
 GameObject:
@@ -12273,6 +12277,7 @@ MonoBehaviour:
   createBu: {fileID: 2133900456}
   Communtron1: {fileID: 739574448}
   SC_data: {fileID: 35467493}
+  SC_connection: {fileID: 35467495}
   WorldID: 7
 --- !u!1 &588381238
 GameObject:
@@ -15328,6 +15333,7 @@ MonoBehaviour:
   createBu: {fileID: 2028083502}
   Communtron1: {fileID: 739574448}
   SC_data: {fileID: 35467493}
+  SC_connection: {fileID: 35467495}
   WorldID: 6
 --- !u!1 &769798970
 GameObject:
@@ -17075,6 +17081,7 @@ MonoBehaviour:
   createBu: {fileID: 1185505631}
   Communtron1: {fileID: 739574448}
   SC_data: {fileID: 35467493}
+  SC_connection: {fileID: 35467495}
   WorldID: 1
 --- !u!1 &840736440
 GameObject:
@@ -19328,6 +19335,7 @@ MonoBehaviour:
   createBu: {fileID: 107399738}
   Communtron1: {fileID: 739574448}
   SC_data: {fileID: 35467493}
+  SC_connection: {fileID: 35467495}
   WorldID: 8
 --- !u!1 &1054966541
 GameObject:
@@ -30549,6 +30557,7 @@ MonoBehaviour:
   createBu: {fileID: 2076353716}
   Communtron1: {fileID: 739574448}
   SC_data: {fileID: 35467493}
+  SC_connection: {fileID: 35467495}
   WorldID: 5
 --- !u!1 &1575961372
 GameObject:
@@ -33851,6 +33860,7 @@ MonoBehaviour:
   createBu: {fileID: 960483610}
   Communtron1: {fileID: 739574448}
   SC_data: {fileID: 35467493}
+  SC_connection: {fileID: 35467495}
   WorldID: 2
 --- !u!1 &1913742774
 GameObject:

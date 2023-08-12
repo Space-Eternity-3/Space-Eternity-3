@@ -49,7 +49,6 @@ public class SC_data : MonoBehaviour
     FileStream fr,fw;
     StreamReader sr;
     StreamWriter sw;
-    BinaryFormatter bf;
     string writingStorage="";
 
     //Awake Universal
@@ -68,6 +67,7 @@ public class SC_data : MonoBehaviour
     public string[] upgrades = new string[5];
     public string[] data = new string[8];
     public string[,] inventory = new string[9,2];
+    public string biome_memories = "";
 
     //Asteroids
     public int asteroidCounter=0;
@@ -340,6 +340,7 @@ public class SC_data : MonoBehaviour
         for(i=0;i<9;i++) for(j=0;j<2;j++) inventory[i,j]="0";
         for(i=0;i<5;i++) upgrades[i]="0";
         for(i=0;i<8;i++) data[i]="";
+        biome_memories = "";
         dataSource=example;
         dataSourceStorage=example;
     }
@@ -423,6 +424,7 @@ public class SC_data : MonoBehaviour
             case "UniverseInfo": return savesDIR;
             case "Settings": return settingsDIR;
             case "Seed": return worldDIR;
+            case "Biomes": return worldDIR;
             case "PlayerData": return worldDIR;
             case "generated": return asteroidDIR;
             default: return "./ERROR/";
@@ -497,8 +499,7 @@ public class SC_data : MonoBehaviour
                 {
                     UniverseX[i-1,0]="0";
                     UniverseX[i-1,1]="DEFAULT~"+example;
-                    if(DEV_mode) UniverseX[i-1,2]="DEV";
-                    else UniverseX[i-1,2]=clientVersion;
+                    UniverseX[i-1,2]=clientVersion;
                 }
             }
         }
@@ -559,6 +560,17 @@ public class SC_data : MonoBehaviour
             for(i=0;i<21;i++) for(j=0;j<2;j++) backpack[i,j]=int.Parse(ST_B[i*2+j])+"";
             for(i=0;i<5;i++) upgrades[i]=int.Parse(ST_U[i])+"";
 
+            CloseRead();
+        }
+
+        path=GetPath("Biomes");
+        file=GetFile("Biomes");
+        if(Directory.Exists(path)) if(File.Exists(file))
+        {
+            OpenRead(file);
+            
+            biome_memories=sr.ReadLine();
+            
             CloseRead();
         }
 
@@ -719,6 +731,22 @@ public class SC_data : MonoBehaviour
             }catch(Exception)
             {
                 SaveCrash("Seed");
+            }
+        }
+        if(E=="biomes")
+        {
+            file=GetFile("Biomes");
+
+            try{
+            OpenWrite(file);
+            
+            SaveLineCrLf(biome_memories);
+
+            CloseWrite();
+
+            }catch(Exception)
+            {
+                SaveCrash("Biomes");
             }
         }
         if(E=="player_data")
