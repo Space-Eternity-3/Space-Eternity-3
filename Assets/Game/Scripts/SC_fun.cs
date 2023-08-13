@@ -591,7 +591,7 @@ public class SC_fun : MonoBehaviour
 		if(ulam%2==0) return "b0";
 
 		int foundUlam = FindBiome(ulam);
-		string ret;
+		string ret = "b0";
 
 		if(foundUlam==-1) {
 
@@ -613,7 +613,6 @@ public class SC_fun : MonoBehaviour
 				}
 			}
 			
-			ret = "b0";
 			InsertBiome(ulam,int.Parse(ret.Split('b')[1]));
 			return ret;
 		}
