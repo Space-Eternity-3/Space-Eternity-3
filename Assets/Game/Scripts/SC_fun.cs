@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
+using System.Text;
 
 public struct BiomeOfUlam
 {
@@ -549,19 +550,17 @@ public class SC_fun : MonoBehaviour
 	{
 		try {
 
-			string[] tab = SC_data.biome_memories.Split('|');
-			int i,lngt = tab.Length-1;
-			for(i=0;i<lngt;i++)
+			int ln = ulam / 1000;
+			int id = ulam % 1000;
+			if(ln>=16000)
 			{
-				string[] tb = tab[i].Split(';');
-				int ret;
-				if(tb[0]==ulam+"")
-				{
-					ret = int.Parse(tb[1]);
-					if(ret<0 || ret>31) return -1;
-					else return ret;
-				}
+				id += (ln-15999) * 1000;
+				ln = 15999;
 			}
+			if(SC_data.biome_memories[ln].Length <= id) return -1;
+			int cand = CharToNum31(SC_data.biome_memories[ln][id]);
+			if(cand < 0 || cand > 31) return -1;
+			else return cand;
 
 		} catch(Exception) {
 			Debug.LogWarning("FindBiome error");
@@ -573,9 +572,38 @@ public class SC_fun : MonoBehaviour
 	public void InsertBiome(int ulam, int biome)
 	{
 		if((int)SC_control.Communtron4.position.y!=100)
-			SC_data.biome_memories += ulam+";"+biome+"|";
+		{
+			int ln = ulam / 1000;
+			int id = ulam % 1000;
+			if(ln>=16000)
+			{
+				id += (ln-15999) * 1000;
+				ln = 15999;
+			}
+			while(SC_data.biome_memories[ln].Length <= id)
+				SC_data.biome_memories[ln] += '-';
+			
+			int i;
+			StringBuilder ret = new StringBuilder();
+			for(i=0;i<id;i++) ret.Append(SC_data.biome_memories[ln][i]);
+			ret.Append(Num31ToChar(biome));
+			for(i=id+1;i<SC_data.biome_memories[ln].Length;i++) ret.Append(SC_data.biome_memories[ln][i]);
+			SC_data.biome_memories[ln] = ret.ToString();
+		}
 		else
 			SC_control.SendMTP("/TryInsertBiome "+SC_control.connectionID+" "+ulam+" "+biome);
+	}
+	char Num31ToChar(int num)
+	{
+		if(num < 10) return (char)(48+num);
+		return (char)(55+num);
+	}
+	int CharToNum31(char ch)
+	{
+		if(ch=='-') return -1;
+		int num = (int)ch;
+		if(num < 65) return num-48;
+		else return num-55;
 	}
     public string GetBiomeStringR(int ulam)
     {

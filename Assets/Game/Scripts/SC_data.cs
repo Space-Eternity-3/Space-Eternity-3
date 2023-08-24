@@ -24,7 +24,6 @@ public class SC_data : MonoBehaviour
     bool multiplayer;
     public bool menu;
     public bool crashed;
-    string bin;
     public string example=""; //Default datapack
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
@@ -67,7 +66,7 @@ public class SC_data : MonoBehaviour
     public string[] upgrades = new string[5];
     public string[] data = new string[8];
     public string[,] inventory = new string[9,2];
-    public string biome_memories = "";
+    public string[] biome_memories = new string[16000];
 
     //Asteroids
     public int asteroidCounter=0;
@@ -340,7 +339,7 @@ public class SC_data : MonoBehaviour
         for(i=0;i<9;i++) for(j=0;j<2;j++) inventory[i,j]="0";
         for(i=0;i<5;i++) upgrades[i]="0";
         for(i=0;i<8;i++) data[i]="";
-        biome_memories = "";
+        for(i=0;i<16000;i++) biome_memories[i]="";
         dataSource=example;
         dataSourceStorage=example;
     }
@@ -569,7 +568,7 @@ public class SC_data : MonoBehaviour
         {
             OpenRead(file);
             
-            biome_memories=sr.ReadLine();
+            for(i=0;i<16000;i++) biome_memories[i]=sr.ReadLine();
             
             CloseRead();
         }
@@ -740,7 +739,7 @@ public class SC_data : MonoBehaviour
             try{
             OpenWrite(file);
             
-            SaveLineCrLf(biome_memories);
+            writingStorage = string.Join("\r\n",biome_memories) + "\r\n";
 
             CloseWrite();
 

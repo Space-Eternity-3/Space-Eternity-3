@@ -1968,7 +1968,15 @@ public class SC_control : MonoBehaviour {
 			TextConstYou.text = nick;
 
 			string[] rw = SC_data.TempFileConID[8].Split('&');
-			if(rw.Length>=2) SC_data.biome_memories = rw[1];
+			if(rw.Length>=2)
+			{
+				string[] tabb = rw[1].Split('?');
+				if(tabb.Length>=16000)
+				{
+					int ri;
+					for(ri=0;ri<16000;ri++) SC_data.biome_memories[ri] = tabb[ri];
+				}
+			}
 		}
 
 		Engines*=float.Parse(SC_data.Gameplay[15]);
