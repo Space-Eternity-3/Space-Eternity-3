@@ -31,8 +31,8 @@ Default datapack changes:
 - power element drill chance 4% -> 5,5%
 - amethyst drill chance 20% -> 30%
 - diamond asteroid chance 2% -> 1,5%
-- unstable damage 8 -> 10
 - fire and unstable damages changed:
+  - unstable damage 8 -> 10
   - boss unstable effectivity 1,25 -> 1
   - fire bullet damage 3 -> 4
   - boss fire effectivity 2 -> 1,3125
