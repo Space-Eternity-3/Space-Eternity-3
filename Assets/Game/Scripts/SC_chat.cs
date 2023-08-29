@@ -114,6 +114,11 @@ public class SC_chat : MonoBehaviour
     }
     void Update()
     {
+        //F2 hide all chat
+        if(Input.GetKeyDown(KeyCode.F2))
+            for(int j=0;j<line_timers.Length;j++)
+                line_timers[j] = 0;
+
         //Chat input activator
 		if(!SC_control.timeStop)
 		{

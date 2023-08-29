@@ -1,6 +1,6 @@
 New features:
 
-- chat added, press "T" or "/" to send a message
+- chat added, press "T" or "/" to send a message, press F2 to hide all messages instantly
 
 Old feature changes:
 
@@ -25,3 +25,4 @@ Important technical changes:
 Bug fixes:
 
 - It was possible to activate pause menu without closing inventory when escape button was released while in inventory
+- junkyard & chat font wasn't supporting characters like ą, ę, ó, ł
