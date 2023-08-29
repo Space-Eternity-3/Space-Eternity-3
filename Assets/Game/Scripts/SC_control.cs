@@ -6,6 +6,7 @@ using System.IO;
 using WebSocketSharp;
 using UnityEngine.SceneManagement;
 using System;
+using System.Text;
 
 public class SC_control : MonoBehaviour {
 
@@ -77,11 +78,11 @@ public class SC_control : MonoBehaviour {
 	int dmLicz=0;
 	int saveCo=0;
 	public int max_players = 10;
+	public bool blockEscapeThisFrame = false;
 
 	public float F_barrier;
 	public float IL_barrier;
 	public float IM_barrier;
-	public bool invBlockExit;
 
 	public float VacuumDrag,Engines;
 	public float unit=0.0008f;
@@ -144,6 +145,8 @@ public class SC_control : MonoBehaviour {
 	public SC_seek_data SC_seek_data;
 	public SC_bars SC_bars;
 	public SC_gameplay_set SC_gameplay_set;
+	public SC_inv_mover SC_inv_mover; //left
+	public SC_chat SC_chat;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -531,7 +534,7 @@ public class SC_control : MonoBehaviour {
 		}
 
 		//BRAKE
-		if(Input.GetKey(KeyCode.LeftAlt)&&!pause)
+		if(PressedNotInChat(KeyCode.LeftAlt,"hold")&&!pause)
 		{
 			brake=true;
 			if(!turbo&&!engineON)
@@ -549,7 +552,7 @@ public class SC_control : MonoBehaviour {
 			//engine.material=E1;
 		}
 		//ENGINE
-		if((Input.GetKey(KeyCode.Space)||tempengine)&&living&&!pause)
+		if((PressedNotInChat(KeyCode.Space,"hold")||tempengine)&&living&&!pause)
 		{
 			engineON=true;
 			if(!turbo)
@@ -576,7 +579,7 @@ public class SC_control : MonoBehaviour {
 			//engine.material=E1;
 		}
 		//TURBO
-		if(((Input.GetKey(KeyCode.LeftShift)||tempturbo)&&turbo_V>0f)&&Communtron2.position.x==0&&living&&!pause)
+		if(((PressedNotInChat(KeyCode.LeftShift,"hold")||tempturbo)&&turbo_V>0f)&&Communtron2.position.x==0&&living&&!pause)
 		{
 			if(turbo_V>=F_barrier)
 			{
@@ -620,7 +623,7 @@ public class SC_control : MonoBehaviour {
 		//DRILL
 		if(!SC_invisibler.invisible)
 		{
-			if(Input.GetKeyDown(KeyCode.R)&&!pause)
+			if(PressedNotInChat(KeyCode.R,"down")&&!pause)
 			{
 				if(drill3B) 
 				{
@@ -664,8 +667,10 @@ public class SC_control : MonoBehaviour {
 		{
 			escaped = false;
 		}
-		if(Input.GetKey("escape")&&!invBlockExit&&!escaped)
+		if(Input.GetKeyDown("escape") && !SC_inv_mover.active && !SC_chat.typing && !blockEscapeThisFrame && !escaped)
 			esc_press(true);
+
+		blockEscapeThisFrame = false;
 
 		//Restart lags
 		if(truePing>2.5f)
@@ -1863,6 +1868,11 @@ public class SC_control : MonoBehaviour {
 			if(arg[2]==connectionID+"") return;
 			InfoUp(info_space_add(arg[1]),500);
 		}
+		if(arg[0]=="/RetChatMessage")
+		{
+			if(arg[1]==connectionID+"") return;
+			SC_chat.AddMessage(arg[1],new StringBuilder(arg[2]).Replace("\t"," ").ToString());
+		}
 		if(arg[0]=="/RetAsteroidData")
 		{
 			//REBUILD IT
@@ -2240,6 +2250,15 @@ public class SC_control : MonoBehaviour {
 	{
 		return RASCII_toInt(dat[st+0])/123f;
 	}
+	public bool PressedNotInChat(KeyCode keycode, string mode)
+	{
+		if(mode=="down") return Input.GetKeyDown(keycode) && !SC_chat.typing;
+		if(mode=="hold") return Input.GetKey(keycode) && !SC_chat.typing;
+		if(mode=="up") return Input.GetKeyUp(keycode) && !SC_chat.typing;
+		return false;
+	}
+
+
 	bool tempengine = false;
 	bool tempturbo = false;
 	void OnGUI()

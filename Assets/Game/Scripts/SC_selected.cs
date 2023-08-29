@@ -31,12 +31,12 @@ public class SC_selected : MonoBehaviour {
 		
 		if(SC_push.clicked_on==0)
 		{
-			if(Input.GetAxisRaw("Mouse ScrollWheel")<0&&!Input.GetKey(KeyCode.LeftControl)&&!SC_control.pause)
+			if(Input.GetAxisRaw("Mouse ScrollWheel")<0&&!Input.GetKey(KeyCode.LeftControl)&&!SC_control.SC_chat.typing&&!SC_control.pause)
  			{
 				cont=true;
      			if(cont) selected++;
  			}
-			if(Input.GetAxisRaw("Mouse ScrollWheel")>0&&!Input.GetKey(KeyCode.LeftControl)&&!SC_control.pause)
+			if(Input.GetAxisRaw("Mouse ScrollWheel")>0&&!Input.GetKey(KeyCode.LeftControl)&&!SC_control.SC_chat.typing&&!SC_control.pause)
  			{
 				cont=true;
      			if(cont) selected--;

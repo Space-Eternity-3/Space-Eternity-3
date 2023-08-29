@@ -148,8 +148,10 @@ public class SC_artefacts : MonoBehaviour
 		SC_control.PowerNormal = Color3N[n];
 		SC_control.PowerBurning = Color3B[n];
 		SC_control.PowerBlocked = Color3L[n];
+
+		bool key_A = SC_control.PressedNotInChat(KeyCode.A,"down");
 		
-		if(n==3 && Input.GetKeyDown(KeyCode.A) && !SC_control.pause && SC_control.livTime!=0)
+		if(n==3 && key_A && !SC_control.pause && SC_control.livTime!=0)
 		{
 			if(SC_invisibler.invisible) SC_invisibler.invisible = false;
 			else if(SC_control.power_V >= SC_control.IL_barrier)
@@ -165,7 +167,7 @@ public class SC_artefacts : MonoBehaviour
 		}
 		if(n!=3) SC_invisibler.invisible = false;
 		
-		if(n==2 && Input.GetKeyDown(KeyCode.A) && SC_control.imp_cooldown==0 && !SC_control.pause && !SC_control.drill3B)
+		if(n==2 && key_A && SC_control.imp_cooldown==0 && !SC_control.pause && !SC_control.drill3B)
 		{
 			if(SC_control.power_V >= SC_control.IM_barrier)
 			{
@@ -195,7 +197,7 @@ public class SC_artefacts : MonoBehaviour
 
 		if(n==6 && !SC_control.pause)
 		{
-			if(Input.GetKeyDown(KeyCode.A) && SC_control.power_V>=0.2f)
+			if(key_A && SC_control.power_V>=0.2f)
 				unstabling = true;
 		}
 		if(SC_control.power_V==0f || n!=6) unstabling = false;

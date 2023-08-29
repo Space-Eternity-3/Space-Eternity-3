@@ -39,12 +39,12 @@ public class SC_camera : MonoBehaviour {
 		camZ=float.Parse(SC_data.camera_zoom);
 		
 		//Ctrl + Scroll
-		if(Input.GetAxisRaw("Mouse ScrollWheel")<0&&Input.GetKey(KeyCode.LeftControl)&&Communtron1.position.z==0f&&!SC_control.pause)
+		if(Input.GetAxisRaw("Mouse ScrollWheel")<0&&SC_control.PressedNotInChat(KeyCode.LeftControl,"hold")&&Communtron1.position.z==0f&&!SC_control.pause)
  		{
      		if(camZ>min) camZ-=2.5f;
 			save_zoom(camZ);
  		}
-		if(Input.GetAxisRaw("Mouse ScrollWheel")>0&&Input.GetKey(KeyCode.LeftControl)&&Communtron1.position.z==0f&&!SC_control.pause)
+		if(Input.GetAxisRaw("Mouse ScrollWheel")>0&&SC_control.PressedNotInChat(KeyCode.LeftControl,"hold")&&Communtron1.position.z==0f&&!SC_control.pause)
  		{
      		if(camZ<max) camZ+=2.5f;
 			save_zoom(camZ);

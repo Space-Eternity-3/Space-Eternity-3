@@ -3175,6 +3175,12 @@ wss.on("connection", function connection(ws) {
 
       sendToAllClients("/RetInfoClient " + arg[1] + " " + arg[2] + " X X");
     }
+    if (arg[0] == "/ChatMessage") {
+      //ChatMessage 1[PlayerID] 2[Message]
+      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+
+      sendToAllClients("/RetChatMessage " + plr.nicks[func.parseFloatU(arg[1])] + " " + arg[2] + " X X");
+    }
     if (arg[0] == "/InvisibilityPulse") {
       //InvisibilityPulse 1[PlayerID] 2[DataString]
       if (!checkPlayer(arg[1], arg[msl - 2])) return;

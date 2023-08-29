@@ -24,6 +24,7 @@ public class SC_bp_upg : MonoBehaviour
         if(state==0)
         {
             upper.text = "Upgrades";
+            upper.fontSize = 32;
             upg.localPosition = upgS;
             U.interactable = false;
         }else {upg.localPosition = hidden; U.interactable = true;}
@@ -31,6 +32,7 @@ public class SC_bp_upg : MonoBehaviour
         if(state==1)
         {
             upper.text = "Backpack";
+            upper.fontSize = 32;
             bp.localPosition = bpS;
             B.interactable = false;
         }else {bp.localPosition = hidden; B.interactable = true;}
@@ -38,13 +40,15 @@ public class SC_bp_upg : MonoBehaviour
         if(state==2)
         {
             upper.text = "Junkyard";
+            upper.fontSize = 32;
             mng.localPosition = bpS;
             M.interactable = false;
         }else {mng.localPosition = hidden; M.interactable = true;}
 
         if(state==3)
         {
-            upper.text = "Chat";
+            upper.text = "Spaceships";
+            upper.fontSize = 30;
             ch.localPosition = bpS;
             C.interactable = false;
         }else {ch.localPosition = hidden; C.interactable = true;}

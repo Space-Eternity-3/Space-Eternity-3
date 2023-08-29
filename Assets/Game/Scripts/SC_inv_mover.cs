@@ -17,42 +17,28 @@ public class SC_inv_mover : MonoBehaviour {
 
 	public float step_size=17f;
 	public float A;
-	public bool thisMain;
 	public bool backwards;
 	public bool updown;
 	public bool tab;
+	public bool inv;
 
 	void Update()
 	{
-		if(!SC_control.timeStop){
-		
-		if(!tab)
-		if(Input.GetKeyDown(KeyCode.E)&&!active)
+		//Inventory extender
+		if(inv && !SC_control.timeStop)
 		{
-			if(thisMain) SC_control.invBlockExit=true;
-			active=true;
-		}
-		else
-		{
-			if(Input.GetKeyDown(KeyCode.E)||Communtron1.position.z!=0f)
+			if(!active && Input.GetKeyDown(KeyCode.E) && !SC_control.SC_chat.typing && Communtron1.position.z==0f)
+				active=true;
+			
+			else if(active && (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Escape) || Communtron1.position.z!=0f))
 			{
-				if(thisMain) SC_control.invBlockExit=false;
-				active=false;
-			}
-			if(Input.GetKeyDown(KeyCode.Escape))
-			{
-				active=false;
+				active = false;
+				SC_control.blockEscapeThisFrame = true;
 			}
 		}
 
-		if(Input.GetKeyUp(KeyCode.Escape))
-		{
-			if(thisMain) SC_control.invBlockExit=false;
-		}
-		
-		}
-
-		if(tab&&(int)Communtron4.position.y==100)
+		//Tab extender
+		if(tab && (int)Communtron4.position.y==100)
 		{
 			if(Input.GetKey(KeyCode.Tab)) active=true;
 			else active=false;

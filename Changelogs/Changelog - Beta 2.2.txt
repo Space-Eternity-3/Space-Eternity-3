@@ -1,0 +1,27 @@
+New features:
+
+- chat added, press "T" or "/" to send a message
+
+Old feature changes:
+
+- new junkyard messages added
+
+UI changes:
+
+- junkyard info now bold and italic and changed color to more gray
+
+Default datapack changes:
+
+
+
+Configurables:
+
+
+
+Important technical changes:
+
+
+
+Bug fixes:
+
+- It was possible to activate pause menu without closing inventory when escape button was released while in inventory
