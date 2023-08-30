@@ -854,7 +854,7 @@ function asteroidIndex(ulam) {
 
 //Data functions
 function nickWrong(stam) {
-  if (
+  return (
     stam.includes("\\") ||
     stam.includes("/") ||
     stam.includes(":") ||
@@ -863,11 +863,11 @@ function nickWrong(stam) {
     stam.includes('"') ||
     stam.includes("<") ||
     stam.includes(">") ||
-    stam.includes("|")
-  )
-    return true;
-  else if (stam != "") return false;
-  else return true;
+    stam.includes("|") ||
+    stam.length > 16 ||
+    stam == "0" ||
+    stam == ""
+  );
 }
 function clientDatapacks() {
   // ' element separator
