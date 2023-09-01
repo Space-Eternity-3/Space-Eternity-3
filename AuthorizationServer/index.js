@@ -8,7 +8,7 @@ var serverVersion = "1.0.0";
 
 //Websocket functions
 let connectionOptions = {
-  port: 27683,
+  port: 27684,
 };
 
 const wss = new WebSocket.Server(connectionOptions);
@@ -108,6 +108,7 @@ wss.on("connection", function connection(ws) {
   // 5 -> wrong password
   // 6 -> server not responding
   // 7 -> here you have connection code (next argument)
+  // 8 -> new password too short
 
   ws.on("message", (msg) => {
 
@@ -120,26 +121,28 @@ wss.on("connection", function connection(ws) {
     //REGISTER
     if(arg[0]=="/Register" && argsize==3) //Register 1[nickname] 2[password] NP
     {
-      sendTo(ws,"/Ret "+Register(arg[1],arg[2]));
+      if(arg[2].length <=6 || arg[2].length >=33) {sendTo(ws,"/RetLogin 8"); return;}
+      sendTo(ws,"/RetLogin "+Register(arg[1],arg[2]));
     }
 
     //LOGIN
     if(arg[0]=="/Login" && argsize==3) //Login 1[nickname] 2[password] NP
     {
-      sendTo(ws,"/Ret "+Login(arg[1],arg[2]));
+      sendTo(ws,"/RetLogin "+Login(arg[1],arg[2]));
     }
 
     //CHANGEPASSWORD
     if(arg[0]=="/ChangePassword" && argsize==4) //ChangePassword 1[nickname] 2[password] 3[passwordNew] NPP
     {
+      if(arg[3].length <=6 || arg[2].length >=33) {sendTo(ws,"/RetChangePassword 8"); return;}
       var ef = Login(arg[1],arg[2]);
       if(ef==1)
       {
-        var file = getNickPath(nick);
+        var file = getNickPath(arg[1]);
         removeF(file);
-        sendTo(ws,"/Ret "+Register(arg[1],arg[3]));
+        sendTo(ws,"/RetChangePassword "+Register(arg[1],arg[3]));
       }
-      else sendTo(ws,"/Ret "+ef);
+      else sendTo(ws,"/RetChangePassword "+ef);
     }
 
     //AUTHORIZE
@@ -148,14 +151,14 @@ wss.on("connection", function connection(ws) {
       var ef = Login(arg[1],arg[2]);
       if(ef==1)
       {
-        sendTo(ws,"/Ret 6");
+        sendTo(ws,"/RetAuthorize 6");
       }
-      else sendTo(ws,"/Ret "+ef);
+      else sendTo(ws,"/RetAuthorize "+ef);
     }
     
   });
 });
 
 //Starting ending
-console.log("Communication version: " + serverVersion + "\nPort "+connectionOptions.port+"\nStarting authorization server for SE3...");
+console.log("Communication version: " + serverVersion + "\nPort: "+connectionOptions.port+"\nStarting authorization server for SE3...");
 console.log("Server started succesfully!")

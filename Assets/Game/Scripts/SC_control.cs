@@ -1933,6 +1933,14 @@ public class SC_control : MonoBehaviour {
     {
 		SendMTP("/ImJoined "+connectionID+" "+immID+" "+livID);
     }
+	void Ws_OnClose(object sender, System.EventArgs e)
+    {
+		Debug.Log("Connection E-close");
+	}
+	void Ws_OnError(object sender, System.EventArgs e)
+    {
+		Debug.Log("Connection E-error");
+	}
 	void MTP_InventoryLoad()
 	{
 		int i;
@@ -2018,16 +2026,10 @@ public class SC_control : MonoBehaviour {
         	
 			ws.OnMessage += Ws_OnMessage;
 			ws.OnOpen += Ws_OnOpen;
+			ws.OnClose += Ws_OnClose;
+			ws.OnError += Ws_OnError;
         	
-			try{
-				ws.Connect();
-			}
-			catch(Exception e)
-			{
-				Debug.LogWarning("Can't join to server (Can't connect)");
-				MenuReturn();
-				return;
-			}
+			ws.Connect();
 			
 			if(getData!="0")
 			{

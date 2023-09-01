@@ -9,7 +9,11 @@ public class SC_main_buttons : MonoBehaviour {
 	public Canvas[] Screens;
 	public SC_connection SC_connection;
 	public SC_data SC_data;
+	public SC_account SC_account;
 	public bool fullS;
+
+	public RectTransform NameField;
+	public RectTransform Name2parent, Name5parent;
 
 	public void Start()
 	{
@@ -18,7 +22,6 @@ public class SC_main_buttons : MonoBehaviour {
 		SAS(0);
 		if(SC_data.TempFile=="-1") SAS(1);
 		if(SC_data.TempFile=="-2") SAS(2);
-		if(SC_data.TempFile=="-4") SAS(4);
 	}
 	public void Button5PermanentExit()
 	{
@@ -47,11 +50,10 @@ public class SC_main_buttons : MonoBehaviour {
 		for(i=0;i<lngt;i++) Screens[i].enabled=false;
 		if(n==0)
 		{
-            SC_data.warning_text4.text="";
-            SC_data.warning_field4.localPosition=new Vector3(10000f,0f,0f);
+            SC_data.RemoveWarning();
+			SC_account.RemoveWarning();
 		}
 		if(n!=-1) Screens[n].enabled=true;
-		if(n==2) SC_connection.mtpDataLoad();
 		if(n==3)
 		{
 			//MAIN MENU, CAN BE HERE
@@ -61,5 +63,11 @@ public class SC_main_buttons : MonoBehaviour {
 				ss.valueRead();
 			}
 		}
+
+		//Nick field location changer
+		if(n==2) NameField.parent = Name2parent;
+		if(n==4) NameField.parent = Name5parent;
+
+		SC_account.ReloadCarets(n);
 	}
 }

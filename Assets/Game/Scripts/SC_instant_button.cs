@@ -30,6 +30,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public SC_control SC_control;
     public SC_bp_upg SC_bp_upg;
     public SC_bars SC_bars;
+    public SC_account SC_account;
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -87,6 +88,7 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
 				if(index==2) SC_resume.Quit();
                 if(index==3) SC_resume.GiveUp();
 			}
+            if(ID==12) SC_account.RemoveWarning();
         }
         else if(mode==1)
         {

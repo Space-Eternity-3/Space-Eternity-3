@@ -10,10 +10,12 @@ using UnityEngine.SceneManagement;
 public class SC_connection : MonoBehaviour
 {
     public SC_data SC_data;
+    public SC_account SC_account;
     public Button BT_connect,BT_disconnect,BT_join;
     public InputField IF_nickname,IF_adress;
     public Text TX_connect;
-    public Canvas Screen3;
+    public Canvas Screen3, Screen5;
+    public Text TX_disconnect;
 
     Vector3 POS_connect,POS_disconnect,POS_join;
     Vector3 POS_hidden;
@@ -33,7 +35,6 @@ public class SC_connection : MonoBehaviour
 
     WebSocket ws;
     bool justLPH;
-    bool trydisc=false;
     int freety=0;
     int waiter=0;
     int counter=0;
@@ -65,21 +66,6 @@ public class SC_connection : MonoBehaviour
 
         return ador;
     }
-    public void mtpDataLoad()
-    {
-        justLPH=true;
-        IF_nickname.text=SC_data.MultiplayerInput[0];
-        IF_adress.text=SC_data.MultiplayerInput[1];
-    }
-    void mtpDataSave()
-    {
-        if(justLPH&&connectionState==0&&Screen3.enabled)
-        {
-            SC_data.MultiplayerInput[0]=IF_nickname.text;
-            SC_data.MultiplayerInput[1]=IF_adress.text;
-            SC_data.Save("settings");
-        }
-    }
     void SendMTP(string msg)
     {
         msg=msg+" "+conID+" 0";	
@@ -91,7 +77,7 @@ public class SC_connection : MonoBehaviour
         catch(Exception e2)
         {
             Debug.LogWarning("Failied sending message: "+msg);
-            V_Disconnect();
+            V_Stop();
         }
     }
     void Start()
@@ -104,36 +90,32 @@ public class SC_connection : MonoBehaviour
     }
     void Update()
     {
-        //if(connectionState!=memcon) Debug.Log("Connection State: "+connectionState);
-        //memcon=connectionState;
-
         //0 - Active
         //1 - Disabled
         //2 - Hidden
 
-        if(connectionState==0) {BTc=0; BTd=2; BTj=2;}
-        if(connectionState==1) {BTc=1; BTd=2; BTj=2;}
-        if(connectionState==2) {BTc=1; BTd=2; BTj=2;}
+        if(connectionState==0) {BTc=0; BTd=1; BTj=2;}
+        if(connectionState==1) {BTc=1; BTd=0; BTj=2;}
+        if(connectionState==2) {BTc=1; BTd=0; BTj=2;}
         if(connectionState==3) {BTc=2; BTd=0; BTj=0;}
         if(connectionState==4) {BTc=2; BTd=0; BTj=1;}
-        if(trydisc&&BTd==0) BTd=1;
+
+        if(connectionState<=2) TX_disconnect.text = "Stop";
+        else TX_disconnect.text = "Disconnect";
 
         if(BTc==0)
         {
             TX_connect.text="Connect";
-            TX_connect.fontSize=60;
             BT_connect.interactable=true;
-            IF_nickname.enabled=true;
-            IF_adress.enabled=true;
+            IF_adress.interactable=true;
         }
         else
         {
             TX_connect.text="Connecting";
-            TX_connect.fontSize=55;
             BT_connect.interactable=false;
-            IF_nickname.enabled=false;
-            IF_adress.enabled=false;
+            IF_adress.interactable=false;
         }
+        IF_nickname.interactable = BTc==0 && !(SC_account.logged || SC_account.confirming) && (SC_account.waiting_for==0);
 
         if(BTc==2) BT_connect.GetComponent<Transform>().localPosition=POS_hidden;
         else BT_connect.GetComponent<Transform>().localPosition=POS_connect;
@@ -157,34 +139,28 @@ public class SC_connection : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if(counter==0) mtpDataSave();
-        counter++;
-        if(counter==25) counter=0;
-
         if(waiter>0) waiter--;
-        if((waiter==0&&connectionState==2)||(trydisc&&connectionState==3))
-        {
-            connectionState=0;
-            trydisc=false;
-            try
-            {
-                ws.Close();
-            }
-            catch(Exception e)
-            {
-                Debug.LogError("Can't close");
-                return;
-            }
-        }
+        if(waiter==0&&connectionState==2)
+            ws.Close();
 
         if(connectionState==3) SendMTP("/ImConnected "+connectionID+" 250");
     }
     void Ws_OnClose(object sender, System.EventArgs e)
     {
-        if(connectionState<4) connectionState=0;
+        if(connectionState<4)
+        {
+            connectionState=0;
+            Debug.Log("Connection E-closed");
+        }
+    }
+    void Ws_OnError(object sender, System.EventArgs e)
+    {
+        Debug.Log("Connection E-error");
+        connectionState=0;
     }
     void Ws_OnOpen(object sender, System.EventArgs e)
     {
+        Debug.Log("Connection E-open");
         waiter=200;
         connectionState=2;
         SendMTP("/AllowConnection "+IF_nickname.text+" "+SC_data.clientRedVersion+" "+conID);
@@ -212,14 +188,9 @@ public class SC_connection : MonoBehaviour
             else
             {
                 Debug.Log("Connection dennied");
-                ws.Close();
-                connectionState=0;
+                waiter = 0;
             }
         }
-    }
-    void OnApplicationQuit()
-    {
-        mtpDataSave();
     }
     public void V_Connect()
     {
@@ -227,19 +198,23 @@ public class SC_connection : MonoBehaviour
         connectionState=1;
         connect_in_update=2;
     }
+    public void V_Stop()
+    {
+        if(ws!=null) ws.CloseAsync();
+        connectionState=0;
+    }
     void True_connect()
     {
         conID = UnityEngine.Random.Range(1,999999999)+"";
 
-        mtpDataSave();
-        string url=adressConvert(IF_adress.text);
+        string url = adressConvert(IF_adress.text);
         try
         {
-            ws=new WebSocket(url);
+            ws = new WebSocket(url);
         }
         catch(Exception e)
         {
-            Debug.Log("Wrong adress E1");
+            Debug.Log("Wrong adress: "+e.ToString());
             connectionState=0;
             return;
         }
@@ -247,36 +222,17 @@ public class SC_connection : MonoBehaviour
         ws.OnOpen += Ws_OnOpen;
         ws.OnMessage += Ws_OnMessage;
         ws.OnClose += Ws_OnClose;
+        ws.OnError += Ws_OnError;
         
-        try
-        {
-            ws.Connect();
-        }
-        catch(Exception e)
-        {
-            Debug.Log("Wrong adress E2");
-            connectionState=0;
-            return;
-        }
-    }
-    public void V_Disconnect()
-    {
-        if(connectionState>=1&&connectionState<=3) trydisc=true;
+        ws.ConnectAsync();
     }
     public void V_ConPlay()
     {
-        if(connectionState!=3||trydisc) return;
+        if(connectionState!=3) return;
         connectionState=4;
 
         SendMTP("/ImConnected "+connectionID+" 500 JOINING");
-        try
-        {
-            ws.Close();
-        }
-        catch(Exception e)
-        {
-            Debug.LogError("Joining failied");
-        }
+        ws.Close();
 
         SC_data.TempFile="100";
 		SC_data.TempFileConID[0]=connectionID+"";

@@ -51,7 +51,7 @@ public class SC_data : MonoBehaviour
     string writingStorage="";
 
     //Awake Universal
-    public string[] MultiplayerInput = new string[2];
+    public string[] MultiplayerInput = new string[4];
     public string TempFile="0";
     public string camera_zoom="-27,5";
     public string volume="0,5";
@@ -329,7 +329,7 @@ public class SC_data : MonoBehaviour
 		music="0,5"; compass_mode="0";
         seed="";
         for(i=0;i<11;i++) TempFileConID[i]="";
-        for(i=0;i<2;i++) MultiplayerInput[i]="";
+        for(i=0;i<4;i++) MultiplayerInput[i]="";
         for(i=0;i<8;i++) for(j=0;j<3;j++) UniverseX[i,j]="";
     }
     void ResetAwakeWorld()
@@ -463,7 +463,7 @@ public class SC_data : MonoBehaviour
 
             volume=float.Parse(sr.ReadLine())+"";
             camera_zoom=float.Parse(sr.ReadLine())+"";
-            for(i=0;i<2;i++) MultiplayerInput[i]=sr.ReadLine();
+            for(i=0;i<4;i++) MultiplayerInput[i]=sr.ReadLine();
             if(menu)
             {
                 PreData=example;
@@ -659,6 +659,8 @@ public class SC_data : MonoBehaviour
             SaveLineCrLf(camera_zoom);
             SaveLineCrLf(MultiplayerInput[0]);
             SaveLineCrLf(MultiplayerInput[1]);
+            SaveLineCrLf(MultiplayerInput[2]);
+            SaveLineCrLf(MultiplayerInput[3]);
             if(!menu) SaveLineCrLf(dataSourceStorage);
             else SaveLineCrLf(dataSource);
 			SaveLineCrLf(music);

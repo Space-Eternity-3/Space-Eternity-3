@@ -1,14 +1,17 @@
 New features:
 
 - chat added, press "T" or "/" to send a message, press F2 to hide all messages instantly
+- SE3 official accounts added, 3rd menu button "Account" activates when game connects with the official user authorization server, it contains interface used to register and login to your account
 
 Old feature changes:
 
 - new junkyard messages added
+- multiplayer connection panel reworked, added "stop" button to stop connecting to the server
 
 UI changes:
 
-- junkyard info now bold and italic and changed color to more gray
+- junkyard info now bold and changed color to more gray
+- disabled main menu button color is now lighter gray
 
 Default datapack changes:
 
@@ -20,7 +23,8 @@ Configurables:
 
 Important technical changes:
 
-
+- settings format changed to fit official account text field data (username and password)
+- connecting to the server no longer lags the entire main menu
 
 Bug fixes:
 
