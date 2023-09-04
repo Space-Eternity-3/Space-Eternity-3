@@ -99,9 +99,8 @@ public class SC_fobs : MonoBehaviour
     }
     void MTPsend(int st1, int st2, int ed, int di, int dc, int sl)
     {
-        //FobsChange [ConnectionID] [UlamID] [index] [StartID] [Start2ID] [EndID] [Item] [Count] [Slot] [CandyCount]
-        int cc=0;
-        SC_control.SendMTP("/FobsChange "+SC_control.connectionID+" "+ID+" "+index+" "+st1+" "+st2+" "+ed+" "+di+" "+dc+" "+sl+" "+cc);
+        //FobsChange [ConnectionID] [UlamID] [index] [StartID] [Start2ID] [EndID] [Item] [Count] [Slot]
+        SC_control.SendMTP("/FobsChange "+SC_control.connectionID+" "+ID+" "+index+" "+st1+" "+st2+" "+ed+" "+di+" "+dc+" "+sl);
     }
     public bool onMSG(string eData)
     {

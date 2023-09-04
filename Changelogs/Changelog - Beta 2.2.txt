@@ -2,16 +2,20 @@ New features:
 
 - chat added, press "T" or "/" to send a message, press F2 to hide all messages instantly
 - SE3 official accounts added, 3rd menu button "Account" activates when game connects with the official user authorization server, it contains interface used to register and login to your account
+- added way to verify users who join your server, no more logging into your friend's account
+- added way to ban players or to allow only certain users to join
 
 Old feature changes:
 
-- new junkyard messages added
-- multiplayer connection panel reworked, added "stop" button to stop connecting to the server
+
 
 UI changes:
 
 - junkyard info now bold and changed color to more gray
 - disabled main menu button color is now lighter gray
+- new junkyard messages added
+- multiplayer connection panel reworked, added "stop" button to stop connecting to the server
+  - dennied connection info added
 
 Default datapack changes:
 
@@ -19,14 +23,24 @@ Default datapack changes:
 
 Configurables:
 
-
+- new config variables:
+  - require_se3_account
+  - whitelist_enabled
+  - whitelist
+  - banned_players
+- max_players in config is set to 10 by default
 
 Important technical changes:
 
 - settings format changed to fit official account text field data (username and password)
 - connecting to the server no longer lags the entire main menu
+- server will kick you after waiting in main menu for longer than 30 seconds
+- server always verifies the sender of the message from now
+- nicks can only contain english letters, numbers, and following characters: _ - from now
+- all bosbul related commands removed from seon, from now they are part of the boss object and are no longer configurable, arena seon code changed to fit these rules
 
 Bug fixes:
 
 - It was possible to activate pause menu without closing inventory when escape button was released while in inventory
 - junkyard & chat font wasn't supporting characters like ą, ę, ó, ł
+- command /ScrForget had no implemented connection verification

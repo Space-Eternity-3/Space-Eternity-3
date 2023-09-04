@@ -6,6 +6,7 @@ using WebSocketSharp;
 using System;
 using System.IO;
 using UnityEngine.SceneManagement;
+using System.Security.Cryptography;
 
 public class SC_connection : MonoBehaviour
 {
@@ -50,6 +51,8 @@ public class SC_connection : MonoBehaviour
     string getBackpack="";
     string getSeed="";
 
+    string delayedWarning = "";
+
     void Awake()
     {
         SC_data.CollectAwakeUniversal();
@@ -90,6 +93,11 @@ public class SC_connection : MonoBehaviour
     }
     void Update()
     {
+        if(delayedWarning!="") {
+            SC_account.SetWarningRaw("Connection dennied: " + delayedWarning);
+            delayedWarning = "";
+        }
+
         //0 - Active
         //1 - Disabled
         //2 - Hidden
@@ -142,8 +150,17 @@ public class SC_connection : MonoBehaviour
         if(waiter>0) waiter--;
         if(waiter==0&&connectionState==2)
             ws.Close();
-
-        if(connectionState==3) SendMTP("/ImConnected "+connectionID+" 250");
+    }
+    string getDenyInfo(string code)
+    {
+        if(code=="-1") return "Incompatible version.";
+        if(code=="-2") return "Wrong nick format. Nick should not contain any special characters except for _ and -";
+        if(code=="-3") return "This player is already on a server.";
+        if(code=="-4") return "Server is full.";
+        if(code=="-5") return "You are banned or not on a whitelist.";
+        if(code=="-6") return "You were kicked for idling in menu for too long. Try reconnecting.";
+        if(code=="-7") return "This server verifies users using SE3 account. Register or login in Account page in the main menu.";
+        return "Unknown description, maybe introduced in a newer version.";
     }
     void Ws_OnClose(object sender, System.EventArgs e)
     {
@@ -163,7 +180,7 @@ public class SC_connection : MonoBehaviour
         Debug.Log("Connection E-open");
         waiter=200;
         connectionState=2;
-        SendMTP("/AllowConnection "+IF_nickname.text+" "+SC_data.clientRedVersion+" "+conID);
+        SendMTP("/AllowConnection "+IF_nickname.text+" "+SC_data.clientRedVersion);
     }
     void Ws_OnMessage(object sender, MessageEventArgs e)
     {
@@ -172,7 +189,7 @@ public class SC_connection : MonoBehaviour
 
         if(e.Data.Split(' ')[0]=="/RetAllowConnection")
         {
-            if(e.Data.Split(' ')[1]!="-1")
+            if(e.Data.Split(' ')[1][0]!='-')
             {
                 connectionState=3;
                 connectionID=int.Parse(e.Data.Split(' ')[1]);
@@ -187,13 +204,14 @@ public class SC_connection : MonoBehaviour
             }
             else
             {
-                Debug.Log("Connection dennied");
+                delayedWarning = getDenyInfo(e.Data.Split(' ')[1]);
                 waiter = 0;
             }
         }
     }
     public void V_Connect()
     {
+        SC_account.RemoveWarning();
         if(connectionState!=0) return;
         connectionState=1;
         connect_in_update=2;
@@ -203,9 +221,28 @@ public class SC_connection : MonoBehaviour
         if(ws!=null) ws.CloseAsync();
         connectionState=0;
     }
+    int GenerateRandomNumber(int minValue, int maxValue)
+    {
+        //Written by ChatGPT, it's a cryptography-safe function (as he said)
+        if (minValue >= maxValue)
+            throw new ArgumentException("minValue musi byc mniejszy niz maxValue.");
+
+        long range = (long)maxValue - minValue + 1;
+        if (range <= 0 || range > int.MaxValue)
+            throw new ArgumentException("Zakres jest nieprawidlowy.");
+
+        using (var rng = new RNGCryptoServiceProvider())
+        {
+            byte[] randomNumber = new byte[4]; // 4 bajty = 32 bity
+            rng.GetBytes(randomNumber);
+
+            long randomValue = BitConverter.ToUInt32(randomNumber, 0);
+            return (int)(minValue + (randomValue % range));
+        }
+    }
     void True_connect()
     {
-        conID = UnityEngine.Random.Range(1,999999999)+"";
+        conID = GenerateRandomNumber(1,999999999)+"";
 
         string url = adressConvert(IF_adress.text);
         try
@@ -231,7 +268,7 @@ public class SC_connection : MonoBehaviour
         if(connectionState!=3) return;
         connectionState=4;
 
-        SendMTP("/ImConnected "+connectionID+" 500 JOINING");
+        SendMTP("/ImJoining "+connectionID);
         ws.Close();
 
         SC_data.TempFile="100";

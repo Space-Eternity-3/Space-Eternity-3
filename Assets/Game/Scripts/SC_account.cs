@@ -200,7 +200,7 @@ public class SC_account : MonoBehaviour
         {
             switch(msg_code)
             {
-                case 2: SetWarning("Wrong nick format."); break;
+                case 2: SetWarning("Wrong nick format. Nick should not contain any special characters except for _ and -"); break;
                 case 3: SetWarning("User with this nickname already exists."); break;
                 case 4: SetWarning("Wrong nickname."); break;
                 case 5: SetWarning("Wrong password."); break;
@@ -217,7 +217,7 @@ public class SC_account : MonoBehaviour
     void OnDestroy()
     {
         try{
-            ws.Close();
+            ws.CloseAsync();
         }catch(Exception){}
         AllInputSave();
     }
@@ -244,6 +244,11 @@ public class SC_account : MonoBehaviour
         warning_text5.text="Error: "+e;
         warning_field5.localPosition=new Vector3(0f,-186f,0f);
     }
+    public void SetWarningRaw(string e)
+    {
+        warning_text5.text=e;
+        warning_field5.localPosition=new Vector3(0f,-186f,0f);
+    }
     public void AllInputLoad()
     {
         IF_n1.text = SC_data.MultiplayerInput[0];
@@ -257,6 +262,7 @@ public class SC_account : MonoBehaviour
         SC_data.MultiplayerInput[1] = IF_a1.text; //address
         SC_data.MultiplayerInput[2] = IF_p1.text; //password
         if(logged) SC_data.MultiplayerInput[3] = IF_n1.text; //auto login
+        else SC_data.MultiplayerInput[3] = "..........................";
         SC_data.Save("settings");
     }
     public void ReloadCarets(int n)

@@ -46,15 +46,6 @@ summon #69 wall 12 move 2 -2 rotate 315
 summon #70 wall 12 move 2 -2 rotate 337,5
 from #59 to #70 move 34,25 0
 
-from #1 to #16 bosbul add
-from #59 to #70 bosbul add
-
-summon #171 bosbul cylinder rotate 0
-summon #172 bosbul cylinder rotate 90
-summon #173 bosbul cylinder rotate 180
-summon #174 bosbul cylinder rotate 270
-from #171 to #174 move 36.4 0
-
 summon #17 asteroid 4 12 0,0,0,0,0,0,0,0
 summon #18 asteroid 4 12 0,0,0,0,0,0,0,0
 summon #19 asteroid 4 12 0,0,0,0,0,0,0,0

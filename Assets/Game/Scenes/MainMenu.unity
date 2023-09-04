@@ -38736,6 +38736,8 @@ MonoBehaviour:
   NameField: {fileID: 841226590}
   Name2parent: {fileID: 819508943}
   Name5parent: {fileID: 1193934302}
+  ParScreen2: {fileID: 1738348584}
+  ParScreen5: {fileID: 613791062}
 --- !u!114 &1205799744
 MonoBehaviour:
   m_ObjectHideFlags: 0

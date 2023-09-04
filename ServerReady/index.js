@@ -68,7 +68,7 @@ var plr = {
   cl_livID: ["-1"],
   cl_immID: ["-1"],
 
-  connectionTime: [0],
+  connectionTime: [-1],
   sHealth: [0],
   sRegTimer: [-1],
 
@@ -89,7 +89,7 @@ for(ki=1;ki<max_players;ki++)
   for(kj=0;kj<klngt;kj++)
   {
     if(kd[kj]=="mems")
-      plr[kd[kj]].push(Object.assign({},plr[kd[kj]][0]));
+      plr["mems"].push(Object.assign({},plr["mems"][0]));
     else if(kd[kj]=="impulsed"||kd[kj]=="bossMemories")
       plr[kd[kj]].push([]);
     else
@@ -854,20 +854,19 @@ function asteroidIndex(ulam) {
 
 //Data functions
 function nickWrong(stam) {
-  return (
-    stam.includes("\\") ||
-    stam.includes("/") ||
-    stam.includes(":") ||
-    stam.includes("*") ||
-    stam.includes("?") ||
-    stam.includes('"') ||
-    stam.includes("<") ||
-    stam.includes(">") ||
-    stam.includes("|") ||
+  if (
     stam.length > 16 ||
     stam == "0" ||
     stam == ""
-  );
+  ) return true;
+  var i,lngt = stam.length;
+  for(i=0;i<lngt;i++)
+    if(![
+      'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+      'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+      '1','2','3','4','5','6','7','8','9','0','_','-'
+    ].includes(stam[i])) return true;
+  return false;
 }
 function clientDatapacks() {
   // ' element separator
@@ -909,7 +908,7 @@ process.on("SIGUSR2", exitHandler.bind(null, { exit: true })); //???
 function SaveAllNow() {
   var i,
     lngt = chunk_data.length;
-  for (i = 0; i < max_players; i++) if (checkPlayer(i, plr.conID[i])) savePlayer(i);
+  for (i = 0; i < max_players; i++) if (checkPlayerCn(i, plr.conID[i])) savePlayer(i);
   for (i = 0; i < lngt; i++) chunkSave(i);
   writeF(universe_name + "/Biomes.se3", biome_memories.join("\r\n") + "\r\n");
 }
@@ -1571,6 +1570,7 @@ function kick(i) {
   se3_ws[i] = "";
   se3_wsS[i] = "";
   try{
+    sendTo(pom,"/RetAllowConnection -6 X X");
     pom.close();
   }catch{}
   if (plr.players[i] != "0")
@@ -1708,10 +1708,20 @@ function steer_tryGet(pID,ind)
 }
 
 //Check functions
-function checkPlayer(idm, cn) {
-  if (plr.nicks[idm] == "0") return false;
-  if (plr.conID[idm] != cn) return false;
-  return true;
+function checkPlayerM(n,ws) {
+  return (se3_wsS[n]=="menu" && checkPlayer(n,ws));
+}
+function checkPlayerJ(n,cn) {
+  return (se3_wsS[n]=="joining" && checkPlayerCn(n,cn));
+}
+function checkPlayerG(n,ws) {
+  return (se3_wsS[n]=="game" && checkPlayer(n,ws));
+}
+function checkPlayer(n,ws) {
+  return (plr.nicks[n]!="0" && se3_ws[n]==ws);
+}
+function checkPlayerCn(idm, cn) {
+  return (plr.nicks[idm]!="0" && plr.conID[idm]==cn);
 }
 
 function intToRASCII(int)
@@ -2283,6 +2293,40 @@ function getBlockAt(ulam, place) {
   else return -1;
 }
 
+//ScrShapeAdd
+function ScrShapeAdd(arg)
+{
+  var bID = arg[2];
+  var lngts = scrs.length;
+  for(i=0;i<lngts;i++)
+  {
+    if(scrs[i].bID==bID)
+    {
+      var q,qlngt=scrs[i].bulCols.length;
+      for(q=0;q<qlngt;q++)
+        if(scrs[i].bulCols[q].col_identifier==arg[9]) return;
+
+      shape_description = {sx:0,sy:0};
+      default_offset = {cx:0,cy:0,lx:0,ly:0,lrot:0};
+          
+      shape_description.sx = func.parseFloatU(arg[4]);
+      shape_description.sy = func.parseFloatU(arg[5]);
+      default_offset.cx = scrs[i].posCX;
+      default_offset.cy = scrs[i].posCY;
+      default_offset.lx = func.parseFloatU(arg[6]);
+      default_offset.ly = func.parseFloatU(arg[7]);
+      default_offset.lrot = func.parseFloatU(arg[8]);
+
+      scrs[i].bulCols.push(new CShape(
+        arg[3],
+        shape_description,
+        default_offset,
+        arg[9]
+      ));
+    }
+  }
+}
+
 //Death functions
 function kill(pid)
 {
@@ -2398,9 +2442,7 @@ wss.on("connection", function connection(ws) {
     for(i=0;i<max_players;i++){
       if(ws==se3_ws[i])
       {
-        if(se3_wsS[i]=="joining"){
-          se3_ws[i]="";
-        }
+        if(se3_wsS[i]=="joining") se3_ws[i]="";
         if(se3_wsS[i]=="game" || se3_wsS[i]=="menu") kick(i);
       }
     }
@@ -2412,9 +2454,113 @@ wss.on("connection", function connection(ws) {
 
     size_download += (msg+"").length;
 
+    if (arg[0] == "/AllowConnection") // 1[nick] 2[RedVersion]
+    {
+      var bV = arg[2] != serverRedVersion;
+      var bN = nickWrong(arg[1]);
+      var bJ = plr.nicks.includes(arg[1]);
+      var bA = !((!config.whitelist_enabled || config.whitelist.includes(arg[1])) && (!config.banned_players.includes(arg[1])));
+      var bT = !(!config.require_se3_account || false);
+      if(bN || bJ || bV || bA || bT) {
+        if(bV) sendTo(ws,"/RetAllowConnection -1 X X"); //incompatible version
+        else if(bT) sendTo(ws,"/RetAllowConnection -7 X X"); //this server requires se3 account to verify users
+        else if(bN) sendTo(ws,"/RetAllowConnection -2 X X"); //wrong nick format
+        else if(bJ) sendTo(ws,"/RetAllowConnection -3 X X"); //player already joined
+        else if(bA) sendTo(ws,"/RetAllowConnection -5 X X"); //you are banned or not on whitelist
+        console.log("Connection dennied");
+        return;
+      }
+      for(i=0;i<max_players;i++)
+      {
+        if (plr.waiter[i] == 0) {
+          plr.waiter[i] = 30*50; //30 seconds for idling in menu
+          plr.nicks[i] = arg[1];
+
+          readPlayer(i);
+          plr.pushInventory[i] = "1;2;3;4;5;6;7;8;9";
+          if (plr.data[i] == "0") plr.data[i] = "0;0;0;0;0;0;0;0;1;0;0;0";
+          if (plr.inventory[i] == "0") plr.inventory[i] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+          if (plr.backpack[i] == "0") plr.backpack[i] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+          if (plr.upgrades[i] == "0") plr.upgrades[i] = "0;0;0;0;0";
+          plr.sHealth[i] = func.parseFloatU(plr.data[i].split(";")[8]);
+          plr.sRegTimer[i] = func.parseFloatU(plr.data[i].split(";")[10]);
+          SaveAllNow();
+
+          plr.conID[i] = arg[msl-2];
+          sendTo(ws,
+            "/RetAllowConnection " + i + " " +
+              plr.data[i] + " " +
+              plr.inventory[i] + " " +
+              max_players + " " +
+              clientDatapacksVar + " " +
+              plr.upgrades[i] + " " +
+              plr.backpack[i] + " " +
+              seed+"&"+(biome_memories.join("?")) +
+              " X X"
+          );
+          se3_ws[i] = ws;
+          se3_wsS[i] = "menu";
+          console.log(hourHeader + plr.nicks[i] + " connected [" + i + "]");
+          return;
+        }
+      }
+      sendTo(ws,"/RetAllowConnection -4 X X"); //server is full
+      console.log("Connection dennied");
+      return;
+    }
+    if (arg[0] == "/ImJoining") // 1[PlayerID]
+    {
+      if (!checkPlayerM(arg[1],ws)) return;
+
+      plr.waiter[arg[1]] = 500;
+      se3_wsS[arg[1]] = "joining";
+      return;
+    }
+    if (arg[0] == "/ImJoined") // 1[PlayerID]
+    {
+      if (!checkPlayerJ(arg[1],arg[msl - 2])) {
+        try {
+          ws.close();
+        } catch{}
+        return;
+      }
+
+      var playerID = arg[1];
+      
+      console.log(hourHeader + plr.nicks[playerID] + " joined");
+
+      se3_ws[playerID] = ws;
+      se3_wsS[playerID] = "game";
+
+      plr.cl_immID[playerID] = 0;
+      plr.cl_livID[playerID] = 0;
+      plr.connectionTime[playerID] = 0;
+
+      sendToAllClients(
+        "/RetInfoClient " +
+          (plr.nicks[playerID] + " joined the game").replaceAll(" ", "`") +
+          " " +
+          playerID +
+          " X X"
+      );
+
+      //RPC send everything to new player
+      var eff,lngt = plr.players.length;
+      var gtt = GetRPC(plr.players,lngt,true);
+      eff = "/RPC " + max_players + " " + gtt + " X X";
+      sendTo(ws,eff);
+
+      //Bullet data send to new player
+      lngt = bulletsT.length;
+      var tpl;
+      for(i=0;i<lngt;i++)
+        bulletsT[i].immune.push(playerID+"");
+
+      return;
+    }
     if (arg[0] == "/PlayerUpdate") {
       //PlayerUpdate 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[time] 5[livID] 6[immID] 7[isImpulse] *8[memX] *9[memY]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = arg[4];
 
@@ -2475,75 +2621,9 @@ wss.on("connection", function connection(ws) {
       }
       return;
     }
-    if (arg[0] == "/ImConnected") {
-      //ImConnected 1[PlayerID] 2[time] 3[additional_info]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
-
-      if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = arg[2];
-      if(arg[3]=="JOINING") se3_wsS[arg[1]] = "joining";
-      return;
-    }
-    if (arg[0] == "/AllowConnection") {
-      //AllowConnection 1[nick] 2[password] 3[conID]
-      for (i = 0; i <= max_players; i++) {
-        if (
-          i == max_players ||
-          arg[2] != serverRedVersion ||
-          plr.nicks.includes(arg[1]) ||
-          //arg[1] == "You" ||
-          nickWrong(arg[1])
-        ) {
-          sendTo(ws,"/RetAllowConnection -1 X X");
-          console.log("Connection dennied");
-          break;
-        }
-        if (plr.waiter[i] == 0) {
-          plr.waiter[i] = 250;
-          plr.nicks[i] = arg[1];
-
-          readPlayer(i);
-          plr.pushInventory[i] = "1;2;3;4;5;6;7;8;9";
-          if (plr.data[i] == "0") plr.data[i] = "0;0;0;0;0;0;0;0;1;0;0;0";
-          if (plr.inventory[i] == "0")
-            plr.inventory[i] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-          if (plr.backpack[i] == "0")
-            plr.backpack[i] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-          if (plr.upgrades[i] == "0") plr.upgrades[i] = "0;0;0;0;0";
-
-          plr.sHealth[i] = func.parseFloatU(plr.data[i].split(";")[8]);
-          plr.sRegTimer[i] = func.parseFloatU(plr.data[i].split(";")[10]);
-
-          SaveAllNow();
-          plr.conID[i] = arg[3];
-          sendTo(ws,
-            "/RetAllowConnection " +
-              i +
-              " " +
-              plr.data[i] +
-              " " +
-              plr.inventory[i] +
-              " " +
-              max_players +
-              " " +
-              clientDatapacksVar +
-              " " +
-              plr.upgrades[i] +
-              " " +
-              plr.backpack[i] +
-              " " +
-              seed+"&"+(biome_memories.join("?")) +
-              " X X"
-          );
-          se3_ws[i] = ws;
-          se3_wsS[i] = "menu";
-          console.log(hourHeader + plr.nicks[i] + " connected [" + i + "]");
-          break;
-        }
-      }
-    }
     if (arg[0] == "/EmitParticles") {
       //EmitParticles 1[PlayerID] 2[type] 3[posX] 4[posY]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       sendToAllClients(
         "/RetEmitParticles " +
@@ -2559,7 +2639,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/GrowLoaded") {
       //GrowLoaded 1[Data] 2[PlayerID]
-      if (!checkPlayer(arg[2], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[2],ws)) return;
 
       var glTab = arg[1].split(";");
       var ji,
@@ -2568,7 +2648,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/AsteroidData") {
       //AsteroidData 1[UlamID] 2[generation_code] 3[PlayerID]
-      if (!checkPlayer(arg[3], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[3],ws)) return;
 
       var ulamID = arg[1];
       var localSize = arg[2];
@@ -2597,7 +2677,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/ScrData") {
       //ScrData 1[PlayerID] 2[bID] 3[scrID] 4[bossType] 5[bossPosX] 6[bossPosY]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var bID = arg[2];
       var scrID = arg[3];
@@ -2656,7 +2736,7 @@ wss.on("connection", function connection(ws) {
     if(arg[0] == "/ScrRefresh")
     {
       //ScrRefresh 1[PlayerID] 2[bID] 3[inArena]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var bID = arg[2];
       var inArena = (arg[3]=="T");
@@ -2680,52 +2760,18 @@ wss.on("connection", function connection(ws) {
     if(arg[0] == "/ScrForget")
     {
       //ScrForget 1[PlayerID] 2[bID]
+      if (!checkPlayerG(arg[1],ws)) return;
+
       var bID = arg[2];
 
       var remindex = plr.bossMemories[arg[1]].indexOf(bID);
       if(remindex!=-1)
         plr.bossMemories[arg[1]].splice(remindex);
     }
-    if(arg[0] == "/ScrShapeAdd")
-    {
-      //ScrShapeAdd 1[PlayerID] 2[bID] 3[shape] 4,5[sx,sy] 6,7,8[x,y,r] 9[col_identifier]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
-
-      var bID = arg[2];
-
-      var lngts = scrs.length;
-      for(i=0;i<lngts;i++)
-      {
-        if(scrs[i].bID==bID)
-        {
-          var q,qlngt=scrs[i].bulCols.length;
-          for(q=0;q<qlngt;q++)
-            if(scrs[i].bulCols[q].col_identifier==arg[9]) return;
-
-          shape_description = {sx:0,sy:0};
-          default_offset = {cx:0,cy:0,lx:0,ly:0,lrot:0};
-          
-          shape_description.sx = func.parseFloatU(arg[4]);
-          shape_description.sy = func.parseFloatU(arg[5]);
-          default_offset.cx = scrs[i].posCX;
-          default_offset.cy = scrs[i].posCY;
-          default_offset.lx = func.parseFloatU(arg[6]);
-          default_offset.ly = func.parseFloatU(arg[7]);
-          default_offset.lrot = func.parseFloatU(arg[8]);
-
-          scrs[i].bulCols.push(new CShape(
-            arg[3],
-            shape_description,
-            default_offset,
-            arg[9]
-          ));
-        }
-      }
-    }
     if(arg[0] == "/GiveUpTry")
     {
       //GiveUpTry 1[PlayerID] 2[bID]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var bID = arg[2];
       var blivID = arg[msl - 1];
@@ -2755,7 +2801,7 @@ wss.on("connection", function connection(ws) {
     if(arg[0] == "/TryBattleStart")
     {
       //TryBattleStart 1[PlayerID] 2[bID] 3[fobID] 4[fobIndex]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var bID = arg[2];
       var fobID = arg[3];
@@ -2777,14 +2823,46 @@ wss.on("connection", function connection(ws) {
                 fobIndex + " 5 -10 -1 " + //itemID, deltaCount, playerID
                 gCountEnd + " 52 X X" //fob21ID
             );
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,36.39999,0,0,171]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,36.39999,90,172]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-36.39999,0,180,173]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,-36.39999,270,174]);
+            ScrShapeAdd(["",0,bID,"sphere",4,0,36.42503,8.337769,11.25,1025]);
+            ScrShapeAdd(["",0,bID,"sphere",4,0,-8.337723,36.42503,101.25,1026]);
+            ScrShapeAdd(["",0,bID,"sphere",4,0,-36.42505,-8.337677,191.25,1027]);
+            ScrShapeAdd(["",0,bID,"sphere",4,0,8.337646,-36.42505,281.25,1028]);
+            ScrShapeAdd(["",0,bID,"sphere",4,0,36.425,-8.337936,348.75,1029]);
+            ScrShapeAdd(["",0,bID,"sphere",4,0,-8.337891,-36.425,258.75,1030]);
+            ScrShapeAdd(["",0,bID,"sphere",4,0,-36.42502,8.337845,168.75,1031]);
+            ScrShapeAdd(["",0,bID,"sphere",4,0,8.337799,36.42502,78.75,1032]);
+            ScrShapeAdd(["",0,bID,"sphere",3.5,0,31.10144,21.44495,33.75,1033]);
+            ScrShapeAdd(["",0,bID,"sphere",3.5,0,21.44498,31.10143,56.25,1034]);
+            ScrShapeAdd(["",0,bID,"sphere",3.5,0,-21.4449,31.10147,123.75,1035]);
+            ScrShapeAdd(["",0,bID,"sphere",3.5,0,-31.10139,21.44501,146.25,1036]);
+            ScrShapeAdd(["",0,bID,"sphere",3.5,0,-31.10149,-21.44489,213.75,1037]);
+            ScrShapeAdd(["",0,bID,"sphere",3.5,0,-21.44505,-31.10138,236.25,1038]);
+            ScrShapeAdd(["",0,bID,"sphere",3.5,0,21.44484,-31.10152,303.75,1039]);
+            ScrShapeAdd(["",0,bID,"sphere",3.5,0,31.10135,-21.44508,326.25,1040]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64288,15.1069,22.5,1083]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21841,26.2184,45,1084]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,15.10693,33.64287,67.5,1085]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-15.10686,33.6429,112.5,1086]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-26.21837,26.21844,135,1087]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-33.64285,15.10696,157.5,1088]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-33.64291,-15.10683,202.5,1089]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-26.21849,-26.21832,225,1090]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-15.10703,-33.64282,247.5,1091]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,15.1068,-33.64291,292.5,1092]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21831,-26.21851,315,1093]);
+            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64282,-15.10704,337.5,1094]);
           }
           return;
         }
       }
     }
     if (arg[0] == "/FobsChange") {
-      //FobsChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[startFob1] 5[startFob2] 6[EndFob] 7[DropID] 8[Count] 9[Slot] 10![CandyCount]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      //FobsChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[startFob1] 5[startFob2] 6[EndFob] 7[DropID] 8[Count] 9[Slot]
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
 
@@ -2797,7 +2875,6 @@ wss.on("connection", function connection(ws) {
       var fDropID = arg[7];
       var fCount = arg[8];
       var fSlot = arg[9];
-      var fCandyCount = arg[10];
 
       var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
 
@@ -2811,26 +2888,19 @@ wss.on("connection", function connection(ws) {
           fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
           sendToAllClients(
             "/RetFobsChange " +
-              fUlamID +
-              " " +
-              fPlaceID +
-              " " +
-              fEndFob +
-              " " +
+              fUlamID + " " +
+              fPlaceID + " " +
+              fEndFob + " " +
               fFob21TT +
               " X X"
           );
           sendTo(ws,
             "/RetInventory " +
-              fPlayerID +
-              " " +
-              fDropID +
-              " 0 " +
-              fSlot +
-              " " +
+              fPlayerID + " " +
+              fDropID + " 0 " +
+              fSlot + " " +
               -fCount +
-              " X " +
-              plr.livID[fPlayerID]
+              " X " + plr.livID[fPlayerID]
           );
           return;
         }
@@ -2840,33 +2910,25 @@ wss.on("connection", function connection(ws) {
       //If failied
       sendTo(ws,
         "/RetFobsChange " +
-          fUlamID +
-          " " +
-          fPlaceID +
-          " " +
-          getBlockAt(fUlamID, fPlaceID) +
-          " " +
+          fUlamID + " " +
+          fPlaceID + " " +
+          getBlockAt(fUlamID, fPlaceID) + " " +
           fFob21TT +
           " X X"
       );
       sendTo(ws,
         "/RetInventory " +
-          fPlayerID +
-          " " +
-          fDropID +
-          " " +
-          -fCount +
-          " " +
-          fSlot +
-          " " +
+          fPlayerID + " " +
+          fDropID + " " +
+          -fCount + " " +
+          fSlot + " " +
           fCount +
-          " X " +
-          plr.livID[fPlayerID]
+          " X " + plr.livID[fPlayerID]
       );
     }
     if (arg[0] == "/FobsDataChange") {
       //FobsDataChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[Item] 5[DeltaCount] 6[Slot] 7[Id21]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
 
@@ -2885,32 +2947,22 @@ wss.on("connection", function connection(ws) {
           var gCountEnd = fobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount);
           sendToAllClients(
             "/RetFobsDataChange " +
-              gUlamID +
-              " " +
-              gPlaceID +
-              " " +
-              gItem +
-              " " +
-              gDeltaCount +
-              " " +
-              gPlayerID +
-              " " +
-              gCountEnd +
-              " " +
+              gUlamID + " " +
+              gPlaceID + " " +
+              gItem + " " +
+              gDeltaCount + " " +
+              gPlayerID + " " +
+              gCountEnd + " " +
               gID21 +
               " X X"
           );
           sendTo(ws,
             "/RetInventory " +
-              gPlayerID +
-              " " +
-              gItem +
-              " 0 " +
-              gSlot +
-              " " +
+              gPlayerID + " " +
+              gItem + " 0 " +
+              gSlot + " " +
               gDeltaCount +
-              " X " +
-              plr.livID[gPlayerID]
+              " X " + plr.livID[gPlayerID]
           );
           return;
         }
@@ -2920,37 +2972,26 @@ wss.on("connection", function connection(ws) {
       //If failied
       sendTo(ws,
         "/RetFobsDataCorrection " +
-          gUlamID +
-          " " +
-          gPlaceID +
-          " " +
-          nbt(gUlamID, gPlaceID, "n", "0;0") +
-          ";" +
-          gDeltaCount +
-          " " +
-          gPlayerID +
-          " " +
+          gUlamID + " " +
+          gPlaceID + " " +
+          nbt(gUlamID, gPlaceID, "n", "0;0") + ";" + gDeltaCount + " " +
+          gPlayerID + " " +
           gID21 +
           " X X"
       );
       sendTo(ws,
         "/RetInventory " +
-          gPlayerID +
-          " " +
-          gItem +
-          " " +
-          gDeltaCount +
-          " " +
-          gSlot +
-          " " +
+          gPlayerID + " " +
+          gItem + " " +
+          gDeltaCount + " " +
+          gSlot + " " +
           -gDeltaCount +
-          " X " +
-          plr.livID[gPlayerID]
+          " X " + plr.livID[gPlayerID]
       );
     }
     if (arg[0] == "/FobsTurn") {
       //FobsTurn 1[PlayerID] 2[ulam] 3[place] 4[start1] 5[start2] 6[end]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var turPlaID = arg[1];
       var turUlam = arg[2];
@@ -2962,12 +3003,9 @@ wss.on("connection", function connection(ws) {
         fobChange(turUlam, turPlace, turEnd);
         sendToAllClients(
           "/RetFobsTurn " +
-            turPlaID +
-            " " +
-            turUlam +
-            " " +
-            turPlace +
-            " " +
+            turPlaID + " " +
+            turUlam + " " +
+            turPlace + " " +
             turEnd +
             " X X"
         );
@@ -2975,7 +3013,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/GeyzerTurnTry") {
       //GeyzerTurnTry 1[PlayerID] 2[ulam] 3[place]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var tgrPlaID = arg[1];
       var tgrUlam = arg[2];
@@ -2995,19 +3033,14 @@ wss.on("connection", function connection(ws) {
         sendToAllClients("/RetGeyzerTurn " + tgrUlam + " " + tgrPlace + " X X");
       }
     }
-    if (arg[0] == "/FobsPing") {
-      //FobsPing 1[id]
-      var fpID = arg[1];
-      sendTo(ws,"/RetFobsPing " + fpID + " X X");
-    }
     if (arg[0] == "/ImpulseStart") {
       //ImpulseStart 1[PlayerID]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
       plr.impulsed[arg[1]] = [];
     }
     if (arg[0] == "/InventoryChange") {
       //InventoryChange 1[PlayerID] 2[Item] 3[Count] 4[Slot]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
       if(arg[msl - 1] != plr.livID[arg[1]]) return;
 
       var liPlaID = arg[1];
@@ -3019,7 +3052,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/Upgrade") {
       //Upgrade 1[PlayerID] 2[item] 3[count] 4[upgID] 5[slot]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
       if(arg[msl - 1] != plr.livID[arg[1]]) return;
 
       var ljPlaID = arg[1];
@@ -3042,7 +3075,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/ClientDamage") {
       //ClientDamage 1[PlayerID] 2[dmg] 3[ImmID] 4[LivID] 5[info]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var serLivID = plr.livID[arg[1]];
       var serImmID = plr.immID[arg[1]];
@@ -3083,7 +3116,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/Craft") {
       //Craft 1[PlaID] 2[Id1] 3[Co1] 4[Sl1] 5[Id2] 6[Co2] 7[Sl2] 8[IdE] 9[CoE] 10[SlE]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
       if(arg[msl - 1] != plr.livID[arg[1]]) return;
 
       var cPlaID = arg[1];
@@ -3113,7 +3146,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/InventoryPush") {
       //InventoryPush 1[PlayerID] 2[PushID]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var locPlaID = arg[1];
       var locPushID = arg[2];
@@ -3130,7 +3163,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/NewBulletSend") {
       //NewBulletSend 1[PlayerID] 2[type] 3,4[position] 5,6[vector] 7[ID] 8[damage]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       var tpl = Object.assign({},bulletTemplate);
       tpl.start = Object.assign({},bulletTemplate.start);
@@ -3157,12 +3190,11 @@ wss.on("connection", function connection(ws) {
       if(tpl.vector.y==0) tpl.vector.y = 0.00001;
 
       arg[8] = "0";
-      //if(tpl.type==9 || tpl.type==10) return;
       spawnBullet(tpl,arg,0);
     }
     if (arg[0] == "/NewBulletRemove") {
       //NewBulletRemove 1[PlayerID] 2[ID] 3[age]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
       
       var lngt = bulletsT.length;
       for(i=0;i<lngt;i++)
@@ -3171,19 +3203,20 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/InfoUp") {
       //InfoUp 1[info] 2[PlayerID]
-      if (!checkPlayer(arg[2], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[2],ws)) return;
 
       sendToAllClients("/RetInfoClient " + arg[1] + " " + arg[2] + " X X");
     }
     if (arg[0] == "/ChatMessage") {
       //ChatMessage 1[PlayerID] 2[Message]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
+      console.log(hourHeader + "<" + plr.nicks[func.parseFloatU(arg[1])] + "> " + arg[2].replaceAll("\t"," "));
       sendToAllClients("/RetChatMessage " + plr.nicks[func.parseFloatU(arg[1])] + " " + arg[2] + " X X");
     }
     if (arg[0] == "/InvisibilityPulse") {
       //InvisibilityPulse 1[PlayerID] 2[DataString]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
 
       sendToAllClients(
         "/RetInvisibilityPulse " + arg[1] + " " + arg[2] + " X X"
@@ -3191,7 +3224,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/Heal") {
       //Heal 1[PlayerID] 2[healID]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
       if(arg[msl - 1] != plr.livID[arg[1]]) {
         sendTo(ws,"/RetHeal "+arg[1]+" "+arg[2]+" X X");
         return;
@@ -3228,8 +3261,8 @@ wss.on("connection", function connection(ws) {
       }
     }
     if (arg[0] == "/Backpack") {
-      //Backpack 1[PlayerID] 2[Item] 3[Count] 4[Slot]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      //Backpack 1[PlayerID] 2[Item] 3[Count] 4[SlotI] 5[SlotB]
+      if (!checkPlayerG(arg[1],ws)) return;
       if(arg[msl - 1] != plr.livID[arg[1]]) return;
 
       var bpPlaID = arg[1];
@@ -3250,7 +3283,7 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/TryInsertBiome") {
       //TryInsertBiome 1[PlayerID] 2[Ulam] 3[Biome]
-      if (!checkPlayer(arg[1], arg[msl - 2])) return;
+      if (!checkPlayerG(arg[1],ws)) return;
       
       var ulam = func.parseIntU(arg[2]);
       var biome = func.parseIntU(arg[3]);
@@ -3267,59 +3300,9 @@ wss.on("connection", function connection(ws) {
 			if(biome_memories[ln][id]=="-") biome_memories[ln] = replaceCharAtIndex(biome_memories[ln], id, Num31ToChar(biome));
 
     }
-    if (arg[0] == "/ImJoined") {
-      //ImJoined 1[PlayerID] 2[immID] 3[livID]
-      var imkConID = arg[1];
-      if (!checkPlayer(arg[1], arg[msl - 2]))
-        try{
-          ws.close();
-        }catch{}
-      else {
-        console.log(hourHeader + plr.nicks[imkConID] + " joined");
-
-        se3_ws[imkConID] = ws;
-        se3_wsS[imkConID] = "game";
-
-        plr.cl_immID[imkConID] = arg[3];
-        plr.cl_livID[imkConID] = arg[4];
-        plr.connectionTime[imkConID] = 0;
-
-        sendToAllClients(
-          "/RetInfoClient " +
-            (plr.nicks[imkConID] + " joined the game").replaceAll(" ", "`") +
-            " " +
-            imkConID +
-            " X X"
-        );
-
-        //RPC send everything to new player
-        var eff,lngt = plr.players.length;
-        var gtt = GetRPC(plr.players,lngt,true);
-        eff = "/RPC " + max_players + " " + gtt + " X X";
-        sendTo(ws,eff);
-
-        //Bullet data send to new player
-        lngt = bulletsT.length;
-        var ag,tpl;
-        for(i=0;i<lngt;i++)
-        {
-          bulletsT[i].immune.push(imkConID+"");
-          //tpl = bulletsT[i];
-          /*ag = ["/",tpl.owner,tpl.type,tpl.start.x,tpl.start.y,tpl.vector.x,tpl.vector.y,tpl.ID,tpl.age].join(" ").replaceAll(".",",").split(" ");
-          sendTo(ws,
-            "/RetNewBulletSend " +
-              ag[1]+" " +
-              ag[2]+" " +
-              ag[3]+" " +
-              ag[4]+" " +
-              ag[5]+" " +
-              ag[6]+" " +
-              ag[7]+" " +
-              ag[8]+" " +
-              " X X"
-          );*/
-        }
-      }
+    if (arg[0] == "/FobsPing") // 1[id]
+    {
+      sendTo(ws,"/RetFobsPing " + arg[1] + " X X");
     }
   });
 });

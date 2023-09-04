@@ -14,6 +14,7 @@ public class SC_main_buttons : MonoBehaviour {
 
 	public RectTransform NameField;
 	public RectTransform Name2parent, Name5parent;
+	public RectTransform ParScreen2, ParScreen5;
 
 	public void Start()
 	{
@@ -67,6 +68,10 @@ public class SC_main_buttons : MonoBehaviour {
 		//Nick field location changer
 		if(n==2) NameField.parent = Name2parent;
 		if(n==4) NameField.parent = Name5parent;
+
+		//Account warning jumper
+		if(n==2) SC_account.warning_field5.parent = ParScreen2;
+		if(n==4) SC_account.warning_field5.parent = ParScreen5;
 
 		SC_account.ReloadCarets(n);
 	}

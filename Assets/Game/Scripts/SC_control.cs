@@ -1931,7 +1931,7 @@ public class SC_control : MonoBehaviour {
 	}
 	void Ws_OnOpen(object sender, System.EventArgs e)
     {
-		SendMTP("/ImJoined "+connectionID+" "+immID+" "+livID);
+		SendMTP("/ImJoined "+connectionID);
     }
 	void Ws_OnClose(object sender, System.EventArgs e)
     {

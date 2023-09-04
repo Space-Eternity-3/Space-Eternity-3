@@ -50,20 +50,19 @@ function removeF(nate) {
 
 //Nick functions
 function nickWrong(stam) {
-  return (
-    stam.includes("\\") ||
-    stam.includes("/") ||
-    stam.includes(":") ||
-    stam.includes("*") ||
-    stam.includes("?") ||
-    stam.includes('"') ||
-    stam.includes("<") ||
-    stam.includes(">") ||
-    stam.includes("|") ||
+  if (
     stam.length > 16 ||
     stam == "0" ||
     stam == ""
-  );
+  ) return true;
+  var i,lngt = stam.length;
+  for(i=0;i<lngt;i++)
+    if(![
+      'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+      'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+      '1','2','3','4','5','6','7','8','9','0','_','-'
+    ].includes(stam[i])) return true;
+  return false;
 }
 function getNickPath(nick) {
   return "./Accounts/"+nick+".txt";

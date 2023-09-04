@@ -1,7 +1,17 @@
 {
 	"universe_name": "ServerUniverse",
-	"max_players": 25,
+	"max_players": 10,
 	"port": 27683,
 	"pvp": true,
-	"show_positions": true
+	"show_positions": true,
+	"require_se3_account": false,
+	"whitelist_enabled": false,
+	"whitelist": [
+		"ExampleNick1",
+		"ExampleNick2"
+	],
+	"banned_players": [
+		"ExampleNick3",
+		"ExampleNick4"
+	]
 }
