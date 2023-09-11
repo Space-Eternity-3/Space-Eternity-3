@@ -36,8 +36,10 @@ Important technical changes:
 - connecting to the server no longer lags the entire main menu
 - server will kick you after waiting in main menu for longer than 30 seconds
 - server always verifies the sender of the message from now
-- nicks can only contain english letters, numbers, and following characters: _ - from now
+- nicks can only contain english letters, numbers, and following characters: _ -
 - all bosbul related commands removed from seon, from now they are part of the boss object and are no longer configurable, arena seon code changed to fit these rules
+- conID safety system replaced with better, se3-ws safety system
+- messages to all clients are sent only when player is confirmed to be in game
 
 Bug fixes:
 

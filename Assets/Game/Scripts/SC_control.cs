@@ -193,13 +193,15 @@ public class SC_control : MonoBehaviour {
 	string RPU = "XXX";
 	int MTPloadedCounter=5;
 	Quaternion lock_rot = new Quaternion(0f,0f,0f,0f);
-	Vector3 memPosition = new Vector3(0f,0f,0f);
 	
 	public bool impulse_enabled;
 	public int impulse_time;
 	
 	public bool public_placed = false;
 	public bool f1 = false;
+
+	public bool flag_impulse_start = false;
+	public bool flag_invisibility_pulse = false;
 	
 	float V_to_F(float V,bool turboo)
 	{
@@ -808,10 +810,10 @@ public class SC_control : MonoBehaviour {
 		if(pause && (int)Communtron4.position.y!=100) {Time.timeScale = 0f; timeStop = true;}
 		else {Time.timeScale = 1f; timeStop = false;}
 	}
-	public void InvisiblityPulseSend(string str)
+	public void InvisiblityPulseSend()
 	{
 		if(SC_invisibler.invisible)
-		SendMTP("/InvisibilityPulse "+connectionID+" "+str);
+			flag_invisibility_pulse = true;
 	}
 	public void MainSaveData()
 	{
@@ -1162,20 +1164,17 @@ public class SC_control : MonoBehaviour {
 		//Websocket sends
 		if((int)Communtron4.position.y==100)
 		{
-			float trX,trY,rgX,rgY,rpX,rpY,heB,fuB,poB,mPPx,mPPy;
-			string isImpulse = "F";
-			if(impulse_enabled) isImpulse = "T";
+			float trX,trY,rpX,rpY,heB,fuB,poB,mPPx,mPPy;
+			string isImpulse = "F"; if(impulse_enabled) isImpulse = "T";
+			string isImpulseStart = "F"; if(flag_impulse_start) { isImpulseStart = "T"; flag_impulse_start = false; }
+			string isInviPulse = "F"; if(flag_invisibility_pulse) { isInviPulse = "T"; flag_invisibility_pulse = false; }
 			trX=Mathf.Round(transform.position.x*10000f)/10000f;
 			trY=Mathf.Round(transform.position.y*10000f)/10000f;
-			rgX=Mathf.Round(playerR.velocity.x*10000f)/10000f;
-			rgY=Mathf.Round(playerR.velocity.y*10000f)/10000f;
 			rpX=Mathf.Round(respawn_point.position.x*10000f)/10000f;
 			rpY=Mathf.Round(respawn_point.position.y*10000f)/10000f;
 			heB=Mathf.Round(health_V*10000f)/10000f;
 			fuB=Mathf.Round(turbo_V*10000f)/10000f;
 			poB=Mathf.Round(power_V*10000f)/10000f;
-			mPPx=Mathf.Round(memPosition.x*10000f)/10000f;
-			mPPy=Mathf.Round(memPosition.y*10000f)/10000f;
 			int sendOther=enMode*16+(int)Communtron5.position.x*4+(int)Communtron2.position.x*2+(int)CommuntronM1.transform.position.x*1;
 			int compressedEffect = 0;
 			if(SC_effect.effect==5) compressedEffect = 1;
@@ -1187,30 +1186,30 @@ public class SC_control : MonoBehaviour {
 				/*
 				0/0 - posX
 				1/1 - posY
-				2[] - velX
-				3[] - velY
+				2[] - ()
+				3[] - ()
 				4[] - rotation
 				5[] - others2
 				6/4 - respX
 				7/5 - respY
-				8x/2 - healthBar
+				8/2 - () healthBar
 				9/3 - fuelBar
-				10x/6 - timerH
+				10/6 - () timerH
 				11/7 - powerBar
 					*/
 				SendMTP(
 					"/PlayerUpdate "+connectionID+" "+
-					trX+";"+trY+";"+rgX+";"+rgY+";"+
-					transform.rotation.eulerAngles.z+";"+sendOther+"&"+sendOtherParasite+";"+
-					rpX+";"+rpY+";;"+fuB+";;"+poB+" "+localPing+" 250 "+livID+" "+immID+" "+isImpulse
-					//---optional---
-					+" "+mPPx+" "+mPPy
+
+					trX+";"+trY+";;;"+transform.rotation.eulerAngles.z+";"+
+					sendOther+"&"+sendOtherParasite+";"+
+					rpX+";"+rpY+";;"+
+					fuB+";;"+poB+" "+
+					
+					localPing+" "+immID+" "+isImpulse + isImpulseStart + isInviPulse
 				);
 			}
-			else SendMTP("/PlayerUpdate "+connectionID+" 1 "+localPing+" 250 "+livID+" "+immID+" F");
+			else SendMTP("/PlayerUpdate "+connectionID+" 1 "+localPing+" "+immID+" FFF");
 		}
-
-		memPosition = new Vector3(transform.position.x,transform.position.y,0f);
 
 		localPing++;
 		
@@ -1333,7 +1332,7 @@ public class SC_control : MonoBehaviour {
 		{
 			if(repetedAF) return;
 
-			msg = msg+" "+conID+" "+livID;
+			msg = msg+" "+livID;
 
 			try {
 				ws.Send(msg);
@@ -1386,7 +1385,7 @@ public class SC_control : MonoBehaviour {
 		
 		if((int)Communtron4.position.y==100) {
 			damageBalance -= dmg;
-			SendMTP("/ClientDamage "+connectionID+" "+dmg+" "+immID+" "+livID+" "+info);
+			SendMTP("/ClientDamage "+connectionID+" "+dmg+" "+immID+" "+info);
 		}
 
 		if(info=="K") KillMe();
@@ -1786,6 +1785,7 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetEmitParticles" && arg[1]!=connectionID+"")
 		{
+			try {
 			Vector3 particlePos;
 			Quaternion quat_foo = new Quaternion(0f,0f,0f,0f);
 			int put = int.Parse(arg[2]);
@@ -1852,8 +1852,12 @@ public class SC_control : MonoBehaviour {
 						trn11.GetComponent<SC_seeking>().enabled = true;
 						break;
 					}
-					else Debug.LogWarning("Unknown particles ID: "+put);
+					else throw(new Exception());
 					break;
+			}
+
+			}catch(Exception) {
+				Debug.LogWarning("Player with ID "+arg[1]+" sends wrong particle packets. It might be a cheater, but also an error...");
 			}
 		}
 		if(arg[0]=="/RetInventory")
@@ -1931,7 +1935,7 @@ public class SC_control : MonoBehaviour {
 	}
 	void Ws_OnOpen(object sender, System.EventArgs e)
     {
-		SendMTP("/ImJoined "+connectionID);
+		SendMTP("/ImJoined "+connectionID+" "+conID);
     }
 	void Ws_OnClose(object sender, System.EventArgs e)
     {
@@ -2077,8 +2081,6 @@ public class SC_control : MonoBehaviour {
                 SC_slots.BackpackY[i]=int.Parse(SC_data.backpack[i,1]);
             }
 		}
-
-		memPosition = transform.position;
 
 		servername.text=CommuntronM1.name;
 

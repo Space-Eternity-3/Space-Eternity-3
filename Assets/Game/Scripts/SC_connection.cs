@@ -71,7 +71,7 @@ public class SC_connection : MonoBehaviour
     }
     void SendMTP(string msg)
     {
-        msg=msg+" "+conID+" 0";	
+        msg=msg+" 0";
 
         try
         {
@@ -180,7 +180,7 @@ public class SC_connection : MonoBehaviour
         Debug.Log("Connection E-open");
         waiter=200;
         connectionState=2;
-        SendMTP("/AllowConnection "+IF_nickname.text+" "+SC_data.clientRedVersion);
+        SendMTP("/AllowConnection "+IF_nickname.text+" "+SC_data.clientRedVersion+" "+conID);
     }
     void Ws_OnMessage(object sender, MessageEventArgs e)
     {

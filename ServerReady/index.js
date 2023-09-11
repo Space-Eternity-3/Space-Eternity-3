@@ -60,7 +60,6 @@ var plr = {
   waiter: [0],
   players: ["0"],
   nicks: ["0"],
-  pingTemp: ["0"],
   conID: ["0"],
   livID: ["0"],
   immID: ["0"],
@@ -308,7 +307,7 @@ class CInfo
   {
     xx = (xx+"").replaceAll(".",",");
     yy = (yy+"").replaceAll(".",",");
-    sendToAllClients("/RetEmitParticles -1 16 "+xx+" "+yy+" X X");
+    sendToAllPlayers("/RetEmitParticles -1 16 "+xx+" "+yy+" X X");
   }
   RemoteDamage(id)
   {
@@ -571,9 +570,14 @@ if(Number.isInteger(config.port))
 const wss = new WebSocket.Server(connectionOptions);
 
 function sendToAllClients(data) {
+  console.log("Sending should be to all players, not clients");
   wss.clients.forEach(function (client) {
     sendTo(client,data);
   });
+}
+function sendToAllPlayers(data) {
+  for(var i=0;i<max_players;i++)
+    if(se3_wsS[i]=="game") sendTo(se3_ws[i],data);
 }
 function sendTo(ws,data) {
   try{
@@ -991,8 +995,8 @@ function CookedDamage(pid,dmg)
 
   var xx = plr.players[pid].split(";")[0];
   var yy = plr.players[pid].split(";")[1];
-  sendToAllClients("/RetEmitParticles "+pid+" 2 "+xx+" "+yy+" X X");
-  sendToAllClients("/RetInvisibilityPulse "+pid+" wait X X");
+  sendToAllPlayers("/RetEmitParticles "+pid+" 2 "+xx+" "+yy+" X X");
+  sendToAllPlayers("/RetInvisibilityPulse "+pid+" wait X X");
 }
 function getBulletDamage(type,owner,pid,bll)
 {
@@ -1474,7 +1478,7 @@ function resetScr(i)
     scrs[i].dataX[1]++;
     var det = asteroidIndex(scrs[i].bID);
     chunk_data[det[0]][det[1]][1] = scrs[i].dataX[1]+"";
-    sendToAllClients(
+    sendToAllPlayers(
       "/RetEmitParticles -1 10 "+
       ((func.ScrdToFloat(mem8)+scrs[i].posCX)+"").replaceAll(".",",")+" "+
       ((func.ScrdToFloat(mem9)+scrs[i].posCY)+"").replaceAll(".",",")+
@@ -1488,7 +1492,7 @@ function DamageBoss(i,dmg)
   var actualHealth = scrs[i].dataY[6-2]/100;
   actualHealth -= dmg;
   scrs[i].dataY[6-2] = Math.floor(actualHealth*100);
-  if(dmg!=0) sendToAllClients(
+  if(dmg!=0) sendToAllPlayers(
     "/RetEmitParticles -1 9 "+
     ((func.ScrdToFloat(scrs[i].dataY[8-2])+scrs[i].posCX)+"").replaceAll(".",",")+" "+
     ((func.ScrdToFloat(scrs[i].dataY[9-2])+scrs[i].posCY)+"").replaceAll(".",",")+
@@ -1507,7 +1511,7 @@ setInterval(function () {  // <interval #2>
   if(gtt != "DONT SEND") //space important here
   {
     eff = "/RPC " + max_players + " " + gtt + " X X";
-    sendToAllClients(eff);
+    sendToAllPlayers(eff);
   }
 
   //RPU - Dynamic data
@@ -1516,12 +1520,12 @@ setInterval(function () {  // <interval #2>
   eff += GetRPU(plr.players,lngt) + " ";
   eff += current_tick;
   eff += " X X"
-  sendToAllClients(eff);
+  sendToAllPlayers(eff);
 
   //BRP - Bullet Rotation Packet
   var gbrp = GetBRP();
   eff = "/BRP " + gbrp + " X X";
-  if(gbrp!="") sendToAllClients(eff);
+  if(gbrp!="") sendToAllPlayers(eff);
 
   var i,j;
   for(i=0;i<scrs.length;i++)
@@ -1533,7 +1537,7 @@ setInterval(function () {  // <interval #2>
     for(j=0;j<max_players;j++)
     {
       if(plr.bossMemories[j].includes(scrs[i].bID+""))
-        sendToAllClients(
+        sendToAllPlayers(
           "/RSD " +
           scrs[i].bID +
           " " +
@@ -1545,7 +1549,7 @@ setInterval(function () {  // <interval #2>
 
   for(i=0;i<max_players;i++)
   {
-    if(se3_wsS[i]!="")
+    if(se3_wsS[i]=="game")
       sendTo(se3_ws[i],"I "+plr.immID[i]+" "+plr.livID[i]+" X X"); //medium type message
   }
 
@@ -1574,7 +1578,7 @@ function kick(i) {
     pom.close();
   }catch{}
   if (plr.players[i] != "0")
-    sendToAllClients(
+    sendToAllPlayers(
       "/RetInfoClient " +
         (plr.nicks[i] + " left the game").replaceAll(" ", "`") +
         " " +
@@ -1593,7 +1597,6 @@ function kick(i) {
   plr.connectionTime[i] = -1;
   plr.sHealth[i] = 0;
   plr.sRegTimer[i] = -1;
-  plr.pingTemp[i] = "0";
   plr.upgrades[i] = "0";
   plr.backpack[i] = "0";
   plr.inventory[i] = "0";
@@ -1636,11 +1639,11 @@ function spawnBullet(tpl,arg,bow)
     {
       tpl.boss_owner = bow;
       tpl.max_age = 300;
-      sendToAllClients("/RetSeekData "+tpl.steerPtr+" "+tpl.ID+" X X");
+      sendToAllPlayers("/RetSeekData "+tpl.steerPtr+" "+tpl.ID+" X X");
     }
   }
   bulletsT.push(tpl);
-  sendToAllClients(
+  sendToAllPlayers(
     "/RetNewBulletSend " +
       arg[1]+" " +
       arg[2]+" " +
@@ -1656,7 +1659,7 @@ function spawnBullet(tpl,arg,bow)
 function destroyBullet(n,arg,noise)
 {
   bulletsT[n].max_age = func.parseIntU(arg[3]);
-  sendToAllClients(
+  sendToAllPlayers(
     "/RetNewBulletDestroy "+
     arg[1]+" "+
     arg[2]+" "+
@@ -2034,7 +2037,7 @@ function serverGrow(ulam, place) {
     chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] = "";
     chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] =
       growSolid[bef].split(";")[2];
-    sendToAllClients("/RetGrowNow " + ulam + " " + place + " X X");
+    sendToAllPlayers("/RetGrowNow " + ulam + " " + place + " X X");
   }
 }
 function serverDrill(ulam, place) {
@@ -2050,7 +2053,7 @@ function serverDrill(ulam, place) {
     chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] = gItem;
     chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] = gCountEnd;
 
-    sendToAllClients(
+    sendToAllPlayers(
       "/RetFobsDataChange " +
         ulam +
         " " +
@@ -2181,6 +2184,15 @@ function invChangeTry(invID, item, count, slot) {
 }
 
 //Fobs change functions
+function checkFobTurn(ulam, place, start1, start2) {
+  var det = asteroidIndex(ulam);
+  if (
+    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == start1 ||
+    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == start2
+  )
+    return true;
+  else return false;
+}
 function checkFobChange(ulam, place, start1, start2) {
   var det = asteroidIndex(ulam);
   if (
@@ -2348,7 +2360,7 @@ function kill(pid)
 
   var xx = plr.players[pid].split(";")[0];
   var yy = plr.players[pid].split(";")[1];
-  sendToAllClients("/RetEmitParticles "+pid+" 1 "+xx+" "+yy+" X X");
+  sendToAllPlayers("/RetEmitParticles "+pid+" 1 "+xx+" "+yy+" X X");
 }
 function immortal(pid)
 {
@@ -2370,7 +2382,7 @@ function immortal(pid)
 
   var xx = plr.players[pid].split(";")[0];
   var yy = plr.players[pid].split(";")[1];
-  sendToAllClients("/RetEmitParticles "+pid+" 5 "+xx+" "+yy+" X X");
+  sendToAllPlayers("/RetEmitParticles "+pid+" 5 "+xx+" "+yy+" X X");
 }
 
 //Asteroid functions
@@ -2454,8 +2466,10 @@ wss.on("connection", function connection(ws) {
 
     size_download += (msg+"").length;
 
-    if (arg[0] == "/AllowConnection") // 1[nick] 2[RedVersion]
+    if (arg[0] == "/AllowConnection") // 1[nick] 2[RedVersion] 3[ConID]
     {
+      if(!VerifyCommand(arg,["nick","short","EndID"])) return;
+
       var bV = arg[2] != serverRedVersion;
       var bN = nickWrong(arg[1]);
       var bJ = plr.nicks.includes(arg[1]);
@@ -2464,9 +2478,9 @@ wss.on("connection", function connection(ws) {
       if(bN || bJ || bV || bA || bT) {
         if(bV) sendTo(ws,"/RetAllowConnection -1 X X"); //incompatible version
         else if(bT) sendTo(ws,"/RetAllowConnection -7 X X"); //this server requires se3 account to verify users
+        else if(bA) sendTo(ws,"/RetAllowConnection -5 X X"); //you are banned or not on a whitelist
         else if(bN) sendTo(ws,"/RetAllowConnection -2 X X"); //wrong nick format
         else if(bJ) sendTo(ws,"/RetAllowConnection -3 X X"); //player already joined
-        else if(bA) sendTo(ws,"/RetAllowConnection -5 X X"); //you are banned or not on whitelist
         console.log("Connection dennied");
         return;
       }
@@ -2486,7 +2500,7 @@ wss.on("connection", function connection(ws) {
           plr.sRegTimer[i] = func.parseFloatU(plr.data[i].split(";")[10]);
           SaveAllNow();
 
-          plr.conID[i] = arg[msl-2];
+          plr.conID[i] = arg[3];
           sendTo(ws,
             "/RetAllowConnection " + i + " " +
               plr.data[i] + " " +
@@ -2510,15 +2524,17 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/ImJoining") // 1[PlayerID]
     {
-      if (!checkPlayerM(arg[1],ws)) return;
+      if(!VerifyCommand(arg,["PlaID"])) return;
+      if(!checkPlayerM(arg[1],ws)) return;
 
       plr.waiter[arg[1]] = 500;
       se3_wsS[arg[1]] = "joining";
       return;
     }
-    if (arg[0] == "/ImJoined") // 1[PlayerID]
+    if (arg[0] == "/ImJoined") // 1[PlayerID] 2[ConID]
     {
-      if (!checkPlayerJ(arg[1],arg[msl - 2])) {
+      if(!VerifyCommand(arg,["PlaID","EndID"])) return;
+      if(!checkPlayerJ(arg[1],arg[2])) {
         try {
           ws.close();
         } catch{}
@@ -2536,7 +2552,7 @@ wss.on("connection", function connection(ws) {
       plr.cl_livID[playerID] = 0;
       plr.connectionTime[playerID] = 0;
 
-      sendToAllClients(
+      sendToAllPlayers(
         "/RetInfoClient " +
           (plr.nicks[playerID] + " joined the game").replaceAll(" ", "`") +
           " " +
@@ -2558,33 +2574,50 @@ wss.on("connection", function connection(ws) {
 
       return;
     }
-    if (arg[0] == "/PlayerUpdate") {
-      //PlayerUpdate 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[time] 5[livID] 6[immID] 7[isImpulse] *8[memX] *9[memY]
-      if (!checkPlayerG(arg[1],ws)) return;
 
-      if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = arg[4];
+    // ----- GAMEPLAY COMMANDS ----- \\
 
-      var censured = Censure(arg[2],arg[1],arg[5]);
+    if (arg[0] == "/PlayerUpdate") // 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[immID] 5[flags]
+    {
+      if(!VerifyCommand(arg,["PlaID","UpdateData","short","EndID","Flags"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+
+      if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = 250;
+
+      var memX = func.parseFloatU(plr.data[arg[1]].split(";")[0]);
+      var memY = func.parseFloatU(plr.data[arg[1]].split(";")[1]);
+
+      var censured = Censure(arg[2],arg[1],arg[msl-1]);
       plr.players[arg[1]] = censured;
 
-      plr.cl_immID[arg[1]] = arg[6];
-      plr.cl_livID[arg[1]] = arg[5];
+      plr.cl_immID[arg[1]] = arg[4];
+      plr.cl_livID[arg[1]] = arg[msl-1];
 
-      plr.pingTemp[arg[1]] = arg[3];
       sendTo(ws,"P"+arg[3]); //Short type command
 
       if (censured != "1") {
         plr.data[arg[1]] = censured;
       }
 
+      //Flags explained
+      // [0] - impulseEnabled
+      // [1] - impulseStarted
+      // [2] - invisibilityPulse
+
+      if(arg[5][1]=="T") plr.impulsed[arg[1]] = [];
+
+      if(arg[5][2]=="T") sendToAllPlayers(
+        "/RetInvisibilityPulse " + arg[1] + " none X X"
+      );
+
       //impulse damage
       var j, caray = censured.split(";");
-      if(caray.length>1 && arg[7]=="T")
+      if(caray.length>1 && arg[5][0]=="T")
       {
         var xa = func.parseFloatU(caray[0]);
         var ya = func.parseFloatU(caray[1]);
-        var xb = func.parseFloatU(arg[8]);
-        var yb = func.parseFloatU(arg[9]);
+        var xb = func.parseFloatU(memX);
+        var yb = func.parseFloatU(memY);
         func.CollisionLinearBulletSet(xa,ya,xb,yb,1.2);
 
         if(pvp)
@@ -2621,22 +2654,172 @@ wss.on("connection", function connection(ws) {
       }
       return;
     }
-    if (arg[0] == "/EmitParticles") {
-      //EmitParticles 1[PlayerID] 2[type] 3[posX] 4[posY]
-      if (!checkPlayerG(arg[1],ws)) return;
+    if (arg[0] == "/ChatMessage") // 1[PlayerID] 2[Message]
+    {
+      if(!VerifyCommand(arg,["PlaID","Msg256"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
 
-      sendToAllClients(
+      console.log(hourHeader + "<" + plr.nicks[func.parseFloatU(arg[1])] + "> " + arg[2].replaceAll("\t"," "));
+      sendToAllPlayers("/RetChatMessage " + plr.nicks[func.parseFloatU(arg[1])] + " " + arg[2] + " X X");
+    }
+    if (arg[0] == "/InventoryPush") // 1[PlayerID] 2[PushID]
+    {
+      if(!VerifyCommand(arg,["PlaID","PushID"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+
+      var locPlaID = arg[1];
+      var locPushID = arg[2];
+      var pom, l;
+
+      var pushTab = plr.pushInventory[locPlaID].split(";");
+      pom = pushTab[locPushID - 1];
+      pushTab[locPushID - 1] = pushTab[locPushID];
+      pushTab[locPushID] = pom;
+
+      var newPush = "" + pushTab[0];
+      for (l = 1; l < 9; l++) newPush = newPush + ";" + pushTab[l];
+      plr.pushInventory[locPlaID] = newPush;
+    }
+    if (arg[0] == "/GeyzerTurnTry") // 1[PlayerID] 2[ulam] 3[place] 4[turnID]
+    {
+      if(!VerifyCommand(arg,["PlaID","ulam","place","turnID"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+
+      if(arg[4]=="40") //dead alien turn
+        if ( checkFobTurn(arg[2], arg[3], "13", "23") || checkFobTurn(arg[2], arg[3], "25", "27") ) {
+          fobChange(arg[2], arg[3], "40");
+          sendToAllPlayers("/RetGeyzerTurn " + arg[2] + " " + arg[3] + " X X");
+        }
+
+      if(arg[4]=="45") //immortality artefact turn
+        if ( checkFobTurn(arg[2], arg[3], "41", "-1") ) {
+          fobChange(arg[2], arg[3], "45");
+          sendToAllPlayers("/RetGeyzerTurn " + arg[2] + " " + arg[3] + " X X");
+        }
+    }
+    if (arg[0] == "/EmitParticles") // 1[PlayerID] 2[particles] 3[posX/dat1] 4[posY/dat2]
+    {
+      if(!VerifyCommand(arg,["PlaID","ID128","Float","Float"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+
+      sendToAllPlayers(
         "/RetEmitParticles " +
-          arg[1] +
-          " " +
-          arg[2] +
-          " " +
-          arg[3] +
-          " " +
+          arg[1] + " " +
+          arg[2] + " " +
+          arg[3] + " " +
           arg[4] +
           " X X"
       );
     }
+    if(arg[0] == "/TryBattleStart") // 1[PlayerID] 2[bID] 3[storageUlam] 4[storagePlace]
+    {
+      if(!VerifyCommand(arg,["PlaID","ulam","ulam","place"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+
+      var bID = arg[2];
+      var fobID = arg[3];
+      var fobIndex = arg[4];
+
+      var lngts = scrs.length;
+      for(i=0;i<lngts;i++)
+      {
+        if(scrs[i].bID==bID)
+        {
+          if(scrs[i].dataY[2-2]==0 && checkFobDataChange(fobID, fobIndex, "5", "-10", "52"))
+          {
+            var gCountEnd = fobDataChange(fobID, fobIndex, "5", "-10");
+            scrs[i].dataY[2-2] = 1;
+            resetScr(i);
+            sendToAllPlayers(
+              "/RetFobsDataChange " +
+                fobID + " " +
+                fobIndex + " 5 -10 -1 " + //itemID, deltaCount, playerID
+                gCountEnd + " 52 X X" //fob21ID
+            );
+          }
+          return;
+        }
+      }
+    }
+    if(arg[0] == "/GiveUpTry") // 1[PlayerID] 2[bID]
+    {
+      if(!VerifyCommand(arg,["PlaID","ulam"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+
+      var bID = arg[2];
+      var blivID = arg[msl - 1];
+
+      var j,lngts = scrs.length;
+      for(i=0;i<lngts;i++)
+      {
+        if(scrs[i].bID==bID) {
+          if(scrs[i].dataY[2-2]!=2) break;
+
+          var players_inside=1;
+          for(j=0;j<max_players;j++)
+            if(plr.players[j]!="0" && plr.players[j]!="1" && arg[1]!=j)
+            {
+              var plas = plr.players[j].split(";");
+              var dx = func.parseFloatU(plas[0]) - scrs[i].posCX;
+              var dy = func.parseFloatU(plas[1]) - scrs[i].posCY;
+              if(dx**2 + dy**2 <= (in_arena_range)**2) players_inside++;
+            }
+
+          if(players_inside==1) scrs[i].dataY[4-2] = 1;
+          else sendTo(ws,"/RetGiveUpTeleport "+arg[1]+" "+bID+" 1024 X "+blivID);
+          break;
+        }
+      }
+    }
+    if (arg[0] == "/ClientDamage") // 1[PlayerID] 2[dmg] 3[ImmID] 4[info]
+    {
+      if(!VerifyCommand(arg,["PlaID","fraction01","EndID","short"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+
+      var serLivID = plr.livID[arg[1]];
+      var serImmID = plr.immID[arg[1]];
+      var cliLivID = arg[msl-1];
+      var cliImmID = arg[3];
+
+      var cis="";
+      if(serLivID==cliLivID) cis+="T"; else cis+="F";
+      if(serImmID==cliImmID) cis+="T"; else cis+="F";
+
+      if(cis=="TT")
+        CookedDamage(arg[1],arg[2]);
+
+      if(arg[4]=="K") //client kill
+      {
+        switch(cis)
+        {
+          case "TT": kill(arg[1]); break;
+          case "TF": kick(arg[1]); return;
+          case "FT": break;
+          case "FF": kick(arg[1]); return;
+        }
+      }
+      if(arg[4]=="I") //client immortal
+      {
+        switch(cis)
+        {
+          case "TT": immortal(arg[1]); break;
+          case "TF": break;
+          case "FT": kick(arg[1]); return;
+          case "FF": kick(arg[1]); return;
+        }
+      }
+
+      var censured = Censure(plr.players[arg[1]],arg[1],cliLivID);
+      plr.players[arg[1]] = censured;
+      sendTo(ws,"/RetDamageBalance " + arg[2] + " " + cliLivID + " " + cliImmID + " X X");
+    }
+
+
+    //---------------//
+    // WILD COMMANDS //
+    //---------------//
+
+
     if (arg[0] == "/GrowLoaded") {
       //GrowLoaded 1[Data] 2[PlayerID]
       if (!checkPlayerG(arg[2],ws)) return;
@@ -2729,6 +2912,40 @@ wss.on("connection", function connection(ws) {
           var tpl2 = {x:0,y:0}; tpl2.x = tpl.posCX; tpl2.y = tpl.posCY;
           tpl.behaviour = new CBoss(bossType,tpl2,tpl.dataX,tpl.dataY,visionInfo);
           scrs.push(tpl);
+
+          //Bosbul static commands
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,36.39999,0,0,171]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,36.39999,90,172]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-36.39999,0,180,173]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,-36.39999,270,174]);
+          ScrShapeAdd(["",0,bID,"sphere",4,0,36.42503,8.337769,11.25,1025]);
+          ScrShapeAdd(["",0,bID,"sphere",4,0,-8.337723,36.42503,101.25,1026]);
+          ScrShapeAdd(["",0,bID,"sphere",4,0,-36.42505,-8.337677,191.25,1027]);
+          ScrShapeAdd(["",0,bID,"sphere",4,0,8.337646,-36.42505,281.25,1028]);
+          ScrShapeAdd(["",0,bID,"sphere",4,0,36.425,-8.337936,348.75,1029]);
+          ScrShapeAdd(["",0,bID,"sphere",4,0,-8.337891,-36.425,258.75,1030]);
+          ScrShapeAdd(["",0,bID,"sphere",4,0,-36.42502,8.337845,168.75,1031]);
+          ScrShapeAdd(["",0,bID,"sphere",4,0,8.337799,36.42502,78.75,1032]);
+          ScrShapeAdd(["",0,bID,"sphere",3.5,0,31.10144,21.44495,33.75,1033]);
+          ScrShapeAdd(["",0,bID,"sphere",3.5,0,21.44498,31.10143,56.25,1034]);
+          ScrShapeAdd(["",0,bID,"sphere",3.5,0,-21.4449,31.10147,123.75,1035]);
+          ScrShapeAdd(["",0,bID,"sphere",3.5,0,-31.10139,21.44501,146.25,1036]);
+          ScrShapeAdd(["",0,bID,"sphere",3.5,0,-31.10149,-21.44489,213.75,1037]);
+          ScrShapeAdd(["",0,bID,"sphere",3.5,0,-21.44505,-31.10138,236.25,1038]);
+          ScrShapeAdd(["",0,bID,"sphere",3.5,0,21.44484,-31.10152,303.75,1039]);
+          ScrShapeAdd(["",0,bID,"sphere",3.5,0,31.10135,-21.44508,326.25,1040]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64288,15.1069,22.5,1083]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21841,26.2184,45,1084]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,15.10693,33.64287,67.5,1085]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-15.10686,33.6429,112.5,1086]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-26.21837,26.21844,135,1087]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-33.64285,15.10696,157.5,1088]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-33.64291,-15.10683,202.5,1089]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-26.21849,-26.21832,225,1090]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-15.10703,-33.64282,247.5,1091]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,15.1068,-33.64291,292.5,1092]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21831,-26.21851,315,1093]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64282,-15.10704,337.5,1094]);
         }
         else return;
       }
@@ -2768,98 +2985,6 @@ wss.on("connection", function connection(ws) {
       if(remindex!=-1)
         plr.bossMemories[arg[1]].splice(remindex);
     }
-    if(arg[0] == "/GiveUpTry")
-    {
-      //GiveUpTry 1[PlayerID] 2[bID]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var bID = arg[2];
-      var blivID = arg[msl - 1];
-
-      var j,lngts = scrs.length;
-      for(i=0;i<lngts;i++)
-      {
-        if(scrs[i].bID==bID) {
-          if(scrs[i].dataY[2-2]!=2) break;
-
-          var players_inside=1;
-          for(j=0;j<max_players;j++)
-            if(plr.players[j]!="0" && plr.players[j]!="1" && arg[1]!=j)
-            {
-              var plas = plr.players[j].split(";");
-              var dx = func.parseFloatU(plas[0]) - scrs[i].posCX;
-              var dy = func.parseFloatU(plas[1]) - scrs[i].posCY;
-              if(dx**2 + dy**2 <= (in_arena_range)**2) players_inside++;
-            }
-
-          if(players_inside==1) scrs[i].dataY[4-2] = 1;
-          else sendTo(ws,"/RetGiveUpTeleport "+arg[1]+" "+bID+" 1024 X "+blivID);
-          break;
-        }
-      }
-    }
-    if(arg[0] == "/TryBattleStart")
-    {
-      //TryBattleStart 1[PlayerID] 2[bID] 3[fobID] 4[fobIndex]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var bID = arg[2];
-      var fobID = arg[3];
-      var fobIndex = arg[4];
-
-      var lngts = scrs.length;
-      for(i=0;i<lngts;i++)
-      {
-        if(scrs[i].bID==bID)
-        {
-          if(scrs[i].dataY[2-2]==0 && checkFobDataChange(fobID, fobIndex, "5", "-10", "52"))
-          {
-            var gCountEnd = fobDataChange(fobID, fobIndex, "5", "-10");
-            scrs[i].dataY[2-2] = 1;
-            resetScr(i);
-            sendToAllClients(
-              "/RetFobsDataChange " +
-                fobID + " " +
-                fobIndex + " 5 -10 -1 " + //itemID, deltaCount, playerID
-                gCountEnd + " 52 X X" //fob21ID
-            );
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,36.39999,0,0,171]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,36.39999,90,172]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-36.39999,0,180,173]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,-36.39999,270,174]);
-            ScrShapeAdd(["",0,bID,"sphere",4,0,36.42503,8.337769,11.25,1025]);
-            ScrShapeAdd(["",0,bID,"sphere",4,0,-8.337723,36.42503,101.25,1026]);
-            ScrShapeAdd(["",0,bID,"sphere",4,0,-36.42505,-8.337677,191.25,1027]);
-            ScrShapeAdd(["",0,bID,"sphere",4,0,8.337646,-36.42505,281.25,1028]);
-            ScrShapeAdd(["",0,bID,"sphere",4,0,36.425,-8.337936,348.75,1029]);
-            ScrShapeAdd(["",0,bID,"sphere",4,0,-8.337891,-36.425,258.75,1030]);
-            ScrShapeAdd(["",0,bID,"sphere",4,0,-36.42502,8.337845,168.75,1031]);
-            ScrShapeAdd(["",0,bID,"sphere",4,0,8.337799,36.42502,78.75,1032]);
-            ScrShapeAdd(["",0,bID,"sphere",3.5,0,31.10144,21.44495,33.75,1033]);
-            ScrShapeAdd(["",0,bID,"sphere",3.5,0,21.44498,31.10143,56.25,1034]);
-            ScrShapeAdd(["",0,bID,"sphere",3.5,0,-21.4449,31.10147,123.75,1035]);
-            ScrShapeAdd(["",0,bID,"sphere",3.5,0,-31.10139,21.44501,146.25,1036]);
-            ScrShapeAdd(["",0,bID,"sphere",3.5,0,-31.10149,-21.44489,213.75,1037]);
-            ScrShapeAdd(["",0,bID,"sphere",3.5,0,-21.44505,-31.10138,236.25,1038]);
-            ScrShapeAdd(["",0,bID,"sphere",3.5,0,21.44484,-31.10152,303.75,1039]);
-            ScrShapeAdd(["",0,bID,"sphere",3.5,0,31.10135,-21.44508,326.25,1040]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64288,15.1069,22.5,1083]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21841,26.2184,45,1084]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,15.10693,33.64287,67.5,1085]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-15.10686,33.6429,112.5,1086]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-26.21837,26.21844,135,1087]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-33.64285,15.10696,157.5,1088]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-33.64291,-15.10683,202.5,1089]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-26.21849,-26.21832,225,1090]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-15.10703,-33.64282,247.5,1091]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,15.1068,-33.64291,292.5,1092]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21831,-26.21851,315,1093]);
-            ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64282,-15.10704,337.5,1094]);
-          }
-          return;
-        }
-      }
-    }
     if (arg[0] == "/FobsChange") {
       //FobsChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[startFob1] 5[startFob2] 6[EndFob] 7[DropID] 8[Count] 9[Slot]
       if (!checkPlayerG(arg[1],ws)) return;
@@ -2886,7 +3011,7 @@ wss.on("connection", function connection(ws) {
         {
           fobChange(fUlamID, fPlaceID, fEndFob);
           fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
-          sendToAllClients(
+          sendToAllPlayers(
             "/RetFobsChange " +
               fUlamID + " " +
               fPlaceID + " " +
@@ -2945,7 +3070,7 @@ wss.on("connection", function connection(ws) {
         if (invChangeTry(gPlayerID, gItem, -gDeltaCount, gSlot))
         {
           var gCountEnd = fobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount);
-          sendToAllClients(
+          sendToAllPlayers(
             "/RetFobsDataChange " +
               gUlamID + " " +
               gPlaceID + " " +
@@ -2993,50 +3118,17 @@ wss.on("connection", function connection(ws) {
       //FobsTurn 1[PlayerID] 2[ulam] 3[place] 4[start1] 5[start2] 6[end]
       if (!checkPlayerG(arg[1],ws)) return;
 
-      var turPlaID = arg[1];
-      var turUlam = arg[2];
-      var turPlace = arg[3];
-      var turStart1 = arg[4];
-      var turStart2 = arg[5];
-      var turEnd = arg[6];
-      if (checkFobChange(turUlam, turPlace, turStart1, turStart2)) {
-        fobChange(turUlam, turPlace, turEnd);
-        sendToAllClients(
+      if (checkFobChange(arg[2], arg[3], arg[4], arg[5])) {
+        fobChange(arg[2], arg[3], arg[6]);
+        sendToAllPlayers(
           "/RetFobsTurn " +
-            turPlaID + " " +
-            turUlam + " " +
-            turPlace + " " +
-            turEnd +
+            arg[1] + " " +
+            arg[2] + " " +
+            arg[3] + " " +
+            arg[6] +
             " X X"
         );
       }
-    }
-    if (arg[0] == "/GeyzerTurnTry") {
-      //GeyzerTurnTry 1[PlayerID] 2[ulam] 3[place]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var tgrPlaID = arg[1];
-      var tgrUlam = arg[2];
-      var tgrPlace = arg[3];
-
-      if (
-        checkFobChange(tgrUlam, tgrPlace, "13", "23") ||
-        checkFobChange(tgrUlam, tgrPlace, "25", "27")
-      ) {
-        fobChange(tgrUlam, tgrPlace, "40");
-        sendToAllClients("/RetGeyzerTurn " + tgrUlam + " " + tgrPlace + " X X");
-      }
-      if (
-        checkFobChange(tgrUlam, tgrPlace, "41", "-1")
-      ) {
-        fobChange(tgrUlam, tgrPlace, "45");
-        sendToAllClients("/RetGeyzerTurn " + tgrUlam + " " + tgrPlace + " X X");
-      }
-    }
-    if (arg[0] == "/ImpulseStart") {
-      //ImpulseStart 1[PlayerID]
-      if (!checkPlayerG(arg[1],ws)) return;
-      plr.impulsed[arg[1]] = [];
     }
     if (arg[0] == "/InventoryChange") {
       //InventoryChange 1[PlayerID] 2[Item] 3[Count] 4[Slot]
@@ -3073,47 +3165,6 @@ wss.on("connection", function connection(ws) {
         );
       } else kick(ljPlaID);
     }
-    if (arg[0] == "/ClientDamage") {
-      //ClientDamage 1[PlayerID] 2[dmg] 3[ImmID] 4[LivID] 5[info]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var serLivID = plr.livID[arg[1]];
-      var serImmID = plr.immID[arg[1]];
-      var cliLivID = arg[4];
-      var cliImmID = arg[3];
-
-      var cis="";
-      if(serLivID==cliLivID) cis+="T"; else cis+="F";
-      if(serImmID==cliImmID) cis+="T"; else cis+="F";
-
-      if(cis=="TT")
-        CookedDamage(arg[1],arg[2]);
-
-      if(arg[5]=="K") //client kill
-      {
-        switch(cis)
-        {
-          case "TT": kill(arg[1]); break;
-          case "TF": kick(arg[1]); return;
-          case "FT": break;
-          case "FF": kick(arg[1]); return;
-        }
-      }
-      if(arg[5]=="I") //client immortal
-      {
-        switch(cis)
-        {
-          case "TT": immortal(arg[1]); break;
-          case "TF": break;
-          case "FT": kick(arg[1]); return;
-          case "FF": kick(arg[1]); return;
-        }
-      }
-
-      var censured = Censure(plr.players[arg[1]],arg[1],cliLivID);
-      plr.players[arg[1]] = censured;
-      sendTo(ws,"/RetDamageBalance " + arg[2] + " " + cliLivID + " " + cliImmID + " X X");
-    }
     if (arg[0] == "/Craft") {
       //Craft 1[PlaID] 2[Id1] 3[Co1] 4[Sl1] 5[Id2] 6[Co2] 7[Sl2] 8[IdE] 9[CoE] 10[SlE]
       if (!checkPlayerG(arg[1],ws)) return;
@@ -3143,23 +3194,6 @@ wss.on("connection", function connection(ws) {
       plr.inventory[cPlaID] = safeCopyI;
       plr.backpack[cPlaID] = safeCopyB;
       kick(cPlaID);
-    }
-    if (arg[0] == "/InventoryPush") {
-      //InventoryPush 1[PlayerID] 2[PushID]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var locPlaID = arg[1];
-      var locPushID = arg[2];
-      var pom, l;
-
-      var pushTab = plr.pushInventory[locPlaID].split(";");
-      pom = pushTab[locPushID - 1];
-      pushTab[locPushID - 1] = pushTab[locPushID];
-      pushTab[locPushID] = pom;
-
-      var newPush = "" + pushTab[0];
-      for (l = 1; l < 9; l++) newPush = newPush + ";" + pushTab[l];
-      plr.pushInventory[locPlaID] = newPush;
     }
     if (arg[0] == "/NewBulletSend") {
       //NewBulletSend 1[PlayerID] 2[type] 3,4[position] 5,6[vector] 7[ID] 8[damage]
@@ -3200,27 +3234,6 @@ wss.on("connection", function connection(ws) {
       for(i=0;i<lngt;i++)
         if(bulletsT[i].owner==arg[1] && bulletsT[i].ID==arg[2])
           destroyBullet(i,arg,true);
-    }
-    if (arg[0] == "/InfoUp") {
-      //InfoUp 1[info] 2[PlayerID]
-      if (!checkPlayerG(arg[2],ws)) return;
-
-      sendToAllClients("/RetInfoClient " + arg[1] + " " + arg[2] + " X X");
-    }
-    if (arg[0] == "/ChatMessage") {
-      //ChatMessage 1[PlayerID] 2[Message]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      console.log(hourHeader + "<" + plr.nicks[func.parseFloatU(arg[1])] + "> " + arg[2].replaceAll("\t"," "));
-      sendToAllClients("/RetChatMessage " + plr.nicks[func.parseFloatU(arg[1])] + " " + arg[2] + " X X");
-    }
-    if (arg[0] == "/InvisibilityPulse") {
-      //InvisibilityPulse 1[PlayerID] 2[DataString]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      sendToAllClients(
-        "/RetInvisibilityPulse " + arg[1] + " " + arg[2] + " X X"
-      );
     }
     if (arg[0] == "/Heal") {
       //Heal 1[PlayerID] 2[healID]
@@ -3302,10 +3315,116 @@ wss.on("connection", function connection(ws) {
     }
     if (arg[0] == "/FobsPing") // 1[id]
     {
+      if(!VerifyCommand(arg,["short"])) return;
       sendTo(ws,"/RetFobsPing " + arg[1] + " X X");
     }
   });
 });
+
+//Command verifier function
+function VerifyCommand(args,formats)
+{
+  formats.push("EndID");
+  if(args.length != formats.length+1) return false;
+  var i,lngt = args.length;
+  for(i=1;i<lngt;i++)
+  {
+    var sw = formats[i-1];
+    var test = args[i];
+    if(sw!="s")
+    {
+      if(false) console.log(test+" -> "+sw);
+      if(sw=="EndID") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p > 999999999) return false;
+      }
+      else if(sw=="PlaID") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p >= max_players) return false;
+      }
+      else if(sw=="nick") {
+        if(nickWrong(test)) return false;
+      }
+      else if(sw=="Float") {
+        var p = func.parseFloatP(test);
+        if(isNaN(p)) return false;
+      }
+      else if(sw=="short") {
+        if(test.length >= 32) return false;
+      }
+      else if(sw=="UpdateData") {
+        if(test!="1")
+          if(!VerifyCommand((";"+test+";0").split(";"),["Float","Float","NULL","NULL","Angle","RocketInfo","Float","Float","NULL","Bar","NULL","Bar"])) return false;
+      }
+      else if(sw=="Flags") {
+        if(test.length!=3) return false;
+      }
+      else if(sw=="NULL") {
+        if(test!="") return false;
+      }
+      else if(sw=="Angle") {
+        var p = func.parseFloatP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p > 360) return false;
+      }
+      else if(sw=="Bar") {
+        var p = func.parseFloatP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p > 1) return false;
+      }
+      else if(sw=="RocketInfo") {
+        if(!VerifyCommand(("&"+test+"&0").split("&"),["OldIntInfo","NewIntInfo"])) return false;
+      }
+      else if(sw=="OldIntInfo") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p > 63) return false;
+      }
+      else if(sw=="NewIntInfo") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p >= 700) return false;
+      }
+      else if(sw=="Msg256") {
+        if(test.length > 256 && !test.includes("\r") && !test.includes("\n")) return false;
+      }
+      else if(sw=="PushID") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 1 || p > 8) return false;
+      }
+      else if(sw=="ulam") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p <= 1 || p > 1700000000) return false;
+      }
+      else if(sw=="place") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p > 19) return false;
+      }
+      else if(sw=="turnID") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p!=45 && p!=40) return false;
+      }
+      else if(sw=="ID128") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p > 128) return false;
+      }
+      else if(sw=="fraction01") {
+        var p = func.parseFloatP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p > 1) return false;
+      }
+      else console.log("Error: Unknown format: "+sw);
+    }
+  }
+  return true;
+}
 
 //Jse3 datapack converter
 function crash(str) {

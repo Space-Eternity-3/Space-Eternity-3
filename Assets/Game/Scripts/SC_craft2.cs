@@ -77,7 +77,6 @@ public class SC_craft2 : MonoBehaviour {
 				{
 					SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" 20 -1 "+slot);
 					SC_control.SendMTP("/EmitParticles "+SC_control.connectionID+" 3 "+player.position.x+" "+player.position.y);
-					//SC_control.InvisiblityPulseSend("none");
 				}
 				Instantiate(R_set_particles,player.position,player.rotation);
 				respawn_point.position=player.position+new Vector3(0f,0f,1f);
@@ -143,7 +142,6 @@ public class SC_craft2 : MonoBehaviour {
 			if((int)Communtron4.position.y==100)
 			{
 				SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" 10 3 "+slot);
-				//SC_control.InvisiblityPulseSend("none");
 			}
 			respawn_point.position=new Vector3(0f,0f,1f);
 		}
