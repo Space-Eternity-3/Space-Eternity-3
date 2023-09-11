@@ -2813,6 +2813,120 @@ wss.on("connection", function connection(ws) {
       plr.players[arg[1]] = censured;
       sendTo(ws,"/RetDamageBalance " + arg[2] + " " + cliLivID + " " + cliImmID + " X X");
     }
+    if (arg[0] == "/Upgrade") // 1[PlayerID] 2[upgID] 3[slot]
+    {
+      if(!VerifyCommand(arg,["PlaID","UpgID","Slot"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+      if(arg[msl - 1] != plr.livID[arg[1]]) return;
+
+      var ljPlaID = arg[1];
+      var ljUpgID = arg[2];
+      var ljSlot = arg[3];
+
+      var ljTab = plr.upgrades[ljPlaID].split(";");
+      var current_level = func.parseIntU(ljTab[ljUpgID]);
+
+      var upg_costs = [[10,3],[10,6],[10,10],[5,12],[5,20]];
+      var ljItem = upg_costs[current_level][0];
+      var ljCount = upg_costs[current_level][1];
+
+      if(current_level < 0 || current_level > 4) return;
+
+      if(invChangeTry(ljPlaID, ljItem, -ljCount, ljSlot))
+      {
+        ljTab[ljUpgID] = current_level + 1;
+        var ij, eff = ljTab[0];
+        for (ij = 1; ij < 5; ij++) eff += ";" + ljTab[ij];
+        plr.upgrades[ljPlaID] = eff;
+        sendTo(ws,"/RetUpgrade " + ljPlaID + " " + ljUpgID + " X " + plr.livID[ljPlaID]);
+      }
+      else kick(ljPlaID);
+    }
+    if (arg[0] == "/FobsDataChange") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[Item] 5[DeltaCount] 6[Slot] 7[StorageID]
+    {
+      if(!VerifyCommand(arg,["PlaID","ulam","place","item","1,-1","Slot","StorageID"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
+
+      var gPlayerID = arg[1];
+      var gUlamID = arg[2];
+      var gPlaceID = arg[3];
+      var gItem = arg[4];
+      var gDeltaCount = arg[5];
+      var gSlot = arg[6];
+      var gID21 = arg[7];
+      
+      if (checkFobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount, gID21) && !overolded)
+      {
+        if (invChangeTry(gPlayerID, gItem, -gDeltaCount, gSlot))
+        {
+          var gCountEnd = fobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount);
+          sendToAllPlayers(
+            "/RetFobsDataChange " +
+              gUlamID + " " +
+              gPlaceID + " " +
+              gItem + " " +
+              gDeltaCount + " " +
+              gPlayerID + " " +
+              gCountEnd + " " +
+              gID21 +
+              " X X"
+          );
+          sendTo(ws,
+            "/RetInventory " +
+              gPlayerID + " " +
+              gItem + " 0 " +
+              gSlot + " " +
+              gDeltaCount +
+              " X " + plr.livID[gPlayerID]
+          );
+          return;
+        }
+        else kick(gPlayerID);
+      }
+
+      //If failied
+      sendTo(ws,
+        "/RetFobsDataCorrection " +
+          gUlamID + " " +
+          gPlaceID + " " +
+          nbt(gUlamID, gPlaceID, "n", "0;0") + ";" + gDeltaCount + " " +
+          gPlayerID + " " +
+          gID21 +
+          " X X"
+      );
+      sendTo(ws,
+        "/RetInventory " +
+          gPlayerID + " " +
+          gItem + " " +
+          gDeltaCount + " " +
+          gSlot + " " +
+          -gDeltaCount +
+          " X " + plr.livID[gPlayerID]
+      );
+    }
+    if (arg[0] == "/Backpack") // 1[PlayerID] 2[Item] 3[Count] 4[SlotI] 5[SlotB]
+    {
+      if(!VerifyCommand(arg,["PlaID","item","count","SlotI","SlotB"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+      if(arg[msl - 1] != plr.livID[arg[1]]) return;
+
+      var bpPlaID = arg[1];
+      var bpItem = arg[2];
+      var bpCount = arg[3];
+      var bpSlotI = arg[4];
+      var bpSlotB = arg[5];
+
+      var safeCopyI = plr.inventory[bpPlaID];
+      var safeCopyB = plr.backpack[bpPlaID];
+
+      if (invChangeTry(bpPlaID, bpItem, bpCount, bpSlotI))
+        if (invChangeTry(bpPlaID, bpItem, -bpCount, bpSlotB)) return;
+
+      plr.inventory[bpPlaID] = safeCopyI;
+      plr.backpack[bpPlaID] = safeCopyB;
+      kick(bpPlaID);
+    }
 
 
     //---------------//
@@ -2850,10 +2964,8 @@ wss.on("connection", function connection(ws) {
 
       sendTo(ws,
         "/RetAsteroidData " +
-          ulamID +
-          " " +
-          lc3 +
-          " " +
+          ulamID + " " +
+          lc3 + " " +
           nbts(ulamID, "n", "0;0") +
           " X X"
       );
@@ -3051,69 +3163,6 @@ wss.on("connection", function connection(ws) {
           " X " + plr.livID[fPlayerID]
       );
     }
-    if (arg[0] == "/FobsDataChange") {
-      //FobsDataChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[Item] 5[DeltaCount] 6[Slot] 7[Id21]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
-
-      var gPlayerID = arg[1];
-      var gUlamID = arg[2];
-      var gPlaceID = arg[3];
-      var gItem = arg[4];
-      var gDeltaCount = arg[5];
-      var gSlot = arg[6];
-      var gID21 = arg[7];
-      
-      if (checkFobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount, gID21) && !overolded)
-      {
-        if (invChangeTry(gPlayerID, gItem, -gDeltaCount, gSlot))
-        {
-          var gCountEnd = fobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount);
-          sendToAllPlayers(
-            "/RetFobsDataChange " +
-              gUlamID + " " +
-              gPlaceID + " " +
-              gItem + " " +
-              gDeltaCount + " " +
-              gPlayerID + " " +
-              gCountEnd + " " +
-              gID21 +
-              " X X"
-          );
-          sendTo(ws,
-            "/RetInventory " +
-              gPlayerID + " " +
-              gItem + " 0 " +
-              gSlot + " " +
-              gDeltaCount +
-              " X " + plr.livID[gPlayerID]
-          );
-          return;
-        }
-        else kick(gPlayerID);
-      }
-
-      //If failied
-      sendTo(ws,
-        "/RetFobsDataCorrection " +
-          gUlamID + " " +
-          gPlaceID + " " +
-          nbt(gUlamID, gPlaceID, "n", "0;0") + ";" + gDeltaCount + " " +
-          gPlayerID + " " +
-          gID21 +
-          " X X"
-      );
-      sendTo(ws,
-        "/RetInventory " +
-          gPlayerID + " " +
-          gItem + " " +
-          gDeltaCount + " " +
-          gSlot + " " +
-          -gDeltaCount +
-          " X " + plr.livID[gPlayerID]
-      );
-    }
     if (arg[0] == "/FobsTurn") {
       //FobsTurn 1[PlayerID] 2[ulam] 3[place] 4[start1] 5[start2] 6[end]
       if (!checkPlayerG(arg[1],ws)) return;
@@ -3141,29 +3190,6 @@ wss.on("connection", function connection(ws) {
       var liSlot = arg[4];
 
       if (!invChangeTry(liPlaID, liItem, liCount, liSlot)) kick(liPlaID);
-    }
-    if (arg[0] == "/Upgrade") {
-      //Upgrade 1[PlayerID] 2[item] 3[count] 4[upgID] 5[slot]
-      if (!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl - 1] != plr.livID[arg[1]]) return;
-
-      var ljPlaID = arg[1];
-      var ljItem = arg[2];
-      var ljCount = arg[3];
-      var ljUpgID = arg[4];
-      var ljSlot = arg[5];
-
-      if (invChangeTry(ljPlaID, ljItem, -ljCount, ljSlot)) {
-        var ljTab = plr.upgrades[ljPlaID].split(";");
-        ljTab[ljUpgID] = func.parseIntU(ljTab[ljUpgID]) + 1;
-        var ij,
-          eff = ljTab[0];
-        for (ij = 1; ij < 5; ij++) eff += ";" + ljTab[ij];
-        plr.upgrades[ljPlaID] = eff;
-        sendTo(ws,
-          "/RetUpgrade " + ljPlaID + " " + ljUpgID + " X " + plr.livID[ljPlaID]
-        );
-      } else kick(ljPlaID);
     }
     if (arg[0] == "/Craft") {
       //Craft 1[PlaID] 2[Id1] 3[Co1] 4[Sl1] 5[Id2] 6[Co2] 7[Sl2] 8[IdE] 9[CoE] 10[SlE]
@@ -3272,27 +3298,6 @@ wss.on("connection", function connection(ws) {
         sendTo(ws,"R "+del+" "+plr.immID[pid]+" "+plr.livID[pid]+" "+abl); //Medium type message
         sendTo(ws,"/RetHeal "+arg[1]+" "+arg[2]+" X X");
       }
-    }
-    if (arg[0] == "/Backpack") {
-      //Backpack 1[PlayerID] 2[Item] 3[Count] 4[SlotI] 5[SlotB]
-      if (!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl - 1] != plr.livID[arg[1]]) return;
-
-      var bpPlaID = arg[1];
-      var bpItem = arg[2];
-      var bpCount = arg[3];
-      var bpSlotI = arg[4];
-      var bpSlotB = arg[5];
-
-      var safeCopyI = plr.inventory[bpPlaID];
-      var safeCopyB = plr.backpack[bpPlaID];
-
-      if (invChangeTry(bpPlaID, bpItem, bpCount, bpSlotI))
-        if (invChangeTry(bpPlaID, bpItem, -bpCount, bpSlotB)) return;
-
-      plr.inventory[bpPlaID] = safeCopyI;
-      plr.backpack[bpPlaID] = safeCopyB;
-      kick(bpPlaID);
     }
     if (arg[0] == "/TryInsertBiome") {
       //TryInsertBiome 1[PlayerID] 2[Ulam] 3[Biome]
@@ -3413,12 +3418,48 @@ function VerifyCommand(args,formats)
       else if(sw=="ID128") {
         var p = func.parseIntP(test);
         if(isNaN(p)) return false;
-        if(p < 0 || p > 128) return false;
+        if(p < 0 || p > 127) return false;
       }
       else if(sw=="fraction01") {
         var p = func.parseFloatP(test);
         if(isNaN(p)) return false;
         if(p < 0 || p > 1) return false;
+      }
+      else if(sw=="UpgID") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p > 4) return false;
+      }
+      else if(sw=="Slot") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p > 25) return false;
+      }
+      else if(sw=="SlotI") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p > 8) return false;
+      }
+      else if(sw=="SlotB") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 9 || p > 25) return false;
+      }
+      else if(sw=="item") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 1 || p > 127) return false;
+      }
+      else if(sw=="count") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < -9999999 || p > 9999999) return false;
+      }
+      else if(sw=="1,-1") {
+        if(!["1","-1"].includes(test)) return false;
+      }
+      else if(sw=="StorageID") {
+        if(!["2","52","21"].includes(test)) return false;
       }
       else console.log("Error: Unknown format: "+sw);
     }

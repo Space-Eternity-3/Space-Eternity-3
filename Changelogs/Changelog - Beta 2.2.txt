@@ -28,7 +28,7 @@ Configurables:
   - whitelist_enabled
   - whitelist
   - banned_players
-- max_players in config is set to 10 by default
+- max_players in config is set to 10 by default, but it can be changed
 
 Important technical changes:
 
@@ -40,9 +40,10 @@ Important technical changes:
 - all bosbul related commands removed from seon, from now they are part of the boss object and are no longer configurable, arena seon code changed to fit these rules
 - conID safety system replaced with better, se3-ws safety system
 - messages to all clients are sent only when player is confirmed to be in game
+- server will no longer crash after receiving a wrong message, certain messages to server were changed
+- anti-cheat improved (there was basically no anti-cheat before)
 
 Bug fixes:
 
 - It was possible to activate pause menu without closing inventory when escape button was released while in inventory
 - junkyard & chat font wasn't supporting characters like ą, ę, ó, ł
-- command /ScrForget had no implemented connection verification

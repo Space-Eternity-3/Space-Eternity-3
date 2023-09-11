@@ -184,7 +184,7 @@ public class SC_upgrades : MonoBehaviour
         if(!(SC_slots.InvHaveB(cii,-cc,true,false,true,0)&&UPG_levels[UPG_selected]<5&&cc!=0)) return;
         
         int slot = SC_slots.InvChange(cii,-cc,true,false,true);
-        if(Communtron4.position.y==100) SC_control.SendMTP("/Upgrade "+SC_control.connectionID+" "+cii+" "+cc+" "+UPG_selected+" "+slot);
+        if(Communtron4.position.y==100) SC_control.SendMTP("/Upgrade "+SC_control.connectionID+" "+UPG_selected+" "+slot);
         else MTP_levels[UPG_selected]++;
         UPG_levels[UPG_selected]++;
         Select(UPG_selected);
