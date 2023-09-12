@@ -65,8 +65,7 @@ public class SC_driller : MonoBehaviour
         int get_type = int.Parse(SC_data.World[a,0,c]);
         if(get_type<0) get_type = 0;
         else get_type = get_type % 16;
-        int ret = SC_asteroid.SetLoot(get_type,true);
-        return ret;
+        return SC_asteroid.SetLoot(get_type);
     }
     void FixedUpdate()
     {
@@ -87,7 +86,7 @@ public class SC_driller : MonoBehaviour
             {
                 drillTime = 1000000;
                 int mined = GetMined();
-                if(mined!=0) SC_Fob21.Fob2Drilled(mined);
+                SC_Fob21.Fob2Drilled(mined);
             }
             if(!drilling) drillTime = 1000000;
             drillTime--;

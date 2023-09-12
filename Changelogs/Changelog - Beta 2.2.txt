@@ -7,7 +7,7 @@ New features:
 
 Old feature changes:
 
-
+- drillers can drill all items from drill loottable now, including magic elements
 
 UI changes:
 
@@ -47,3 +47,4 @@ Bug fixes:
 
 - It was possible to activate pause menu without closing inventory when escape button was released while in inventory
 - junkyard & chat font wasn't supporting characters like ą, ę, ó, ł
+- driller could transform items when more than one item type could be drilled from one asteroid

@@ -63,7 +63,7 @@ public class SC_drill : MonoBehaviour
 			CommuntronM1.position=new Vector3(1f,0f,0f);
 			mined=0;
 
-			if(counter==0) mined=SC_asteroid.SetLoot(type,false);			
+			if(counter==0) mined=SC_asteroid.SetLoot(type);			
 			if(mined>0 && SC_slots.InvHaveB(mined,1,true,true,true,0))
 			{
 				int slot = SC_slots.InvChange(mined,1,true,true,true);

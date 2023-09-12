@@ -1321,12 +1321,7 @@ setInterval(function () { // <interval #2>
            var ulam = drillT[i].split("w")[0];
            var place = drillT[i].split("w")[1];
            serverDrill(ulam, place);
-
-           drillT.remove(i);
-           drillW.remove(i);
-           drillC.remove(i);
-           lngt--;
-           i--;
+           drillC[i] = func.randomInteger(180, 420); //it is two times in a code
          }
         } else {
           drillT.remove(i);
@@ -2043,7 +2038,7 @@ function serverGrow(ulam, place) {
 function serverDrill(ulam, place) {
   var det = asteroidIndex(ulam);
   if (chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == "2") {
-    var gItem = drillGet(det);
+    var gItem = drillGet(det,chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)]);
     if (gItem == "0") return;
     var gCountEnd = func.parseIntU(
       chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)]
@@ -2066,7 +2061,7 @@ function serverDrill(ulam, place) {
     );
   }
 }
-function drillGet(det) {
+function drillGet(det,stackedItem) {
   var typp = func.parseIntU(chunk_data[det[0]][det[1]][0]+"");
   if(typp<0) typp=0;
   else typp = typp % 16;
@@ -2076,8 +2071,11 @@ function drillGet(det) {
   var rnd = func.randomInteger(0, 999);
   var i;
 
-  for (i = 0; i * 3 + 2 < lngt; i++) {
-    if (rnd >= ltdt[i * 3 + 1] && rnd <= ltdt[i * 3 + 2]) return ltdt[i * 3];
+  for (i=0;i*3+2<lngt;i++) {
+    if (rnd >= ltdt[i*3+1] && rnd <= ltdt[i*3+2]) {
+      if(stackedItem==0 || stackedItem=="" || stackedItem==ltdt[i*3]) return ltdt[i*3];
+      else return 0;
+    }
   }
   return 0;
 }
@@ -2106,10 +2104,10 @@ function growActive(ulam) {
           chunk_data[det[0]][det[1]][21 + 2 * i] = tim;
         }
         growT.push(ulam + "g" + i);
-        growW.push(10);
+        growW.push(100);
       }
       ind = growT.indexOf(ulam + "g" + i);
-      growW[ind] = 10;
+      growW[ind] = 100;
     }
     if (
       ["2"].includes(block) &&
@@ -2117,13 +2115,13 @@ function growActive(ulam) {
         chunk_data[det[0]][det[1]][22 + 2 * i] < 5)
     ) {
       if (!drillT.includes(ulam + "w" + i)) {
-        tim = func.randomInteger(180, 420);
+        tim = func.randomInteger(180, 420); //it is two times in a code
         drillT.push(ulam + "w" + i);
-        drillW.push(10);
+        drillW.push(100);
         drillC.push(tim);
       }
       ind = drillT.indexOf(ulam + "w" + i);
-      drillW[ind] = 10;
+      drillW[ind] = 100;
     }
   }
 }
@@ -2184,35 +2182,26 @@ function invChangeTry(invID, item, count, slot) {
 }
 
 //Fobs change functions
-function checkFobTurn(ulam, place, start1, start2) {
-  var det = asteroidIndex(ulam);
-  if (
-    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == start1 ||
-    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == start2
-  )
-    return true;
-  else return false;
-}
 function checkFobChange(ulam, place, start1, start2) {
   var det = asteroidIndex(ulam);
+  if(chunk_data[det[0]][det[1]][0]=="1024") return false;
+
   if (
     chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] != "" &&
-    (start1 == 21 || start2 == 21)
-  )
-    return false; //2 not required, driller item might disappear
+    (start1 == 21 || start2 == 21) //2 not required, driller item might disappear
+  ) return false;
 
   if (
     chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == start1 ||
-    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == start2 ||
-    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == ""
-  )
-    return true;
+    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == start2
+  ) return true;
   else return false;
 }
 function fobChange(ulam, place, end) {
   var det = asteroidIndex(ulam);
   chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] = end;
   nbtReset(ulam, place);
+  growActive(ulam);
 }
 
 //Fob21 change functions
@@ -2686,13 +2675,13 @@ wss.on("connection", function connection(ws) {
       if(!checkPlayerG(arg[1],ws)) return;
 
       if(arg[4]=="40") //dead alien turn
-        if ( checkFobTurn(arg[2], arg[3], "13", "23") || checkFobTurn(arg[2], arg[3], "25", "27") ) {
+        if ( checkFobChange(arg[2], arg[3], "13", "23") || checkFobChange(arg[2], arg[3], "25", "27") ) {
           fobChange(arg[2], arg[3], "40");
           sendToAllPlayers("/RetGeyzerTurn " + arg[2] + " " + arg[3] + " X X");
         }
 
       if(arg[4]=="45") //immortality artefact turn
-        if ( checkFobTurn(arg[2], arg[3], "41", "-1") ) {
+        if ( checkFobChange(arg[2], arg[3], "41", "-1") ) {
           fobChange(arg[2], arg[3], "45");
           sendToAllPlayers("/RetGeyzerTurn " + arg[2] + " " + arg[3] + " X X");
         }
@@ -2927,6 +2916,156 @@ wss.on("connection", function connection(ws) {
       plr.backpack[bpPlaID] = safeCopyB;
       kick(bpPlaID);
     }
+    if(arg[0] == "/ScrRefresh") // 1[PlayerID] 2[bID] 3[inArena]
+    {
+      if(!VerifyCommand(arg,["PlaID","ulam","short"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+
+      var bID = arg[2];
+      var inArena = (arg[3]=="T");
+
+      var lngts = scrs.length;
+      for(i=0;i<lngts;i++)
+      {
+        if(scrs[i].bID==bID)
+        {
+          //Boss found
+          scrs[i].timeToDisappear = 1000;
+          if(inArena) scrs[i].timeToLose = 1000;
+
+          if(!plr.bossMemories[arg[1]].includes(bID))
+            plr.bossMemories[arg[1]].push(bID);
+
+          break;
+        }
+      }
+    }
+    if(arg[0] == "/ScrForget") // 1[PlayerID] 2[bID]
+    {
+      if(!VerifyCommand(arg,["PlaID","ulam"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+
+      var remindex = plr.bossMemories[arg[1]].indexOf(arg[2]);
+      if(remindex!=-1)
+        plr.bossMemories[arg[1]].splice(remindex);
+    }
+    if (arg[0] == "/GrowLoaded") // 1[PlayerID] 2[UlamList]
+    {
+      if(!VerifyCommand(arg,["PlaID","ulamList"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+
+      var tab = arg[2].split(";");
+      var lngt = tab.length - 1;
+      for(i=1;i<lngt;i++) growActive(tab[i]);
+    }
+    if (arg[0] == "/Crafting") // 1[PlaID] 2[CraftID] 3[Slot1] 4[Slot2] 5[SlotE]
+    {
+      console.log(msg);
+      if(!VerifyCommand(arg,["PlaID","CraftID","Slot","SlotIf","Slot"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+      if(arg[msl - 1] != plr.livID[arg[1]]) return;
+
+      var cPlaID = arg[1];
+      var tab = craftings.split(";");
+
+      //first ingredient
+      var cId1 = tab[func.parseIntU(arg[2])*6 + 0];
+      var cCo1 = tab[func.parseIntU(arg[2])*6 + 1];
+      var cSl1 = arg[3];
+
+      //second ingredient
+      var cId2 = tab[func.parseIntU(arg[2])*6 + 2];
+      var cCo2 = tab[func.parseIntU(arg[2])*6 + 3];
+      var cSl2 = arg[4];
+      if(cSl2=="-1" && cCo2!="0") return;
+
+      //crafted item
+      var cIdE = tab[func.parseIntU(arg[2])*6 + 4];
+      var cCoE = tab[func.parseIntU(arg[2])*6 + 5];
+      var cSlE = arg[5];
+
+      console.log(cId1+" "+cId2+" "+cIdE);
+
+      var safeCopyI = plr.inventory[cPlaID];
+      var safeCopyB = plr.backpack[cPlaID];
+
+      if (invChangeTry(cPlaID, cId1, -cCo1, cSl1))
+        if (invChangeTry(cPlaID, cId2, -cCo2, cSl2))
+          if (invChangeTry(cPlaID, cIdE, cCoE, cSlE)) return;
+
+      plr.inventory[cPlaID] = safeCopyI;
+      plr.backpack[cPlaID] = safeCopyB;
+      kick(cPlaID);
+    }
+    //NOT READY COMMAND
+    if (arg[0] == "/FobChange") {
+      //FobChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[startFob] 5[EndFob] 6[Slot]
+      if (!checkPlayerG(arg[1],ws)) return;
+
+      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
+
+      var fPlayerID = arg[1];
+      var fUlamID = arg[2];
+      var fPlaceID = arg[3];
+
+      var fStartFob1 = arg[4];
+      var fStartFob2 = "from startFob1";
+      var fEndFob = arg[5];
+
+      var fDropID = "from modified drops";
+      var fCount = "from modified drops";
+      var fSlot = arg[6];
+
+      var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
+
+      if ((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) ||
+         (["13", "23", "25", "27"].includes(fStartFob1) &&
+         checkFobChange(fUlamID, fPlaceID, "40", "-1"))) && !overolded)
+      {
+        if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
+        {
+          fobChange(fUlamID, fPlaceID, fEndFob);
+          fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
+          sendToAllPlayers(
+            "/RetFobsChange " +
+              fUlamID + " " +
+              fPlaceID + " " +
+              fEndFob + " " +
+              fFob21TT +
+              " X X"
+          );
+          sendTo(ws,
+            "/RetInventory " +
+              fPlayerID + " " +
+              fDropID + " 0 " +
+              fSlot + " " +
+              -fCount +
+              " X " + plr.livID[fPlayerID]
+          );
+          return;
+        }
+        else kick(fPlayerID);
+      }
+
+      //If failied
+      sendTo(ws,
+        "/RetFobsChange " +
+          fUlamID + " " +
+          fPlaceID + " " +
+          getBlockAt(fUlamID, fPlaceID) + " " +
+          fFob21TT +
+          " X X"
+      );
+      sendTo(ws,
+        "/RetInventory " +
+          fPlayerID + " " +
+          fDropID + " " +
+          -fCount + " " +
+          fSlot + " " +
+          fCount +
+          " X " + plr.livID[fPlayerID]
+      );
+    }
 
 
     //---------------//
@@ -2934,14 +3073,71 @@ wss.on("connection", function connection(ws) {
     //---------------//
 
 
-    if (arg[0] == "/GrowLoaded") {
-      //GrowLoaded 1[Data] 2[PlayerID]
-      if (!checkPlayerG(arg[2],ws)) return;
+    if (arg[0] == "/FobsChange") {
+      //FobsChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[startFob1] 5[startFob2] 6[EndFob] 7[DropID] 8[Count] 9[Slot]
+      if (!checkPlayerG(arg[1],ws)) return;
 
-      var glTab = arg[1].split(";");
-      var ji,
-        glLngt = glTab.length - 1;
-      for (ji = 1; ji < glLngt; ji++) growActive(glTab[ji]);
+      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
+
+      var fPlayerID = arg[1];
+      var fUlamID = arg[2];
+      var fPlaceID = arg[3];
+      var fStartFob1 = arg[4];
+      var fStartFob2 = arg[5];
+      var fEndFob = arg[6];
+      var fDropID = arg[7];
+      var fCount = arg[8];
+      var fSlot = arg[9];
+
+      var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
+
+      if ((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) ||
+         (["13", "23", "25", "27"].includes(fStartFob1) &&
+         checkFobChange(fUlamID, fPlaceID, "40", "-1"))) && !overolded)
+      {
+        if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
+        {
+          fobChange(fUlamID, fPlaceID, fEndFob);
+          fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
+          sendToAllPlayers(
+            "/RetFobsChange " +
+              fUlamID + " " +
+              fPlaceID + " " +
+              fEndFob + " " +
+              fFob21TT +
+              " X X"
+          );
+          sendTo(ws,
+            "/RetInventory " +
+              fPlayerID + " " +
+              fDropID + " 0 " +
+              fSlot + " " +
+              -fCount +
+              " X " + plr.livID[fPlayerID]
+          );
+          return;
+        }
+        else kick(fPlayerID);
+      }
+
+      //If failied
+      sendTo(ws,
+        "/RetFobsChange " +
+          fUlamID + " " +
+          fPlaceID + " " +
+          getBlockAt(fUlamID, fPlaceID) + " " +
+          fFob21TT +
+          " X X"
+      );
+      sendTo(ws,
+        "/RetInventory " +
+          fPlayerID + " " +
+          fDropID + " " +
+          -fCount + " " +
+          fSlot + " " +
+          fCount +
+          " X " + plr.livID[fPlayerID]
+      );
     }
     if (arg[0] == "/AsteroidData") {
       //AsteroidData 1[UlamID] 2[generation_code] 3[PlayerID]
@@ -3062,107 +3258,6 @@ wss.on("connection", function connection(ws) {
         else return;
       }
     }
-    if(arg[0] == "/ScrRefresh")
-    {
-      //ScrRefresh 1[PlayerID] 2[bID] 3[inArena]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var bID = arg[2];
-      var inArena = (arg[3]=="T");
-
-      var lngts = scrs.length;
-      for(i=0;i<lngts;i++)
-      {
-        if(scrs[i].bID==bID)
-        {
-          //Boss found
-          scrs[i].timeToDisappear = 1000;
-          if(inArena) scrs[i].timeToLose = 1000;
-
-          if(!plr.bossMemories[arg[1]].includes(bID))
-            plr.bossMemories[arg[1]].push(bID);
-
-          break;
-        }
-      }
-    }
-    if(arg[0] == "/ScrForget")
-    {
-      //ScrForget 1[PlayerID] 2[bID]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var bID = arg[2];
-
-      var remindex = plr.bossMemories[arg[1]].indexOf(bID);
-      if(remindex!=-1)
-        plr.bossMemories[arg[1]].splice(remindex);
-    }
-    if (arg[0] == "/FobsChange") {
-      //FobsChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[startFob1] 5[startFob2] 6[EndFob] 7[DropID] 8[Count] 9[Slot]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
-
-      var fPlayerID = arg[1];
-      var fUlamID = arg[2];
-      var fPlaceID = arg[3];
-      var fStartFob1 = arg[4];
-      var fStartFob2 = arg[5];
-      var fEndFob = arg[6];
-      var fDropID = arg[7];
-      var fCount = arg[8];
-      var fSlot = arg[9];
-
-      var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
-
-      if ((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) ||
-         (["13", "23", "25", "27"].includes(fStartFob1) &&
-         checkFobChange(fUlamID, fPlaceID, "40", "-1"))) && !overolded)
-      {
-        if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
-        {
-          fobChange(fUlamID, fPlaceID, fEndFob);
-          fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
-          sendToAllPlayers(
-            "/RetFobsChange " +
-              fUlamID + " " +
-              fPlaceID + " " +
-              fEndFob + " " +
-              fFob21TT +
-              " X X"
-          );
-          sendTo(ws,
-            "/RetInventory " +
-              fPlayerID + " " +
-              fDropID + " 0 " +
-              fSlot + " " +
-              -fCount +
-              " X " + plr.livID[fPlayerID]
-          );
-          return;
-        }
-        else kick(fPlayerID);
-      }
-
-      //If failied
-      sendTo(ws,
-        "/RetFobsChange " +
-          fUlamID + " " +
-          fPlaceID + " " +
-          getBlockAt(fUlamID, fPlaceID) + " " +
-          fFob21TT +
-          " X X"
-      );
-      sendTo(ws,
-        "/RetInventory " +
-          fPlayerID + " " +
-          fDropID + " " +
-          -fCount + " " +
-          fSlot + " " +
-          fCount +
-          " X " + plr.livID[fPlayerID]
-      );
-    }
     if (arg[0] == "/FobsTurn") {
       //FobsTurn 1[PlayerID] 2[ulam] 3[place] 4[start1] 5[start2] 6[end]
       if (!checkPlayerG(arg[1],ws)) return;
@@ -3190,36 +3285,6 @@ wss.on("connection", function connection(ws) {
       var liSlot = arg[4];
 
       if (!invChangeTry(liPlaID, liItem, liCount, liSlot)) kick(liPlaID);
-    }
-    if (arg[0] == "/Craft") {
-      //Craft 1[PlaID] 2[Id1] 3[Co1] 4[Sl1] 5[Id2] 6[Co2] 7[Sl2] 8[IdE] 9[CoE] 10[SlE]
-      if (!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl - 1] != plr.livID[arg[1]]) return;
-
-      var cPlaID = arg[1];
-
-      var cId1 = arg[2];
-      var cCo1 = arg[3];
-      var cSl1 = arg[4];
-
-      var cId2 = arg[5];
-      var cCo2 = arg[6];
-      var cSl2 = arg[7];
-
-      var cIdE = arg[8];
-      var cCoE = arg[9];
-      var cSlE = arg[10];
-
-      var safeCopyI = plr.inventory[cPlaID];
-      var safeCopyB = plr.backpack[cPlaID];
-
-      if (invChangeTry(cPlaID, cId1, cCo1, cSl1))
-        if (invChangeTry(cPlaID, cId2, cCo2, cSl2))
-          if (invChangeTry(cPlaID, cIdE, cCoE, cSlE)) return;
-
-      plr.inventory[cPlaID] = safeCopyI;
-      plr.backpack[cPlaID] = safeCopyB;
-      kick(cPlaID);
     }
     if (arg[0] == "/NewBulletSend") {
       //NewBulletSend 1[PlayerID] 2[type] 3,4[position] 5,6[vector] 7[ID] 8[damage]
@@ -3338,7 +3403,6 @@ function VerifyCommand(args,formats)
     var test = args[i];
     if(sw!="s")
     {
-      if(false) console.log(test+" -> "+sw);
       if(sw=="EndID") {
         var p = func.parseIntP(test);
         if(isNaN(p)) return false;
@@ -3435,6 +3499,11 @@ function VerifyCommand(args,formats)
         if(isNaN(p)) return false;
         if(p < 0 || p > 25) return false;
       }
+      else if(sw=="SlotIf") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < -1 || p > 25) return false;
+      }
       else if(sw=="SlotI") {
         var p = func.parseIntP(test);
         if(isNaN(p)) return false;
@@ -3460,6 +3529,23 @@ function VerifyCommand(args,formats)
       }
       else if(sw=="StorageID") {
         if(!["2","52","21"].includes(test)) return false;
+      }
+      else if(sw=="ulamList") {
+        var splitTab = test.split(";");
+        var j,jngt = splitTab.length - 1;
+        if(jngt >= 512) return false;
+        for(j=1;j<jngt;j++)
+        {
+          var p = func.parseIntP(splitTab[j]);
+          if(isNaN(p)) return false;
+          if(p <= 1 || p > 1700000000) return false;
+        }
+      }
+      else if(sw=="CraftID") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p >= craftings.split(";").length/6) return false;
+        if(p % 7 >= 5) return false;
       }
       else console.log("Error: Unknown format: "+sw);
     }

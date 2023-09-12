@@ -191,7 +191,7 @@ public class SC_control : MonoBehaviour {
 	
 	bool escaped = false;
 	string RPU = "XXX";
-	int MTPloadedCounter=5;
+	int MTPloadedCounter=0;
 	Quaternion lock_rot = new Quaternion(0f,0f,0f,0f);
 	
 	public bool impulse_enabled;
@@ -963,9 +963,11 @@ public class SC_control : MonoBehaviour {
 		//Grow Loaded
 		if((int)Communtron4.position.y==100)
 		{
-			if(MTPloadedCounter==5) SendMTP("/GrowLoaded "+string.Join(";",SC_fun.GenListsB0)+"; "+connectionID);
-			MTPloadedCounter--;
-			if(MTPloadedCounter==0) MTPloadedCounter=5;
+			if(MTPloadedCounter==400) { //every 8 seconds, but disappears after 10 seconds
+				SendMTP("/GrowLoaded "+connectionID+" "+string.Join(";",SC_fun.GenListsB0)+";");
+				MTPloadedCounter = 0;
+			}
+			MTPloadedCounter++;
 		}
 
 		//something engine

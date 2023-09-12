@@ -131,7 +131,8 @@ public class SC_craft2 : MonoBehaviour {
 		
 		if((int)Communtron4.position.y==100)
 		{
-			SC_control.SendMTP("/Craft "+SC_control.connectionID+" "+id1+" "+co1+" "+sl1+" "+id2+" "+co2+" "+sl2+" "+idE+" "+coE+" "+slE);
+			//SC_control.SendMTP("/Craft "+SC_control.connectionID+" "+id1+" "+co1+" "+sl1+" "+id2+" "+co2+" "+sl2+" "+idE+" "+coE+" "+slE);
+			SC_control.SendMTP("/Crafting "+SC_control.connectionID+" "+(id-1)+" "+sl1+" "+sl2+" "+slE);
 		}
 	}
 	public void ResetSpawn()

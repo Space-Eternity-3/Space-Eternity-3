@@ -402,7 +402,7 @@ public class SC_asteroid : MonoBehaviour {
 		if(strucutral_parent!=null)
 			strucutral_parent.GetComponent<SC_structure>().scaling_blocker--;
 	}
-	public int SetLoot(int typp, bool only_one)
+	public int SetLoot(int typp)
 	{
 		if(typp<0 || typp>15) return 0;
 
@@ -425,10 +425,7 @@ public class SC_asteroid : MonoBehaviour {
 		for(i=0;i<lngt;i++)
 		{
 			if(rand>=min[i]&&rand<=max[i])
-			{
-				if(!only_one || i==0) return idn[i];
-				else return 0;
-			}
+				return idn[i];
 		}
 		return 0;
 	}
