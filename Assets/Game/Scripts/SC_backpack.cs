@@ -135,7 +135,7 @@ public class SC_backpack : MonoBehaviour
         SC_slots.BackpackYA[16] += yy;
         SC_slots.BackpackYB[16] += yy;
 
-        if((int)Communtron4.position.y==100) SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" "+xx+" "+yy+" "+sl);
+        if((int)Communtron4.position.y==100) SC_control.SendMTP("/JunkDiscard "+SC_control.connectionID+" "+xx+" "+yy);
     }
     void LateUpdate()
     {

@@ -25,7 +25,7 @@ public class SC_inv_mover : MonoBehaviour {
 	void Update()
 	{
 		//Inventory extender
-		if(inv && !SC_control.timeStop)
+		if(inv && !SC_control.pause)
 		{
 			if(!active && Input.GetKeyDown(KeyCode.E) && !SC_control.SC_chat.typing && Communtron1.position.z==0f)
 				active=true;

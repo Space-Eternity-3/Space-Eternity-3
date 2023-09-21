@@ -202,6 +202,9 @@ public class SC_control : MonoBehaviour {
 
 	public bool flag_impulse_start = false;
 	public bool flag_invisibility_pulse = false;
+
+	public int ActualDrillGroup = 0;
+	public int ActualDrillType = -1;
 	
 	float V_to_F(float V,bool turboo)
 	{
@@ -265,38 +268,23 @@ public class SC_control : MonoBehaviour {
 		
 		if(SC_effect.effect!=8 && wr_tick && wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100) && wr_unstabling)
 		{
-			int slot, typ = 1;
+			int slot=-1, typ = 1;
 
 			//Bullet types
-			if(SC_slots.InvHaving(24))
-			{
-				typ = 1;
-				slot = SC_slots.InvChange(24,-1,true,false,true);
-				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 24 -1 "+slot);
+			if(SC_slots.InvHaving(24)) {
+				typ = 1; slot = SC_slots.InvChange(24,-1,true,false,true);
 			}
-			else if(SC_slots.InvHaving(39))
-			{
-				typ = 2;
-				slot = SC_slots.InvChange(39,-1,true,false,true);
-				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 39 -1 "+slot);
+			else if(SC_slots.InvHaving(39)) {
+				typ = 2; slot = SC_slots.InvChange(39,-1,true,false,true);
 			}
-			else if(SC_slots.InvHaving(48))
-			{
-				typ = 3;
-				slot = SC_slots.InvChange(48,-1,true,false,true);
-				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 48 -1 "+slot);
+			else if(SC_slots.InvHaving(48)) {
+				typ = 3; slot = SC_slots.InvChange(48,-1,true,false,true);
 			}
-			else if(SC_slots.InvHaving(64))
-			{
-				typ = 14;
-				slot = SC_slots.InvChange(64,-1,true,false,true);
-				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 64 -1 "+slot);
+			else if(SC_slots.InvHaving(64)) {
+				typ = 14; slot = SC_slots.InvChange(64,-1,true,false,true);
 			}
-			else if(SC_slots.InvHaving(65))
-			{
-				typ = 15;
-				slot = SC_slots.InvChange(65,-1,true,false,true);
-				if((int)Communtron4.position.y==100) SendMTP("/InventoryChange "+connectionID+" 65 -1 "+slot);
+			else if(SC_slots.InvHaving(65)) {
+				typ = 15; slot = SC_slots.InvChange(65,-1,true,false,true);
 			}
 
 			int coltyp = 0;
@@ -316,7 +304,8 @@ public class SC_control : MonoBehaviour {
 				new Vector3(xpo,ypo,0f),
 				playerR.velocity*0.02f,
 				typ,
-				0
+				0,
+				"I "+slot
 			);
 			SC_invisibler.invisible = false;
 		}
@@ -342,7 +331,8 @@ public class SC_control : MonoBehaviour {
 				new Vector3(xpo,ypo,0f),
 				playerR.velocity*0.02f,
 				3,
-				0
+				0,
+				"A 0"
 			);
 		}
 
@@ -358,8 +348,7 @@ public class SC_control : MonoBehaviour {
 				}
 				int slot = SC_slots.InvChange(55,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
-					SendMTP("/InventoryChange "+connectionID+" 55 -1 "+slot);
-					SendMTP("/Heal "+connectionID+" 1");
+					SendMTP("/Potion "+connectionID+" 1 "+slot);
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
 					healBalance += float.Parse(SC_data.Gameplay[31]);
 				}
@@ -377,7 +366,7 @@ public class SC_control : MonoBehaviour {
 				}
 				int slot = SC_slots.InvChange(57,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
-					SendMTP("/InventoryChange "+connectionID+" 57 -1 "+slot);
+					SendMTP("/Potion "+connectionID+" 4 "+slot);
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 12 0 0");
 				}
 				turbo_V = 1f;
@@ -394,7 +383,7 @@ public class SC_control : MonoBehaviour {
 				}
 				int slot = SC_slots.InvChange(59,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
-					SendMTP("/InventoryChange "+connectionID+" 59 -1 "+slot);
+					SendMTP("/Potion "+connectionID+" 5 "+slot);
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 13 0 0");
 				}
 				power_V = 1f;
@@ -411,8 +400,7 @@ public class SC_control : MonoBehaviour {
 				}
 				int slot = SC_slots.InvChange(61,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
-					SendMTP("/InventoryChange "+connectionID+" 61 -1 "+slot);
-					SendMTP("/Heal "+connectionID+" 2");
+					SendMTP("/Potion "+connectionID+" 2 "+slot);
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 14 0 0");
 					healBalance += float.Parse(SC_data.Gameplay[39]);
 				}
@@ -431,7 +419,7 @@ public class SC_control : MonoBehaviour {
 				}
 				int slot = SC_slots.InvChange(63,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
-					SendMTP("/InventoryChange "+connectionID+" 63 -1 "+slot);
+					SendMTP("/Potion "+connectionID+" 6 "+slot);
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 15 0 0");
 				}
 				DamageFLOAT(float.Parse(SC_data.Gameplay[35]));
@@ -449,8 +437,7 @@ public class SC_control : MonoBehaviour {
 				}
 				int slot = SC_slots.InvChange(71,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
-					SendMTP("/InventoryChange "+connectionID+" 71 -1 "+slot);
-					SendMTP("/Heal "+connectionID+" 3");
+					SendMTP("/Potion "+connectionID+" 3 "+slot);
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 17 0 0");
 					healBalance += 10000f;
 				}
@@ -461,6 +448,15 @@ public class SC_control : MonoBehaviour {
 			}
 			else InfoUp("Potion blocked",380);
 		}
+
+		/* Potion sending IDs
+		1 - healing
+		2 - blank
+		3 - max
+	   *4 - turbo
+	   *5 - power
+	   *6 - killing
+		*/
 		
 		}
 		if(power_V<0f) power_V=0f; if(power_V>1f) power_V=1f;
@@ -1058,7 +1054,8 @@ public class SC_control : MonoBehaviour {
 					new Vector3(ux,uy,0f),
 					playerR.velocity*0.02f,
 					3,
-					0
+					0,
+					"U 0"
 				);
 				
 				Quaternion quat_foo = new Quaternion(0f,0f,0f,0f);
@@ -1203,8 +1200,7 @@ public class SC_control : MonoBehaviour {
 					"/PlayerUpdate "+connectionID+" "+
 
 					trX+";"+trY+";;;"+transform.rotation.eulerAngles.z+";"+
-					sendOther+"&"+sendOtherParasite+";"+
-					rpX+";"+rpY+";;"+
+					sendOther+"&"+sendOtherParasite+";;;;"+
 					fuB+";;"+poB+" "+
 					
 					localPing+" "+immID+" "+isImpulse + isImpulseStart + isInviPulse
@@ -1866,6 +1862,19 @@ public class SC_control : MonoBehaviour {
 		{
 			//RetInventory [connectionID] [item] [deltaCount] [slot]
 			if(arg[1]==connectionID+"") SC_slots.InvCorrectionMTP(int.Parse(arg[2]),int.Parse(arg[3]),int.Parse(arg[4]),int.Parse(arg[5]));
+		}
+		if(arg[0]=="/RetDrillReady")
+		{
+			int mined = int.Parse(arg[1]);
+			int group = int.Parse(arg[2]);
+			bool actualDrill = group==ActualDrillGroup && ActualDrillType!=-1;
+			if(actualDrill && SC_slots.InvHaveB(mined,1,true,true,true,0))
+			{
+				int slot = SC_slots.InvChange(mined,1,true,true,true);
+				SendMTP("/DrillGet "+connectionID+" "+mined+" "+slot);
+			}
+			else SendMTP("/DrillGet "+connectionID+" "+mined+" 25");
+			if(actualDrill) SendMTP("/DrillAsk "+connectionID+" "+ActualDrillType+" "+ActualDrillGroup);
 		}
 
 		//Other scripts

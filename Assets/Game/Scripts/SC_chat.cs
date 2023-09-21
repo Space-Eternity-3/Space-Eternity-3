@@ -120,7 +120,7 @@ public class SC_chat : MonoBehaviour
                 line_timers[j] = 0;
 
         //Chat input activator
-		if(!SC_control.timeStop)
+		if(!SC_control.pause)
 		{
 			if(!typing && (Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown("/")) && !SC_control.SC_inv_mover.active && SC_control.Communtron1.position.z==0f)
             {

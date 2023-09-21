@@ -6,12 +6,12 @@ public class SC_drill : MonoBehaviour
 {
 	//WARNING! PUBLIC VARIABLES REQUIRED TO SET IN SC_structure
 
-    bool Mining=false;
+    public bool Mining=false;
     int counter=-1;
     public int type=-1;
 	public bool freeze = false;
 
-	int down=10, up=20;
+	int down, up;
 
     public Transform rHydrogenParticles;
 
@@ -42,33 +42,51 @@ public class SC_drill : MonoBehaviour
 			Mining=false;
 		}
 	}
-	void Start()
+	int GetTimeDrill()
 	{
-		down = (int)(SC_asteroid.upg3down/Mathf.Pow(SC_asteroid.upg3hugity,SC_upgrades.MTP_levels[2]+float.Parse(SC_data.Gameplay[2])));
-		up = (int)(SC_asteroid.upg3up/Mathf.Pow(SC_asteroid.upg3hugity,SC_upgrades.MTP_levels[2]+float.Parse(SC_data.Gameplay[2])));
+		float matpow = Mathf.Pow(SC_asteroid.upg3hugity,SC_upgrades.MTP_levels[2]+float.Parse(SC_data.Gameplay[2]));
+		down = (int)(SC_asteroid.upg3down/matpow);
+		up = (int)(SC_asteroid.upg3up/matpow);
+		return UnityEngine.Random.Range(down,up+1);
 	}
-	int GetTimeDrill() {
-		return UnityEngine.Random.Range(down,up);
-	}
+	bool make_drill_start = true;
+	bool make_drill_end = false;
     void FixedUpdate()
     {
 		counter++;
         if(!Input.GetMouseButton(0)) counter=1;
 		if(counter==1) counter=-GetTimeDrill();
-		int mined;
 
 		if(Communtron1.localScale==new Vector3(2f,2f,2f)&&Mining&&Communtron1.position.z==0f&&(Communtron3.position.y==0f||CommuntronM1.position.x==1f)&&Input.GetMouseButton(0))
 		{
+			if(make_drill_start)
+			{
+				SC_control.ActualDrillGroup++;
+				if((int)Communtron4.position.y == 100)
+					SC_control.SendMTP("/DrillAsk "+SC_control.connectionID+" "+type+" "+SC_control.ActualDrillGroup);
+				
+				make_drill_start = false;
+				make_drill_end = true;
+			}
+			SC_control.ActualDrillType=type;
+
 			rHydrogenParticles.localPosition=new Vector3(0f,1.9f,0f);
 			CommuntronM1.position=new Vector3(1f,0f,0f);
-			mined=0;
 
-			if(counter==0) mined=SC_asteroid.SetLoot(type);			
-			if(mined>0 && SC_slots.InvHaveB(mined,1,true,true,true,0))
+			if((int)Communtron4.position.y != 100)
 			{
-				int slot = SC_slots.InvChange(mined,1,true,true,true);
-				if((int)Communtron4.position.y == 100) SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" "+mined+" 1 "+slot);
+				int mined=0;
+				if(counter==0) mined=SC_asteroid.SetLoot(type);			
+				if(mined>0 && SC_slots.InvHaveB(mined,1,true,true,true,0))
+					SC_slots.InvChange(mined,1,true,true,true);
 			}
+		}
+		else if(make_drill_end)
+		{
+			SC_control.ActualDrillType=-1;
+
+			make_drill_end = false;
+			make_drill_start = true;
 		}
 		if((!(Communtron1.localScale==new Vector3(2f,2f,2f) && Input.GetMouseButton(0)))&&Communtron1.position.z==0f)
 		{

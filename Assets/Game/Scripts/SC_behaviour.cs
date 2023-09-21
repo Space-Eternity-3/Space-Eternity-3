@@ -161,7 +161,8 @@ public class CInfo
 			new Vector3(0f,0f,0f),
 			new Vector3(vx,vy,0f),
 			typ,
-			bidf
+			bidf,
+            "-"
 		);
     }
     public void CleanBullets(int bidf)

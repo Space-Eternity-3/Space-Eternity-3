@@ -75,7 +75,7 @@ public class SC_craft2 : MonoBehaviour {
 				int slot = SC_slots.InvChange(20,-1,true,false,true);
 				if((int)Communtron4.position.y==100)
 				{
-					SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" 20 -1 "+slot);
+					SC_control.SendMTP("/SetRespawn "+SC_control.connectionID+" "+slot+" "+player.position.x+" "+player.position.y);
 					SC_control.SendMTP("/EmitParticles "+SC_control.connectionID+" 3 "+player.position.x+" "+player.position.y);
 				}
 				Instantiate(R_set_particles,player.position,player.rotation);
@@ -130,10 +130,7 @@ public class SC_craft2 : MonoBehaviour {
 		int slE = SC_slots.InvChange(idE,coE,true,bpkPg,true); 
 		
 		if((int)Communtron4.position.y==100)
-		{
-			//SC_control.SendMTP("/Craft "+SC_control.connectionID+" "+id1+" "+co1+" "+sl1+" "+id2+" "+co2+" "+sl2+" "+idE+" "+coE+" "+slE);
 			SC_control.SendMTP("/Crafting "+SC_control.connectionID+" "+(id-1)+" "+sl1+" "+sl2+" "+slE);
-		}
 	}
 	public void ResetSpawn()
 	{
@@ -142,7 +139,7 @@ public class SC_craft2 : MonoBehaviour {
 			int slot = SC_slots.InvChange(10,3,true,true,true);
 			if((int)Communtron4.position.y==100)
 			{
-				SC_control.SendMTP("/InventoryChange "+SC_control.connectionID+" 10 3 "+slot);
+				SC_control.SendMTP("/SetRespawn "+SC_control.connectionID+" "+slot+" 0 0");
 			}
 			respawn_point.position=new Vector3(0f,0f,1f);
 		}

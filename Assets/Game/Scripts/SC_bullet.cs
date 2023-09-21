@@ -58,7 +58,7 @@ public class SC_bullet : MonoBehaviour
     public float normal_damage = 0;
     public bool is_unstable = false;
 
-    public SC_bullet Shot(Vector3 position, Vector3 vector, Vector3 delta, int typ, int gun_own)
+    public SC_bullet Shot(Vector3 position, Vector3 vector, Vector3 delta, int typ, int gun_own, string mtp_source)
     {
         SC_bullet gob = Instantiate(gameObject, position, Quaternion.identity).GetComponent<SC_bullet>();
         SC_control.SC_lists.AddTo_SC_bullet(gob);
@@ -113,7 +113,8 @@ public class SC_bullet : MonoBehaviour
                 typ+" "+
                 position.x+" "+position.y+" "+
                 gob.st_vect.x+" "+gob.st_vect.y+" "+
-                gob.ID+" "+gob.normal_damage
+                gob.ID+" "+gob.normal_damage+" "+
+                mtp_source
             );
         
         return gob;
