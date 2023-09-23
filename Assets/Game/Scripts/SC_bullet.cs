@@ -108,13 +108,13 @@ public class SC_bullet : MonoBehaviour
 
         if(multiplayer)
             SC_control.SendMTP(
-                "/NewBulletSend "+
+                "/BulletSend "+
                 SC_control.connectionID+" "+
                 typ+" "+
-                position.x+" "+position.y+" "+
                 gob.st_vect.x+" "+gob.st_vect.y+" "+
-                gob.ID+" "+gob.normal_damage+" "+
-                mtp_source
+                gob.ID+" "+
+                mtp_source+" "+
+                position.x+" "+position.y
             );
         
         return gob;
@@ -212,7 +212,7 @@ public class SC_bullet : MonoBehaviour
 
         if(controller && multiplayer)
             SC_control.SendMTP(
-                "/NewBulletRemove "+
+                "/BulletRemove "+
                 SC_control.connectionID+" "+
                 ID+" "+
                 age

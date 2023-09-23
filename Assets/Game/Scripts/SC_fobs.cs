@@ -420,7 +420,7 @@ public class SC_fobs : MonoBehaviour
             if((bul.type==BulletID || BulletID==0) && (ShotID!=48 || !bul.virtuall))
             {
                 if(multiplayer)
-                    SC_control.SendMTP("/FobsTurn "+SC_control.connectionID+" "+ID+" "+index+" "+ObjID+" "+ObjID2+" "+ShotID);
+                    SC_control.SendMTP("/ShotTurn "+SC_control.connectionID+" "+ID+" "+index+" "+ObjID+" "+bul.ID);
                 else
                     Replace(ShotID,multiplayer);
             }

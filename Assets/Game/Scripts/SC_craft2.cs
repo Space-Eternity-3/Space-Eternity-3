@@ -75,7 +75,7 @@ public class SC_craft2 : MonoBehaviour {
 				int slot = SC_slots.InvChange(20,-1,true,false,true);
 				if((int)Communtron4.position.y==100)
 				{
-					SC_control.SendMTP("/SetRespawn "+SC_control.connectionID+" "+slot+" "+player.position.x+" "+player.position.y);
+					SC_control.SendMTP("/SetRespawn "+SC_control.connectionID+" "+slot+" 1 1");
 					SC_control.SendMTP("/EmitParticles "+SC_control.connectionID+" 3 "+player.position.x+" "+player.position.y);
 				}
 				Instantiate(R_set_particles,player.position,player.rotation);
