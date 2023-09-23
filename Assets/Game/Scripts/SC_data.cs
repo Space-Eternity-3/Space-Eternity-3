@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine.SceneManagement;
 using System.Threading;
 using System.Globalization;
+using System.Diagnostics;
 using SFB;
 
 public class SC_data : MonoBehaviour
@@ -320,7 +321,6 @@ public class SC_data : MonoBehaviour
         CloseWrite();
         crashed=true;
         UnityEngine.Debug.LogError(nam+" can not be saved.");
-        Application.Quit();
     }
     void ResetAwakeUniversal()
     {
@@ -377,6 +377,9 @@ public class SC_data : MonoBehaviour
     }
     void PreAwake()
     {
+        //Start handling errors
+        Application.logMessageReceivedThreaded += HandleLog;
+
 		//Culture set to comma (India converter)
 		System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("pl-PL");
 
@@ -513,7 +516,6 @@ public class SC_data : MonoBehaviour
             }catch(Exception)
             {
                 UnityEngine.Debug.LogError("Broken file can't be deleted.");
-                Application.Quit();
                 throw;
             }
 
@@ -583,7 +585,6 @@ public class SC_data : MonoBehaviour
             }catch(Exception)
             {
                 UnityEngine.Debug.LogError("Broken file can't be deleted.");
-                Application.Quit();
                 throw;
             }
 
@@ -858,7 +859,6 @@ public class SC_data : MonoBehaviour
                     }catch(Exception)
                     {
                         UnityEngine.Debug.LogError("Broken file can't be deleted.");
-                        Application.Quit();
                         throw;
                     }
                     return GetAsteroid(X,Y);
@@ -981,7 +981,6 @@ public class SC_data : MonoBehaviour
         {
             UnityEngine.Debug.LogError("Datapack jse3 critical error: "+e);
             datapack_name.text="ERROR";
-            Application.Quit();
         }
     }
     string ConstructPsPath(string[] tab, string var, int n)
@@ -1634,4 +1633,34 @@ public class SC_data : MonoBehaviour
 		
 		return eff;
 	}
+
+    //Error handlers
+    public static void SaveErrorLog(string errorMessage)
+    {
+        string logFileName = "crash.log";
+        string logEntry = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] {errorMessage}";
+
+        try
+        {
+            using (StreamWriter writer = new StreamWriter(logFileName, true)) {
+                writer.WriteLine(logEntry);
+            }
+            #if !UNITY_EDITOR
+            Process.Start("notepad.exe", logFileName);
+            #endif
+        }
+        catch (Exception) {}
+    }
+    void HandleLog(string logString, string stackTrace, LogType type)
+    {
+        if (type == LogType.Error || type == LogType.Exception)
+        {
+            SaveErrorLog(logString);
+            Application.Quit();
+        }
+    }
+    void OnDestroy()
+    {
+        Application.logMessageReceivedThreaded -= HandleLog;
+    }
 }

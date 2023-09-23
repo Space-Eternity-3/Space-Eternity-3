@@ -89,7 +89,9 @@ public class SC_bars : MonoBehaviour
 			int int_act = (int)act_health;
 			if(int_act==0) int_act=1;
 			BossHealthText.text = "Boss "+int_act+"/"+(int)max_health;
-			boss_ui_bar.value = act_health / max_health;
+			float job_value = act_health / max_health;
+			if(job_value>=0 && job_value<=1) boss_ui_bar.value = job_value;
+			else boss_ui_bar.value = 0;
 		}
 		else
 		{

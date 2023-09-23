@@ -98,8 +98,8 @@ public class SC_camera : MonoBehaviour {
 	}
 	void Awake()
 	{
-		fullS=Screen.fullScreen;
 		SC_data.CollectAwakeUniversal();
+		fullS=Screen.fullScreen;
 		if(SC_data.crashed) return;
 
 		camZ=float.Parse(SC_data.camera_zoom);

@@ -19,7 +19,9 @@ UI changes:
 
 Default datapack changes:
 
-
+- cementery chance changed: 2% -> 2,7%
+- dark cementery chance changed: 1% -> 1,3%
+- that means all cementery chance changed: 3% -> 4%
 
 Configurables:
 
@@ -41,7 +43,8 @@ Important technical changes:
 - conID safety system replaced with better, se3-ws safety system
 - messages to all clients are sent only when player is confirmed to be in game
 - server will no longer crash after receiving a wrong message, certain messages to server were changed
-- anti-cheat improved (there was basically no anti-cheat before)
+- server anti-cheat improved (there was completely no anti-cheat before)
+- game will close immediately after exception or error and save its crash into crash.log file
 
 Bug fixes:
 
@@ -50,3 +53,4 @@ Bug fixes:
 - junkyard & chat font wasn't supporting characters like ą, ę, ó, ł
 - driller could transform items when more than one item type could be drilled from one asteroid
 - drill upgrade was not affecting loot until asteroid reloading
+- boss health had visible negative value part after defeating a boss, it was noticeable only when max boss health was very small
