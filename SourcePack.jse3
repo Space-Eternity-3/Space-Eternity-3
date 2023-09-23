@@ -148,6 +148,7 @@ modified_drops
 	large_amethyst: small_amethyst(3);
 	big_bush: bush(3);
 	medium_diamond: small_diamond(2);
+	magnetic_alien_activated: magnetic_alien;
 }
 gameplay
 {
@@ -221,7 +222,7 @@ gameplay
 	<BULLET SPEEDS>
 	copper_bullet_speed: 0,45;
 	red_bullet_speed: 0,45;
-	unstable_bullet_speed: 0,35;
+	unstable_bullet_speed: 0,4;
 	fire_bullet_speed: 0,4;
 	coal_bullet_speed: 0,45;
 	boss_bullet_speed: 0,35;

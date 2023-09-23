@@ -97,10 +97,13 @@ public class SC_fobs : MonoBehaviour
         } catch (Exception) { return "8;1"; }
         return "8;1";
     }
-    void MTPsend(int st1, int st2, int ed, int di, int dc, int sl)
+    void SendPlace(int fob,int slot)
     {
-        //FobsChange [ConnectionID] [UlamID] [index] [StartID] [Start2ID] [EndID] [Item] [Count] [Slot]
-        SC_control.SendMTP("/FobsChange "+SC_control.connectionID+" "+ID+" "+index+" "+st1+" "+st2+" "+ed+" "+di+" "+dc+" "+sl);
+        SC_control.SendMTP("/FobPlace "+SC_control.connectionID+" "+ID+" "+index+" "+fob+" "+slot);
+    }
+    void SendBreak(int fob,int slot)
+    {
+        SC_control.SendMTP("/FobBreak "+SC_control.connectionID+" "+ID+" "+index+" "+fob+" "+slot);
     }
     public bool onMSG(string eData)
     {
@@ -180,18 +183,22 @@ public class SC_fobs : MonoBehaviour
         }
         return false;
     }
-    bool HasPhysicalVersion(int b)
+    bool CanBePlaced(int b)
     {
-        if(b>=1&&b<=19) return true; //20 -> item respawn
-        if(b>=21&&b<=22) return true; //23 -> magnetic alien waited //24 -> copper bullet
-        if(b>=25&&b<=38) return true; //39 -> red bullet
-        if(b>=40&&b<=47) return true; //48 -> unstable bullet
-		if(b==48&&Input.GetKey(KeyCode.LeftControl)) return true;
-		if(b>=49&&b<=51) return true; //52 -> bedrock storage
-        if(b>=53&&b<=54) return true; //55, 57, 59, 61, 63 -> potions
-        if(b==56||b==58||b==60||b==62) return true; //64 -> coal bullet
-        if(b==65&&Input.GetKey(KeyCode.LeftControl)) return true;
-        if(b>=66&&b<=70) return true;
+        if(b==48 || b==65) return Input.GetKey(KeyCode.LeftControl);
+        else return FobInteractable(b);
+    }
+    bool FobInteractable(int b)
+    {
+        if(b>=1 && b<=19) return true;
+        if(b>=21 && b<=23) return true;
+        if(b>=25 && b<=38) return true;
+        if(b>=40 && b<=47) return true;
+		if(b==48) return true;
+		if(b==51) return true;
+        if(b>=54 && b<=62 && b%2==0) return true;
+        if(b==65) return true;
+        if(b>=66 && b<=70) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)
@@ -513,7 +520,7 @@ public class SC_fobs : MonoBehaviour
         float sdst = safeDistance(SC_slots.SelectedItem());
 
         if(IsEmpty&&Communtron3.position.y==0f&&distance<15f&&distance>=sdst&&topDistance(sdst)&&!Input.GetMouseButton(0)&&Communtron2.position.x==0f&&
-        HasPhysicalVersion(SC_slots.SelectedItem())&&MTPblocker<=0)
+        CanBePlaced(SC_slots.SelectedItem())&&MTPblocker<=0)
         {
             if(!Input.GetMouseButton(1)&&emptyShow)
                 localRendererMem=true;
@@ -527,14 +534,33 @@ public class SC_fobs : MonoBehaviour
                 if(multiplayer)
                 {
                     MTPblocker++;
-                    MTPsend(ObjID,ObjID2,hId,hId,-1,slot);
+                    SendPlace(hId,slot); //Fob place
 					SC_control.InvisiblityPulseSend();
                 }
 				SC_control.public_placed = true;
                 Replace(hId,multiplayer);
             }
         }
-        if(IsStorage&&!StaticStorage&&distance<15f&&Communtron1.position.z==0f&&MTPblocker<=0)
+        if(PickUp&&distance<15f&&Communtron1.position.z==0f&&!SC_backpack.destroyLock&&SC_push.clicked_on==0&&FobInteractable(ObjID)&&MTPblocker<=0)
+        {
+            if(Input.GetMouseButton(0)&&
+            Communtron2.position.x==0f&&Communtron3.position.y==0f)
+            {
+                if(SC_slots.InvHaveB(DropID,1,true,true,true,1))
+                {
+                    slot = SC_slots.InvChange(DropID,DropCount,true,true,false);
+
+                    if(multiplayer)
+                    {
+                        MTPblocker++;
+                        SendBreak(ObjID,slot); //Fob break
+						SC_control.InvisiblityPulseSend();
+                    }
+                    Replace(0,multiplayer);
+                }
+            }
+        }
+        if(IsStorage&&!StaticStorage&&distance<15f&&Communtron1.position.z==0f&&FobInteractable(ObjID)&&MTPblocker<=0)
         {
             if(Input.GetMouseButtonDown(0)&&!ReplaceReserved&&
             Communtron2.position.x==0f&&Communtron3.position.y==0f&&SC_Fob21.pub_count==0)
@@ -546,57 +572,62 @@ public class SC_fobs : MonoBehaviour
                     if(multiplayer)
                     {
                         MTPblocker++;
-                        MTPsend(ObjID,ObjID2,0,DropID,DropCount,slot);
+                        SendBreak(ObjID,slot); //Storage break
 						SC_control.InvisiblityPulseSend();
                     }
                     Replace(0,multiplayer);
                 }
             }
         }
-        if(PickUp&&distance<15f&&Communtron1.position.z==0f&&!SC_backpack.destroyLock&&SC_push.clicked_on==0)
+        if(IsTreasure&&distance<15f&&Communtron1.position.z==0f&&FobInteractable(ObjID)&&MTPblocker<=0)
         {
-            if(MTPblocker<=0){
-            if(Input.GetMouseButton(0)&&
-            Communtron2.position.x==0f&&Communtron3.position.y==0f)
-            {
-                if(SC_slots.InvHaveB(DropID,1,true,true,true,1))
-                {
-                    slot = SC_slots.InvChange(DropID,DropCount,true,true,false);
-
-                    if(multiplayer)
-                    {
-                        MTPblocker++;
-                        MTPsend(ObjID,ObjID2,0,DropID,DropCount,slot);
-						SC_control.InvisiblityPulseSend();
-                    }
-                    Replace(0,multiplayer);
-                }
-            }
-            }
-        }
-        if(IsTreasure&&distance<15f&&Communtron1.position.z==0f)
-        {
-            if(MTPblocker<=0){
             if(Input.GetMouseButtonDown(0)&&
             Communtron2.position.x==0f&&Communtron3.position.y==0f)
             {
                 if(SC_slots.InvHaveB(-1,1,true,true,true,1))
                 {
-                    string localDrop=getLoot(lootSE3);
-                    int ldI=int.Parse(localDrop.Split(';')[0]);
-                    int ldC=int.Parse(localDrop.Split(';')[1]);
-                    
-                    slot = SC_slots.InvChange(ldI,ldC,true,true,false);
-
-                    if(multiplayer)
+                    string localDrop;
+                    if((int)Communtron4.position.y!=100)
                     {
-                        MTPblocker++;
-                        MTPsend(ObjID,ObjID2,0,ldI,ldC,slot);
-						SC_control.InvisiblityPulseSend();
+                        localDrop = getLoot(lootSE3);
                     }
-                    Replace(0,multiplayer);
+                    else
+                    {
+                        if(ObjID==37) //normal treasure
+                        {
+                            if(SC_control.TreasureAllowed.Count>0)
+                            {
+                                localDrop = SC_control.TreasureAllowed[0];
+                                SC_control.TreasureAllowed.RemoveAt(0);
+                            }
+                            else localDrop = "X";
+                        }
+                        else //dark treasure
+                        {
+                            if(SC_control.DarkTreasureAllowed.Count>0)
+                            {
+                                localDrop = SC_control.DarkTreasureAllowed[0];
+                                SC_control.DarkTreasureAllowed.RemoveAt(0);
+                            }
+                            else localDrop = "X";
+                        }
+                    }
+                    if(localDrop!="X")
+                    {
+                        int ldI=int.Parse(localDrop.Split(';')[0]);
+                        int ldC=int.Parse(localDrop.Split(';')[1]);
+                    
+                        slot = SC_slots.InvChange(ldI,ldC,true,true,false);
+
+                        if(multiplayer)
+                        {
+                            MTPblocker++;
+                            SendBreak(ObjID,slot); //Treasure break
+						    SC_control.InvisiblityPulseSend();
+                        }
+                        Replace(0,multiplayer);
+                    }
                 }
-            }
             }
         }
     }

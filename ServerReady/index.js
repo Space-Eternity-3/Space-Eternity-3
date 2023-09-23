@@ -56,9 +56,32 @@ var memTemplate = {
   rposY: "0",
 };
 
+function TreasureDrop(str)
+{
+  try {
+      var marray = [];
+      var i,j,rander=func.randomInteger(0,9999);
+      var arra = str.split("-");
+      var lngt=Math.floor(arra.length/5);
+      for(i=0;i<lngt;i++)
+      {
+        for(j=0;j<5;j++) marray[j]=func.parseIntE(arra[5*i+j]);
+        if(rander>=marray[3]&&rander<=marray[4]) return marray[0]+";"+func.randomInteger(marray[1],marray[2]);
+      }
+    } catch { return "8;1"; }
+    return "8;1";
+}
+
 class CPlayer {
-  constructor() {
+  constructor(pid) {
     this.Reset();
+    this.gpid = pid;
+    this.TreasureNextDrops = [];
+    this.DarkTreasureNextDrops = [];
+    for(var i=0;i<4;i++) {
+      this.TreasureNextDrops.push(TreasureDrop(gameplay[105]));
+      this.DarkTreasureNextDrops.push(TreasureDrop(gameplay[106]));
+    }
   }
   Reset() {
     this.respawn_x = 0;
@@ -90,14 +113,43 @@ class CPlayer {
   DrillGet(pid,item,slot) {
     var iof = this.drill_list.indexOf(item);
     if(iof!=-1) {
-      this.drill_list.splice(iof);
+      this.drill_list.remove(iof);
       return invChangeTry(pid,item,"1",slot);
     }
     else return false;
   }
   DrillDiscard(item) {
     var iof = this.drill_list.indexOf(item);
-    if(iof!=-1) this.drill_list.splice(iof);
+    if(iof!=-1) this.drill_list.remove(iof);
+  }
+  TreasureArrayUpdate(treasure_type,generate_new_loot) {
+    var spliced;
+    if(generate_new_loot) {
+      if(treasure_type==0) {
+        spliced = this.TreasureNextDrops[0];
+        this.TreasureNextDrops.remove(0);
+        this.TreasureNextDrops.push(TreasureDrop(gameplay[105]));
+      }
+      else {
+        spliced = this.DarkTreasureNextDrops[0];
+        this.DarkTreasureNextDrops.remove(0);
+        this.DarkTreasureNextDrops.push(TreasureDrop(gameplay[106]));
+      }
+    }
+    else {
+      if(treasure_type==0) {
+        spliced = this.TreasureNextDrops[0];
+        this.TreasureNextDrops.remove(0);
+        this.TreasureNextDrops.push(spliced);
+      }
+      else {
+        spliced = this.DarkTreasureNextDrops[0];
+        this.DarkTreasureNextDrops.remove(0);
+        this.DarkTreasureNextDrops.push(spliced);
+      }
+    }
+    if(treasure_type==0) sendTo(se3_ws[this.gpid],"/RetTreasureLoot "+plr.pclass[this.gpid].TreasureNextDrops[3]+" "+treasure_type+" X X");
+    else sendTo(se3_ws[this.gpid],"/RetTreasureLoot "+plr.pclass[this.gpid].DarkTreasureNextDrops[3]+" "+treasure_type+" X X");
   }
 }
 
@@ -126,7 +178,7 @@ var plr = {
   impulsed: [[]],
   bossMemories: [[]],
 
-  pclass: [new CPlayer()],
+  pclass: [],
 };
 
 var ki, kj, kd = Object.keys(plr);
@@ -138,9 +190,7 @@ for(ki=1;ki<max_players;ki++)
       plr["mems"].push(Object.assign({},plr["mems"][0]));
     else if(kd[kj]=="impulsed"||kd[kj]=="bossMemories")
       plr[kd[kj]].push([]);
-    else if(kd[kj]=="pclass")
-      plr[kd[kj]].push(new CPlayer());
-    else
+    else if(kd[kj]!="pclass")
       plr[kd[kj]].push(plr[kd[kj]][0]);
   }
 
@@ -2601,22 +2651,18 @@ wss.on("connection", function connection(ws) {
         return;
       }
 
-      var playerID = arg[1];
-      
-      console.log(hourHeader + plr.nicks[playerID] + " joined");
+      se3_ws[arg[1]] = ws;
+      se3_wsS[arg[1]] = "game";
 
-      se3_ws[playerID] = ws;
-      se3_wsS[playerID] = "game";
-
-      plr.cl_immID[playerID] = 0;
-      plr.cl_livID[playerID] = 0;
-      plr.connectionTime[playerID] = 0;
+      plr.cl_immID[arg[1]] = 0;
+      plr.cl_livID[arg[1]] = 0;
+      plr.connectionTime[arg[1]] = 0;
 
       sendToAllPlayers(
         "/RetInfoClient " +
-          (plr.nicks[playerID] + " joined the game").replaceAll(" ", "`") +
+          (plr.nicks[arg[1]] + " joined the game").replaceAll(" ", "`") +
           " " +
-          playerID +
+          arg[1] +
           " X X"
       );
 
@@ -2626,12 +2672,24 @@ wss.on("connection", function connection(ws) {
       eff = "/RPC " + max_players + " " + gtt + " X X";
       sendTo(ws,eff);
 
-      //Bullet data send to new player
+      //New player immune to all existing bullets
       lngt = bulletsT.length;
       var tpl;
       for(i=0;i<lngt;i++)
-        bulletsT[i].immune.push(playerID+"");
+        bulletsT[i].immune.push(arg[1]+"");
 
+      //Treasure data sending
+      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].TreasureNextDrops[0]+" 0 X X");
+      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].TreasureNextDrops[1]+" 0 X X");
+      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].TreasureNextDrops[2]+" 0 X X");
+      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].TreasureNextDrops[3]+" 0 X X");
+      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[0]+" 1 X X");
+      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[1]+" 1 X X");
+      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[2]+" 1 X X");
+      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[3]+" 1 X X");
+
+      //Join info
+      console.log(hourHeader + plr.nicks[arg[1]] + " joined");
       return;
     }
 
@@ -2902,7 +2960,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","ulam","place","item","1,-1","Slot","StorageID"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      if(arg[5]=="1" && arg[7]=="2") return; //Trying to insert item into storage
+      if(arg[5]=="1" && arg[7]=="2") return; //Trying to insert item into driller
       var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
 
       var gPlayerID = arg[1];
@@ -2939,7 +2997,7 @@ wss.on("connection", function connection(ws) {
           );
           return;
         }
-        else kick(gPlayerID);
+        else {kick(gPlayerID); return;}
       }
 
       //If failied
@@ -3015,7 +3073,7 @@ wss.on("connection", function connection(ws) {
 
       var remindex = plr.bossMemories[arg[1]].indexOf(arg[2]);
       if(remindex!=-1)
-        plr.bossMemories[arg[1]].splice(remindex);
+        plr.bossMemories[arg[1]].remove(remindex);
     }
     if (arg[0] == "/GrowLoaded") // 1[PlayerID] 2[UlamList]
     {
@@ -3152,33 +3210,23 @@ wss.on("connection", function connection(ws) {
       }
       else plr.pclass[arg[1]].DrillDiscard(arg[2]);
     }
-
-
-
-    //NOT READY COMMAND
-    if (arg[0] == "/FobChange") {
-      //FobChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[startFob] 5[EndFob] 6[Slot]
-      if (!checkPlayerG(arg[1],ws)) return;
-
+    if (arg[0] == "/FobPlace") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[EndFob] 5[Slot]
+    {
+      if(!VerifyCommand(arg,["PlaID","ulam","place","fob-interactable","Slot"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
       var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
 
       var fPlayerID = arg[1];
       var fUlamID = arg[2];
       var fPlaceID = arg[3];
-
-      var fStartFob1 = arg[4];
-      var fStartFob2 = "from startFob1";
-      var fEndFob = arg[5];
-
-      var fDropID = "from modified drops";
-      var fCount = "from modified drops";
-      var fSlot = arg[6];
+      var fEndFob = arg[4];
+      var fDropID = fEndFob;
+      var fCount = "-1";
+      var fSlot = arg[5];
 
       var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
 
-      if ((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) ||
-         (["13", "23", "25", "27"].includes(fStartFob1) &&
-         checkFobChange(fUlamID, fPlaceID, "40", "-1"))) && !overolded)
+      if (checkFobChange(fUlamID, fPlaceID, "0", "-1") && !overolded)
       {
         if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
         {
@@ -3203,10 +3251,108 @@ wss.on("connection", function connection(ws) {
           sendTo(ws,"/RetFobsPing "+arg[1]+";"+arg[2]+";"+arg[3]+" X X");
           return;
         }
-        else kick(fPlayerID);
+        else {kick(fPlayerID); return;}
       }
 
       //If failied
+      sendTo(ws,
+        "/RetFobsChange " +
+          fUlamID + " " +
+          fPlaceID + " " +
+          getBlockAt(fUlamID, fPlaceID) + " " +
+          fFob21TT +
+          " X X"
+      );
+      sendTo(ws,
+        "/RetInventory " +
+          fPlayerID + " " +
+          fDropID + " " +
+          -fCount + " " +
+          fSlot + " " +
+          fCount +
+          " X " + plr.livID[fPlayerID]
+      );
+      sendTo(ws,"/RetFobsPing "+arg[1]+";"+arg[2]+";"+arg[3]+" X X");
+    }
+    if (arg[0] == "/FobBreak") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[StartFob] 5[Slot]
+    {
+      if(!VerifyCommand(arg,["PlaID","ulam","place","fob-interactable","Slot"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
+
+      var fPlayerID = arg[1];
+      var fUlamID = arg[2];
+      var fPlaceID = arg[3];
+      var fStartFob1 = arg[4];
+      var fSlot = arg[5];
+
+      //fStartFob2 set
+      var fStartFob2 = fStartFob1;
+      if(fStartFob1=="5") fStartFob2 = "6";
+      if(fStartFob1=="6") fStartFob2 = "7";
+      if(fStartFob1=="23") fStartFob2 = "25";
+      if(fStartFob1=="25") fStartFob2 = "23";
+      if(fStartFob1=="41") fStartFob2 = "45";
+
+      //Drop set
+      var fDropID = fStartFob1;
+      var fCount = "1";
+      if(modifiedDrops[fStartFob1]!="") {
+        var modTab = modifiedDrops[fStartFob1].split(";");
+        fDropID = modTab[0];
+        fCount = modTab[1];
+      }
+
+      //Treasure drop set
+      var treasure_type = -1;
+      if(fStartFob1=="37") {
+        var treTab = plr.pclass[fPlayerID].TreasureNextDrops[0].split(";");
+        fDropID = treTab[0];
+        fCount = treTab[1];
+        treasure_type = 0;
+      }
+      if(fStartFob1=="68") {
+        var treTab = plr.pclass[fPlayerID].DarkTreasureNextDrops[0].split(";");
+        fDropID = treTab[0];
+        fCount = treTab[1];
+        treasure_type = 1;
+      }
+
+      var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
+
+      if ((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) ||
+         (["13", "23", "25", "27"].includes(fStartFob1) &&
+         checkFobChange(fUlamID, fPlaceID, "40", "-1"))) && !overolded)
+      {
+        if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
+        {
+          if(treasure_type!=-1) plr.pclass[fPlayerID].TreasureArrayUpdate(treasure_type,true);
+          fobChange(fUlamID, fPlaceID, "0");
+          fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
+          sendToAllPlayers(
+            "/RetFobsChange " +
+              fUlamID + " " +
+              fPlaceID + " " +
+              "0" + " " +
+              fFob21TT +
+              " X X"
+          );
+          sendTo(ws,
+            "/RetInventory " +
+              fPlayerID + " " +
+              fDropID + " 0 " +
+              fSlot + " " +
+              -fCount +
+              " X " + plr.livID[fPlayerID]
+          );
+          sendTo(ws,"/RetFobsPing "+arg[1]+";"+arg[2]+";"+arg[3]+" X X");
+          return;
+        }
+        else {kick(fPlayerID); return;}
+      }
+
+      //If failied
+      if(treasure_type!=-1) plr.pclass[fPlayerID].TreasureArrayUpdate(treasure_type,false);
       sendTo(ws,
         "/RetFobsChange " +
           fUlamID + " " +
@@ -3233,74 +3379,6 @@ wss.on("connection", function connection(ws) {
     //---------------//
 
 
-    if (arg[0] == "/FobsChange") {
-      //FobsChange 1[PlayerID] 2[UlamID] 3[PlaceID] 4[startFob1] 5[startFob2] 6[EndFob] 7[DropID] 8[Count] 9[Slot]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
-
-      var fPlayerID = arg[1];
-      var fUlamID = arg[2];
-      var fPlaceID = arg[3];
-      var fStartFob1 = arg[4];
-      var fStartFob2 = arg[5];
-      var fEndFob = arg[6];
-      var fDropID = arg[7];
-      var fCount = arg[8];
-      var fSlot = arg[9];
-
-      var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
-
-      if ((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) ||
-         (["13", "23", "25", "27"].includes(fStartFob1) &&
-         checkFobChange(fUlamID, fPlaceID, "40", "-1"))) && !overolded)
-      {
-        if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
-        {
-          fobChange(fUlamID, fPlaceID, fEndFob);
-          fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
-          sendToAllPlayers(
-            "/RetFobsChange " +
-              fUlamID + " " +
-              fPlaceID + " " +
-              fEndFob + " " +
-              fFob21TT +
-              " X X"
-          );
-          sendTo(ws,
-            "/RetInventory " +
-              fPlayerID + " " +
-              fDropID + " 0 " +
-              fSlot + " " +
-              -fCount +
-              " X " + plr.livID[fPlayerID]
-          );
-          sendTo(ws,"/RetFobsPing "+arg[1]+";"+arg[2]+";"+arg[3]+" X X");
-          return;
-        }
-        else kick(fPlayerID);
-      }
-
-      //If failied
-      sendTo(ws,
-        "/RetFobsChange " +
-          fUlamID + " " +
-          fPlaceID + " " +
-          getBlockAt(fUlamID, fPlaceID) + " " +
-          fFob21TT +
-          " X X"
-      );
-      sendTo(ws,
-        "/RetInventory " +
-          fPlayerID + " " +
-          fDropID + " " +
-          -fCount + " " +
-          fSlot + " " +
-          fCount +
-          " X " + plr.livID[fPlayerID]
-      );
-      sendTo(ws,"/RetFobsPing "+arg[1]+";"+arg[2]+";"+arg[3]+" X X");
-    }
     if (arg[0] == "/AsteroidData") {
       //AsteroidData 1[UlamID] 2[generation_code] 3[PlayerID]
       if (!checkPlayerG(arg[3],ws)) return;
@@ -3692,6 +3770,18 @@ function VerifyCommand(args,formats)
         var p = func.parseIntP(test);
         if(isNaN(p)) return false;
         if(p < 0 || p > 15) return false;
+      }
+      else if(sw=="fob-interactable") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p>=1 && p<=19) return true;
+        if(p>=21 && p<=23) return true;
+        if(p>=25 && p<=38) return true;
+        if(p>=40 && p<=48) return true;
+        if(p==51) return true;
+        if(p>=54 && p<=62 && p%2==0) return true;
+        if(p>=65 && p<=70) return true;
+        return false;
       }
       else console.log("Error: Unknown format: "+sw);
     }
@@ -4401,6 +4491,10 @@ boss_damages[17] = GplGet("boss_bullet_neutronium_damage");
 var gsol5a = 50 * Math.floor(GplGet("amethyst_grow_time_min"));
 var gsol5b = 50 * Math.floor(GplGet("amethyst_grow_time_max"));
 var gsol25 = 50 * Math.floor(GplGet("magnetic_alien_grow_time"));
+
+//plr class creation using datapack
+for(ki=0;ki<max_players;ki++)
+  plr.pclass.push(new CPlayer(ki));
 
 if(gsol5a<=0) gsol5a = 50;
 if(gsol5b<=0) gsol5b = 50;

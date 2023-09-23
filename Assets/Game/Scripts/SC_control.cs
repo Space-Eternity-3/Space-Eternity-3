@@ -205,6 +205,9 @@ public class SC_control : MonoBehaviour {
 
 	public int ActualDrillGroup = 0;
 	public int ActualDrillType = -1;
+
+	public List<string> TreasureAllowed = new List<string>();
+	public List<string> DarkTreasureAllowed = new List<string>();
 	
 	float V_to_F(float V,bool turboo)
 	{
@@ -1875,6 +1878,14 @@ public class SC_control : MonoBehaviour {
 			}
 			else SendMTP("/DrillGet "+connectionID+" "+mined+" 25");
 			if(actualDrill) SendMTP("/DrillAsk "+connectionID+" "+ActualDrillType+" "+ActualDrillGroup);
+		}
+		if(arg[0]=="/RetTreasureLoot")
+		{
+			int item = int.Parse(arg[1].Split(';')[0]);
+			int count = int.Parse(arg[1].Split(';')[1]);
+			string treasure_type = arg[2];
+			if(treasure_type=="0") TreasureAllowed.Add(arg[1]);
+			if(treasure_type=="1") DarkTreasureAllowed.Add(arg[1]);
 		}
 
 		//Other scripts
