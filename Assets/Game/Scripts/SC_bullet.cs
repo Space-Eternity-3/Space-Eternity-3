@@ -58,6 +58,11 @@ public class SC_bullet : MonoBehaviour
     public float normal_damage = 0;
     public bool is_unstable = false;
 
+    Vector3 VectorCut(Vector3 vect, float cut_at)
+    {
+        if(vect.magnitude > cut_at) vect = vect.normalized * cut_at;
+        return vect;
+    }
     public SC_bullet Shot(Vector3 position, Vector3 vector, Vector3 delta, int typ, int gun_own, string mtp_source)
     {
         SC_bullet gob = Instantiate(gameObject, position, Quaternion.identity).GetComponent<SC_bullet>();
@@ -66,7 +71,7 @@ public class SC_bullet : MonoBehaviour
         gob.mode = "present";
         gob.gun_owner = gun_own;
         gob.controller = true;
-        gob.st_vect = SC_fun.Skop(vector, BulletSpeeds[typ]) + delta;
+        gob.st_vect = VectorCut(SC_fun.Skop(vector, BulletSpeeds[typ])+delta, 1.19f);
         gob.ID = UnityEngine.Random.Range(0,1000000000);
 
         if(!multiplayer && (gob.type==9 || gob.type==10))

@@ -208,6 +208,8 @@ public class SC_control : MonoBehaviour {
 
 	public List<string> TreasureAllowed = new List<string>();
 	public List<string> DarkTreasureAllowed = new List<string>();
+
+	public int unstable_pulses_available = 0;
 	
 	float V_to_F(float V,bool turboo)
 	{
@@ -267,9 +269,10 @@ public class SC_control : MonoBehaviour {
 		bool wr_cotr = !(Input.GetKey(KeyCode.LeftControl) && (SC_slots.InvHaving(48) || SC_slots.InvHaving(65)));
 		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && wr_cotr;
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
-		bool wr_unstabling = (!SC_artefacts.unstabling);
+		bool wr_noblocker = (!SC_artefacts.unstabling) && SC_effect.effect!=8;
+		bool wr_oktime = livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100);
 		
-		if(SC_effect.effect!=8 && wr_tick && wr_isok && wr_moustay && !public_placed && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100) && wr_unstabling)
+		if(wr_tick && wr_isok && wr_moustay && !public_placed && wr_oktime && wr_noblocker)
 		{
 			int slot=-1, typ = 1;
 
@@ -302,6 +305,7 @@ public class SC_control : MonoBehaviour {
 			float xpo = Input.mousePosition.x-Screen.width/2, ypo=Input.mousePosition.y-Screen.height/2;
 			if(typ!=3) playerR.velocity += Skop(float.Parse(SC_data.Gameplay[30]),new Vector3(-xpo,-ypo,0f));
 
+			//Inventory shoot
 			SC_bullet.Shot(
 				transform.position,
 				new Vector3(xpo,ypo,0f),
@@ -313,7 +317,7 @@ public class SC_control : MonoBehaviour {
 			SC_invisibler.invisible = false;
 		}
 
-		if(SC_artefacts.unstabling && cooldown==0)
+		if(SC_artefacts.unstabling && cooldown==0 && livTime>=50)
 		{
 			cooldown = (int)float.Parse(SC_data.Gameplay[97+4]);
 
@@ -328,6 +332,7 @@ public class SC_control : MonoBehaviour {
 			xpo = Mathf.Cos(angle);
 			ypo = Mathf.Sin(angle);
 			
+			//Shoot unstabling
 			SC_bullet.next_bullet_virtual = true;
 			SC_bullet.Shot(
 				transform.position,
@@ -1044,14 +1049,16 @@ public class SC_control : MonoBehaviour {
 
 				power_V += at_unstable_regen1/50f;
 			}
-			if(UnityEngine.Random.Range(0,unstable_sprobability)==0)
+			if((UnityEngine.Random.Range(0,unstable_sprobability)==0 && (int)Communtron4.position.y!=100) || unstable_pulses_available > 0)
 			{
+				unstable_pulses_available--;
 				bool wr_tick = (int)Communtron4.position.y!=100 || current_tick!=-1;
 
 				float alp = UnityEngine.Random.Range(0,360);
 				float ux = Mathf.Cos((alp*3.14159f)/180f);
 				float uy = Mathf.Sin((alp*3.14159f)/180f);
 				
+				//Unstable pulse shoot
 				if(SC_effect.effect!=8 && wr_tick) SC_bullet.Shot(
 					transform.position,
 					new Vector3(ux,uy,0f),
@@ -1136,6 +1143,12 @@ public class SC_control : MonoBehaviour {
 		foreach(SC_bullet bul in buls)
 		{
 			bul.AfterFixedUpdate();
+		}
+
+		if(!timeStop) {
+
+		//HEREBUL
+
 		}
 
 		//RPU converter
