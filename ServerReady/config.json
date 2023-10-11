@@ -15,7 +15,7 @@
 		"ExampleNick4"
 	],
 	"anti_cheat": {
-		"max_movement_per_period": 20,
-		"period_in_ticks": 10
+		"max_movement_per_period": 20, "period_in_ticks": 10,
+		"bullet_spawn_allow_radius": 3
 	}
 }

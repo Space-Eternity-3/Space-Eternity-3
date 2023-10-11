@@ -96,8 +96,11 @@ class CPlayer {
     this.last_pos_changes = [];
     this.allowed_teleport_small = false;
     this.force_teleport_respawn = false;
-    this.spam_handler = { //[actual, max, reset_period, is_cooldown?, should_kick?]
-      invisibility_pulse: [0,10,50,false,false],
+    this.spam_handler = { //[last, max, wait_time, mode, kick, last_date] (TPS independent system)
+      pre_command: [0,3,0,"limit",true,0],
+      player_update: [0,60,1000,"spam",true,0],
+      impulse_start: [0,1,(GplGet("impulse_cooldown")-1)*20,"cooldown",true,0],
+      invisibility_pulse: [0,10,1000,"spam",false,0],
     };
   }
   DataImport(rsp_x,rsp_y) {
@@ -2591,6 +2594,21 @@ function getPlayerBulletDamage(pid,type)
     default: return 0;
   }
 }
+function getPlayerArtefact(pid)
+{
+  var splitted = plr.backpack[pid].split(";");
+  var item = func.parseIntU(splitted[30]);
+  var count = func.parseIntU(splitted[31]);
+  item -= 41;
+  if(item < 1 || item > 6) item=0;
+  if(count > 0) return item;
+  else return 0;
+}
+
+function inHeaven(pid)
+{
+  return (plr.players[pid]=="0" || plr.players[pid]=="1");
+}
 
 function Censure(pldata,pid,livID)
 {
@@ -2828,6 +2846,11 @@ wss.on("connection", function connection(ws) {
       // [2] - invisibilityPulse
       // [3] - doTeleport
 
+      //flags questioning
+      var artef = getPlayerArtefact(arg[1]);
+      if(artef!=2) { arg[4][0]="F"; arg[4][1]="F"; };
+      if(artef!=3) { arg[4][2]="F"; };
+
       if(arg[4][1]=="T") plr.impulsed[arg[1]] = [];
 
       if(arg[4][2]=="T") sendToAllPlayers(
@@ -2971,7 +2994,7 @@ wss.on("connection", function connection(ws) {
       if(!checkPlayerG(arg[1],ws)) return;
 
       var bID = arg[2];
-      var blivID = arg[msl - 1];
+      var blivID = arg[msl-1];
 
       var j,lngts = scrs.length;
       for(i=0;i<lngts;i++)
@@ -2997,7 +3020,7 @@ wss.on("connection", function connection(ws) {
             if(players_inside==1) scrs[i].dataY[4-2] = 1;
             else {
               sendTo(ws,"/RetGiveUpTeleport "+arg[1]+" "+bID+" 1024 X "+blivID);
-              plr.pclass[arg[1]].allowed_teleport_small = true;
+              plr.pclass[arg[1]].allowed_teleport_small = true; //might turn "true" for a longer time when player dies while trying to teleport, but it only allows for one short-distance teleportation with cheats
             }
           }
           break;
@@ -3051,7 +3074,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","UpgID","Slot"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl - 1] != plr.livID[arg[1]]) return;
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       var ljPlaID = arg[1];
       var ljUpgID = arg[2];
@@ -3081,7 +3104,7 @@ wss.on("connection", function connection(ws) {
       if(!VerifyCommand(arg,["PlaID","ulam","place","item","1,-1","Slot","StorageID"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
       if(arg[5]=="1" && arg[7]=="2") return; //Trying to insert item into driller
-      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
+      var overolded = (arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1]));
 
       var gPlayerID = arg[1];
       var gUlamID = arg[2];
@@ -3144,7 +3167,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","item","count","SlotI","SlotB"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl - 1] != plr.livID[arg[1]]) return;
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       var bpPlaID = arg[1];
       var bpItem = arg[2];
@@ -3208,7 +3231,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","CraftID","Slot","SlotIf","Slot"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl - 1] != plr.livID[arg[1]]) return;
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       var cPlaID = arg[1];
       var tab = craftings.split(";");
@@ -3244,7 +3267,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","PotionID","SlotI"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl - 1] != plr.livID[arg[1]]) {
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) {
         sendTo(ws,"/RetHeal "+arg[1]+" "+arg[2]+" X X");
         return;
       }
@@ -3290,7 +3313,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","item","count-"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl - 1] != plr.livID[arg[1]]) return;
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       if(!invChangeTry(arg[1], arg[2], arg[3], "25")) kick(arg[1]);
     }
@@ -3298,7 +3321,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","Slot","short","short"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl-1] != plr.livID[arg[1]]) {kick(arg[1]); return;} //Kick if modified respawn while not living
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) {kick(arg[1]); return;} //Kick if modified respawn while not living
       
       if(arg[3]+" "+arg[4]!="0 0") { //create
         var pla_pos = getPlayerPosition(arg[1]);
@@ -3320,7 +3343,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","DrillID","EndID"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl - 1] != plr.livID[arg[1]]) return;
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       plr.pclass[arg[1]].DrillAsk(arg[2],arg[1],arg[3]);
     }
@@ -3328,7 +3351,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","item","Slot"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      if(arg[msl-1] != plr.livID[arg[1]]) {arg[3]="25"; return;}
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) arg[3]="25";
 
       if(arg[3]!="25") {
         if(!plr.pclass[arg[1]].DrillGet(arg[1],arg[2],arg[3])) kick(pid);
@@ -3339,7 +3362,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","ulam","place","fob-interactable","Slot"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
+      var overolded = (arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1]));
 
       var fPlayerID = arg[1];
       var fUlamID = arg[2];
@@ -3403,7 +3426,7 @@ wss.on("connection", function connection(ws) {
     {
       if(!VerifyCommand(arg,["PlaID","ulam","place","fob-interactable","Slot"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
-      var overolded = (arg[msl - 1] != plr.livID[arg[1]]);
+      var overolded = (arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1]));
 
       var fPlayerID = arg[1];
       var fUlamID = arg[2];
@@ -3502,7 +3525,7 @@ wss.on("connection", function connection(ws) {
       if(!VerifyCommand(arg,["PlaID","BulletType","Float","Float","EndID","short","Slot","Float","Float"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
       var revert_string = "/RetNewBulletDestroy "+arg[1]+" "+arg[5]+" 0 "+false+"  X X";
-      if(arg[msl-1] != plr.livID[arg[1]]) { sendTo(ws,revert_string); return; } //not living
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) { sendTo(ws,revert_string); return; } //not living
       for(i=0;i<bulletsT.length;i++) if(bulletsT[i].ID+""==arg[5]) { sendTo(ws,revert_string); return; } //existing ID (veeery small chance)
 
       //Command data
@@ -3516,9 +3539,6 @@ wss.on("connection", function connection(ws) {
       var bPosX = arg[8];
       var bPosY = arg[9];
       var bDmg = getPlayerBulletDamage(bPlaID,bType);
-
-      //Speed anti-cheat
-      if((func.parseFloatU(bVectX)**2 + func.parseFloatU(bVectY)**2) ** 0.5 > 1.2) { sendTo(ws,revert_string); return; } //bullet too fast
 
       //Bullet paywall
       if(bBulSrc=="I") //inventory
@@ -3547,6 +3567,16 @@ wss.on("connection", function connection(ws) {
         if(!(plr.backpack[bPlaID].split(";")[30]=="47" && plr.backpack[bPlaID].split(";")[31]!="0")) { sendTo(ws,revert_string); return; } //unstabling without artefact
       }
       else return;
+
+      //Speed anti-cheat
+      if((func.parseFloatU(bVectX)**2 + func.parseFloatU(bVectY)**2) ** 0.5 > 1.2) { sendTo(ws,revert_string); return; } //bullet too fast
+
+      //Start position anti-cheat
+      var ppos = getPlayerPosition(arg[1]);
+      var ddx = func.parseFloatU(ppos[0]) - func.parseFloatU(bPosX);
+      var ddy = func.parseFloatU(ppos[1]) - func.parseFloatU(bPosY);
+      var distance_to_center = Math.sqrt(ddx**2 + ddy**2);
+      if(distance_to_center > config.anti_cheat.bullet_spawn_allow_radius) { sendTo(ws,revert_string); return; } //bullet wrong spawn position
 
       //bullet summon
       var tpl = Object.assign({},bulletTemplate);

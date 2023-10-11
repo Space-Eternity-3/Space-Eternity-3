@@ -8,6 +8,7 @@ New features:
 Old feature changes:
 
 - drillers can drill all items from drill loottable now, including magic elements
+- unstable loop sound volume reduced: 0.4 -> 0.25 (to be less annoying)
 
 UI changes:
 
