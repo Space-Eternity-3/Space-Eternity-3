@@ -200,6 +200,7 @@ public class SC_boss : MonoBehaviour
         }
         if(arg[0]=="/RetGiveUpTeleport" && arg[1]==SC_control.connectionID+"" && arg[2]==bID+"")
         {
+            SC_control.already_teleported = true;
             SC_control.transform.position = NextToRandomGate();
             SC_control.RemoveImpulse();
             SC_control.SC_effect.EffectClean();

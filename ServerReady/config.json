@@ -13,5 +13,9 @@
 	"banned_players": [
 		"ExampleNick3",
 		"ExampleNick4"
-	]
+	],
+	"anti_cheat": {
+		"max_movement_per_period": 20,
+		"period_in_ticks": 10
+	}
 }

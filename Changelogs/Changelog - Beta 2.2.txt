@@ -44,8 +44,10 @@ Important technical changes:
 - all bosbul related commands removed from seon, from now they are part of the boss object and are no longer configurable, arena seon code changed to fit these rules
 - conID safety system replaced with better, se3-ws safety system
 - messages to all clients are sent only when player is confirmed to be in game
-- server will no longer crash after receiving a wrong message, certain messages to server were changed
+- server should no longer crash after receiving a wrong message
+- server communication protocol was modified in some places, check server code comments for more information
 - server anti-cheat improved (there was completely no anti-cheat before)
+- player bullets can no longer be faster than 1.2 units, anti-cheat implemented on server side
 - game will close immediately after exception or error and save its crash into crash.log file
 
 Bug fixes:

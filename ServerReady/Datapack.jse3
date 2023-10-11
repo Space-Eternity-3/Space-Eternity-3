@@ -370,7 +370,7 @@ generator_settings
 	{
 		chance: 4%;
 		settings: [
-			structural, arena,
+			structural, arena, spawn,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
 			density = 100%,

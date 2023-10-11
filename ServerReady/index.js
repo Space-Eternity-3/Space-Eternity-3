@@ -56,6 +56,8 @@ var memTemplate = {
   rposY: "0",
 };
 
+var unstable_sprobability = 1;
+
 function TreasureDrop(str)
 {
   try {
@@ -85,18 +87,17 @@ class CPlayer {
   }
   Reset() {
     this.respawn_x = 0;
-    this.respawn_Y = 0;
+    this.respawn_y = 0;
     this.drill_counter = 0;
     this.drill_asteroid = 0;
     this.drill_group = 0;
     this.drill_list = [];
     this.unstable_pulses_available = 0;
-    this.cooldown_handler = {
-      bullet: 0,
-      impulse: 0,
-    };
-    this.spam_handler = { //[actual,max,kick?]
-      invisibility_pulse: [0,5,false],
+    this.last_pos_changes = [];
+    this.allowed_teleport_small = false;
+    this.force_teleport_respawn = false;
+    this.spam_handler = { //[actual, max, reset_period, is_cooldown?, should_kick?]
+      invisibility_pulse: [0,10,50,false,false],
     };
   }
   DataImport(rsp_x,rsp_y) {
@@ -159,6 +160,15 @@ class CPlayer {
     if(treasure_type==0) sendTo(se3_ws[this.gpid],"/RetTreasureLoot "+plr.pclass[this.gpid].TreasureNextDrops[3]+" "+treasure_type+" X X");
     else sendTo(se3_ws[this.gpid],"/RetTreasureLoot "+plr.pclass[this.gpid].DarkTreasureNextDrops[3]+" "+treasure_type+" X X");
   }
+  PosChangeAdd(distance) {
+    if(this.last_pos_changes.length >= config.anti_cheat.period_in_ticks) this.last_pos_changes.shift();
+    this.last_pos_changes.push(distance);
+  }
+  PosChangeSum() {
+    var sum=0,i,lngt = this.last_pos_changes.length;
+    for(i=0;i<lngt;i++) sum += this.last_pos_changes[i];
+    return sum;
+  }
 }
 
 var plr = {
@@ -168,9 +178,6 @@ var plr = {
   conID: ["0"],
   livID: ["0"],
   immID: ["0"],
-
-  cl_livID: ["-1"],
-  cl_immID: ["-1"],
 
   connectionTime: [-1],
   sHealth: [0],
@@ -797,10 +804,10 @@ function playerToMsg(str) {
   return [
     strT[0],
     strT[1],
+    "",
+    "",
     0,
-    0,
-    0,
-    0,
+    "0&0",
     strT[4],
     strT[5],
     strT[2],
@@ -1062,7 +1069,7 @@ function getProtRegenMultiplier(art)
 function DamageFLOAT(pid,dmg)
 {
   dmg = func.parseFloatU(dmg);
-  if(dmg>0 && plr.players[pid].split(";").length!=1 && (plr.livID[pid]==plr.cl_livID[pid] && plr.immID[pid]==plr.cl_immID[pid]) && plr.connectionTime[pid]>=50)
+  if(dmg>0 && plr.players[pid].split(";").length!=1 && plr.connectionTime[pid]>=50)
   {
     var artid = plr.backpack[pid].split(";")[30] - 41;
     if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
@@ -1088,7 +1095,9 @@ function DamageFLOAT(pid,dmg)
     if(info=="I")
     {
       immortal(pid);
-      plr.players[pid] = Censure(plr.players[pid],pid,plr.livID[pid]);
+      var cens = Censure(plr.players[pid],pid,plr.livID[pid]);
+      plr.players[pid] = cens;
+      if(cens!="1") plr.data[pid] = cens;
     }
     return info;
   }
@@ -1317,11 +1326,21 @@ setInterval(function () { // <interval #2>
       }
 
       //CPlayer all frame updates
-      for(i=0;i<max_players;i++) {
+      for(i=0;i<max_players;i++)
+      {
         if(plr.pclass[i].drill_counter!=0) {
           plr.pclass[i].drill_counter--;
           if(plr.pclass[i].drill_counter==0)
             plr.pclass[i].DrillReady(i);
+        }
+        var bpckArray = plr.backpack[i].split(";");
+        var loc_artid = func.parseIntU(bpckArray[30]) - 41;
+        if(func.parseIntU(bpckArray[31]) < 1) loc_artid = -42;
+        if(plr.connectionTime[i] > 50 && plr.pclass[i].unstable_pulses_available < 5 && loc_artid==6) {
+          if(func.randomInteger(0,unstable_sprobability-1)==0) {
+            plr.pclass[i].unstable_pulses_available++;
+            sendTo(se3_ws[i],"/RetUnstablePulse X X");
+          }
         }
       }
 
@@ -1335,7 +1354,7 @@ setInterval(function () { // <interval #2>
 
           var sth1 = plr.sHealth[i];
 
-          if(plr.sHealth[i]<1 && plr.sRegTimer[i]==0 && (plr.livID[i]==plr.cl_livID[i] && plr.immID[i]==plr.cl_immID[i]))
+          if(plr.sHealth[i]<1 && plr.sRegTimer[i]==0)
 		      {
 			      var potHH = func.parseFloatU(plr.upgrades[i].split(";")[0]) + getProtLevelAdd(artid) + func.parseFloatU(gameplay[26]);
 			      if(potHH<-50) potHH = -50; if(potHH>56.397) potHH = 56.397;
@@ -1705,8 +1724,6 @@ function kick(i) {
   plr.conID[i] = "0";
   plr.livID[i] = "0";
   plr.immID[i] = "0";
-  plr.cl_livID[i] = "-1";
-  plr.cl_immID[i] = "-1";
   plr.connectionTime[i] = -1;
   plr.sHealth[i] = 0;
   plr.sRegTimer[i] = -1;
@@ -2277,6 +2294,11 @@ function invChangeTry(invID, item, count, slot) {
   if (slot == -1) return true;
   var itemS, countS, effTab, mode;
 
+  if(slot>=9) {
+    var bpkUpgrade = func.parseFloatU(plr.upgrades[invID].split(";")[4]);
+    if(Math.floor((slot-9)/3)+1 > bpkUpgrade && !(slot-9>=15 && slot-9<=16)) return false;
+  }
+
   if (slot < 9) {
     effTab = plr.inventory[invID].split(";");
     itemS = effTab[slot * 2];
@@ -2472,6 +2494,9 @@ function kill(pid)
   plr.sHealth[pid] = 1;
   plr.sRegTimer[pid] = 0;
 
+  plr.pclass[pid].force_teleport_respawn = true;
+  plr.pclass[pid].last_pos_changes = [];
+
   if(plr.players[pid]=="0" || plr.players[pid]=="1") return;
 
   var xx = plr.players[pid].split(";")[0];
@@ -2585,8 +2610,58 @@ function Censure(pldata,pid,livID)
   pldata[5] = pldata[5].split("&")[0] + "&" + artid;
 
   var cens = pldata.join(";");
-  plr.data[pid] = cens;
   return cens;
+}
+
+function updateHasSense(before,after,pid,flags)
+{
+  if((before=="0" && after.length>1) || (before=="1" && after.length>1)) //player joins or respawns
+  {
+    //check if at spawn/respawn
+    var tab_aft = after.split(";");
+    var pos_aft_x = func.parseFloatU(tab_aft[0]);
+    var pos_aft_y = func.parseFloatU(tab_aft[1]);
+    var tab_dat = plr.data[pid].split(";");
+    var pos_dat_x = func.parseFloatU(tab_dat[0]);
+    var pos_dat_y = func.parseFloatU(tab_dat[1]);
+    var spawn_deviation = Math.sqrt((pos_aft_x-pos_dat_x)**2 + (pos_aft_y-pos_dat_y)**2);
+    if(spawn_deviation > 1) return false;
+  }
+
+  else if(before.length>1 && after.length>1) //player normally updates
+  {
+    //check if good movement
+    var tab_bef = before.split(";");
+    var pos_bef_x = func.parseFloatU(tab_bef[0]);
+    var pos_bef_y = func.parseFloatU(tab_bef[1]);
+    var tab_aft = after.split(";");
+    var pos_aft_x = func.parseFloatU(tab_aft[0]);
+    var pos_aft_y = func.parseFloatU(tab_aft[1]);
+    var position_change = Math.sqrt((pos_aft_x-pos_bef_x)**2 + (pos_aft_y-pos_bef_y)**2);
+    
+    if(flags[3]!="T") {
+      plr.pclass[pid].PosChangeAdd(position_change);
+      if(plr.pclass[pid].PosChangeSum() > config.anti_cheat.max_movement_per_period) return false;
+    }
+    else {
+      if(position_change > 150 || !plr.pclass[pid].allowed_teleport_small) return false;
+    }
+  }
+
+  //player dies -> can't happen in PlayerUpdate
+
+  else if(before=="1" && after=="1") //player is in heaven
+  { /* ALWAYS GOOD */ }
+
+  else if(before=="1" && after.length>1) //player respawns
+  {
+    //check if can respawn
+    if(plr.pclass[pid].force_teleport_respawn) plr.pclass[pid].force_teleport_respawn = false;
+    else return false;
+  }
+
+  else return false;
+  return true; //no problem noticed
 }
 
 //Websocket brain
@@ -2687,8 +2762,6 @@ wss.on("connection", function connection(ws) {
       se3_ws[arg[1]] = ws;
       se3_wsS[arg[1]] = "game";
 
-      plr.cl_immID[arg[1]] = 0;
-      plr.cl_livID[arg[1]] = 0;
       plr.connectionTime[arg[1]] = 0;
 
       sendToAllPlayers(
@@ -2728,21 +2801,24 @@ wss.on("connection", function connection(ws) {
 
     // ----- GAMEPLAY COMMANDS ----- \\
 
-    if (arg[0] == "/PlayerUpdate") // 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[immID] 5[flags]
+    if (arg[0] == "/PlayerUpdate") // 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[flags]
     {
-      if(!VerifyCommand(arg,["PlaID","UpdateData","short","EndID","Flags"])) return;
+      if(!VerifyCommand(arg,["PlaID","UpdateData","short","Flags"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
+      var censured = Censure(arg[2],arg[1],arg[msl-1]);
+      if(!updateHasSense(plr.players[arg[1]],censured,arg[1],arg[4])) {kick(arg[1]); return;}
 
-      if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = 250;
+      if(arg[4][3]=="T") plr.pclass[arg[1]].allowed_teleport_small = false;
+
+      if(censured=="1") arg[4]="FFF"+arg[4][3];
 
       var memX = func.parseFloatU(plr.data[arg[1]].split(";")[0]);
       var memY = func.parseFloatU(plr.data[arg[1]].split(";")[1]);
 
-      var censured = Censure(arg[2],arg[1],arg[msl-1]);
       plr.players[arg[1]] = censured;
+      if(censured!="1") plr.data[arg[1]] = censured;
 
-      plr.cl_immID[arg[1]] = arg[4];
-      plr.cl_livID[arg[1]] = arg[msl-1];
+      if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = 250;
 
       sendTo(ws,"P"+arg[3]); //Short type command
 
@@ -2750,16 +2826,17 @@ wss.on("connection", function connection(ws) {
       // [0] - impulseEnabled
       // [1] - impulseStarted
       // [2] - invisibilityPulse
+      // [3] - doTeleport
 
-      if(arg[5][1]=="T") plr.impulsed[arg[1]] = [];
+      if(arg[4][1]=="T") plr.impulsed[arg[1]] = [];
 
-      if(arg[5][2]=="T") sendToAllPlayers(
+      if(arg[4][2]=="T") sendToAllPlayers(
         "/RetInvisibilityPulse " + arg[1] + " none X X"
       );
 
       //impulse damage
       var j, caray = censured.split(";");
-      if(caray.length>1 && arg[5][0]=="T")
+      if(caray.length>1 && arg[4][0]=="T")
       {
         var xa = func.parseFloatU(caray[0]);
         var ya = func.parseFloatU(caray[1]);
@@ -2902,18 +2979,27 @@ wss.on("connection", function connection(ws) {
         if(scrs[i].bID==bID) {
           if(scrs[i].dataY[2-2]!=2) break;
 
-          var players_inside=1;
-          for(j=0;j<max_players;j++)
-            if(plr.players[j]!="0" && plr.players[j]!="1" && arg[1]!=j)
+          var players_inside = 0;
+          var found_me = false;
+          for(j=0;j<max_players;j++) {
+            if(plr.players[j]!="0" && plr.players[j]!="1")
             {
               var plas = plr.players[j].split(";");
               var dx = func.parseFloatU(plas[0]) - scrs[i].posCX;
               var dy = func.parseFloatU(plas[1]) - scrs[i].posCY;
-              if(dx**2 + dy**2 <= (in_arena_range)**2) players_inside++;
+              if(dx**2 + dy**2 <= (in_arena_range)**2) {
+                players_inside++;
+                if(arg[1]==j+"") found_me = true;
+              }
             }
-
-          if(players_inside==1) scrs[i].dataY[4-2] = 1;
-          else sendTo(ws,"/RetGiveUpTeleport "+arg[1]+" "+bID+" 1024 X "+blivID);
+          }
+          if(found_me) {
+            if(players_inside==1) scrs[i].dataY[4-2] = 1;
+            else {
+              sendTo(ws,"/RetGiveUpTeleport "+arg[1]+" "+bID+" 1024 X "+blivID);
+              plr.pclass[arg[1]].allowed_teleport_small = true;
+            }
+          }
           break;
         }
       }
@@ -2958,6 +3044,7 @@ wss.on("connection", function connection(ws) {
 
       var censured = Censure(plr.players[arg[1]],arg[1],cliLivID);
       plr.players[arg[1]] = censured;
+      if(censured!="1") plr.data[arg[1]] = censured;
       sendTo(ws,"/RetDamageBalance " + arg[2] + " " + cliLivID + " " + cliImmID + " X X");
     }
     if (arg[0] == "/Upgrade") // 1[PlayerID] 2[upgID] 3[slot]
@@ -3225,7 +3312,9 @@ wss.on("connection", function connection(ws) {
         if(!invChangeTry(arg[1], "10", "3", arg[2])) {kick(arg[1]); return;}
         plr.pclass[arg[1]].ModifyRespawn(0,0);
       }
-      plr.players[arg[1]] = Censure(plr.players[arg[1]],arg[1],arg[msl-1]);
+       var cens = Censure(plr.players[arg[1]],arg[1],arg[msl-1]);
+       plr.players[arg[1]] = cens;
+       if(cens!="1") plr.data[arg[1]] = cens;
     }
     if (arg[0] == "/DrillAsk") // 1[PlayerID] 2[DrillID] 3[DrillGroup]
     {
@@ -3459,6 +3548,7 @@ wss.on("connection", function connection(ws) {
       }
       else return;
 
+      //bullet summon
       var tpl = Object.assign({},bulletTemplate);
       tpl.start = Object.assign({},bulletTemplate.start);
       tpl.vector = Object.assign({},bulletTemplate.vector);
@@ -3561,7 +3651,7 @@ wss.on("connection", function connection(ws) {
       );
     }
     if (arg[0] == "/ScrData") {
-      //ScrData 1[PlayerID] 2[bID] 3[scrID] 4[bossType] 5[bossPosX] 6[bossPosY]
+      //ScrData 1[PlayerID] 2[bID] 3[1024] 4[bossType] 5[bossPosX] 6[bossPosY]
       if (!checkPlayerG(arg[1],ws)) return;
 
       var bID = arg[2];
@@ -3711,7 +3801,7 @@ function VerifyCommand(args,formats)
           if(!VerifyCommand((";"+test+";0").split(";"),["Float","Float","NULL","NULL","Angle","RocketInfo","NULL","NULL","NULL","Bar","NULL","Bar"])) return false;
       }
       else if(sw=="Flags") {
-        if(test.length!=3) return false;
+        if(test.length!=4) return false;
       }
       else if(sw=="NULL") {
         if(test!="") return false;
@@ -4595,6 +4685,9 @@ if(gsol5a > gsol5b)
   gsol5a = gsol5b;
   gsol5b = gsolpom;
 }
+
+unstable_sprobability = Math.floor(func.parseFloatU(gameplay[24])*50+1);
+if(unstable_sprobability < 1) unstable_sprobability = 1;
 
 growSolid[5] = gsol5a +";"+ gsol5b +";6";
 growSolid[6] = gsol5a +";"+ gsol5b +";7";

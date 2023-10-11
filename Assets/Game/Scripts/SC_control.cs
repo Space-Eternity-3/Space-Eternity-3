@@ -43,8 +43,7 @@ public class SC_control : MonoBehaviour {
 	public Transform respawn_point;
 	public Text servername,pingname;
 	public Text TextConstYou;
-	float mX,mY,mmX,mmY,X,Y,F=0.3f;
-	bool big_vel=false;
+	float mX,mY,X,Y,F=0.3f;
 
 	public Renderer engine;
 	public Material E1;
@@ -210,6 +209,7 @@ public class SC_control : MonoBehaviour {
 	public List<string> DarkTreasureAllowed = new List<string>();
 
 	public int unstable_pulses_available = 0;
+	public bool already_teleported = false;
 	
 	float V_to_F(float V,bool turboo)
 	{
@@ -247,6 +247,13 @@ public class SC_control : MonoBehaviour {
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
 		float heal=0.02f*hp/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
 		return heal;
+	}
+	public float getMouseRotation(float y, float x)
+	{
+		float raw_angle = Mathf.Atan2(y,x)*57.296f;
+		raw_angle += 360*10;
+		raw_angle %= 360;
+		return raw_angle;
 	}
 	public void LaterUpdate()
 	{
@@ -502,10 +509,7 @@ public class SC_control : MonoBehaviour {
 		if(!timeStop){
 			
 		//rotate player
-		
-		mmX=Input.mousePosition.x-Screen.width/2;
-		mmY=Input.mousePosition.y-Screen.height/2;
-		
+
 		if(!impulse_enabled || impulse_reset)
 		{
 			mX=Input.mousePosition.x-Screen.width/2;
@@ -513,15 +517,11 @@ public class SC_control : MonoBehaviour {
 			impulse_reset = false;
 		}
 
-		if(mmX==0) mmX=1;
-		if(mmY==0) mmY=1;
-		
-		if(mX==0) mX=1;
+		if(mX==0) mX=1; //required
 		if(mY==0) mY=1;
 		
-		float pom=Mathf.Atan(mY/mX)*57.296f;
+		float pom = getMouseRotation(mY,mX);
 		Quaternion quat_food=new Quaternion(0f,0f,0f,0f);
-		if(mX<0) pom=pom+180f;
 		
 		quat_food.eulerAngles = new Vector3(0f,0f,pom);
 		player.rotation = quat_food;
@@ -1032,9 +1032,10 @@ public class SC_control : MonoBehaviour {
 		}
 		
 		//unstability movement
-		if(SC_artefacts.GetArtefactID()==6 && livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
+		bool is_artefact_6 = (SC_artefacts.GetArtefactID()==6);
+		if(livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100))
 		{
-			if(UnityEngine.Random.Range(0,unstable_probability)==0)
+			if(is_artefact_6 && UnityEngine.Random.Range(0,unstable_probability)==0)
 			{
 				float alp = UnityEngine.Random.Range(0,360);
 				float ux = Mathf.Cos((alp*3.14159f)/180f);
@@ -1049,7 +1050,7 @@ public class SC_control : MonoBehaviour {
 
 				power_V += at_unstable_regen1/50f;
 			}
-			if((UnityEngine.Random.Range(0,unstable_sprobability)==0 && (int)Communtron4.position.y!=100) || unstable_pulses_available > 0)
+			if((is_artefact_6 && UnityEngine.Random.Range(0,unstable_sprobability)==0 && (int)Communtron4.position.y!=100) || unstable_pulses_available > 0)
 			{
 				unstable_pulses_available--;
 				bool wr_tick = (int)Communtron4.position.y!=100 || current_tick!=-1;
@@ -1183,6 +1184,7 @@ public class SC_control : MonoBehaviour {
 			string isImpulse = "F"; if(impulse_enabled) isImpulse = "T";
 			string isImpulseStart = "F"; if(flag_impulse_start) { isImpulseStart = "T"; flag_impulse_start = false; }
 			string isInviPulse = "F"; if(flag_invisibility_pulse) { isInviPulse = "T"; flag_invisibility_pulse = false; }
+			string isTeleport = "F"; if(already_teleported) { isTeleport = "T"; already_teleported = false; }
 			trX=Mathf.Round(transform.position.x*10000f)/10000f;
 			trY=Mathf.Round(transform.position.y*10000f)/10000f;
 			rpX=Mathf.Round(respawn_point.position.x*10000f)/10000f;
@@ -1219,10 +1221,10 @@ public class SC_control : MonoBehaviour {
 					sendOther+"&"+sendOtherParasite+";;;;"+
 					fuB+";;"+poB+" "+
 					
-					localPing+" "+immID+" "+isImpulse + isImpulseStart + isInviPulse
+					localPing+" "+isImpulse + isImpulseStart + isInviPulse + isTeleport
 				);
 			}
-			else SendMTP("/PlayerUpdate "+connectionID+" 1 "+localPing+" "+immID+" FFF");
+			else SendMTP("/PlayerUpdate "+connectionID+" 1 "+localPing+" FFF"+isTeleport);
 		}
 
 		localPing++;
@@ -1900,6 +1902,10 @@ public class SC_control : MonoBehaviour {
 			if(treasure_type=="0") TreasureAllowed.Add(arg[1]);
 			if(treasure_type=="1") DarkTreasureAllowed.Add(arg[1]);
 		}
+		if(arg[0]=="/RetUnstablePulse")
+		{
+			unstable_pulses_available++;
+		}
 
 		//Other scripts
 		if(arg[0]=="/RetInfoClient")
@@ -2089,6 +2095,19 @@ public class SC_control : MonoBehaviour {
 				power_V=tP;
 				respawn_point.position=new Vector3(tVx,tVy,1f);
 			}
+
+			float uX=Input.mousePosition.x-Screen.width/2;
+			float uY=Input.mousePosition.y-Screen.height/2;
+
+			SendMTP(
+				"/PlayerUpdate "+connectionID+" "+
+
+				tX+";"+tY+";;;"+getMouseRotation(uY,uX)+";"+
+				"0&0;;;;"+
+				(Mathf.Round(turbo_V*10000f)/10000f)+";;"+(Mathf.Round(power_V*10000f)/10000f)+" "+
+					
+				localPing+" FFFF"
+			);
 		}
 		else
 		{
