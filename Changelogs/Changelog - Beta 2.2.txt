@@ -50,6 +50,7 @@ Important technical changes:
 - server anti-cheat improved (there was completely no anti-cheat before)
 - player bullets can no longer be faster than 1.2 units, anti-cheat implemented on server side
 - game will close immediately after exception or error and save its crash into crash.log file
+- the main menu will automatically add se3:// instead of wss:// prefix to the server address when it doesn't find any
 
 Bug fixes:
 

@@ -2,10 +2,132 @@ const WebSocket = require("ws");
 const fs = require("fs");
 const path = require("path");
 const config = require("./config.json");
+const authConfig = require("./authConfig.json");
 const { runInNewContext } = require("vm");
 const { parse } = require("path");
 const { func } = require("./functions");
 const { CBoss } = require("./behaviour");
+
+//Variable functions
+String.prototype.replaceAll = function replaceAll(search, replace) {
+  return this.split(search).join(replace);
+};
+String.prototype.replaceAt = function(index, replacement) {
+  return this.substring(0, index) + replacement + this.substring(index + replacement.length);
+}
+String.prototype.insertAt = function(index, insertion) {
+  return this.substring(0, index) + insertion + this.substring(index);
+}
+Array.prototype.remove = function (ind) {
+  this.splice(ind, 1);
+  return this;
+};
+
+//Authorization server variables
+var waiting_authorized = [];
+
+/* ---------AUTHORIZATION SERVER CONNECTION---------- */
+
+const authServerUrl = authConfig.auth_server_url;
+
+function connectToAuthServer() {
+  return new Promise((resolve, reject) => {
+    
+    if(config.require_se3_account) {
+    
+    if(authConfig.is_configured) {
+      
+    const ws = new WebSocket(authServerUrl);
+
+    ws.on('open', () => {
+      console.log('Sending information to the authorization server...');
+      ws.send("/RunningServerAdd "+
+      (authConfig.host_nickname).replaceAll(" ","\n")+" "+(authConfig.host_password).replaceAll(" ","\n")+" "+
+      (authConfig.server_name).replaceAll(" ","\n")+" "+(authConfig.server_redirect_address).replaceAll(" ","\n"));
+
+      ws.on("message", (msg) => {
+        var arg = msg.split(" ");
+        if(arg[0]=="/RetServer")
+        {
+          if(arg[1]=="10") {
+            console.log("Server registered by user "+authConfig.host_nickname);
+            resolve(ws);
+          }
+          else if(arg[1]=="13") {
+            console.log("Server reloaded by user "+authConfig.host_nickname);
+            resolve(ws);
+          }
+
+          else if(arg[1]=="9") {
+            console.log("Server name '"+authConfig.server_name+"' is already registered by another player. Choose a different name.");
+            reject("code 9");
+          }
+          else if(arg[1]=="11") {
+            console.log("Server name should not contain \\n or space character.");
+            reject("code 11");
+          }
+          else if(arg[1]=="12") {
+            console.log("Server address should not contain \\n or space character.");
+            reject("code 12");
+          }
+          else {
+            console.log("Failied to login as "+authConfig.host_nickname);
+            reject("code L");
+          }
+        }
+        else if(arg[0]=="/RetAuthorizeUser")
+        {
+          //Add nick with conID for 8 seconds
+          waiting_authorized.push([arg[1],arg[2],8]);
+        }
+        else
+        {
+          console.log("Unknown authorization answer.");
+          reject("code W");
+        }
+      });
+      ws.on("close", (code,reason) => {
+        console.log("Connection with authorization server closed. Stopping the server...");
+        process.emit("SIGINT");
+      });
+    });
+
+    ws.on('error', (error) => {
+      console.log('Error connecting to the authorization server.');
+      console.log("You can disable 'require_se3_account' in the config.json file to ignore that.");
+      console.log("Do it only when hosting a non-comercial server, as this will result in removing the nickname protection.");
+      console.log("Such servers do not provide the server name system. Instead, they use raw IP or DNS addresses.");
+      reject("code E");
+    });
+    
+    } else {
+      //not configured
+      console.log("You must configure the authConfig.json file or disable 'require_se3_account' in the config.json file.");
+      console.log("Here is the tutorial how to configure values:\n");
+      console.log("'is_configured' - set this to true");
+	    console.log("'auth_server_url' - leave it as it is, unless authorization address has changed");
+	    console.log("'host_nickname' - your se3 account nickname");
+	    console.log("'host_password' - your se3 account password");
+	    console.log("'server_name' - SE3 server name, use it as se3://SERVER_NAME to connect to the server");
+	    console.log("'server_redirect_address' - IP or DNS address which will be sent to users, who are connecting to your server");
+      console.log("\nNote, that every user can have up to one server. Every next will overwrite the server_name reservation.");
+      reject("code C");
+    }
+
+    } else {
+      //doesn't require se3 account
+      resolve("NO SOCKET");
+    }
+  });
+}
+
+connectToAuthServer()
+  .then((AuthWs) => {
+    console.log("Starting the server...");
+    if(!config.require_se3_account) console.log("Warning: Running without the nickname protection!\nEnable 'require_se3_account' in file config.json to fix.");
+    //(...)
+
+/* -------------------------------------------------- */
 
 const health_base = 1.0985;
 const unit = 0.0008;
@@ -21,6 +143,8 @@ var hourHeader = "";
 var gpl_number = 112;
 var max_players = 10;
 var verF;
+var connectionAddress = "IP or DNS + port";
+if(config.require_se3_account) connectionAddress = "se3://" + authConfig.server_name;
 
 var boss_damages = [0,0,0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,0,0 ,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var other_bullets_colliders = [0,0.14,0.14,0.12,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.14,0.08 ,1.68,0.25,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
@@ -725,21 +849,6 @@ function getRandomFunnyText()
   return "Something went wrong...";
 }
 
-//Variable functions
-String.prototype.replaceAll = function replaceAll(search, replace) {
-  return this.split(search).join(replace);
-};
-String.prototype.replaceAt = function(index, replacement) {
-  return this.substring(0, index) + replacement + this.substring(index + replacement.length);
-}
-String.prototype.insertAt = function(index, insertion) {
-  return this.substring(0, index) + insertion + this.substring(index);
-}
-Array.prototype.remove = function (ind) {
-  this.splice(ind, 1);
-  return this;
-};
-
 //File functions
 function readF(nate) {
   if (existsF(nate)) return fs.readFileSync(nate, { flag: "r" }).toString();
@@ -1171,6 +1280,15 @@ setInterval(function () { // <interval #2>
       size_upload = 0;
       size_updates = 0;
       size_tps = 0;
+
+      var vi,wa_lngt = waiting_authorized.length;
+      for(vi=0;vi<wa_lngt;vi++) {
+        waiting_authorized[vi][2]--;
+        if(waiting_authorized[vi][2]<=0) {
+          waiting_authorized.splice(vi,1);
+          vi--; wa_lngt--;
+        }
+      }
     }
 
     //LAG PREVENTING
@@ -2709,10 +2827,24 @@ wss.on("connection", function connection(ws) {
       var bN = nickWrong(arg[1]);
       var bJ = plr.nicks.includes(arg[1]);
       var bA = !((!config.whitelist_enabled || config.whitelist.includes(arg[1])) && (!config.banned_players.includes(arg[1])));
-      var bT = !(!config.require_se3_account || false);
+      
+      var bT = true;
+      if(config.require_se3_account) {
+        var wa_lngt = waiting_authorized.length;
+        for(i=0;i<wa_lngt;i++) {
+          if(waiting_authorized[i][0]==arg[1] && waiting_authorized[i][1]==arg[3]) {
+            waiting_authorized.splice(i,1);
+            bT = false;
+            break;
+          }
+        }
+      }
+      else bT = false;
+      var conInsert = ""; if(config.require_se3_account) conInsert = " "+connectionAddress;
+
       if(bN || bJ || bV || bA || bT) {
         if(bV) sendTo(ws,"/RetAllowConnection -1 X X"); //incompatible version
-        else if(bT) sendTo(ws,"/RetAllowConnection -7 X X"); //this server requires se3 account to verify users
+        else if(bT) sendTo(ws,"/RetAllowConnection -7"+conInsert+" X X"); //this server requires se3 account to verify users
         else if(bA) sendTo(ws,"/RetAllowConnection -5 X X"); //you are banned or not on a whitelist
         else if(bN) sendTo(ws,"/RetAllowConnection -2 X X"); //wrong nick format
         else if(bJ) sendTo(ws,"/RetAllowConnection -3 X X"); //player already joined
@@ -4620,8 +4752,8 @@ if (!existsF(universe_name + "/UniverseInfo.se3"))
     [uniTime, uniMiddle, uniVersion, ""].join("\r\n")
   );
 
-  if(verF=="Custom Data" && datName=="DEFAULT") console.log("Datapack imported: [CUSTOM]");
-  else console.log("Datapack imported: [" + datName + "]");
+  if(verF=="Custom Data" && datName=="DEFAULT") console.log("Datapack imported: CUSTOM");
+  else console.log("Datapack imported: " + datName + "");
 }
 else
 {
@@ -4724,11 +4856,19 @@ growSolid[6] = gsol5a +";"+ gsol5b +";7";
 growSolid[25] = gsol25 +";"+ gsol25 +";23";
 
 //Starting ending
-console.log("Server started on version: [" + serverVersion + "]");
-console.log("Universe directory: [" + universe_name + "]");
-console.log("Max players: [" + max_players + "]");
-console.log("Port: [" + connectionOptions.port + "]" + laggy_comment(max_players));
+console.log("Server started on version: " + serverVersion + "");
+console.log("Universe directory: " + universe_name + "");
+console.log("Max players: " + max_players + "");
+console.log("Port: " + connectionOptions.port + "");
+console.log("Server address: " + connectionAddress + "" + laggy_comment(max_players));
 console.log("-------------------------------");
 
 updateHourHeader();
 setTerminalTitle("SE3 server | "+serverVersion+" | "+getRandomFunnyText());
+
+//END OF MAIN SEGMENT
+
+})
+.catch((error) => {
+  console.log("\nClosing the server: "+error);
+});

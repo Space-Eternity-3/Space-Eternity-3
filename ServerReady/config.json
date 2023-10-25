@@ -4,7 +4,7 @@
 	"port": 27683,
 	"pvp": true,
 	"show_positions": true,
-	"require_se3_account": false,
+	"require_se3_account": true,
 	"whitelist_enabled": false,
 	"whitelist": [
 		"ExampleNick1",

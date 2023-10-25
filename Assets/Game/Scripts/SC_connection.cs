@@ -51,7 +51,9 @@ public class SC_connection : MonoBehaviour
     string getBackpack="";
     string getSeed="";
 
+    string gotAddress = "?";
     string delayedWarning = "";
+    string ConnectionUrl = "";
 
     void Awake()
     {
@@ -61,13 +63,65 @@ public class SC_connection : MonoBehaviour
     string adressConvert(string ador)
     {
         int lngt=ador.Length;
-        if(!(lngt>4&&ador[0]=='w'&&ador[1]=='s'&&((ador[2]==':'&&ador[3]=='/'&&ador[4]=='/')||(lngt>5&&ador[2]=='s'&&ador[3]==':'&&ador[4]=='/'&&ador[5]=='/'))))
-            ador = "wss://"+ador;
+        if(!ador.StartsWith("ws://") && !ador.StartsWith("wss://") && !ador.StartsWith("se3://"))
+            ador = "se3://"+ador;
 
         lngt = ador.Length;
         if(ador[lngt-1]==':') ador += "27683";
 
         return ador;
+    }
+    string trueAddressGet(string ador)
+    {
+        if(ador.StartsWith("se3://")) return adressConvert(adressDownload(ador.Substring(6)));
+        else return adressConvert(ador);
+    }
+    string adressDownload(string serverName)
+    {
+        string e = "se3://ERROR ";
+        string ask = "/Authorize "+SC_account.IF_n1.text+" "+SC_account.IF_p1.text+" "+serverName;
+        string response = null;
+
+        try {
+
+        if(SC_account.connected_to_authorizer)
+        {
+            WebSocket _ws = new WebSocket(SC_account.authorizationServer);
+            _ws.OnMessage += (sender, e) => {
+                response = e.Data;
+            };
+
+            _ws.Connect();
+            _ws.Send(ask);
+
+            DateTime startTime = DateTime.Now;
+            while(response == null)
+            {
+                TimeSpan elapsedTime = DateTime.Now - startTime;
+                if(elapsedTime.TotalSeconds >= 5) {
+                    return e;
+                }
+            }
+
+            string[] arg = response.Split(' ');
+            if(arg[0]=="/RetAuthorize")
+            {
+                if(arg[1]=="6")
+                    return e;
+                if(arg[1]=="7")
+                {
+                    //got address
+                    return "ws://localhost:";
+                }
+                return e;
+            }
+            else return e;
+        }
+        else return e;
+
+        } catch(Exception) {
+            return e;
+        }
     }
     void SendMTP(string msg)
     {
@@ -159,7 +213,7 @@ public class SC_connection : MonoBehaviour
         if(code=="-4") return "Server is full.";
         if(code=="-5") return "You are banned or not on a whitelist.";
         if(code=="-6") return "You were kicked for idling in menu for too long. Try reconnecting.";
-        if(code=="-7") return "This server verifies users using SE3 account. Register or login in Account page in the main menu.";
+        if(code=="-7") return "Failied verifing your SE3 account. Try connecting through address: '" + gotAddress + "'.";
         return "Unknown description, maybe introduced in a newer version.";
     }
     void Ws_OnClose(object sender, System.EventArgs e)
@@ -204,6 +258,8 @@ public class SC_connection : MonoBehaviour
             }
             else
             {
+                if(e.Data.Split(' ')[1]=="-7") gotAddress = e.Data.Split(' ')[2];
+                else gotAddress = "?";
                 delayedWarning = getDenyInfo(e.Data.Split(' ')[1]);
                 waiter = 0;
             }
@@ -213,6 +269,10 @@ public class SC_connection : MonoBehaviour
     {
         SC_account.RemoveWarning();
         if(connectionState!=0) return;
+        if(IF_adress.text.Split(' ').Length > 1) {
+            SC_account.SetWarningRaw("Aborted: Server address can't contain space characters.");
+            return;
+        }
         connectionState=1;
         connect_in_update=2;
     }
@@ -244,14 +304,19 @@ public class SC_connection : MonoBehaviour
     {
         conID = GenerateRandomNumber(1,999999999)+"";
 
-        string url = adressConvert(IF_adress.text);
-        try
-        {
-            ws = new WebSocket(url);
+        string raw_url = IF_adress.text;
+        ConnectionUrl = trueAddressGet(raw_url);
+        if(ConnectionUrl=="se3://ERROR ") {
+            V_Stop();
+            SC_account.SetWarningRaw("Aborted: Downloading server address failied.");
+            return;
         }
-        catch(Exception e)
-        {
-            Debug.Log("Wrong adress: "+e.ToString());
+
+        try {
+            ws = new WebSocket(ConnectionUrl);
+        }
+        catch(Exception e) {
+            SC_account.SetWarningRaw("Aborted: Wrong server address typed or received from authorization server.");
             connectionState=0;
             return;
         }
@@ -273,7 +338,7 @@ public class SC_connection : MonoBehaviour
 
         SC_data.TempFile="100";
 		SC_data.TempFileConID[0]=connectionID+"";
-        SC_data.TempFileConID[1]=adressConvert(IF_adress.text);
+        SC_data.TempFileConID[1]=ConnectionUrl;
         SC_data.TempFileConID[2]=IF_nickname.text;
         SC_data.TempFileConID[3]=getData;
         SC_data.TempFileConID[4]=getInventory;

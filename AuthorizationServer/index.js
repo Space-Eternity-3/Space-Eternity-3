@@ -20,8 +20,8 @@ function sendToAllClients(data) {
 }
 function sendTo(ws,data) {
   try{
-    console.log(data);
     ws.send(data);
+    console.log(data);
   }catch{return;}
 }
 
@@ -47,6 +47,25 @@ function writeF(nate, text) {
 function removeF(nate) {
   fs.unlinkSync(nate);
 }
+function getAllTxtFiles(folderPath) {
+  const files = fs.readdirSync(folderPath);
+  const textFiles = files.filter(file => {
+      const filePath = path.join(folderPath, file);
+      const fileStats = fs.statSync(filePath);
+      return fileStats.isFile() && file.endsWith('.txt');
+  });
+  return textFiles;
+}
+function removeFileExtension(filename) {
+  const lastDotIndex = filename.lastIndexOf('.');
+  if (lastDotIndex === -1) {
+    // Jeśli nie ma kropki (.), nie ma rozszerzenia, zwracamy oryginalną nazwę
+    return filename;
+  } else {
+    // W przeciwnym razie zwracamy część przed ostatnią kropką
+    return filename.substring(0, lastDotIndex);
+  }
+}
 
 //Nick functions
 function nickWrong(stam) {
@@ -66,6 +85,16 @@ function nickWrong(stam) {
 }
 function getNickPath(nick) {
   return "./Accounts/"+nick+".txt";
+}
+
+//Verify functions
+function okServerAddress(s) {
+  if(s.includes("\n") || s.includes(" ")) return false;
+  return (s!="");
+}
+function okServerName(s) {
+  if(s.includes("\n") || s.includes(" ")) return false;
+  return (s!="");
 }
 
 //Account functions
@@ -93,6 +122,32 @@ function Login(nick,password) {
   }
 }
 
+//Registered servers
+var serverList = [];
+class CServer {
+  constructor(_ws,_owner,_name,_address) {
+    this.ws = _ws;
+    this.owner = _owner;
+    this.name = _name;
+    this.address = _address;
+  }
+  Save() {
+    writeF("./RegisteredServers/"+this.owner+".txt",this.name+"\n"+this.address);
+  }
+  Load() {
+    var tab = readF("./RegisteredServers/"+this.owner+".txt").split("\n");
+    this.name = tab[0];
+    this.address = tab[1];
+  }
+}
+function getServerMemoryInfo(obj) {
+  return [
+    obj.owner,
+    obj.name,
+    obj.address,
+  ];
+}
+
 //Websocket brain
 wss.on("connection", function connection(ws) {
   ws.on("close", (code, reason) => {
@@ -105,9 +160,14 @@ wss.on("connection", function connection(ws) {
   // 3 -> username already exists
   // 4 -> user doesn't exist
   // 5 -> wrong password
-  // 6 -> server not responding
-  // 7 -> here you have connection code (next argument)
+  // 6 -> server not found
+  // 7 -> server address given
   // 8 -> new password too short
+  // 9 -> serverName already exists
+  // 10 -> running server name registered
+  // 11 -> wrong serverName format
+  // 12 -> wrong serverAddress format
+  // 13 -> running server name reloaded
 
   ws.on("message", (msg) => {
 
@@ -145,7 +205,7 @@ wss.on("connection", function connection(ws) {
     }
 
     //AUTHORIZE
-    if(arg[0]=="/Authorize" && argsize==4) //Authorize 1[nickname] 2[password] 3[serverAddress] NPA
+    if(arg[0]=="/Authorize" && argsize==4) //Authorize 1[nickname] 2[password] 3[serverName] NPS
     {
       var ef = Login(arg[1],arg[2]);
       if(ef==1)
@@ -154,10 +214,53 @@ wss.on("connection", function connection(ws) {
       }
       else sendTo(ws,"/RetAuthorize "+ef);
     }
+
+    //RUNNING SERVER ADD
+    if(arg[0]=="/RunningServerAdd" && argsize==5) //RunningServerAdd 1[nickname] 2[password] 3[serverName] 4[serverAddress] NPSA
+    {
+      if(!okServerName(arg[3])) {sendTo(ws,"/RetServer 11"); return;}
+      if(!okServerAddress(arg[4])) {sendTo(ws,"/RetServer 12"); return;}
+      var ef = Login(arg[1],arg[2]);
+      if(ef==1)
+      {
+        var i,lngt=serverList.length;
+        for(i=0;i<lngt;i++)
+        {
+          if(serverList[i].owner!=arg[1] && serverList[i].name==arg[3])
+          {
+            sendTo(ws,"/RetServer 9"); return; //unable to register name
+          }
+        }
+        for(i=0;i<lngt;i++)
+        {
+          if(serverList[i].owner == arg[1])
+          {
+            serverList[i].ws = ws;
+            serverList[i].name = arg[3];
+            serverList[i].address = arg[4];
+            serverList[i].Save(); console.log(getServerMemoryInfo(serverList[i]));
+            sendTo(ws,"/RetServer 13"); return; //reloading
+          }
+        }
+        serverList.push(new CServer(ws,arg[1],arg[3],arg[4]));
+        serverList[lngt].Save(); console.log(getServerMemoryInfo(serverList[lngt]));
+        sendTo(ws,"/RetServer 10"); return; //registering
+      }
+      else sendTo(ws,"/RetServer "+ef);
+    }
     
   });
 });
 
-//Starting ending
+//Starting server
 console.log("Communication version: " + serverVersion + "\nPort: "+connectionOptions.port+"\nStarting authorization server for SE3...");
-console.log("Server started succesfully!")
+
+var reservedServerNicknames = getAllTxtFiles("./RegisteredServers/");
+var i,lngt=reservedServerNicknames.length;
+for(i=0;i<lngt;i++) {
+  serverList.push(new CServer("",removeFileExtension(reservedServerNicknames[i]),"",""));
+  serverList[i].Load();
+  console.log(getServerMemoryInfo(serverList[i]));
+}
+
+console.log("Server started succesfully!");

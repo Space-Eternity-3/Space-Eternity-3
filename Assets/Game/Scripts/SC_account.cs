@@ -261,8 +261,10 @@ public class SC_account : MonoBehaviour
         SC_data.MultiplayerInput[0] = IF_n1.text; //nickname
         SC_data.MultiplayerInput[1] = IF_a1.text; //address
         SC_data.MultiplayerInput[2] = IF_p1.text; //password
-        if(logged) SC_data.MultiplayerInput[3] = IF_n1.text; //auto login
-        else SC_data.MultiplayerInput[3] = "..........................";
+        if(connected_to_authorizer) {
+            if(logged) SC_data.MultiplayerInput[3] = IF_n1.text; //auto login
+            else SC_data.MultiplayerInput[3] = "..........................";
+        }
         SC_data.Save("settings");
     }
     public void ReloadCarets(int n)
