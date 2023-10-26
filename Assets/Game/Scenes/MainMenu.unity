@@ -27042,13 +27042,14 @@ MonoBehaviour:
   Screen5: {fileID: 613791061}
   warning_text5: {fileID: 1231874460}
   warning_field5: {fileID: 992205126}
-  authorizationServer: ws://localhost:27684
+  authorizationServer: wss://comp.se3.page:27684
   accountPage: https://se3.page/passchange.html
   logged: 0
   confirming: 0
   waiting_for: 0
   connected_to_authorizer: 0
   delayed_login: 0
+  make_wrong_ask: 0
   delayed_messages: []
   SC_main_buttons: {fileID: 1205799743}
   SC_data: {fileID: 35467493}

@@ -153,11 +153,41 @@ function getServerMemoryInfo(obj) {
   ];
 }
 
+//Connection limiter variables
+const maxConnectionsPerIP = 5;
+const connectionsPerIP = new Map();
+
 //Websocket brain
-wss.on("connection", function connection(ws) {
+wss.on("connection", function connection(ws,req) {
+
+  //Check connection limiter
+  const clientIP = req.socket.remoteAddress;
+  if (connectionsPerIP.has(clientIP) && connectionsPerIP.get(clientIP) >= maxConnectionsPerIP) {
+    ws.close();
+    console.log(clientIP+" blocked");
+    return;
+  }
+
   ws.on("close", (code, reason) => {
-    
+    //Remove connection limiter IP from map
+    if (connectionsPerIP.has(clientIP)) {
+      const currentConnections = connectionsPerIP.get(clientIP);
+      if (currentConnections > 1) {
+        connectionsPerIP.set(clientIP, currentConnections - 1);
+      } else {
+        connectionsPerIP.delete(clientIP);
+      }
+    }
   });
+
+  //Add connection limiter IP to map
+  if (connectionsPerIP.has(clientIP)) {
+    connectionsPerIP.set(clientIP, connectionsPerIP.get(clientIP) + 1);
+  } else {
+    connectionsPerIP.set(clientIP, 1);
+  }
+
+  console.log(clientIP+" -> "+connectionsPerIP.get(clientIP));
 
   //Return codes:
   // 1 -> success
