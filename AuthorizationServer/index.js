@@ -178,7 +178,7 @@ wss.on("connection", function connection(ws) {
   ws.on("message", (msg) => {
 
     try {
-      var str = (msg).toString(); if(str.length > 1000) {ws.close(); return;}
+      const str = msg.toString(); if(str.length > 1000) {ws.close(); return;}
       var arg = str.split(" ");
     } catch {ws.close(); return;}
     var argsize = arg.length;

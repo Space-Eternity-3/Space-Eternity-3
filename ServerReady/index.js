@@ -46,7 +46,7 @@ function connectToAuthServer() {
       (authConfig.server_name).replaceAll(" ","\n")+" "+(authConfig.server_redirect_address).replaceAll(" ","\n"));
 
       ws.on("message", (msg) => {
-        var arg = msg.split(" ");
+        var arg = msg.toString().split(" ");
         if(arg[0]=="/RetServer")
         {
           if(arg[1]=="10") {
