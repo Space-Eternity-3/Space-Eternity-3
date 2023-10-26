@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using UnityEngine.SceneManagement;
 using System.Security.Cryptography;
+using System.Threading;
 
 public class SC_connection : MonoBehaviour
 {
@@ -73,54 +74,59 @@ public class SC_connection : MonoBehaviour
     }
     string trueAddressGet(string ador)
     {
+        ador = adressConvert(ador);
         if(ador.StartsWith("se3://")) return adressConvert(adressDownload(ador.Substring(6)));
-        else return adressConvert(ador);
+        else return ador;
     }
     string adressDownload(string serverName)
     {
-        string e = "se3://ERROR ";
-        string ask = "/Authorize "+SC_account.IF_n1.text+" "+SC_account.IF_p1.text+" "+serverName;
+        string e = "se3://ERROR "; //not logged in
+        string e1 = "se3://ERROR_1 "; //connection error
+        string e2 = "se3://ERROR_2 "; //no such server
+        string e3 = "se3://ERROR_3 "; //exception error
+        string ask = "/Authorize "+SC_account.IF_n1.text+" "+SC_account.IF_p1.text+" "+serverName+" "+conID;
         string response = null;
 
         try {
 
-        if(SC_account.connected_to_authorizer)
+        if(SC_account.connected_to_authorizer && SC_account.logged)
         {
-            WebSocket _ws = new WebSocket(SC_account.authorizationServer);
-            _ws.OnMessage += (sender, e) => {
-                response = e.Data;
-            };
-
-            _ws.Connect();
-            _ws.Send(ask);
-
-            DateTime startTime = DateTime.Now;
-            while(response == null)
+            using(WebSocket _ws = new WebSocket(SC_account.authorizationServer))
             {
-                TimeSpan elapsedTime = DateTime.Now - startTime;
-                if(elapsedTime.TotalSeconds >= 5) {
-                    return e;
-                }
-            }
+                _ws.OnMessage += (sender, e) => {
+                    response = e.Data;
+                };
 
-            string[] arg = response.Split(' ');
-            if(arg[0]=="/RetAuthorize")
-            {
-                if(arg[1]=="6")
-                    return e;
-                if(arg[1]=="7")
+                _ws.Connect();
+                _ws.Send(ask);
+
+                DateTime startTime = DateTime.Now;
+                while(response == null)
                 {
-                    //got address
-                    return "ws://localhost:";
+                    TimeSpan elapsedTime = DateTime.Now - startTime;
+                    if(elapsedTime.TotalSeconds >= 3) {
+                        return e1;
+                    }
                 }
-                return e;
+
+                Thread.Sleep(100); //must be sure that game server already received the join confirmation
+
+                string[] arg = response.Split(' ');
+                if(arg[0]=="/RetAuthorize")
+                {
+                    if(arg[1]=="6")
+                        return e2;
+                    if(arg[1]=="7")
+                        return arg[2];
+                    return e1;
+                }
+                else return e1;
             }
-            else return e;
         }
         else return e;
 
         } catch(Exception) {
-            return e;
+            return e3;
         }
     }
     void SendMTP(string msg)
@@ -210,7 +216,7 @@ public class SC_connection : MonoBehaviour
         if(code=="-1") return "Incompatible version.";
         if(code=="-2") return "Wrong nick format. Nick should not contain any special characters except for _ and -";
         if(code=="-3") return "This player is already on a server.";
-        if(code=="-4") return "Server is full.";
+        if(code=="-4") return "The server is full.";
         if(code=="-5") return "You are banned or not on a whitelist.";
         if(code=="-6") return "You were kicked for idling in menu for too long. Try reconnecting.";
         if(code=="-7") return "Failied verifing your SE3 account. Try connecting through address: '" + gotAddress + "'.";
@@ -306,9 +312,12 @@ public class SC_connection : MonoBehaviour
 
         string raw_url = IF_adress.text;
         ConnectionUrl = trueAddressGet(raw_url);
-        if(ConnectionUrl=="se3://ERROR ") {
+        if(ConnectionUrl.StartsWith("se3://ERROR")) {
             V_Stop();
-            SC_account.SetWarningRaw("Aborted: Downloading server address failied.");
+            if(ConnectionUrl=="se3://ERROR ") SC_account.SetWarningRaw("Aborted: Servers with such addresses require SE3 account to verify users. Register or login from the main menu.");
+            if(ConnectionUrl=="se3://ERROR_1 ") SC_account.SetWarningRaw("Aborted: Error downloading data from the authorization server.");
+            if(ConnectionUrl=="se3://ERROR_2 ") SC_account.SetWarningRaw("Aborted: Couldn't find the server with such name. Is your address correct?");
+            if(ConnectionUrl=="se3://ERROR_3 ") SC_account.SetWarningRaw("Aborted: Unknown error downloading the server address.");
             return;
         }
 

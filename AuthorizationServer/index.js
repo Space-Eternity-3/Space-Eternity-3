@@ -96,6 +96,11 @@ function okServerName(s) {
   if(s.includes("\n") || s.includes(" ")) return false;
   return (s!="");
 }
+function okConID(s) {
+  var n = parseInt(s);
+  if(isNaN(n)) return false;
+  return (n>=0 && n<=999999999);
+}
 
 //Account functions
 function sha256(s) {
@@ -168,6 +173,7 @@ wss.on("connection", function connection(ws) {
   // 11 -> wrong serverName format
   // 12 -> wrong serverAddress format
   // 13 -> running server name reloaded
+  // 14 -> wrong conID format
 
   ws.on("message", (msg) => {
 
@@ -205,11 +211,21 @@ wss.on("connection", function connection(ws) {
     }
 
     //AUTHORIZE
-    if(arg[0]=="/Authorize" && argsize==4) //Authorize 1[nickname] 2[password] 3[serverName] NPS
+    if(arg[0]=="/Authorize" && argsize==5) //Authorize 1[nickname] 2[password] 3[serverName] 4[conID] NPSI
     {
+      if(!okServerName(arg[3])) {sendTo(ws,"/RetAuthorize 11"); return;}
+      if(!okConID(arg[4])) {sendTo(ws,"/RetAuthorize 14"); return;}
       var ef = Login(arg[1],arg[2]);
       if(ef==1)
       {
+        var i,lngt=serverList.length;
+        for(i=0;i<lngt;i++) {
+          if(serverList[i].name==arg[3] && serverList[i].ws.readyState==1) {
+            sendTo(serverList[i].ws,"/RetAuthorizeUser "+arg[1]+" "+arg[4]);
+            sendTo(ws,"/RetAuthorize 7 "+serverList[i].address);
+            return;
+          }
+        }
         sendTo(ws,"/RetAuthorize 6");
       }
       else sendTo(ws,"/RetAuthorize "+ef);

@@ -39,6 +39,7 @@ public class SC_account : MonoBehaviour
     WebSocket ws;
     public bool connected_to_authorizer = false;
     public bool delayed_login = false;
+    public bool make_wrong_ask = false;
 
     public List<string> delayed_messages = new List<string>();
 
@@ -56,6 +57,7 @@ public class SC_account : MonoBehaviour
         ws = new WebSocket(authorizationServer);
         ws.OnMessage += Ws_OnMessage;
         ws.OnOpen += Ws_OnOpen;
+        ws.OnClose += Ws_OnClose;
         ws.ConnectAsync();
     }
     bool passwordGood(int f)
@@ -66,6 +68,11 @@ public class SC_account : MonoBehaviour
     }
     void Update()
     {
+        if(make_wrong_ask) {
+            AskServer("Wrong ask");
+            waiting_for=0;
+        }
+
         Account.interactable = connected_to_authorizer;
 
         if(connected_to_authorizer && delayed_login)
@@ -190,10 +197,6 @@ public class SC_account : MonoBehaviour
                 confirming = false;
             }
         }
-        if(arg[0]=="/RetAuthorize")
-        {
-
-        }
 
         waiting_for--;
         if(msg_code!=1 && msg_code!=7)
@@ -213,6 +216,16 @@ public class SC_account : MonoBehaviour
     {
         UnityEngine.Debug.Log("Connected to authorization server.");
         connected_to_authorizer = true;
+    }
+    void Ws_OnClose(object sender, System.EventArgs e)
+    {
+        if(connected_to_authorizer) {
+            UnityEngine.Debug.Log("Connection to the authorization server closed.");
+            _Logout();
+            connected_to_authorizer = false;
+            make_wrong_ask = true;
+        }
+        else UnityEngine.Debug.Log("Failied connecting to the authorization server. Running in offline mode.");
     }
     void OnDestroy()
     {

@@ -38,7 +38,7 @@ Configurables:
 Important technical changes:
 
 - settings format changed to fit official account text field data (username and password)
-- connecting to the server no longer lags the entire main menu
+- the max lagging time in main menu is 3 seconds from now and it happens only during the nick verification process
 - server will kick you after waiting in main menu for longer than 30 seconds
 - server always verifies the sender of the message from now
 - nicks can only contain english letters, numbers, and following characters: _ -
