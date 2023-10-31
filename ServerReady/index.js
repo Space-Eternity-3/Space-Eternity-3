@@ -1640,10 +1640,13 @@ function setTerminalTitle(title)
 function updateHourHeader()
 {
   var date_ob = new Date();
+  var years = date_ob.getYear()+1900;
+  var months = ToTwo(date_ob.getMonth()+1);
+  var days = ToTwo(date_ob.getDate());
   var hours = ToTwo(date_ob.getHours());
   var minutes = ToTwo(date_ob.getMinutes());
   var seconds = ToTwo(date_ob.getSeconds());
-  hourHeader = `[${hours}:${minutes}:${seconds}] `;
+  hourHeader = `[${years}-${months}-${days} ${hours}:${minutes}:${seconds}] `;
 }
 function ToTwo(n) {
   if(n>9) return n+"";
