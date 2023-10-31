@@ -29,6 +29,7 @@ public class SC_account : MonoBehaviour
 
     public Text warning_text5; public Transform warning_field5;
 
+    public bool use_local_authorization = false;
     public string authorizationServer = "ws://localhost:27683";
     public string accountPage = "se3.page";
 
@@ -53,6 +54,9 @@ public class SC_account : MonoBehaviour
     }
     void Start()
     {
+        if(use_local_authorization)
+            authorizationServer = "ws://localhost:27684";
+
         AllInputLoad();
         ws = new WebSocket(authorizationServer);
         ws.OnMessage += Ws_OnMessage;
@@ -208,6 +212,7 @@ public class SC_account : MonoBehaviour
                 case 4: SetWarning("Wrong nickname."); break;
                 case 5: SetWarning("Wrong password."); break;
                 case 8: SetWarning("Wrong password lenght (must be 7-32 characters)."); break; //Will never be executed from here because of client side filter
+                case 15: SetWarning("Registration limit from this IP reached. Please, wait one minute."); break;
                 default: SetWarning("Unknown error."); break;
             }
         }

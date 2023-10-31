@@ -1,2 +1,2 @@
 mein.server
-ws://localhost:
+ws://komp.se3.page:

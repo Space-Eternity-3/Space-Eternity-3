@@ -23,6 +23,8 @@ Array.prototype.remove = function (ind) {
   return this;
 };
 
+console.log("Starting procedures...");
+
 //Authorization server variables
 var waiting_authorized = [];
 

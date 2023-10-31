@@ -27042,6 +27042,7 @@ MonoBehaviour:
   Screen5: {fileID: 613791061}
   warning_text5: {fileID: 1231874460}
   warning_field5: {fileID: 992205126}
+  use_local_authorization: 0
   authorizationServer: wss://comp.se3.page:27684
   accountPage: https://se3.page/passchange.html
   logged: 0
