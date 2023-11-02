@@ -1018,9 +1018,7 @@ function chunkRead(ind) {
         return eff;
       } else throw "error";
     } catch {
-      console.log(
-        "Asteroid file [" + ind + "] is invalid. Generating new data..."
-      );
+      console.log("Asteroid file [" + ind + "] is invalid. Generating new data...");
     }
   }
   for (i = 0; i < 100; i++) eff += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;" + "\r\n";
@@ -1150,12 +1148,6 @@ function SaveAllNow() {
 //Save all once per 15 seconds (or less if lags)
 setInterval(function () { // <interval #1>
   SaveAllNow();
-
-  //var dn1=Date.now();
-  //var dn2=Date.now();
-  //var dn3=dn2-dn1;
-  //console.log("Time "+dn3+"ms");
-
   var i,
     lngt = chunk_waiter.length;
   for (i = 0; i < lngt; i++) {
@@ -2198,7 +2190,6 @@ function GetRPC(players,lngt,sendAll)
 
     if(rbt[0])
     {
-      //if(!sendAll) console.log(rbt[1]);
       not_empty = true;
 
       eff += rbt[2];
@@ -2323,7 +2314,7 @@ function serverDrill(ulam, place) {
   }
 }
 function handDrillTimeGet(pid) {
-  var upg3hugity = 1.15;
+  var upg3hugity = 1.12;
   var upg3down = 90, upg3up = 210;
   var matpow = upg3hugity ** (func.parseFloatU(plr.upgrades[pid].split(";")[2])+func.parseFloatU(gameplay[2]));
 	down = Math.round(upg3down/matpow);
@@ -2805,8 +2796,37 @@ function updateHasSense(before,after,pid,flags)
   return true; //no problem noticed
 }
 
+//Connection limiter variables
+const con_map = new Map();
+const max_cons = config.max_connections_per_ip;
+
+//Connection limiter functions
+function coMinuteFunction() {
+  
+}
+function coSekundeFunction() {
+  
+}
+setInterval(coMinuteFunction, 60 * 1000);
+setInterval(coSekundeFunction, 1 * 1000);
+
 //Websocket brain
-wss.on("connection", function connection(ws) {
+wss.on("connection", function connection(ws,req)
+{
+  //get IP
+  const client_ip = req.socket.remoteAddress;
+
+  //IP bans execute
+  config.banned_ips.forEach(function(ip){
+    if(client_ip.endsWith(ip)) { ws.close(); return; };
+  });
+
+  //Connection limiter (+)
+  if(!con_map.has(client_ip)) con_map.set(client_ip,0);
+  var cur_cons = con_map.get(client_ip);
+  if(cur_cons >= max_cons) { ws.close(); return; }
+  else con_map.set(client_ip, cur_cons+1);
+
   ws.on("close", (code, reason) => {
     var i;
     for(i=0;i<max_players;i++){
@@ -2816,7 +2836,12 @@ wss.on("connection", function connection(ws) {
         if(se3_wsS[i]=="game" || se3_wsS[i]=="menu") kick(i);
       }
     }
+
+    //Connection limiter (-)
+    var cur_cons = con_map.get(client_ip);
+    con_map.set(client_ip, cur_cons-1);
   });
+
   ws.on("message", (msg) => {
     var i,
       arg = (msg+"").split(" ");
@@ -2853,7 +2878,6 @@ wss.on("connection", function connection(ws) {
         else if(bA) sendTo(ws,"/RetAllowConnection -5 X X"); //you are banned or not on a whitelist
         else if(bN) sendTo(ws,"/RetAllowConnection -2 X X"); //wrong nick format
         else if(bJ) sendTo(ws,"/RetAllowConnection -3 X X"); //player already joined
-        console.log("Connection dennied");
         return;
       }
       for(i=0;i<max_players;i++)
@@ -2887,12 +2911,11 @@ wss.on("connection", function connection(ws) {
           );
           se3_ws[i] = ws;
           se3_wsS[i] = "menu";
-          console.log(hourHeader + plr.nicks[i] + " connected [" + i + "]");
+          console.log(hourHeader + plr.nicks[i] + " connected: " + i + "");
           return;
         }
       }
       sendTo(ws,"/RetAllowConnection -4 X X"); //server is full
-      console.log("Connection dennied");
       return;
     }
     if (arg[0] == "/ImJoining") // 1[PlayerID]
@@ -2950,7 +2973,7 @@ wss.on("connection", function connection(ws) {
       sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[3]+" 1 X X");
 
       //Join info
-      console.log(hourHeader + plr.nicks[arg[1]] + " joined");
+      console.log(hourHeader + plr.nicks[arg[1]] + " joined the game");
       return;
     }
 
@@ -3220,7 +3243,7 @@ wss.on("connection", function connection(ws) {
       var ljTab = plr.upgrades[ljPlaID].split(";");
       var current_level = func.parseIntU(ljTab[ljUpgID]);
 
-      var upg_costs = [[10,3],[10,6],[10,10],[5,12],[5,20]];
+      var upg_costs = [[10,5],[10,10],[10,15],[5,20],[5,30]];
       var ljItem = upg_costs[current_level][0];
       var ljCount = upg_costs[current_level][1];
 
@@ -4795,7 +4818,7 @@ else
 if (!existsF(universe_name + "/Seed.se3")) {
   seed = func.randomInteger(0, 10000000);
   writeF(universe_name + "/Seed.se3", seed + "\r\n");
-  console.log("New seed generated: [" + seed + "]");
+  console.log("New seed generated: " + seed + "");
 }
 else {
   seed = func.parseIntU(readF(universe_name + "/Seed.se3").split("\r\n")[0]);

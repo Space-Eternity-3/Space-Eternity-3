@@ -26,6 +26,7 @@ public class SC_connection : MonoBehaviour
     int BTc=0,BTd=2,BTj=2;
     public int connectionState=0;
     int connect_in_update=0;
+    bool block_retransmission;
 
     public List<string> UpdatableVersions = new List<string>();
     
@@ -109,7 +110,7 @@ public class SC_connection : MonoBehaviour
                     }
                 }
 
-                Thread.Sleep(100); //must be sure that game server already received the join confirmation
+                Thread.Sleep(100); //sleep to wait for server authorize confirmation
 
                 string[] arg = response.Split(' ');
                 if(arg[0]=="/RetAuthorize")
@@ -238,15 +239,13 @@ public class SC_connection : MonoBehaviour
     void Ws_OnOpen(object sender, System.EventArgs e)
     {
         Debug.Log("Connection E-open");
+        block_retransmission = false;
         waiter=200;
         connectionState=2;
         SendMTP("/AllowConnection "+IF_nickname.text+" "+SC_data.clientRedVersion+" "+conID);
     }
     void Ws_OnMessage(object sender, MessageEventArgs e)
     {
-        int msl=e.Data.Split(' ').Length;
-		if(e.Data.Split(' ')[msl-2]!=conID&&e.Data.Split(' ')[msl-2]!="X") return;
-
         if(e.Data.Split(' ')[0]=="/RetAllowConnection")
         {
             if(e.Data.Split(' ')[1][0]!='-')
@@ -264,6 +263,15 @@ public class SC_connection : MonoBehaviour
             }
             else
             {
+                //Retransmission for /AllowConnection but only in authorization mode
+                if(SC_account.logged && e.Data.Split(' ')[1]=="-7" && !block_retransmission) {
+                    block_retransmission = true;
+                    Debug.Log("Retransmission for /AllowConnection... but this time waiting 1500ms");
+                    Thread.Sleep(1500);
+                    SendMTP("/AllowConnection "+IF_nickname.text+" "+SC_data.clientRedVersion+" "+conID);
+                    return;
+                }
+
                 if(e.Data.Split(' ')[1]=="-7") gotAddress = e.Data.Split(' ')[2];
                 else gotAddress = "?";
                 delayedWarning = getDenyInfo(e.Data.Split(' ')[1]);

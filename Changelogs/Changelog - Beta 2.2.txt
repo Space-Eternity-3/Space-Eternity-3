@@ -1,14 +1,25 @@
 New features:
 
 - chat added, press "T" or "/" to send a message, press F2 to hide all messages instantly
-- SE3 official accounts added, 3rd menu button "Account" activates when game connects with the official user authorization server, it contains interface used to register and login to your account
-- added way to verify users who join your server, no more logging into your friend's account
-- added way to ban players or to allow only certain users to join
+- added SE3 accounts, you can register or login in main menu
+- added nickname-protection system on servers based on SE3 accounts, enable 'require_se3_account' in config.json
+- added whitelist system for servers
+- added banned players list for servers
+- added banned IPs list for servers
 
 Old feature changes:
 
 - drillers can drill all items from drill loottable now, including magic elements
 - unstable loop sound volume reduced: 0.4 -> 0.25 (to be less annoying)
+- hour header on server improved, it will additionally display date
+- information display design on server console changed a bit, removed unnecessary rectangular brackets []
+- upgrade prices increased:
+  - level 1: gold 3 -> 5
+  - level 2: gold 6 -> 10
+  - level 3: gold 10 -> 15
+  - level 4: amethyst 12 -> 20
+  - level 5: amethyst 20 -> 30
+- drill efficiency upgrade nerfed +15% -> +12%
 
 UI changes:
 
@@ -16,48 +27,59 @@ UI changes:
 - disabled main menu button color is now lighter gray
 - new junkyard messages added
 - multiplayer connection panel reworked, added "stop" button to stop connecting to the server
-  - dennied connection info added
 
 Default datapack changes:
 
-- cementery chance changed: 2% -> 2,7%
-- dark cementery chance changed: 1% -> 1,3%
-- that means all cementery chance changed: 3% -> 4%
+- cementery chance increased: 2% -> 2,7%
+- dark cementery chance increased: 1% -> 1,3%
+- that means all cementery chance increased: 3% -> 4%
 - unstable bullet speed: 0,35 -> 0,4
 - added modified drop: magnetic_alien_activated: magnetic_alien;
 
 Configurables:
 
 - new config variables:
-  - require_se3_account
-  - whitelist_enabled
-  - whitelist
-  - banned_players
-- max_players in config is set to 10 by default, but it can be changed
+  - max_connections_per_ip // max websocket clients from one IP
+  - require_se3_account // enable nickname-protection system
+  - whitelist_enabled // enable whitelist
+  - whitelist // whitelisted players
+  - banned_players // banned players
+  - banned_ips // banned IP addresses
+  - anti-cheat:
+    - max_movement_per_period // max allowed player position change per period
+    - period_in_ticks // movement period length
+    - bullet_spawn_allow_radius // max distance from player, in which it can summon a bullet
+- max_players in config is set to 10 by default
+- all bosbul related commands removed from seon, they are now part of the boss object and are no longer configurable
+  - changed arena seon to fit these rules
 
 Important technical changes:
 
-- settings format changed to fit official account text field data (username and password)
+a) Server connecting
 - the max lagging time in main menu is 3 seconds from now and it happens only during the nick verification process
 - server will kick you after waiting in main menu for longer than 30 seconds
-- server always verifies the sender of the message from now
-- nicks can only contain english letters, numbers, and following characters: _ -
-- all bosbul related commands removed from seon, from now they are part of the boss object and are no longer configurable, arena seon code changed to fit these rules
-- conID safety system replaced with better, se3-ws safety system
-- messages to all clients are sent only when player is confirmed to be in game
-- server should no longer crash after receiving a wrong message
-- server communication protocol was modified in some places, check server code comments for more information
-- server anti-cheat improved (there was completely no anti-cheat before)
-- player bullets can no longer be faster than 1.2 units, anti-cheat implemented on server side
-- game will close immediately after exception or error and save its crash into crash.log file
 - the main menu will automatically add se3:// instead of wss:// prefix to the server address when it doesn't find any
+
+b) Server run
+- server always verifies the sender of the message from now
+- conID safety system replaced with better, se3-ws safety system
+- messages to all clients are sent only to players confirmed to be in game
+- server will no longer crash after receiving a wrong message (if it does, contact with the game developer)
+- server communication protocol was drastically reworked in client -> server commands, check server code comments for more information
+- server anti-cheat improved (there was completely no anti-cheat before)
+- player bullet speed will be always reduced to 1.2 units when too big
+
+c) Others
+- settings format changed to fit official account text field data (username and password)
+- nicks can only contain english letters, numbers, and following characters: _ -
+- game will close immediately after exception or error and save its crash into crash.log file
 
 Bug fixes:
 
 - It was possible to activate pause menu without closing inventory when escape button was released while in inventory
 - It was possible to activate inventory while both in pause menu and on multiplayer
 - junkyard & chat font wasn't supporting characters like ą, ę, ó, ł
-- driller could transform items when more than one item type could be drilled from one asteroid
+- driller could transform items when more than one item type could be drilled from one asteroid (only multiplayer)
 - drill upgrade was not affecting loot until asteroid reloading
 - boss health had visible negative value part after defeating a boss, it was noticeable only when max boss health was very small
 - bullets were breaking when flying through respawn
