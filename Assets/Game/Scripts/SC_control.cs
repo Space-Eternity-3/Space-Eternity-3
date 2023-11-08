@@ -26,6 +26,8 @@ public class SC_control : MonoBehaviour {
 	public Transform explosionM;
 	public Transform explosion2;
 	public Transform explosion2M;
+	public Transform explosion3;
+	public Transform explosion3M;
 	public Transform receiveParticles;
 	public Transform respawn2M;
 	public Transform InvisiPart;
@@ -1398,21 +1400,31 @@ public class SC_control : MonoBehaviour {
 			if(SC_artefacts.GetArtefactID() != 4) info = "K";
 			else info = "I";
 		}
+
+		string if_ringed = "F";
+		if(damage_ringed) if_ringed = "T";
 		
 		if((int)Communtron4.position.y==100) {
 			damageBalance -= dmg;
-			SendMTP("/ClientDamage "+connectionID+" "+dmg+" "+immID+" "+info);
+			SendMTP("/ClientDamage "+connectionID+" "+dmg+" "+immID+" "+info+" "+if_ringed);
 		}
 
 		if(info=="K") KillMe();
 		if(info=="I") ImmortalMe();
+
+		damage_ringed = false;
 	}
+	public bool damage_ringed = false;
 	public void CookedDamage(float dmg)
 	{
 		health_V-=dmg;
 		if(Mathf.Round(health_V*10000f) == 0f) health_V = 0f;
 		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
-		if(!damage_sounds_disabled) Instantiate(explosion2,transform.position,transform.rotation);
+		if(!damage_sounds_disabled)
+		{
+			if(!damage_ringed) Instantiate(explosion2,transform.position,transform.rotation);
+			else Instantiate(explosion3,transform.position,transform.rotation);
+		}
 	}
 	public void HealSGP(string arg2)
 	{
@@ -1438,7 +1450,7 @@ public class SC_control : MonoBehaviour {
 		SC_adecodron[] SC_adecodron2 = FindObjectsOfType<SC_adecodron>();
 		foreach(SC_adecodron adc in SC_adecodron2)
 		{
-			if(adc.cooldown!=0) return false;
+			if(adc.cooldown!=0 && !adc.detached) return false;
 		}
 		return true;
 	}
@@ -1454,7 +1466,10 @@ public class SC_control : MonoBehaviour {
 				dmLicz=20;
 				float head_ache = head_ache=collision.impulse.magnitude-CME + 3f;
 				float hai=float.Parse(SC_data.Gameplay[7])*head_ache*1.2f;
-				if(AllowCollisionDamage()) DamageFLOAT(hai);
+				if(AllowCollisionDamage() && hai>0) {
+					damage_ringed = true;
+					DamageFLOAT(hai);
+				}
 			}
 		}
     }
@@ -1857,6 +1872,9 @@ public class SC_control : MonoBehaviour {
 					break;
 				case 16: //telep (hidden)
 					Instantiate(TelepParticles,particlePos,new Quaternion(0f,0f,0f,0f));
+					break;
+				case 18:
+					Instantiate(explosion3M,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				default:
 					if((put>=11&&put<=15)||put==17)

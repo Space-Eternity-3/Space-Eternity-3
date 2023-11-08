@@ -7,8 +7,8 @@ public class SC_bp_upg : MonoBehaviour
 {
     public int state = 0;
     public Transform upg,bp,mng,ch;
-    public Text upper;
-    public Button B,U,M,C;
+    public Text upper, upper_new;
+    public Button B,U,M,C,Bmin,Bplu;
     Vector3 upgS,bpS,hidden;
     public SC_inv_mover SC_inv_mover;
 	public SC_control SC_control;
@@ -52,11 +52,14 @@ public class SC_bp_upg : MonoBehaviour
             ch.localPosition = bpS;
             C.interactable = false;
         }else {ch.localPosition = hidden; C.interactable = true;}
+
+        upper_new.text = upper.text;
+        Bmin.interactable = state > 0;
+        Bplu.interactable = state < 2;
     }
-    public void change_state()
+    public void add_state(int delta)
     {
-        if(state==0) state=1;
-        else if(state==1) state=0;
+        state += delta;
     }
     public void set_state(int st)
     {

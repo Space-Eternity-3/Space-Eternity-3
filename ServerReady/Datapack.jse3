@@ -12,87 +12,38 @@ craftings
 {
 	<Category>1
 	{
-		title_image: stone;
+		title_image: packed_stone;
 		1: stone(5) -> packed_stone;
-		2: packed_stone -> stone(5);
-		3: stone(2) -> stone_drill;
-		4: stone_drill -> stone(2);
-		5: geyzer -> stone(3);
+		2: copper(5) -> packed_copper;
+		3: gold(5) -> packed_gold;
+		4: coal(5) -> packed_coal;
+		5: magnetic_stone(5) -> packed_magnetic_stone;
 	}
 	<Category>2
 	{
-		title_image: copper;
-		1: copper(5) -> packed_copper;
+		title_image: magnetic_stone;
+		1: packed_stone -> stone(5);
 		2: packed_copper -> copper(5);
-		3: copper -> copper_bullet(5);
+		3: packed_gold -> gold(5);
+		4: packed_coal -> coal(5);
+		5: packed_magnetic_stone -> magnetic_stone(5);
 	}
 	<Category>3
 	{
-		title_image: gold;
-		1: gold(5) -> packed_gold;
-		2: packed_gold -> gold(5);
-		3: gold(2) -> golden_drill;
-		4: golden_drill -> gold(2);
+		title_image: storage;
+		1: stone(4) + magnetic_stone(2) -> storage;
+		2: stone_with_crystals(3) + stone_drill -> driller;
+		3: gold(3) + copper(2) -> respawn;
 	}
 	<Category>4
 	{
-		title_image: magnetic_stone;
-		1: magnetic_stone(5) -> packed_magnetic_stone;
-		2: packed_magnetic_stone -> magnetic_stone(5);
-		3: magnetic_stone(3) -> magnetic_lamp;
-		4: magnetic_lamp -> magnetic_stone(3);
-		5: mega_geyzer -> magnetic_stone(4);
-	}
-	<Category>5
-	{
-		title_image: coal;
-		1: coal(5) -> packed_coal;
-		2: packed_coal -> coal(5);
-		3: coal -> coal_bullet(3);
+		title_image: copper_bullet;
+		1: coal -> coal_bullet(3);
+		2: copper -> copper_bullet(5);
+		3: red_stone -> red_bullet(3);
 		4: coal_bullet(3) + fire_bullet -> fire_bullet(3);
 	}
-	<Category>6
-	{
-		title_image: red_stone;
-		1: red_stone(5) -> packed_red;
-		2: packed_red -> red_stone(5);
-		3: red_stone -> red_bullet(3);
-	}
-	<Category>7
-	{
-		title_image: bush;
-		1: bush(3) -> big_bush;
-		2: big_bush -> bush(3);
-	}
-	<Category>8
-	{
-		title_image: medium_amethyst;
-		1: small_amethyst(2) -> medium_amethyst;
-		2: small_amethyst(3) -> large_amethyst;
-		3: medium_amethyst -> small_amethyst(2);
-		4: large_amethyst -> small_amethyst(3);
-	}
-	<Category>9
-	{
-		title_image: medium_diamond;
-		1: stone(3) + small_diamond -> stone_with_crystals;
-		2: stone_with_crystals -> small_diamond;
-		3: small_diamond(2) -> medium_diamond;
-		4: medium_diamond -> small_diamond(2);
-	}
-	<Category>10
-	{
-		title_image: storage;
-		1: stone(4) + copper(2) -> storage;
-		2: stone_with_crystals(3) + stone_drill -> driller;
-	}
-	<Category>11
-	{
-		title_image: respawn;
-		1: gold(3) + copper(2) -> respawn;
-		2: respawn -> gold(3);
-	}
-	<Category>12
+	<Category>5
 	{
 		title_image: healing_potion;
 		1: bush(3) + magic_element -> healing_potion;
@@ -101,30 +52,56 @@ craftings
 		4: bone(3) + blank_element -> blank_potion;
 		5: red_stone(3) + unstable_matter -> killing_potion;
 	}
-	<Category>13
+	<Category>6
+	{
+		title_image: stone_with_crystals;
+		1: stone(2) -> stone_drill;
+		2: gold(2) -> golden_drill;
+		3: magnetic_stone(3) -> magnetic_lamp;
+		4: stone(3) + small_diamond -> stone_with_crystals;
+		5: red_stone(3) -> red_spikes;
+	}
+	<Category>7
+	{
+		title_image: packed_red;
+		1: dark_stone(5) -> packed_dark_stone;
+		2: red_stone(5) -> packed_red;
+	}
+	<Category>8
 	{
 		title_image: dark_stone;
-		1: dark_stone(5) -> packed_dark_stone;
-		2: packed_dark_stone -> dark_stone(5);
-		3: lava_geyzer -> dark_stone(3);
-		4: dark_stone(5) + unstable_matter -> red_stone(5);
+		1: packed_dark_stone -> dark_stone(5);
+		2: packed_red -> red_stone(5);
 	}
-	<Category>14
+	<Category>9
+	{
+		title_image: medium_diamond;
+		1: small_amethyst(2) -> medium_amethyst;
+		2: small_amethyst(3) -> large_amethyst;
+		3: small_diamond(2) -> medium_diamond;
+		4: bush(3) -> big_bush;
+	}
+	<Category>10
 	{
 		title_image: stone_tomb;
-		1: stone(5) + dead_alien -> stone_tomb;
-		2: stone_tomb -> dead_alien;
-		3: dark_stone(5) + dead_alien -> dark_tomb;
+		1: packed_stone + dead_alien -> stone_tomb;
+		2: packed_dark_stone + dead_alien -> dark_tomb;
+		3: stone_tomb -> dead_alien;
 		4: dark_tomb -> dead_alien;
 	}
-	<Category>15
+	<Category>11
 	{
-		title_image: bone;
-		1: bone(4) + unstable_matter -> dead_alien;
-		2: dead_alien -> bone(4);
-		3: dead_alien + bush(3) -> alien;
-		4: dead_alien + magnetic_stone(3) -> magnetic_alien;
-		5: dead_alien + red_stone(3) -> red_alien;
+		title_image: dead_alien;
+		1: dead_alien -> bone(3);
+		2: dead_alien + bush(3) -> alien;
+		3: dead_alien + magnetic_stone(3) -> magnetic_alien;
+		4: dead_alien + red_spikes -> red_alien;
+	}
+	<Category>12
+	{
+		title_image: unstable_matter;
+		1: bone(3) + unstable_matter -> dead_alien;
+		2: dark_stone(5) + unstable_matter -> red_stone(5);
 	}
 	<Max 512 categories>
 }
@@ -200,6 +177,18 @@ gameplay
 	amethyst_grow_time_min: 60;
 	amethyst_grow_time_max: 180;
 	magnetic_alien_grow_time: 3;
+
+	<UPGRADES>
+	upg_1_item: 10;
+    upg_1_cost: 5;
+    upg_2_item: 10;
+    upg_2_cost: 10;
+    upg_3_item: 10;
+    upg_3_cost: 15;
+    upg_4_item: 5;
+    upg_4_cost: 20;
+    upg_5_item: 5;
+    upg_5_cost: 30;
 	
 	<ARTEFACTS>
 	at_protection_health_level_add: 2,272;
@@ -366,11 +355,11 @@ generator_settings
 	
 	<---STRUCTURES--->
 	
-	<Arena structure> 4
+	<Arena> 4
 	{
 		chance: 4%;
 		settings: [
-			structural, arena, spawn,
+			structural, struct=4,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
 			density = 100%,
@@ -378,11 +367,11 @@ generator_settings
 		
 		all_sizes: metalic(100%);
 	}
-	<Catastrophic arena structure> 5
+	<Catastrophic arena> 5
 	{
 		chance: 0,4%;
 		settings: [
-			structural, catastrophic.arena,
+			structural, struct=5,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
 			density = 100%,
@@ -390,11 +379,11 @@ generator_settings
 		
 		all_sizes: metalicA(100%);
 	}
-	<Cementery structure> 6
+	<Cementery> 6
 	{
 		chance: 2,7%;
 		settings: [
-			structural, cementery,
+			structural, struct=1,
 			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 50,
 			density = 100%,
@@ -402,11 +391,11 @@ generator_settings
 		
 		all_sizes: stoneB(100%);
 	}
-	<Dark cementery structure> 7
+	<Dark cementery> 7
 	{
 		chance: 1,3%;
 		settings: [
-			structural, dark.cementery,
+			structural, struct=2,
 			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 50,
 			density = 100%,
@@ -414,17 +403,28 @@ generator_settings
 		
 		all_sizes: dark(100%);
 	}
-	<Star structure> 8
+	<Star> 8
 	{
-		chance: 1,5%;
+		chance: 2%;
 		settings: [
-			structural, star,
+			structural, struct=3,
 			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 40,
 			density = 100%,
 		];
 		
-		all_sizes: coalB(100%);
+		all_sizes: coalA(100%);
+	}
+	<Copper facility> 9
+	{
+		chance: 0%;
+		settings: [
+			radius = 60,
+			density = 80%,
+			priority = 24,
+		];
+		
+		all_sizes: metalicB(50%) + copperA(35%) + bedrock(15%);
 	}
 	<max 31 biomes + default>
 }
@@ -435,20 +435,22 @@ objects_generate
 	stoneB: stone(15%) + bone(20%) + stone_tomb(24%) + treasure(6%) + dead_alien(1%) + pumpkin(1%);
 	dark: dark_stone(15%) + bone(12%) + dark_tomb(24%) + dark_treasure(6%) + lava_geyzer(8%) + gold(3%);
 	copper: copper(35%);
+	copperA: copper(35%) + packed_copper(20%);
 	gold: gold(25%);
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%);
 	amethyst: small_amethyst(20%) + medium_amethyst(20%) + large_amethyst(20%);
 	coal: coal(45%);
-	coalB: coal(45%) + fire_bullet(20%);
+	coalA: coal(45%) + fire_bullet(20%);
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%);
 	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
-	redA: unstable_matter(20%); <actually not designed to be red>
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	metalic: stone(35%) + metal_piece(25%);
 	metalicA: stone(35%) + metal_piece(25%) + unstable_matter(8%);
+	metalicB: stone(35%) + metal_piece(15%) + storage(25%);
 	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
 	bedrockA: bedrock_stone(30%) + packed_bedrock(15%) + unstable_matter(20%);
+	other: unstable_matter(20%);
 }
 game_translate <low-level settings>
 {
@@ -456,6 +458,7 @@ game_translate <low-level settings>
 	{
 		0: stone;
 		1: dark;
+		2: other;
 		3: copper;
 		4: gold;
 		5: grass;
@@ -539,13 +542,214 @@ game_translate <low-level settings>
 		68: dark_treasure;
 		69: dark_tomb;
 		70: lava_geyzer;
+		71: max_potion;					<only item>
 	}
 }
 custom_structures <advanced settings>
 {
-	1: '[
+	<normal cementery> 1: '[
 	
-		<seon code here>
+		summon #1 asteroid 10 32 x scale 2 2 1,2
+		summon #2 asteroid 10 32 x scale 2 2 1,2 asteroid hide
+		catch children 0 19 from #1 to #2 scale children 0.5 0.5 0.8333
+		catch #2 rotate 9
+	
+	]';
+	<dark cementery> 2: '[
+	
+		summon #1 asteroid 10 1 x scale 2 2 1,2
+		summon #2 asteroid 10 1 x scale 2 2 1,2 asteroid hide
+		catch children 0 19 from #1 to #2 scale children 0.5 0.5 0.8333
+		catch #2 rotate 9
+	
+	]';
+	<star> 3: '[
+	
+		summon #1 star
+	
+	]';
+	<arena> 4: '[
+	
+		setrandom %5
+		summon #50 respblock 41,5284
+
+		summon #1 asteroid 8 12 x move 2 2 rotate 11,25
+		summon #2 asteroid 8 12 x move -2 2 rotate 101,25
+		summon #3 asteroid 8 12 x move -2 -2 rotate 191,25
+		summon #4 asteroid 8 12 x move 2 -2 rotate 281,25
+		summon #5 asteroid 8 12 x move 2 -2 rotate -11,25
+		summon #6 asteroid 8 12 x move -2 -2 rotate -101,25
+		summon #7 asteroid 8 12 x move -2 2 rotate -191,25
+		summon #8 asteroid 8 12 x move 2 2 rotate -281,25
+		from #1 to #4 move 35 -0,5
+		from #5 to #8 move 35 0,5
+
+		catch child $0 from #1 to #8 layer child -500
+		catch child $8 from #1 to #8 layer child -500
+		catch child $9 from #1 to #8 layer child -500
+		catch child $15 from #1 to #8 layer child -500
+
+		summon #9 asteroid 7 12 x move 2 2 rotate 33,75
+		summon #10 asteroid 7 12 x move 2 2 rotate 56,25
+		summon #11 asteroid 7 12 x move -2 2 rotate 123,75
+		summon #12 asteroid 7 12 x move -2 2 rotate 146,25
+		summon #13 asteroid 7 12 x move -2 -2 rotate 213,75
+		summon #14 asteroid 7 12 x move -2 -2 rotate 236,25
+		summon #15 asteroid 7 12 x move 2 -2 rotate 303,75
+		summon #16 asteroid 7 12 x move 2 -2 rotate 326,25
+		from #9 to #16 move 35 0
+
+		catch child $0 from #9 to #16 layer child -500
+		catch child $7 from #9 to #16 layer child -500
+		catch child $8 from #9 to #16 layer child -500
+		catch child $13 from #9 to #16 layer child -500
+
+		summon #59 wall 12 move 2 2 rotate 22,5
+		summon #60 wall 12 move 2 2 rotate 45
+		summon #61 wall 12 move 2 2 rotate 67,5
+		summon #62 wall 12 move -2 2 rotate 112,5
+		summon #63 wall 12 move -2 2 rotate 135
+		summon #64 wall 12 move -2 2 rotate 157,5
+		summon #65 wall 12 move -2 -2 rotate 202,5
+		summon #66 wall 12 move -2 -2 rotate 225
+		summon #67 wall 12 move -2 -2 rotate 247,5
+		summon #68 wall 12 move 2 -2 rotate 292,5
+		summon #69 wall 12 move 2 -2 rotate 315
+		summon #70 wall 12 move 2 -2 rotate 337,5
+		from #59 to #70 move 34,25 0
+
+		summon #17 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #18 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #19 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #20 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #21 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #22 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #23 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #24 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #25 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #26 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #27 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #28 asteroid 4 12 0,0,0,0,0,0,0,0
+		from #59 to #70 steal 4 from delta -42
+
+		summon #51 piston move 36,4 6,4
+		summon #52 piston move -36,4 6,4
+		summon #53 piston move 36,4 -6,4 rotate 180
+		summon #54 piston move -36,4 -6,4 rotate 180
+		summon #55 piston rotate 90 move 36,4 6,4
+		summon #56 piston rotate 90 move -36,4 6,4
+		summon #57 piston rotate 90 move 36,4 -6,4 rotate 180
+		summon #58 piston rotate 90 move -36,4 -6,4 rotate 180
+
+		from #51 to #52 extension 0 -3,6 40
+		from #53 to #54 extension 0 3,6 40
+		from #55 to #56 extension 3,6 0 40
+		from #57 to #58 extension -3,6 0 40
+
+		from #51 to #58 list extended doing a1b1,a2b2,a3b3
+		from #51 to #58 list extended done default,B1,B2,B3
+		from #51 to #58 list extended undoing b1a1,b2a2,b3a3,b1a2,b2a3,b3r
+
+		summon #71 empty summon #72 empty
+		summon #30 asteroid 6 12 52,53,50,0,0,0,0,0,0,0,50,53
+		ifrandom 0 summon #0 boss 1 summon #29 asteroid 6 12 42,49,50,0,0,0,0,0,0,0,50,49
+		ifrandom 1 summon #0 boss 2 summon #29 asteroid 6 12 43,49,50,0,0,0,0,0,0,0,50,49
+		ifrandom 2 summon #0 boss 3 summon #29 asteroid 6 12 44,49,50,0,0,0,0,0,0,0,50,49
+		ifrandom 3 summon #0 boss 4 summon #29 asteroid 6 12 45,49,50,0,0,0,0,0,0,0,50,49
+		ifrandom 4 summon #0 boss 6 summon #29 asteroid 6 12 47,49,50,0,0,0,0,0,0,0,50,49
+		ifrandom break
+		from #29 to #30 move 0 -2
+		catch #29 parent set #71
+		catch #30 parent set #72
+
+		catch #71
+		list hidden done default,A1,A2,A3,B1,B2,B3,a1b1,a2b2,a3b3,b1a1,b2a2,b3a3,b1a2,b2a3
+		list hidden undoing b3r
+		list hidden undone R
+		hidesmooth 0 40
+
+		catch #72
+		list hidden doing a1b1,a2b2,a3b3
+		list hidden done default,B1,B2,B3,b3r,R
+		list hidden undoing b1a1,b2a2,b3a3,b1a2,b2a3
+		list hidden undone A1,A2,A3
+		hidesmooth 0 40
+	
+	]';
+	<catastrophic arena> 5: '[
+	
+		summon #50 respblock 41,5284
+
+		summon #1 asteroid 8 28 x move 2 2 rotate 11,25
+		summon #2 asteroid 8 28 x move -2 2 rotate 101,25
+		summon #3 asteroid 8 28 x move -2 -2 rotate 191,25
+		summon #4 asteroid 8 28 x move 2 -2 rotate 281,25
+		summon #5 asteroid 8 28 x move 2 -2 rotate -11,25
+		summon #6 asteroid 8 28 x move -2 -2 rotate -101,25
+		summon #7 asteroid 8 28 x move -2 2 rotate -191,25
+		summon #8 asteroid 8 28 x move 2 2 rotate -281,25
+		from #1 to #4 move 35 -0,5
+		from #5 to #8 move 35 0,5
+
+		catch child $0 from #1 to #8 layer child -500
+		catch child $8 from #1 to #8 layer child -500
+		catch child $9 from #1 to #8 layer child -500
+		catch child $15 from #1 to #8 layer child -500
+
+		summon #9 asteroid 7 28 x move 2 2 rotate 33,75
+		summon #10 asteroid 7 28 x move 2 2 rotate 56,25
+		summon #11 asteroid 7 28 x move -2 2 rotate 123,75
+		summon #12 asteroid 7 28 x move -2 2 rotate 146,25
+		summon #13 asteroid 7 28 x move -2 -2 rotate 213,75
+		summon #14 asteroid 7 28 x move -2 -2 rotate 236,25
+		summon #15 asteroid 7 28 x move 2 -2 rotate 303,75
+		summon #16 asteroid 7 28 x move 2 -2 rotate 326,25
+		from #9 to #16 move 35 0
+
+		catch child $0 from #9 to #16 layer child -500
+		catch child $7 from #9 to #16 layer child -500
+		catch child $8 from #9 to #16 layer child -500
+		catch child $13 from #9 to #16 layer child -500
+
+		summon #59 wall 12 move 2 2 rotate 22,5
+		summon #60 wall 12 move 2 2 rotate 45
+		summon #61 wall 12 move 2 2 rotate 67,5
+		summon #62 wall 12 move -2 2 rotate 112,5
+		summon #63 wall 12 move -2 2 rotate 135
+		summon #64 wall 12 move -2 2 rotate 157,5
+		summon #65 wall 12 move -2 -2 rotate 202,5
+		summon #66 wall 12 move -2 -2 rotate 225
+		summon #67 wall 12 move -2 -2 rotate 247,5
+		summon #68 wall 12 move 2 -2 rotate 292,5
+		summon #69 wall 12 move 2 -2 rotate 315
+		summon #70 wall 12 move 2 -2 rotate 337,5
+		from #59 to #70 move 34,25 0
+
+		summon #17 asteroid 4 2 x
+		summon #18 asteroid 4 2 x
+		summon #19 asteroid 4 2 x
+		summon #20 asteroid 4 2 x
+		summon #21 asteroid 4 2 x
+		summon #22 asteroid 4 2 x
+		summon #23 asteroid 4 2 x
+		summon #24 asteroid 4 2 x
+		summon #25 asteroid 4 2 x
+		summon #26 asteroid 4 2 x
+		summon #27 asteroid 4 2 x
+		summon #28 asteroid 4 2 x
+		from #59 to #70 steal 4 from delta -42
+
+		summon #51 piston move 36,4 6,4
+		summon #52 piston move -36,4 6,4
+		summon #53 piston move 36,4 -6,4 rotate 180
+		summon #54 piston move -36,4 -6,4 rotate 180
+		summon #55 piston rotate 90 move 36,4 6,4
+		summon #56 piston rotate 90 move -36,4 6,4
+		summon #57 piston rotate 90 move 36,4 -6,4 rotate 180
+		summon #58 piston rotate 90 move -36,4 -6,4 rotate 180
+
+		summon #29 asteroid 6 2 ,49,50,,,,,,,,50,49 asteroid hide
+		summon #30 sphere 6 12 from #29 to #30 move 0 -2
 	
 	]';
 }

@@ -18,6 +18,7 @@ public class SC_structure : MonoBehaviour
 	public Transform stboss;
 	public Transform emptyobject;
 	public Transform star;
+	public Transform star2;
 	
     public int X=0,Y=0,ID=1,overrand=0;
 	public string actual_state = "default";
@@ -394,6 +395,12 @@ public class SC_structure : MonoBehaviour
 					else if(arg[i]=="star")
 					{
 						Transform sta = Instantiate(star,transform.position,Quaternion.identity);
+						sta.parent = transform;
+						st_structs[current] = sta;
+					}
+					else if(arg[i]=="star2")
+					{
+						Transform sta = Instantiate(star2,transform.position,Quaternion.identity);
 						sta.parent = transform;
 						st_structs[current] = sta;
 					}

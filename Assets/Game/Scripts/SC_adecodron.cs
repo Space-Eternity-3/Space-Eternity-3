@@ -10,10 +10,11 @@ public class SC_adecodron : MonoBehaviour
     public Transform player;
     public SC_control SC_control;
     public SC_boss SC_boss;
+    public bool detached;
 
     void OnTriggerEnter(Collider collision)
     {
-        if(collision.gameObject.name=="pseudoBody" && SC_boss.dataID[2]==2)
+        if(collision.gameObject.name=="pseudoBody" && (detached || SC_boss.dataID[2]==2))
         {
             Vector3 cent = transform.position;
             Vector3 plar = player.position;

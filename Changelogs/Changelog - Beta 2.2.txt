@@ -1,4 +1,8 @@
-New features:
+New features (gameplay):
+
+- added "copper facilities" biome, (temporarily disabled)
+
+New features (technical):
 
 - chat added, press "T" or "/" to send a message, press F2 to hide all messages instantly
 - added SE3 accounts, you can register or login in main menu
@@ -10,16 +14,10 @@ New features:
 Old feature changes:
 
 - drillers can drill all items from drill loottable now, including magic elements
-- unstable loop sound volume reduced: 0.4 -> 0.25 (to be less annoying)
-- hour header on server improved, it will additionally display date
-- information display design on server console changed a bit, removed unnecessary rectangular brackets []
-- upgrade prices increased:
-  - level 1: gold 3 -> 5
-  - level 2: gold 6 -> 10
-  - level 3: gold 10 -> 15
-  - level 4: amethyst 12 -> 20
-  - level 5: amethyst 20 -> 30
 - drill efficiency upgrade nerfed +15% -> +12%
+- all craftings reworked, check in game for details
+- fob destroy particle effect reworked
+- stone collider is now bigger, so it's easier to collect it
 
 UI changes:
 
@@ -27,6 +25,10 @@ UI changes:
 - disabled main menu button color is now lighter gray
 - new junkyard messages added
 - multiplayer connection panel reworked, added "stop" button to stop connecting to the server
+- changed 4th button letter in the right UI to #, as this is a disabled functionality
+- junkyard discard button reworked
+- amethyst conture added to the bedrock storage
+- in the right UI segment small letter-buttons were replaced with arrows
 
 Default datapack changes:
 
@@ -35,6 +37,13 @@ Default datapack changes:
 - that means all cementery chance increased: 3% -> 4%
 - unstable bullet speed: 0,35 -> 0,4
 - added modified drop: magnetic_alien_activated: magnetic_alien;
+- upgrade prices changed:
+  - level 1: gold 3 -> 5
+  - level 2: gold 6 -> 10
+  - level 3: gold 10 -> 15
+  - level 4: amethyst 12 -> 20
+  - level 5: amethyst 20 -> 30
+- redA (id=25) object generation replaced with empty (id=2) object generation
 
 Configurables:
 
@@ -52,6 +61,10 @@ Configurables:
 - max_players in config is set to 10 by default
 - all bosbul related commands removed from seon, they are now part of the boss object and are no longer configurable
   - changed arena seon to fit these rules
+- removed biome tag "full"
+- added upgrade variables in gameplay segment to allow customization of upgrade prices
+- removed all structural tags except for struct=X, transferred all built-in structures into custom structures
+- added "star2" to command "summon" in seon, it summons an unfinished ghost-like ornament creature
 
 Important technical changes:
 
@@ -68,11 +81,15 @@ b) Server run
 - server communication protocol was drastically reworked in client -> server commands, check server code comments for more information
 - server anti-cheat improved (there was completely no anti-cheat before)
 - player bullet speed will be always reduced to 1.2 units when too big
+- hour header on server improved, it will additionally display date
+- information display design on server console changed a bit, removed unnecessary rectangular brackets []
 
 c) Others
 - settings format changed to fit official account text field data (username and password)
 - nicks can only contain english letters, numbers, and following characters: _ -
 - game will close immediately after exception or error and save its crash into crash.log file
+- unstable loop sound volume reduced: 0.4 -> 0.25 (to be less annoying)
+- removed 2 junkyard messages because of wrong text wrapping
 
 Bug fixes:
 
@@ -83,3 +100,4 @@ Bug fixes:
 - drill upgrade was not affecting loot until asteroid reloading
 - boss health had visible negative value part after defeating a boss, it was noticeable only when max boss health was very small
 - bullets were breaking when flying through respawn
+- fixed lightning problem in the main menu

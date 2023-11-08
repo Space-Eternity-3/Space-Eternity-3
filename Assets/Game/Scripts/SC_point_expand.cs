@@ -43,17 +43,11 @@ public class SC_point_expand : MonoBehaviour {
 				{
 					SC_fun.GenListAdd(ID,mode);
 					SC_structure stc;
-					if(stch>0)
-					{
-						//Default structure
-						stc = Instantiate(SC_fun.structures[stch], transform.position, Quaternion.identity).GetComponent<SC_structure>();
-					}
-					else
-					{
-						//Custom structure
-						stc = Instantiate(SC_fun.structures[0], transform.position, Quaternion.identity).GetComponent<SC_structure>();
-						stc.SeonField = SC_fun.SC_data.CustomStructures[-stch];
-					}
+					
+					//All structures are 'custom' from Beta 2.2
+					stc = Instantiate(SC_fun.structures[0], transform.position, Quaternion.identity).GetComponent<SC_structure>();
+					stc.SeonField = SC_fun.SC_data.CustomStructures[-stch];
+
 					stc.X = tX; stc.Y = tY; stc.ID = ID;
 				}
 			}

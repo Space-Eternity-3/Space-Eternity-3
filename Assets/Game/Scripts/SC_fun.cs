@@ -520,8 +520,6 @@ public class SC_fun : MonoBehaviour
         string typ=GetBiomeString(ulam);
 		string tags=GetBiomeTag(ulam);
 		
-		if(TagContains(tags,"full")) return 900f;
-		
 		int[] ulXY = UlamToXY(ulam);
         if(typ=="b0") return -1f;
 		if(TagContains(tags,"structural") && !(ulXY[0]%2==0 && ulXY[1]%2==0)) return -1f;
@@ -789,11 +787,6 @@ public class SC_fun : MonoBehaviour
 			truing = false;
 			for(j=0;j<=80;j++)
 			{
-				if(TagContains(tags,"full"))
-				{
-					bbW[i,j] = false;
-					continue;
-				}
 				if(bbW[i,j]) truing = !truing;
 				bbW[i,j] = truing;
 			}
@@ -819,11 +812,6 @@ public class SC_fun : MonoBehaviour
 				if(TagContains(tags,"struct="+j)) bC[i]=-j;
 			
 			if(TagContains(tags,"structural")) bP[i]=32;
-			if(TagContains(tags,"arena")) bC[i]=1;
-			if(TagContains(tags,"cementery")) bC[i]=2;
-			if(TagContains(tags,"catastrophic.arena")) bC[i]=3;
-			if(TagContains(tags,"star")) bC[i]=4;
-			if(TagContains(tags,"dark.cementery")) bC[i]=5;
 		}
 		
 		bP[0] = 0;

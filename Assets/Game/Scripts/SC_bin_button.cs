@@ -14,7 +14,6 @@ public class SC_bin_button : MonoBehaviour
 {
 //#1
 "Behold, the endless abyss of cosmic trash.",
-"Congratulations, you've made the galaxy a landfill.",
 "From Earth to the edges of infinity, your garbage reigns supreme.",
 "Space debris: the gift that keeps on giving.",
 "The cosmos is now littered with your discarded belongings.",
@@ -123,7 +122,6 @@ public class SC_bin_button : MonoBehaviour
 //#4
 "Your discarded items just threw a little farewell party. They'll be fine!",
 "Who needs a museum when you have our Junkyard? A treasure trove of... well, junk!",
-"Congratulations, you've officially contributed to the cosmic collection of curiosities!",
 "Thank you for the donation! Remember, one player's trash is another player's 'meh.'",
 "This Junkyard has seen it all, from rusty blasters to malfunctioning teleporters. Quite the showcase!",
 "Hey, at least you're keeping the space garbage collectors in business.",

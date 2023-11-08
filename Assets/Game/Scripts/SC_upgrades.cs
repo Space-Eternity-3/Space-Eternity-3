@@ -108,11 +108,11 @@ public class SC_upgrades : MonoBehaviour
     {
         switch(UPG_levels[ust])
         {
-            case 0: return 10;
-            case 1: return 10;
-            case 2: return 10;
-            case 3: return 5;
-            case 4: return 5;
+            case 0: return int.Parse(SC_data.Gameplay[112]);
+            case 1: return int.Parse(SC_data.Gameplay[114]);
+            case 2: return int.Parse(SC_data.Gameplay[116]);
+            case 3: return int.Parse(SC_data.Gameplay[118]);
+            case 4: return int.Parse(SC_data.Gameplay[120]);
             case 5: return 1;
         }
         return 0;
@@ -121,11 +121,11 @@ public class SC_upgrades : MonoBehaviour
     {
         switch(UPG_levels[ust])
         {
-            case 0: return 5;
-            case 1: return 10;
-            case 2: return 15;
-            case 3: return 20;
-            case 4: return 30;
+            case 0: return int.Parse(SC_data.Gameplay[113]);
+            case 1: return int.Parse(SC_data.Gameplay[115]);
+            case 2: return int.Parse(SC_data.Gameplay[117]);
+            case 3: return int.Parse(SC_data.Gameplay[119]);
+            case 4: return int.Parse(SC_data.Gameplay[121]);
             case 5: return 0;
         }
         return 0;

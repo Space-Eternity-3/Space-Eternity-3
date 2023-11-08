@@ -35,6 +35,7 @@ public class SC_account : MonoBehaviour
 
     public bool logged = false;
     public bool confirming = false;
+    public bool tried_login = false;
     public int waiting_for = 0;
 
     WebSocket ws;
@@ -190,8 +191,10 @@ public class SC_account : MonoBehaviour
         int msg_code = int.Parse(arg[1]);
         if(arg[0]=="/RetLogin")
         {
+            tried_login = true;
             if(msg_code==1)
             {
+                UnityEngine.Debug.Log("Logged in!");
                 logged = true;
                 confirming = false;
             }
@@ -279,7 +282,7 @@ public class SC_account : MonoBehaviour
         SC_data.MultiplayerInput[0] = IF_n1.text; //nickname
         SC_data.MultiplayerInput[1] = IF_a1.text; //address
         SC_data.MultiplayerInput[2] = IF_p1.text; //password
-        if(connected_to_authorizer) {
+        if(tried_login) {
             if(logged) SC_data.MultiplayerInput[3] = IF_n1.text; //auto login
             else SC_data.MultiplayerInput[3] = "..........................";
         }

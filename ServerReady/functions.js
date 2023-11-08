@@ -125,6 +125,16 @@ class cfun
 	        "at_unstable_power_special_eat:+", //109
 	        "at_unstable_power_killpot_give:+", //110
 	        "at_unstable_max_unstabling_deviation:+", //111
+            "upg_1_item:+", //112
+            "upg_1_cost:+", //113
+            "upg_2_item:+", //114
+            "upg_2_cost:+", //115
+            "upg_3_item:+", //116
+            "upg_3_cost:+", //117
+            "upg_4_item:+", //118
+            "upg_4_cost:+", //119
+            "upg_5_item:+", //120
+            "upg_5_cost:+", //121
         ];
     }
 

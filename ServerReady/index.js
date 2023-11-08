@@ -142,7 +142,7 @@ var clientDatapacksVar = "";
 var seed;
 var biome_memories = new Array(16000);
 var hourHeader = "";
-var gpl_number = 112;
+var gpl_number = 122;
 var max_players = 10;
 var verF;
 var connectionAddress = "IP or DNS + port";
@@ -1183,7 +1183,7 @@ function DamageFLOAT(pid,dmg)
     var potHHH = func.parseFloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + func.parseFloatU(gameplay[26]);
 		if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
 		dmg=0.02*dmg/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
-		CookedDamage(pid,dmg);
+		CookedDamage(pid,dmg,false);
 
     var info = "d";
     if(plr.sHealth[pid]<=0)
@@ -1208,7 +1208,7 @@ function DamageFLOAT(pid,dmg)
     return info;
   }
 }
-function CookedDamage(pid,dmg)
+function CookedDamage(pid,dmg,if_ringed)
 {
   dmg = func.parseFloatU(dmg);
   plr.sHealth[pid] -= dmg;
@@ -1219,7 +1219,8 @@ function CookedDamage(pid,dmg)
 
   var xx = plr.players[pid].split(";")[0];
   var yy = plr.players[pid].split(";")[1];
-  sendToAllPlayers("/RetEmitParticles "+pid+" 2 "+xx+" "+yy+" X X");
+  if(!if_ringed) sendToAllPlayers("/RetEmitParticles "+pid+" 2 "+xx+" "+yy+" X X");
+  else sendToAllPlayers("/RetEmitParticles "+pid+" 18 "+xx+" "+yy+" X X");
   sendToAllPlayers("/RetInvisibilityPulse "+pid+" wait X X");
 }
 function getBulletDamage(type,owner,pid,bll)
@@ -3187,9 +3188,9 @@ wss.on("connection", function connection(ws,req)
         }
       }
     }
-    if (arg[0] == "/ClientDamage") // 1[PlayerID] 2[dmg] 3[ImmID] 4[info]
+    if (arg[0] == "/ClientDamage") // 1[PlayerID] 2[dmg] 3[ImmID] 4[info] 5[ifRinged]
     {
-      if(!VerifyCommand(arg,["PlaID","fraction01","EndID","short"])) return;
+      if(!VerifyCommand(arg,["PlaID","fraction01","EndID","short","short"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
 
       var serLivID = plr.livID[arg[1]];
@@ -3202,7 +3203,7 @@ wss.on("connection", function connection(ws,req)
       if(serImmID==cliImmID) cis+="T"; else cis+="F";
 
       if(cis=="TT")
-        CookedDamage(arg[1],arg[2]);
+        CookedDamage(arg[1],arg[2],arg[5]=="T");
 
       if(arg[4]=="K") //client kill
       {
@@ -3243,7 +3244,13 @@ wss.on("connection", function connection(ws,req)
       var ljTab = plr.upgrades[ljPlaID].split(";");
       var current_level = func.parseIntU(ljTab[ljUpgID]);
 
-      var upg_costs = [[10,5],[10,10],[10,15],[5,20],[5,30]];
+      var upg_costs = [
+        [func.parseIntU(gameplay[112]),func.parseIntU(gameplay[113])],
+        [func.parseIntU(gameplay[114]),func.parseIntU(gameplay[115])],
+        [func.parseIntU(gameplay[116]),func.parseIntU(gameplay[117])],
+        [func.parseIntU(gameplay[118]),func.parseIntU(gameplay[119])],
+        [func.parseIntU(gameplay[120]),func.parseIntU(gameplay[121])]
+      ];
       var ljItem = upg_costs[current_level][0];
       var ljCount = upg_costs[current_level][1];
 

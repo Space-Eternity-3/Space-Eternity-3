@@ -33,6 +33,9 @@ public class SC_Fob21 : MonoBehaviour {
 	public Image screen_description_image;
 	public Color32 screen_color_disabled;
 	public int screen_button_cooldown=0;
+
+	public bool isDriller;
+	public Material Material5E;
 	
 	public int ID=0,uID=0,X,Y;
 	public int ASAC_cooldown;
@@ -57,6 +60,7 @@ public class SC_Fob21 : MonoBehaviour {
 		try{
 			Ention.material=SC_fun.M[item];
 		}catch{Ention.material=SC_fun.M[23];}
+		if(item==0 && isDriller) Ention.material = Material5E;
 		int i,lngt;
 
 		for(i=0;i<max_count;i++){
