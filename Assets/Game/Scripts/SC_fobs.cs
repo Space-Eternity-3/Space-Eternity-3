@@ -407,15 +407,15 @@ public class SC_fobs : MonoBehaviour
 	public void AfterTriggerEnter(Collider collision)
 	{
         if(mother) return;
+        SC_bullet bul = collision.gameObject.GetComponent<SC_bullet>();
 		if(
             collision.gameObject.name=="Bullet(Clone)" &&
-            !collision.gameObject.GetComponent<SC_bullet>().turn_used &&
-            collision.gameObject.GetComponent<SC_bullet>().controller &&
-            collision.gameObject.GetComponent<SC_bullet>().gun_owner==0 &&
-            collision.gameObject.GetComponent<SC_bullet>().mode=="present" &&
-            ShotTurn && (!(asst.permanent_blocker || asst.temporary_blocker))
+            !bul.turn_used &&
+            bul.controller &&
+            bul.gun_owner==0 &&
+            bul.mode=="present" &&
+            ShotTurn && !isSeonBlocked()
         ){
-            SC_bullet bul = collision.gameObject.GetComponent<SC_bullet>();
 			bul.turn_used = true; bul.MakeDestroy(false);
             if((bul.type==BulletID || BulletID==0) && (ShotID!=48 || !bul.virtuall))
             {
@@ -459,7 +459,7 @@ public class SC_fobs : MonoBehaviour
             SC_snd_loop.sound_pos[loopSndID] = transform.position;
 
         if(mother) return;
-        if(inGeyzer>0&&(GeyzerTurn && (!(asst.permanent_blocker || asst.temporary_blocker))))
+        if(inGeyzer>0&&(GeyzerTurn && !isSeonBlocked()))
         {
             GeyzerTime++;
             if(GeyzerTime>=140)
@@ -505,10 +505,15 @@ public class SC_fobs : MonoBehaviour
         if(id==2||id==21||id==29) return 2f; //BIGGER OBJECT
         return 2f; //DEFAULT
     }
+    public bool isSeonBlocked()
+    {
+        if(asst.reward_blocker) return (asst.strucutral_parent.GetComponent<SC_structure>().actual_state != "R");
+        else return (asst.permanent_blocker || asst.temporary_blocker);
+    }
     void OnMouseOver()
     {
         if(mother) return;
-		if(asst.permanent_blocker || asst.temporary_blocker) return;
+		if(isSeonBlocked()) return;
 
         int slot;
         float oX=transform.position.x, oY=transform.position.y;

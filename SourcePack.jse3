@@ -659,7 +659,7 @@ custom_structures <advanced settings>
 		ifrandom 4 summon #0 boss 6 summon #29 asteroid 6 12 47,49,50,0,0,0,0,0,0,0,50,49
 		ifrandom break
 		from #29 to #30 move 0 -2
-		catch #29 parent set #71
+		catch #29 parent set #71 asteroid blocker reward
 		catch #30 parent set #72
 
 		catch #71

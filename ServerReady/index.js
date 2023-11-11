@@ -7,6 +7,7 @@ const { runInNewContext } = require("vm");
 const { parse } = require("path");
 const { func } = require("./functions");
 const { CBoss } = require("./behaviour");
+const readline = require('readline');
 
 //Variable functions
 String.prototype.replaceAll = function replaceAll(search, replace) {
@@ -2833,8 +2834,16 @@ wss.on("connection", function connection(ws,req)
     for(i=0;i<max_players;i++){
       if(ws==se3_ws[i])
       {
+        //Bullets remove (temporary)
+        var j,lngt = bulletsT.length;
+        for(j=0;j<lngt;j++)
+          if(bulletsT[j].owner==i) destroyBullet(j,["",i+"",bulletsT[j].ID,bulletsT[j].age],true);
+
+        //Kicking
         if(se3_wsS[i]=="joining") se3_ws[i]="";
         if(se3_wsS[i]=="game" || se3_wsS[i]=="menu") kick(i);
+
+        break;
       }
     }
 
@@ -4900,6 +4909,33 @@ console.log("-------------------------------");
 
 updateHourHeader();
 setTerminalTitle("SE3 server | "+serverVersion+" | "+getRandomFunnyText());
+
+//Command listener
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function listenForMessages()
+{
+  rl.question('', (message) => {
+    if(message == "exit")
+    {
+      rl.close();
+      process.emit("SIGINT");
+    }
+    else
+    {
+      var arg = message.split(" ");
+      if(arg[0] == "test")
+      {
+        console.log("Accepted command: "+message);
+      }
+      listenForMessages();
+    }
+  });
+}
+listenForMessages();
 
 //END OF MAIN SEGMENT
 

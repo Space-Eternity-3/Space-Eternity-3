@@ -923,9 +923,9 @@ public class SC_structure : MonoBehaviour
 						{
 							ast.permanent_blocker = true;
 						}
-						else if(arg[i]=="disable")
+						else if(arg[i]=="reward")
 						{
-							ast.permanent_blocker = false;
+							ast.reward_blocker = true;
 						}
 						else throw(new Exception());
 					}

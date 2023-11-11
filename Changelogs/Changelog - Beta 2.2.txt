@@ -16,8 +16,15 @@ Old feature changes:
 - drillers can drill all items from drill loottable now, including magic elements
 - drill efficiency upgrade nerfed +15% -> +12%
 - all craftings reworked, check in game for details
-- fob destroy particle effect reworked
 - stone collider is now bigger, so it's easier to collect it
+- boss damage sound volume reduced: 0,35 -> 0,3
+
+Artistic changes:
+
+- player damage sound changed to more metalic
+- fob destroy particle effect reworked
+- grass asteroid reflects less light now
+- coal asteroid and coal bullets are darker now
 
 UI changes:
 
@@ -44,6 +51,7 @@ Default datapack changes:
   - level 4: amethyst 12 -> 20
   - level 5: amethyst 20 -> 30
 - redA (id=25) object generation replaced with empty (id=2) object generation
+- changed seon codes in datapack
 
 Configurables:
 
@@ -60,11 +68,13 @@ Configurables:
     - bullet_spawn_allow_radius // max distance from player, in which it can summon a bullet
 - max_players in config is set to 10 by default
 - all bosbul related commands removed from seon, they are now part of the boss object and are no longer configurable
-  - changed arena seon to fit these rules
 - removed biome tag "full"
 - added upgrade variables in gameplay segment to allow customization of upgrade prices
 - removed all structural tags except for struct=X, transferred all built-in structures into custom structures
 - added "star2" to command "summon" in seon, it summons an unfinished ghost-like ornament creature
+- seon changes:
+  - removed command "asteroid blocker disable"
+  - added command "asteroid blocker reward" - disabled only in structure state "b3r"
 
 Important technical changes:
 
@@ -83,6 +93,7 @@ b) Server run
 - player bullet speed will be always reduced to 1.2 units when too big
 - hour header on server improved, it will additionally display date
 - information display design on server console changed a bit, removed unnecessary rectangular brackets []
+- bullet removing after kick is now on server side, client bullets no longer disappear when returning to menu (it will be changed in Beta 2.2)
 
 c) Others
 - settings format changed to fit official account text field data (username and password)
@@ -90,6 +101,7 @@ c) Others
 - game will close immediately after exception or error and save its crash into crash.log file
 - unstable loop sound volume reduced: 0.4 -> 0.25 (to be less annoying)
 - removed 2 junkyard messages because of wrong text wrapping
+- bullet invisible server projections do not spawn anymore as physical objects
 
 Bug fixes:
 
@@ -101,3 +113,5 @@ Bug fixes:
 - boss health had visible negative value part after defeating a boss, it was noticeable only when max boss health was very small
 - bullets were breaking when flying through respawn
 - fixed lightning problem in the main menu
+- bullet projections on multiplayer were breaking one frame too early
+- bullet invisible server projections were spawning one frame ahead of their real position

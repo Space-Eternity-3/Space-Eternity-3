@@ -44,15 +44,6 @@ public class SC_effect : MonoBehaviour
         if(effect==8) return 2f;
         else return 1f;
     }
-    public void OneFrameDamage()
-    {
-        return;
-        //One frame damage removed :) Stay safe!
-
-        if(damage_cycle_timer>0)
-            SC_control.DamageFLOAT((damage_cycle_timer/cycle_period)*SC_fun.boss_damages_cyclic[effect]*float.Parse(SC_fun.SC_data.Gameplay[36]));
-        damage_cycle_timer = 0;
-    }
     void FixedUpdate()
     {
         if(damage_cycle_timer<=0)

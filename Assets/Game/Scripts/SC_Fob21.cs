@@ -221,7 +221,7 @@ public class SC_Fob21 : MonoBehaviour {
 		if(SC_control.impulse_enabled) return;
 		if(SC_fobs.mother) return;
 		SC_asteroid asst = transform.parent.GetComponent<SC_asteroid>();
-		if(asst.permanent_blocker || asst.temporary_blocker) return;
+		if(SC_fobs.isSeonBlocked()) return;
 		
 		if(Req(0))
 		{

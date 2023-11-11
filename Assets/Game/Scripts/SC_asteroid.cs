@@ -56,6 +56,7 @@ public class SC_asteroid : MonoBehaviour {
 	public Vector3 asteroidScale = new Vector3(1f,1f,1f);
 	public Vector3 normalScale = new Vector3(1f,1f,1f);
 	public bool permanent_blocker = false;
+	public bool reward_blocker = false;
 	public bool temporary_blocker = false;
 	
 	public bool proto = false;

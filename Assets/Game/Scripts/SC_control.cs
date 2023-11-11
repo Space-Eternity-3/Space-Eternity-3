@@ -96,11 +96,9 @@ public class SC_control : MonoBehaviour {
 	float truePing;
 	public int intPing=-1;
 	bool dont=false;
-	bool repeted=false;
 	bool repetedAF=false;
 	public bool gtm1 = false;
 	public int bos_num = 0;
-	bool damage_sounds_disabled = false;
 	public int current_tick = -1;
 	public bool absolute_health_sync = true;
 
@@ -717,11 +715,8 @@ public class SC_control : MonoBehaviour {
 		SC_effect.EffectClean();
 		solidPos=transform.position+new Vector3(0f,0f,2500f);
 		Communtron1.position+=new Vector3(0f,0f,75f);
-		if(!damage_sounds_disabled)
-		{
-			SC_sounds.PlaySound(transform.position,2,2);
-			Instantiate(explosion,transform.position,transform.rotation);
-		}
+		SC_sounds.PlaySound(transform.position,2,2);
+		Instantiate(explosion,transform.position,transform.rotation);
 		living=false;
 
 		List<SC_boss> boses = SC_lists.SC_boss;
@@ -792,7 +787,7 @@ public class SC_control : MonoBehaviour {
 			immID=(int.Parse(immID)+1)+"";
 			damageBalance = 0;
 		}
-		if(!damage_sounds_disabled) Instantiate(ImmortalParticles,transform.position,transform.rotation);
+		Instantiate(ImmortalParticles,transform.position,transform.rotation);
 		Debug.Log("Player avoided death");
 	}
 	public void esc_press(bool bo)
@@ -878,13 +873,10 @@ public class SC_control : MonoBehaviour {
 	}
 	public void MenuReturn()
 	{
-		if(repeted) return;
-		repeted=true;
+		repetedAF=true;
 
-		damage_sounds_disabled = true;
-		SC_effect.OneFrameDamage();
-
-		List<SC_bullet> buls = SC_lists.SC_bullet;
+		//Remove all bullets
+		/*List<SC_bullet> buls = SC_lists.SC_bullet;
 		foreach(SC_bullet bul in buls)
 		{
 			if(bul.mode!="mother")
@@ -892,8 +884,9 @@ public class SC_control : MonoBehaviour {
 				bul.block_graphics = true;
 				bul.MakeDestroy(false);
 			}
-		}
+		}*/
 
+		//Save temp
 		if(!dont)
 		{
 			if(Communtron4.position.y==100f) SC_data.TempFile="-2";
@@ -901,16 +894,19 @@ public class SC_control : MonoBehaviour {
 			SC_data.Save("temp");
 		}
 
-		Debug.Log("Quit");
-		if((int)Communtron4.position.y==100)
-		{
+		//Save data or close connection
+		if((int)Communtron4.position.y==100) {
 			try{
 				ws.Close();
 			}catch(Exception e){}
 		}
 		else if((int)Communtron4.position.y!=0) MainSaveData();
-		if(!dont) SceneManager.LoadScene("MainMenu");
-		repetedAF=true;
+
+		//Quit
+		if(!dont) {
+			Debug.Log("Quit");
+			SceneManager.LoadScene("MainMenu");
+		}
 	}
 	void health_Text_update()
 	{
@@ -1137,16 +1133,17 @@ public class SC_control : MonoBehaviour {
 		if(power_V>1f) power_V=1f;
 		if(power_V<0f) power_V=0f;
 
-		//Cmd list activator
-		Queue tsList = Queue.Synchronized(cmdList);
-		while(tsList.Count > 0)
-			cmdDo(tsList.Dequeue()+"");
-
+		//Bullet update
 		List<SC_bullet> buls = SC_lists.SC_bullet;
 		foreach(SC_bullet bul in buls)
 		{
 			bul.AfterFixedUpdate();
 		}
+
+		//Cmd list activator
+		Queue tsList = Queue.Synchronized(cmdList);
+		while(tsList.Count > 0)
+			cmdDo(tsList.Dequeue()+"");
 
 		if(!timeStop) {
 
@@ -1420,11 +1417,8 @@ public class SC_control : MonoBehaviour {
 		health_V-=dmg;
 		if(Mathf.Round(health_V*10000f) == 0f) health_V = 0f;
 		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
-		if(!damage_sounds_disabled)
-		{
-			if(!damage_ringed) Instantiate(explosion2,transform.position,transform.rotation);
-			else Instantiate(explosion3,transform.position,transform.rotation);
-		}
+		if(!damage_ringed) Instantiate(explosion2,transform.position,transform.rotation);
+		else Instantiate(explosion3,transform.position,transform.rotation);
 	}
 	public void HealSGP(string arg2)
 	{
@@ -1732,38 +1726,18 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetNewBulletSend")
 		{
-			SC_bullet bul1 = SC_bullet.ShotProjection(
-				new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
-				new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
-				int.Parse(arg[2]),
-				"server",
-				int.Parse(arg[7]),
-				arg[1]
-			);
-			bul1.InstantMove(int.Parse(arg[8]));
-
 			if(connectionID+""==arg[1])
 			{
 				List<SC_bullet> buls = SC_lists.SC_bullet;
 				foreach(SC_bullet bul in buls)
 				{
 					if(bul.ID+""==arg[7] && bul.mode=="projection")
-						bul.delta_age = -bul.age - (4/2);
+						bul.delta_age = -bul.age - (4/2); //Your bullets should be delayed
 				}
 			}
 
-			/*if(connectionID+""!=arg[1]){
-				SC_bullet bul2 = SC_bullet.ShotProjection(
-					new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
-					new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
-					int.Parse(arg[2]),
-					"present",
-					int.Parse(arg[7])
-				);
-				bul2.InstantMove(intPing);
-			}*/
-
-			if(connectionID+""!=arg[1]){
+			if(connectionID+""!=arg[1])
+			{
 				SC_bullet bul3 = SC_bullet.ShotProjection(
 					new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
 					new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
@@ -1773,8 +1747,7 @@ public class SC_control : MonoBehaviour {
 					arg[1]
 				);
 				bul3.InstantMove(int.Parse(arg[8]));
-				//Future bullets make no sense, change my mind
-				//bul3.delta_age = (4/2);
+				//Their bullets should not be delayed
 			}
 		}
 		if(arg[0]=="/RetNewBulletDestroy")

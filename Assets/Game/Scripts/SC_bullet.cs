@@ -139,7 +139,7 @@ public class SC_bullet : MonoBehaviour
     }
     int MaxAgeOfPlayerBullet(int n)
     {
-        //Quite good at client side
+        //Quite good on client side
 
         float ret = 0f;
         if(n==1) ret = SC_fun.SC_data.GplGet("copper_bullet_speed");
@@ -204,8 +204,8 @@ public class SC_bullet : MonoBehaviour
 
             //Age change
             age++;
-            CheckAge();
             transform.position += st_vect;
+            CheckAge();
         }
     }
     public void MakeDestroy(bool graphics)
@@ -215,15 +215,16 @@ public class SC_bullet : MonoBehaviour
 
         if(loopSndID!=-1) SC_snd_loop.RemoveFromLoop(loopSndID);
 
-        if(controller && multiplayer)
-            SC_control.SendMTP(
-                "/BulletRemove "+
-                SC_control.connectionID+" "+
-                ID+" "+
-                age
-            );
         if(controller)
         {
+            if(multiplayer)
+                SC_control.SendMTP(
+                    "/BulletRemove "+
+                    SC_control.connectionID+" "+
+                    ID+" "+
+                    age
+                );
+                
             List<SC_bullet> buls = SC_control.SC_lists.SC_bullet;
             foreach(SC_bullet bul in buls)
             {
@@ -316,7 +317,7 @@ public class SC_bullet : MonoBehaviour
         looper++;
         if(looper>=3) looper=0; //Start: 1-2-0-1-2-0...
 
-        if(mode=="present" || mode=="server") InstantMove(1);
+        if(mode=="present") InstantMove(1);
         if(mode=="projection")
         {
             if(delta_age == 0 || !multiplayer)
