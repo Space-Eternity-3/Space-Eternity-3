@@ -1,8 +1,6 @@
 const WebSocket = require("ws");
 const fs = require("fs");
 const path = require("path");
-const config = require("./config.json");
-const authConfig = require("./authConfig.json");
 const { runInNewContext } = require("vm");
 const { parse } = require("path");
 const { func } = require("./functions");
@@ -24,7 +22,74 @@ Array.prototype.remove = function (ind) {
   return this;
 };
 
+//File functions
+function readF(nate) {
+  if (existsF(nate)) return fs.readFileSync(nate, { flag: "r" }).toString();
+  else crash("Can't read file " + nate);
+}
+function existsF(nate) {
+  return fs.existsSync(nate);
+}
+function writeF(nate, text) {
+  var i,
+    fold = path.dirname(nate);
+  var foldT = fold.split("/");
+  var lngt = foldT.length;
+  var pathCurrent = "";
+  for (i = 0; i < lngt; i++) {
+    pathCurrent += foldT[i] + "/";
+    if (!existsF(pathCurrent)) fs.mkdirSync(pathCurrent);
+  }
+  fs.writeFileSync(nate, String(text));
+}
+function removeF(nate) {
+  fs.unlinkSync(nate);
+}
+
 console.log("Starting procedures...");
+
+//Config generator
+const default_config = {
+	"universe_name": "ServerUniverse",
+	"max_players": 10,
+	"max_connections_per_ip": 10,
+	"port": 27683,
+	"pvp": true,
+	"show_positions": true,
+	"require_se3_account": false,
+	"whitelist_enabled": false,
+	"whitelist": [],
+	"banned_players": [],
+	"banned_ips": [
+		"0.0.0.0",
+		"255.255.255.255"
+	],
+	"anti_cheat": {
+		"max_movement_per_period": 20,
+		"period_in_ticks": 10,
+		"bullet_spawn_allow_radius": 3
+	}
+};
+if(!existsF("./config.json")) {
+  writeF("config.json",JSON.stringify(default_config,null,2));
+  console.log("File config.json generated.");
+}
+const config = require("./config.json");
+
+//AuthConfig generator
+const default_authConfig = {
+	"is_configured": false,
+	"auth_server_url": "wss://comp.se3.page:27684",
+	"host_nickname": "SE3_nickname",
+	"host_password": "SE3_password",
+	"server_name": "connect.through.this.name",
+	"server_redirect_address": "ws://0.0.0.0:27683"
+};
+if(!existsF("./authConfig.json")) {
+  writeF("authConfig.json",JSON.stringify(default_authConfig,null,2));
+  console.log("File authConfig.json generated.");
+}
+const authConfig = require("./authConfig.json");
 
 //Authorization server variables
 var waiting_authorized = [];
@@ -184,6 +249,8 @@ var memTemplate = {
 };
 
 var unstable_sprobability = 1;
+
+const give_array = [];
 
 function TreasureDrop(str)
 {
@@ -850,30 +917,6 @@ function getRandomFunnyText()
     case 18: return "Hacking your computer..."; case 19: return "Searching for cheaters...";
   }
   return "Something went wrong...";
-}
-
-//File functions
-function readF(nate) {
-  if (existsF(nate)) return fs.readFileSync(nate, { flag: "r" }).toString();
-  else crash("Can't read file " + nate);
-}
-function existsF(nate) {
-  return fs.existsSync(nate);
-}
-function writeF(nate, text) {
-  var i,
-    fold = path.dirname(nate);
-  var foldT = fold.split("/");
-  var lngt = foldT.length;
-  var pathCurrent = "";
-  for (i = 0; i < lngt; i++) {
-    pathCurrent += foldT[i] + "/";
-    if (!existsF(pathCurrent)) fs.mkdirSync(pathCurrent);
-  }
-  fs.writeFileSync(nate, String(text));
-}
-function removeF(nate) {
-  fs.unlinkSync(nate);
 }
 
 //File readable functions
@@ -3534,6 +3577,36 @@ wss.on("connection", function connection(ws,req)
       }
       else plr.pclass[arg[1]].DrillDiscard(arg[2]);
     }
+    if (arg[0] == "/CommandGive") // 1[PlayerID] 2[Item] 3[Count] 4[Slot]
+    {
+      if(!VerifyCommand(arg,["PlaID","item","count+","Slot"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
+
+      var indof = give_array.indexOf("GIVE "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
+      if(indof!=-1) {
+        give_array.splice(indof,1);
+        if(!invChangeTry(arg[1],arg[2],arg[3],arg[4])) {kick(arg[1]); return;}
+        console.log("Given "+arg[3]+"x item("+arg[2]+") to: "+plr.nicks[arg[1]]);
+      }
+      else {kick(arg[1]); return;}
+    }
+    if (arg[0] == "/CommandTp") // 1[PlayerID] 2[x] 3[y]
+    {
+      if(!VerifyCommand(arg,["PlaID","Float","Float"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
+
+      var indof = give_array.indexOf("TP "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
+      if(indof!=-1) {
+        give_array.splice(indof,1);
+        var bef = plr.players[arg[1]].split(";");
+        bef[0] = func.parseFloatU(arg[2]);
+        bef[1] = func.parseFloatU(arg[3]);
+        plr.players[arg[1]] = bef.join(";");
+        console.log("Teleported player "+plr.nicks[arg[1]]+" to coordinates: "+bef[0]+" "+bef[1]);
+      }
+    }
     if (arg[0] == "/FobPlace") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[EndFob] 5[Slot]
     {
       if(!VerifyCommand(arg,["PlaID","ulam","place","fob-interactable","Slot"])) return;
@@ -4102,6 +4175,11 @@ function VerifyCommand(args,formats)
         var p = func.parseIntP(test);
         if(isNaN(p)) return false;
         if(p < -9999999 || p > 9999999) return false;
+      }
+      else if(sw=="count+") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 1 || p > 9999999) return false;
       }
       else if(sw=="count-") {
         var p = func.parseIntP(test);
@@ -4899,6 +4977,196 @@ growSolid[5] = gsol5a +";"+ gsol5b +";6";
 growSolid[6] = gsol5a +";"+ gsol5b +";7";
 growSolid[25] = gsol25 +";"+ gsol25 +";23";
 
+//Command listener
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function saveConfig() {
+  writeF("config.json",JSON.stringify(config,null,2));
+}
+function listenForMessages()
+{
+  rl.question('', (message) => {
+    if(["stop","quit","exit"].includes(message))
+    {
+      rl.close();
+      process.emit("SIGINT");
+    }
+    else
+    {
+      var arg = message.split(" ");
+      if(message=="") {}
+      else if(arg[0]=="ban" && arg.length==2 && arg[1])
+      {
+        if(!config.banned_players.includes(arg[1])) {
+          config.banned_players.push(arg[1]);
+          console.log("Banned player: "+arg[1]);
+          saveConfig();
+        }
+        else console.log("This player is already banned.");
+      }
+      else if(arg[0]=="unban" && arg.length==2 && arg[1])
+      {
+        var indof = config.banned_players.indexOf(arg[1]);
+        if(indof!=-1) {
+          config.banned_players.splice(indof,1);
+          console.log("Unbanned player: "+arg[1]);
+          saveConfig();
+        }
+        else console.log("This player is not banned.");
+      }
+      else if(message=="banlist")
+      {
+        console.log("All banned players: ");
+        console.log(config.banned_players);
+      }
+      else if(arg[0]=="banip" && arg.length==2 && arg[1])
+      {
+        if(!config.banned_ips.includes(arg[1])) {
+          config.banned_ips.push(arg[1]);
+          console.log("Banned IPv4: "+arg[1]);
+          saveConfig();
+        }
+        else console.log("This IPv4 is already banned.");
+      }
+      else if(arg[0]=="unbanip" && arg.length==2 && arg[1])
+      {
+        var indof = config.banned_ips.indexOf(arg[1]);
+        if(indof!=-1) {
+          config.banned_ips.splice(indof,1);
+          console.log("Unbanned IPv4: "+arg[1]);
+          saveConfig();
+        }
+        else console.log("This IPv4 is not banned.");
+      }
+      else if(message=="baniplist")
+      {
+        console.log("All banned IPv4s: ");
+        console.log(config.banned_ips);
+      }
+      else if(arg[0]=="whitelist" && arg[1]=="add" && arg.length==3 && arg[2])
+      {
+        if(!config.whitelist.includes(arg[2])) {
+          config.whitelist.push(arg[2]);
+          console.log("Added player to whitelist: "+arg[2]);
+          saveConfig();
+        }
+        else console.log("This player is already whitelisted.");
+      }
+      else if(arg[0]=="whitelist" && arg[1]=="remove" && arg.length==3 && arg[2])
+      {
+        var indof = config.whitelist.indexOf(arg[2]);
+        if(indof!=-1) {
+          config.whitelist.splice(indof,1);
+          console.log("Removed player from whitelist: "+arg[1]);
+          saveConfig();
+        }
+        else console.log("This player is not whitelisted.");
+      }
+      else if(message=="whitelist toggle")
+      {
+        config.whitelist_enabled = !config.whitelist_enabled;
+        console.log("Whitelist toggled to: "+config.whitelist_enabled);
+        saveConfig();
+      }
+      else if(message=="whitelist list")
+      {
+        console.log("All players on whitelist: ");
+        console.log(config.whitelist);
+      }
+      else if(arg[0]=="kick" && arg.length==2 && arg[1])
+      {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1])) {
+          var tnik = plr.nicks[indof];
+          kick(indof);
+          console.log("Kicked player: "+arg[1]);
+        }
+        else console.log("This player is not on a server.");
+      }
+      else if(arg[0]=="damage" && arg.length==3 && arg[1] && arg[2])
+      {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1])) {
+          DamageFLOAT(indof,func.parseFloatU(arg[2]));
+          console.log("Applied damage to player "+arg[1]+": "+arg[2]+"hp");
+        }
+        else console.log("This player is not on a server.");
+      }
+      else if(arg[0]=="give" && arg.length==4 && arg[1] && arg[2] && arg[3])
+      {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1])) {
+          var item = func.parseIntU(arg[2]);
+          var count = func.parseIntU(arg[3]);
+          if(item>=1 && count>=1) {
+            give_array.push("GIVE "+arg[1]+" "+item+" "+count);
+            sendTo(se3_ws[indof],"/RetCommandGive "+item+" "+count+" X X");
+          }
+          else console.log("Item and count should be greater than 0.");
+        }
+        else console.log("This player is not on a server.");
+      }
+      else if(arg[0]=="tp" && arg.length==4 && arg[1] && arg[2]=="to" && arg[3])
+      {
+        var indof1 = plr.nicks.indexOf(arg[1]);
+        var indof2 = plr.nicks.indexOf(arg[3]);
+        if(indof1!=-1 && !nickWrong(arg[1]) && se3_wsS[indof1]=="game" && !inHeaven(indof1) &&
+           indof2!=-1 && !nickWrong(arg[3]) && se3_wsS[indof2]=="game" && !inHeaven(indof2))
+        {
+          var bef = plr.players[indof2].split(";");
+          var x = bef[0].replaceAll(".",",");
+          var y = bef[1].replaceAll(".",",");
+          give_array.push("TP "+arg[1]+" "+x+" "+y);
+          sendTo(se3_ws[indof1],"/RetCommandTp "+x+" "+y+" X X");
+        }
+        else console.log("At least one of these players is not on a server.");
+      }
+      else if(arg[0]=="tp" && arg.length==4 && arg[1] && arg[2] && arg[3])
+      {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1])) {
+          var x = (func.parseFloatU(arg[2])+"").replaceAll(".",",");
+          var y = (func.parseFloatU(arg[3])+"").replaceAll(".",",");
+          give_array.push("TP "+arg[1]+" "+x+" "+y);
+          sendTo(se3_ws[indof],"/RetCommandTp "+x+" "+y+" X X");
+        }
+        else console.log("This player is not on a server.");
+      }
+      else if(message=="tasks discard") {
+        var tc = give_array.length;
+        give_array.splice(0,give_array.length);
+        console.log("Discarded "+tc+" tasks.");
+      }
+      else if(message=="help")
+      {
+        console.log("----- List of all commands -----")
+        console.log("'help' - Displays this documentation");
+        console.log("'ban [nickname]' - Bans a player.");
+        console.log("'unban [nickname]' - Unbans a player.");
+        console.log("'banlist' - Displays a list of all banned players.");
+        console.log("'banip [IPv4]' - Bans an IPv4s.");
+        console.log("'unbanip [IPv4]' - Unbans an IPv4s.");
+        console.log("'baniplist' - Displays a list of all banned IPv4s.");
+        console.log("'whitelist add/remove [nickname]' - Adds or removes a player to/from whitelist.");
+        console.log("'whitelist toggle' - Enables/disables whitelist.");
+        console.log("'whitelist list' - Displays all players on whitelist.");
+        console.log("'kick [nickname]' - Kicks a player.");
+        console.log("'damage [nickname] [hp]' - Applies damage to a player.");
+        console.log("'give [nickname] [item] [amount]' - Gives an item to a player. (task-based command)");
+        console.log("'tp [nickname] [x] [y]' - Teleports a player to specified coordinates. (task-based command)");
+        console.log("'tp [nickname] to [target-nickname]' - Teleports a player to another player. (task-based command)");
+        console.log("'tasks discard - Discards all command tasks. Do not use short (1-2 seconds) after a task-based command.");
+      }
+      else console.log("Incorrect command. Type 'help' for documentation.");
+      listenForMessages();
+    }
+  });
+}
+listenForMessages();
+
 //Starting ending
 console.log("Server started on version: " + serverVersion + "");
 console.log("Universe directory: " + universe_name + "");
@@ -4909,33 +5177,6 @@ console.log("-------------------------------");
 
 updateHourHeader();
 setTerminalTitle("SE3 server | "+serverVersion+" | "+getRandomFunnyText());
-
-//Command listener
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
-function listenForMessages()
-{
-  rl.question('', (message) => {
-    if(message == "exit")
-    {
-      rl.close();
-      process.emit("SIGINT");
-    }
-    else
-    {
-      var arg = message.split(" ");
-      if(arg[0] == "test")
-      {
-        console.log("Accepted command: "+message);
-      }
-      listenForMessages();
-    }
-  });
-}
-listenForMessages();
 
 //END OF MAIN SEGMENT
 

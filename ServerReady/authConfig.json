@@ -1,8 +1,8 @@
 {
-	"is_configured": true,
-	"auth_server_url": "wss://comp.se3.page:27684",
-	"host_nickname": "Kamiloso",
-	"host_password": "haslo123",
-	"server_name": "mein.server",
-	"server_redirect_address": "ws://komp.se3.page:"
+  "is_configured": false,
+  "auth_server_url": "wss://comp.se3.page:27684",
+  "host_nickname": "SE3_nickname",
+  "host_password": "SE3_password",
+  "server_name": "connect.through.this.name",
+  "server_redirect_address": "ws://0.0.0.0:27683"
 }

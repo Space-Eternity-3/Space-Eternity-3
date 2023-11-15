@@ -7,7 +7,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 2.2'; <Don't change>
-name: 'DEFAULdT'; <Rename it>
+name: 'DEFAULTd'; <Rename it>
 craftings
 {
 	<Category>1
@@ -359,7 +359,7 @@ generator_settings
 	{
 		chance: 4%;
 		settings: [
-			structural, struct=4, spawn,
+			structural, struct=4,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
 			density = 100%,
@@ -407,7 +407,7 @@ generator_settings
 	{
 		chance: 2%;
 		settings: [
-			structural, struct=3,
+			structural, struct=3, spawn,
 			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 40,
 			density = 100%,
@@ -565,7 +565,7 @@ custom_structures <advanced settings>
 	]';
 	<star> 3: '[
 	
-		summon #1 star
+		summon #1 star2
 	
 	]';
 	<arena> 4: '[

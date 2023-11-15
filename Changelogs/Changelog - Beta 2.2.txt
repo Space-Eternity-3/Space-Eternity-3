@@ -17,7 +17,7 @@ Old feature changes:
 - drill efficiency upgrade nerfed +15% -> +12%
 - all craftings reworked, check in game for details
 - stone collider is now bigger, so it's easier to collect it
-- boss damage sound volume reduced: 0,35 -> 0,3
+- boss damage sound volume reduced: 0,35 -> 0,3 + pitch changed
 
 Artistic changes:
 
@@ -36,6 +36,7 @@ UI changes:
 - junkyard discard button reworked
 - amethyst conture added to the bedrock storage
 - in the right UI segment small letter-buttons were replaced with arrows
+- settings credits reworked
 
 Default datapack changes:
 
@@ -94,6 +95,7 @@ b) Server run
 - hour header on server improved, it will additionally display date
 - information display design on server console changed a bit, removed unnecessary rectangular brackets []
 - bullet removing after kick is now on server side, client bullets no longer disappear when returning to menu (it will be changed in Beta 2.2)
+- config.json and authConfig.json files will now generate automatically
 
 c) Others
 - settings format changed to fit official account text field data (username and password)

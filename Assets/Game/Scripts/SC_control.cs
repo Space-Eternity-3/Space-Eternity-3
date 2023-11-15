@@ -1897,8 +1897,6 @@ public class SC_control : MonoBehaviour {
 		{
 			unstable_pulses_available++;
 		}
-
-		//Other scripts
 		if(arg[0]=="/RetInfoClient")
 		{
 			if(arg[2]==connectionID+"") return;
@@ -1909,6 +1907,25 @@ public class SC_control : MonoBehaviour {
 			if(arg[1]==connectionID+"") return;
 			SC_chat.AddMessage(arg[1],new StringBuilder(arg[2]).Replace("\t"," ").ToString());
 		}
+		if(arg[0]=="/RetCommandGive")
+		{
+			int item = int.Parse(arg[1]);
+			int count = int.Parse(arg[2]);
+			if(SC_slots.InvHaveB(item,count,true,true,true,0))
+			{
+				int slot = SC_slots.InvChange(item,count,true,true,true);
+				SendMTP("/CommandGive "+connectionID+" "+arg[1]+" "+arg[2]+" "+slot);
+			}
+		}
+		if(arg[0]=="/RetCommandTp")
+		{
+			float x = float.Parse(arg[1]);
+			float y = float.Parse(arg[2]);
+			SendMTP("/CommandTp "+connectionID+" "+arg[1]+" "+arg[2]);
+			player.position = new Vector3(x,y,player.position.z);
+		}
+
+		//Other scripts
 		if(arg[0]=="/RetAsteroidData")
 		{
 			//REBUILD IT
