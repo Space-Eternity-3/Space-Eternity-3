@@ -7,7 +7,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 2.2'; <Don't change>
-name: 'DEFAULTd'; <Rename it>
+name: 'DEFfAULT'; <Rename it>
 craftings
 {
 	<Category>1
@@ -359,7 +359,7 @@ generator_settings
 	{
 		chance: 4%;
 		settings: [
-			structural, struct=4,
+			structural, struct=4, spawn,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
 			density = 100%,
@@ -407,7 +407,7 @@ generator_settings
 	{
 		chance: 2%;
 		settings: [
-			structural, struct=3, spawn,
+			structural, struct=3,
 			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 40,
 			density = 100%,
@@ -565,7 +565,7 @@ custom_structures <advanced settings>
 	]';
 	<star> 3: '[
 	
-		summon #1 star2
+		summon #1 star
 	
 	]';
 	<arena> 4: '[
@@ -573,14 +573,14 @@ custom_structures <advanced settings>
 		setrandom %5
 		summon #50 respblock 41,5284
 
-		summon #1 asteroid 8 12 x move 2 2 rotate 11,25
-		summon #2 asteroid 8 12 x move -2 2 rotate 101,25
-		summon #3 asteroid 8 12 x move -2 -2 rotate 191,25
-		summon #4 asteroid 8 12 x move 2 -2 rotate 281,25
-		summon #5 asteroid 8 12 x move 2 -2 rotate -11,25
-		summon #6 asteroid 8 12 x move -2 -2 rotate -101,25
-		summon #7 asteroid 8 12 x move -2 2 rotate -191,25
-		summon #8 asteroid 8 12 x move 2 2 rotate -281,25
+		summon #1 asteroid 8 1 x move 2 2 rotate 11,25
+		summon #2 asteroid 8 1 x move -2 2 rotate 101,25
+		summon #3 asteroid 8 1 x move -2 -2 rotate 191,25
+		summon #4 asteroid 8 1 x move 2 -2 rotate 281,25
+		summon #5 asteroid 8 1 x move 2 -2 rotate -11,25
+		summon #6 asteroid 8 1 x move -2 -2 rotate -101,25
+		summon #7 asteroid 8 1 x move -2 2 rotate -191,25
+		summon #8 asteroid 8 1 x move 2 2 rotate -281,25
 		from #1 to #4 move 35 -0,5
 		from #5 to #8 move 35 0,5
 
@@ -604,32 +604,32 @@ custom_structures <advanced settings>
 		catch child $8 from #9 to #16 layer child -500
 		catch child $13 from #9 to #16 layer child -500
 
-		summon #59 wall 12 move 2 2 rotate 22,5
-		summon #60 wall 12 move 2 2 rotate 45
-		summon #61 wall 12 move 2 2 rotate 67,5
-		summon #62 wall 12 move -2 2 rotate 112,5
-		summon #63 wall 12 move -2 2 rotate 135
-		summon #64 wall 12 move -2 2 rotate 157,5
-		summon #65 wall 12 move -2 -2 rotate 202,5
-		summon #66 wall 12 move -2 -2 rotate 225
-		summon #67 wall 12 move -2 -2 rotate 247,5
-		summon #68 wall 12 move 2 -2 rotate 292,5
-		summon #69 wall 12 move 2 -2 rotate 315
+		summon #59 wall 1 move 2 2 rotate 22,5
+		summon #60 wall 2 move 2 2 rotate 45
+		summon #61 wall 3 move 2 2 rotate 67,5
+		summon #62 wall 4 move -2 2 rotate 112,5
+		summon #63 wall 5 move -2 2 rotate 135
+		summon #64 wall 6 move -2 2 rotate 157,5
+		summon #65 wall 7 move -2 -2 rotate 202,5
+		summon #66 wall 8 move -2 -2 rotate 225
+		summon #67 wall 9 move -2 -2 rotate 247,5
+		summon #68 wall 10 move 2 -2 rotate 292,5
+		summon #69 wall 11 move 2 -2 rotate 315
 		summon #70 wall 12 move 2 -2 rotate 337,5
 		from #59 to #70 move 34,25 0
 
-		summon #17 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #18 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #19 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #20 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #21 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #22 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #23 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #24 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #25 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #26 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #27 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #28 asteroid 4 12 0,0,0,0,0,0,0,0
+		summon #17 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #18 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #19 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #20 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #21 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #22 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #23 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #24 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #25 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #26 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #27 asteroid 4 1 0,0,0,0,0,0,0,0
+		summon #28 asteroid 4 1 0,0,0,0,0,0,0,0
 		from #59 to #70 steal 4 from delta -42
 
 		summon #51 piston move 36,4 6,4

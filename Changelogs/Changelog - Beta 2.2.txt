@@ -25,6 +25,7 @@ Artistic changes:
 - fob destroy particle effect reworked
 - grass asteroid reflects less light now
 - coal asteroid and coal bullets are darker now
+- the majority of textures reworked, there are no pixels visible now
 
 UI changes:
 
@@ -51,7 +52,7 @@ Default datapack changes:
   - level 3: gold 10 -> 15
   - level 4: amethyst 12 -> 20
   - level 5: amethyst 20 -> 30
-- redA (id=25) object generation replaced with empty (id=2) object generation
+- redA (id=25) object generation replaced with other (id=2) object generation
 - changed seon codes in datapack
 
 Configurables:
@@ -96,6 +97,7 @@ b) Server run
 - information display design on server console changed a bit, removed unnecessary rectangular brackets []
 - bullet removing after kick is now on server side, client bullets no longer disappear when returning to menu (it will be changed in Beta 2.2)
 - config.json and authConfig.json files will now generate automatically
+- added command system to server console, type 'help' for more info
 
 c) Others
 - settings format changed to fit official account text field data (username and password)
@@ -117,3 +119,4 @@ Bug fixes:
 - fixed lightning problem in the main menu
 - bullet projections on multiplayer were breaking one frame too early
 - bullet invisible server projections were spawning one frame ahead of their real position
+- dark asteroid had not received a wall variant

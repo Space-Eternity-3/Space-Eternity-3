@@ -60,10 +60,7 @@ const default_config = {
 	"whitelist_enabled": false,
 	"whitelist": [],
 	"banned_players": [],
-	"banned_ips": [
-		"0.0.0.0",
-		"255.255.255.255"
-	],
+	"banned_ips": [],
 	"anti_cheat": {
 		"max_movement_per_period": 20,
 		"period_in_ticks": 10,
@@ -1168,7 +1165,7 @@ function exitHandler(options, exitCode) {
   try {
     SaveAllNow();
   } catch {}
-  console.log("Data saved");
+  console.log("Data saved on exit");
   if (options.exit) process.exit();
 }
 
@@ -3585,7 +3582,7 @@ wss.on("connection", function connection(ws,req)
 
       var indof = give_array.indexOf("GIVE "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
       if(indof!=-1) {
-        give_array.splice(indof,1);
+        give_array[indof] = undefined;
         if(!invChangeTry(arg[1],arg[2],arg[3],arg[4])) {kick(arg[1]); return;}
         console.log("Given "+arg[3]+"x item("+arg[2]+") to: "+plr.nicks[arg[1]]);
       }
@@ -3599,7 +3596,7 @@ wss.on("connection", function connection(ws,req)
 
       var indof = give_array.indexOf("TP "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
       if(indof!=-1) {
-        give_array.splice(indof,1);
+        give_array[indof] = undefined;
         var bef = plr.players[arg[1]].split(";");
         bef[0] = func.parseFloatU(arg[2]);
         bef[1] = func.parseFloatU(arg[3]);
@@ -4983,6 +4980,12 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
+function give_array_add_temp(element) {
+  var ind = give_array.push(element) - 1;
+  setTimeout(function() {
+          give_array[ind] = undefined;
+  }, 3000);
+}
 function saveConfig() {
   writeF("config.json",JSON.stringify(config,null,2));
 }
@@ -5102,7 +5105,7 @@ function listenForMessages()
           var item = func.parseIntU(arg[2]);
           var count = func.parseIntU(arg[3]);
           if(item>=1 && count>=1) {
-            give_array.push("GIVE "+arg[1]+" "+item+" "+count);
+            give_array_add_temp("GIVE "+arg[1]+" "+item+" "+count);
             sendTo(se3_ws[indof],"/RetCommandGive "+item+" "+count+" X X");
           }
           else console.log("Item and count should be greater than 0.");
@@ -5119,7 +5122,7 @@ function listenForMessages()
           var bef = plr.players[indof2].split(";");
           var x = bef[0].replaceAll(".",",");
           var y = bef[1].replaceAll(".",",");
-          give_array.push("TP "+arg[1]+" "+x+" "+y);
+          give_array_add_temp("TP "+arg[1]+" "+x+" "+y);
           sendTo(se3_ws[indof1],"/RetCommandTp "+x+" "+y+" X X");
         }
         else console.log("At least one of these players is not on a server.");
@@ -5130,35 +5133,56 @@ function listenForMessages()
         if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1])) {
           var x = (func.parseFloatU(arg[2])+"").replaceAll(".",",");
           var y = (func.parseFloatU(arg[3])+"").replaceAll(".",",");
-          give_array.push("TP "+arg[1]+" "+x+" "+y);
+          give_array_add_temp("TP "+arg[1]+" "+x+" "+y);
           sendTo(se3_ws[indof],"/RetCommandTp "+x+" "+y+" X X");
         }
         else console.log("This player is not on a server.");
       }
-      else if(message=="tasks discard") {
-        var tc = give_array.length;
-        give_array.splice(0,give_array.length);
-        console.log("Discarded "+tc+" tasks.");
+      else if(message=="save")
+      {
+        SaveAllNow();
+        console.log("Data saved manually");
+      }
+      else if(message=="players")
+      {
+        var i,current_players=0,plmem=[];
+        for(i=0;i<max_players;i++) {
+          if(se3_wsS[i]!="") {
+            plmem.push("[" + i + "]: " + plr.nicks[i] + " (" + se3_wsS[i] + ")");
+            current_players++;
+          }
+        }
+        console.log("\nPlayers ["+current_players+"/"+max_players+"]:");
+        for(i=0;i<max_players;i++) if(plmem[i]) console.log(plmem[i]);
+        console.log("");
       }
       else if(message=="help")
       {
-        console.log("----- List of all commands -----")
-        console.log("'help' - Displays this documentation");
+        console.log("\n------ List of all commands ------\n");
+
+        console.log("'help' - Displays this documentation.");
+        console.log("'save' - Saves server data. (happens automatically once per 15 seconds)");
+        console.log("'players' - Displays a list of all online players.");
+        console.log("'stop' / 'quit' / 'exit' - Stops the server.\n");
+
         console.log("'ban [nickname]' - Bans a player.");
         console.log("'unban [nickname]' - Unbans a player.");
         console.log("'banlist' - Displays a list of all banned players.");
-        console.log("'banip [IPv4]' - Bans an IPv4s.");
-        console.log("'unbanip [IPv4]' - Unbans an IPv4s.");
-        console.log("'baniplist' - Displays a list of all banned IPv4s.");
+        console.log("'banip [IPv4]' - Bans an IPv4 address.");
+        console.log("'unbanip [IPv4]' - Unbans an IPv4 address.");
+        console.log("'baniplist' - Displays a list of all banned IPv4s.\n");
+
         console.log("'whitelist add/remove [nickname]' - Adds or removes a player to/from whitelist.");
         console.log("'whitelist toggle' - Enables/disables whitelist.");
-        console.log("'whitelist list' - Displays all players on whitelist.");
+        console.log("'whitelist list' - Displays all players on whitelist.\n");
+
         console.log("'kick [nickname]' - Kicks a player.");
         console.log("'damage [nickname] [hp]' - Applies damage to a player.");
-        console.log("'give [nickname] [item] [amount]' - Gives an item to a player. (task-based command)");
-        console.log("'tp [nickname] [x] [y]' - Teleports a player to specified coordinates. (task-based command)");
-        console.log("'tp [nickname] to [target-nickname]' - Teleports a player to another player. (task-based command)");
-        console.log("'tasks discard - Discards all command tasks. Do not use short (1-2 seconds) after a task-based command.");
+        console.log("'give [nickname] [item] [amount]' - Gives an item to a player.");
+        console.log("'tp [nickname] [x] [y]' - Teleports a player to specified coordinates.");
+        console.log("'tp [nickname] to [target-nickname]' - Teleports a player to another player.");
+
+        console.log("\n----------------------------------\n");
       }
       else console.log("Incorrect command. Type 'help' for documentation.");
       listenForMessages();

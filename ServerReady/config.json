@@ -9,10 +9,7 @@
   "whitelist_enabled": false,
   "whitelist": [],
   "banned_players": [],
-  "banned_ips": [
-    "0.0.0.0",
-    "255.255.255.255"
-  ],
+  "banned_ips": [],
   "anti_cheat": {
     "max_movement_per_period": 20,
     "period_in_ticks": 10,
