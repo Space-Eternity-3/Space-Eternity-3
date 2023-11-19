@@ -506,7 +506,7 @@ public class SC_boss : MonoBehaviour
         }
         SaveSGP();
     }
-    string romeNumber(int num)
+    public string romeNumber(int num)
     {
         if(num==1) return "I";
         if(num==2) return "II";

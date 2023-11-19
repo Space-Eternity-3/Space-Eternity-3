@@ -34,6 +34,8 @@ craftings
 		1: stone(4) + magnetic_stone(2) -> storage;
 		2: stone_with_crystals(3) + stone_drill -> driller;
 		3: gold(3) + copper(2) -> respawn;
+		4: stone -> small_amethyst(999);
+		5: stone -> copper_bullet(9999);
 	}
 	<Category>4
 	{
@@ -359,7 +361,7 @@ generator_settings
 	{
 		chance: 4%;
 		settings: [
-			structural, struct=4,
+			structural, struct=4, spawn,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
 			density = 100%,

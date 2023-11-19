@@ -137,14 +137,9 @@ public class SC_fun : MonoBehaviour
     public int CheckID(int X,int Y)
     {
         int ID=0,P;
-        if(Mathf.Abs(X)>Mathf.Abs(Y))
-		{
-			P=Mathf.Abs(X);
-		}
-		else
-        {
-			P=Mathf.Abs(Y);
-		}
+        if(Mathf.Abs(X)>Mathf.Abs(Y)) P=Mathf.Abs(X);
+		else P=Mathf.Abs(Y);
+
 		ID=4*(P*P-P)+1;
 
 		X=X+P+1;
@@ -238,7 +233,6 @@ public class SC_fun : MonoBehaviour
         int IDm=MakeID(ID,seed);
         if(ID==1) return false;
         if(IDm%2==0) return false;
-        //int it = System.Text.Encoding.ASCII.GetBytes(SC_long_strings.AsteroidBase[(IDm%65536-1)/2]+"")[0];
 		int it = (int)SC_long_strings.AsteroidBase[(IDm%65536-1)/2];
 		int ia = 28; //from 28th ASCII char
 		int inu = it - ia;
@@ -343,6 +337,65 @@ public class SC_fun : MonoBehaviour
 
 //-----------------------------------------------------------------------------------------------
 
+	public int FindBiome(int ulam)
+	{
+		try {
+
+			int ln = ulam / 1000;
+			int id = ulam % 1000;
+			if(ln>=16000)
+			{
+				id += (ln-15999) * 1000;
+				ln = 15999;
+			}
+			if(SC_data.biome_memories[ln].Length <= id) return -1;
+			int cand = CharToNum31(SC_data.biome_memories[ln][id]);
+			if(cand < 0 || cand > 31) return -1;
+			else return cand;
+
+		} catch(Exception) {
+			Debug.LogWarning("FindBiome error");
+			return -1;
+		}
+
+		return -1;
+	}
+	public void InsertBiome(int ulam, int biome)
+	{
+		if((int)SC_control.Communtron4.position.y!=100)
+		{
+			int ln = ulam / 1000;
+			int id = ulam % 1000;
+			if(ln>=16000)
+			{
+				id += (ln-15999) * 1000;
+				ln = 15999;
+			}
+			while(SC_data.biome_memories[ln].Length <= id)
+				SC_data.biome_memories[ln] += '-';
+			
+			int i;
+			StringBuilder ret = new StringBuilder();
+			for(i=0;i<id;i++) ret.Append(SC_data.biome_memories[ln][i]);
+			ret.Append(Num31ToChar(biome));
+			for(i=id+1;i<SC_data.biome_memories[ln].Length;i++) ret.Append(SC_data.biome_memories[ln][i]);
+			SC_data.biome_memories[ln] = ret.ToString();
+		}
+		else
+			SC_control.SendMTP("/TryInsertBiome "+SC_control.connectionID+" "+ulam+" "+biome);
+	}
+	char Num31ToChar(int num)
+	{
+		if(num < 10) return (char)(48+num);
+		return (char)(55+num);
+	}
+	int CharToNum31(char ch)
+	{
+		if(ch=='-') return -1;
+		int num = (int)ch;
+		if(num < 65) return num-48;
+		else return num-55;
+	}
 	public int pseudoRandom100(int prSeed)
 	{
 		prSeed = prSeed % 15000;
@@ -544,65 +597,6 @@ public class SC_fun : MonoBehaviour
 	{
 		return SC_data.BiomeTags[int.Parse(GetBiomeString(ulam).Split('b')[1])];
 	}
-	public int FindBiome(int ulam)
-	{
-		try {
-
-			int ln = ulam / 1000;
-			int id = ulam % 1000;
-			if(ln>=16000)
-			{
-				id += (ln-15999) * 1000;
-				ln = 15999;
-			}
-			if(SC_data.biome_memories[ln].Length <= id) return -1;
-			int cand = CharToNum31(SC_data.biome_memories[ln][id]);
-			if(cand < 0 || cand > 31) return -1;
-			else return cand;
-
-		} catch(Exception) {
-			Debug.LogWarning("FindBiome error");
-			return -1;
-		}
-
-		return -1;
-	}
-	public void InsertBiome(int ulam, int biome)
-	{
-		if((int)SC_control.Communtron4.position.y!=100)
-		{
-			int ln = ulam / 1000;
-			int id = ulam % 1000;
-			if(ln>=16000)
-			{
-				id += (ln-15999) * 1000;
-				ln = 15999;
-			}
-			while(SC_data.biome_memories[ln].Length <= id)
-				SC_data.biome_memories[ln] += '-';
-			
-			int i;
-			StringBuilder ret = new StringBuilder();
-			for(i=0;i<id;i++) ret.Append(SC_data.biome_memories[ln][i]);
-			ret.Append(Num31ToChar(biome));
-			for(i=id+1;i<SC_data.biome_memories[ln].Length;i++) ret.Append(SC_data.biome_memories[ln][i]);
-			SC_data.biome_memories[ln] = ret.ToString();
-		}
-		else
-			SC_control.SendMTP("/TryInsertBiome "+SC_control.connectionID+" "+ulam+" "+biome);
-	}
-	char Num31ToChar(int num)
-	{
-		if(num < 10) return (char)(48+num);
-		return (char)(55+num);
-	}
-	int CharToNum31(char ch)
-	{
-		if(ch=='-') return -1;
-		int num = (int)ch;
-		if(num < 65) return num-48;
-		else return num-55;
-	}
     public string GetBiomeStringR(int ulam)
     {
 		int i;
@@ -647,26 +641,6 @@ public class SC_fun : MonoBehaviour
 	public bool TagContains(string tags, string tag)
 	{
 		return (Array.IndexOf(tags.Replace('[','_').Replace(']','_').Replace('_',',').Split(','),tag)>-1);
-	}
-	bool HasBadNeighbor(int ulam, Vector3[] udels)
-	{
-		int[] getXY = UlamToXY(ulam);
-		int uX = getXY[0];
-		int uY = getXY[1];
-		int i;
-		
-		for(i=0;i<9;i++)
-		{
-			int ulam2 = CheckID(uX+(int)udels[i].x,uY+(int)udels[i].y);
-			string tags = GetBiomeTag(ulam2);
-			if(TagContains(tags,"structural") && GetBiomeString(ulam2)!="b0")
-			{
-				if(pseudoRandom100(ulam2+seed) > pseudoRandom100(ulam+seed)) return true;
-				if(pseudoRandom100(ulam2+seed) == pseudoRandom100(ulam+seed) && ulam2>ulam) return true;
-			}
-		}
-		
-		return false;
 	}
 	public int TrueBiomeUlam(Vector3 cenPos, Vector3 astPos)
 	{

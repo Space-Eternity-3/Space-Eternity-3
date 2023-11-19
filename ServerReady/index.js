@@ -3230,9 +3230,10 @@ wss.on("connection", function connection(ws,req)
             if(players_inside==1) scrs[i].dataY[4-2] = 1;
             else {
               sendTo(ws,"/RetGiveUpTeleport "+arg[1]+" "+bID+" 1024 X "+blivID);
-              plr.pclass[arg[1]].allowed_teleport_small = true; //might turn "true" for a longer time when player dies while trying to teleport, but it only allows for one short-distance teleportation with cheats
+              plr.pclass[arg[1]].allowed_teleport_small = true; //might turn "true" for a longer time when player dies, but it only allows for one short-distance teleportation with cheats
             }
           }
+          else if(players_inside==0) scrs[i].dataY[4-2] = 1;
           break;
         }
       }

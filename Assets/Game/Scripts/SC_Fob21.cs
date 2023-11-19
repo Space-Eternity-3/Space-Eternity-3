@@ -22,6 +22,7 @@ public class SC_Fob21 : MonoBehaviour {
 	public SC_data SC_data;
 	public SC_slots SC_slots;
 	public SC_fobs SC_fobs;
+	public SC_boss SC_boss;
 	public int max_count;
 	public int item_allow;
 	
@@ -106,7 +107,7 @@ public class SC_Fob21 : MonoBehaviour {
                     SC_boss bts = rts.st_structs[0].GetComponent<SC_boss>();
                     if(bts!=null)
                     {
-						screen_description.text = bts.BossNames[bts.type]+" "+(bts.dataID[1]+1)+"/3";
+						screen_description.text = bts.BossNames[bts.type]+" "+SC_boss.romeNumber(bts.dataID[1]+1);
 						screen_description_image.color = bts.arenaColors[bts.type];
 					}
                 }
