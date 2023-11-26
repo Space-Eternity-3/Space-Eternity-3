@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
+using UnityEngine.UI;
 
 public class SC_main_buttons : MonoBehaviour {
 
@@ -15,6 +16,8 @@ public class SC_main_buttons : MonoBehaviour {
 	public RectTransform NameField;
 	public RectTransform Name2parent, Name5parent;
 	public RectTransform ParScreen2, ParScreen5;
+
+	public Text info_rel;
 
 	public void Start()
 	{
@@ -74,6 +77,8 @@ public class SC_main_buttons : MonoBehaviour {
 		if(n==2) SC_account.warning_field5.SetParent(ParScreen2,false);
 		if(n==4) SC_account.warning_field5.SetParent(ParScreen5,false);
 
+		//Reloader
+		if(n==3) info_rel.fontSize = 33;
 		SC_account.ReloadCarets(n);
 	}
 }

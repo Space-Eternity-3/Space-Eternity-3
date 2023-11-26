@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 989
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Game
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 371}
   m_MaxSize: {x: 10000, y: 10000}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 111
+  controlID: 49
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -189,8 +189,8 @@ MonoBehaviour:
     y: 0
     width: 347
     height: 678
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: SceneView
+  m_Name: GameView
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -217,12 +217,12 @@ MonoBehaviour:
     height: 678
   m_MinSize: {x: 202, y: 221}
   m_MaxSize: {x: 4002, y: 4021}
-  m_ActualView: {fileID: 14}
+  m_ActualView: {fileID: 12}
   m_Panes:
   - {fileID: 14}
   - {fileID: 12}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -269,8 +269,8 @@ MonoBehaviour:
     y: 0
     width: 465
     height: 939
-  m_MinSize: {x: 275, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 71}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 17}
   m_Panes:
   - {fileID: 17}
@@ -343,7 +343,7 @@ MonoBehaviour:
     m_HSlider: 0
     m_VSlider: 0
     m_IgnoreScrollWheelUntilClicked: 0
-    m_EnableMouseInput: 0
+    m_EnableMouseInput: 1
     m_EnableSliderZoomHorizontal: 0
     m_EnableSliderZoomVertical: 0
     m_UniformScale: 1
@@ -410,7 +410,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 2cfbffff784f00001854000038550000685500001e56000082570000
+      m_ExpandedIDs: 0055f9ff3e55f9ffc862f9ffba63f9ffb24ffaff5a53faff9853faff2261faff1462faff5ef2fbff9cf2fbff2600fcff1801fcff7aadfcffb8adfcff26bbfcff18bcfcffccbffcff0ac0fcff94cdfcff86cefcfff8dffcff2cfbffffee4e0000784f0000525300001854000036550000525500004c57000080570000525f030092c3030020c603003cc60300eac6030032c8030042c803002ec90300acc9030064ca0300d6ca0300cecb03003acc030092cc0300cacc030080cd0300f0cd03002c0d0500760d0500980d0500c80d0500020e0500940e0500d00e0500da0e0500e40e0500fe0e0500900f0500a80f0500b60f0500e80f0500081005001610050026100500ea100500f210050018110500241105003c11050092110500bc110500161205004e120500d2120500f6120500321305007813050088130500ee130500f41305008e140500101505004215050088150500aa150500c6150500ce150500201605005e1605008c1605009a160500a8160500c61605008a170500aa170500c2170500301805003a18050068180500701805007818050084180500cc180500de180500f018050038190500741905007e190500a0830600
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -715,9 +715,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 614.3862, y: 266.78064, z: -22.52771}
+    m_Target: {x: 594.6358, y: 461.05807, z: 97.18787}
     speed: 2
-    m_Value: {x: 614.3862, y: 266.78064, z: -22.52771}
+    m_Value: {x: 594.6358, y: 461.05807, z: 97.18787}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -763,13 +763,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.08231255, y: 0.018801577, z: 0.0067722877, w: 0.9971996}
+    m_Target: {x: 0.08529369, y: 0.017326605, z: 0.006837344, w: 0.996978}
     speed: 2
-    m_Value: {x: 0.08225759, y: 0.020281324, z: 0.00664356, w: 0.99638265}
+    m_Value: {x: 0.08522608, y: 0.017312871, z: 0.0068319244, w: 0.9961878}
   m_Size:
-    m_Target: 353.42535
+    m_Target: 270.48892
     speed: 2
-    m_Value: 338.2061
+    m_Value: 270.48892
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -836,22 +836,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/Game/Imported/Fonts
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets
+  - Assets/Game/Imported/Fonts
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\lenovo\Documents\GitHub\Space-Eternity-3
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 79}
-    m_SelectedIDs: ae580000
-    m_LastClickedID: 22702
-    m_ExpandedIDs: 00000000ae580000bc580000e458000000ca9a3bffffff7f
+    m_SelectedIDs: d22d0200
+    m_LastClickedID: 142802
+    m_ExpandedIDs: 00000000ac580000bc580000c005010000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -879,7 +879,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000ae580000
+    m_ExpandedIDs: 00000000ac580000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
