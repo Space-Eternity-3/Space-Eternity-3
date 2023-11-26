@@ -37,6 +37,8 @@ sysinfo.txt
 *.apk
 *.unitypackage
 ServerReady/ServerUniverse/
+ServerReady/config.json
+ServerReady/authConfig.json
 WindowsBuild/Settings/
 LinuxBuild/Settings/
 Settings/

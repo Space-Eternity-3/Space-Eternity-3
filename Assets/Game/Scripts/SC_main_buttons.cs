@@ -67,12 +67,12 @@ public class SC_main_buttons : MonoBehaviour {
 		}
 
 		//Nick field location changer
-		if(n==2) NameField.parent = Name2parent;
-		if(n==4) NameField.parent = Name5parent;
+		if(n==2) NameField.SetParent(Name2parent,false);
+		if(n==4) NameField.SetParent(Name5parent,false);
 
 		//Account warning jumper
-		if(n==2) SC_account.warning_field5.parent = ParScreen2;
-		if(n==4) SC_account.warning_field5.parent = ParScreen5;
+		if(n==2) SC_account.warning_field5.SetParent(ParScreen2,false);
+		if(n==4) SC_account.warning_field5.SetParent(ParScreen5,false);
 
 		SC_account.ReloadCarets(n);
 	}
