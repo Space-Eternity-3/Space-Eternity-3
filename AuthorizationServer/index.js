@@ -3,8 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const {createHash} = require('node:crypto');
 
-//Global variables
-var serverVersion = "1.0.0";
+const config = require("./config.json");
 
 //Websocket functions
 let connectionOptions = {
@@ -21,7 +20,12 @@ function sendToAllClients(data) {
 function sendTo(ws,req,data) {
   try{
     ws.send(data);
-    logConsole(req.socket.remoteAddress+" << "+data);
+    let client_ip;
+    if (config.useForwardedFor) {
+      client_ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+    }
+    else client_ip = req.socket.remoteAddress;
+    logConsole(client_ip+" << "+data);
   }catch{return;}
 }
 
@@ -188,9 +192,12 @@ setInterval(coSekundeFunction, 1 * 1000);
 
 //Websocket brain
 wss.on("connection", function connection(ws,req) {
-
   //Check connection limiter and add to map
-  const client_ip = req.socket.remoteAddress;
+  let client_ip;
+  if (config.useForwardedFor) {
+    client_ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+  }
+  else client_ip = req.socket.remoteAddress;
 
   if(!con_map.has(client_ip)) con_map.set(client_ip,0);
 
@@ -336,7 +343,7 @@ wss.on("connection", function connection(ws,req) {
 });
 
 //Starting server
-console.log("Communication version: " + serverVersion + "\nPort: "+connectionOptions.port+"\nStarting authorization server for SE3...");
+console.log("\nPort: "+connectionOptions.port+"\nStarting authorization server for SE3...");
 
 var reservedServerNicknames = getAllTxtFiles("./RegisteredServers/");
 var i,lngt=reservedServerNicknames.length;
