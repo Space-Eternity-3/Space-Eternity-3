@@ -34,8 +34,6 @@ craftings
 		1: stone(4) + magnetic_stone(2) -> storage;
 		2: stone_with_crystals(3) + stone_drill -> driller;
 		3: gold(3) + copper(2) -> respawn;
-		4: stone -> small_amethyst(999);
-		5: stone -> copper_bullet(9999);
 	}
 	<Category>4
 	{
@@ -114,7 +112,7 @@ drill_loot
 	copper: copper(92%) + turbo_element(8%);
 	gold: gold(30%);
 	grass: bush(70%) + stone(22%) + magic_element(8%);
-	amethyst: small_amethyst(30%) + power_element(5,5%);
+	amethyst: small_amethyst(30%) + power_element(4%);
 	coal: coal(100%);
 	magnetic: magnetic_stone(100%);
 	red: red_stone(100%);
@@ -198,7 +196,7 @@ gameplay
 	at_impulse_power_regenerate_multiplier: 1;
 	at_impulse_time: 0,4;
 	at_impulse_speed: 70;
-	at_impulse_damage: 8;
+	at_impulse_damage: 10;
 	at_illusion_power_regenerate_multiplier: 1;
 	at_illusion_power_use_multiplier: 2;
 	at_unstable_normal_avarage_time: 1,5;
@@ -361,7 +359,7 @@ generator_settings
 	{
 		chance: 4%;
 		settings: [
-			structural, struct=4, spawn,
+			structural, struct=4,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
 			density = 100%,

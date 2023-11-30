@@ -62,8 +62,7 @@ const default_config = {
 	"banned_players": [],
 	"banned_ips": [],
 	"anti_cheat": {
-		"max_movement_per_period": 20,
-		"period_in_ticks": 10,
+    "max_movement_speed": 100,
 		"bullet_spawn_allow_radius": 3
 	}
 };
@@ -211,6 +210,9 @@ var verF;
 var connectionAddress = "IP or DNS + port";
 if(config.require_se3_account) connectionAddress = "se3://" + authConfig.server_name;
 
+var IPv4s = [];
+var activeConnections = [];
+
 var boss_damages = [0,0,0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,0,0 ,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var other_bullets_colliders = [0,0.14,0.14,0.12,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.14,0.08 ,1.68,0.25,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
 var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,1 ,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
@@ -309,8 +311,7 @@ class CPlayer {
   }
   DrillReady(pid) {
     var mined = drillItemGet(this.drill_asteroid,0);
-    if(mined==0) return;
-    this.drill_list.push(mined);
+    if(mined!=0) this.drill_list.push(mined);
     sendTo(se3_ws[pid],"/RetDrillReady "+mined+" "+this.drill_group+" X X");
   }
   DrillGet(pid,item,slot) {
@@ -355,7 +356,7 @@ class CPlayer {
     else sendTo(se3_ws[this.gpid],"/RetTreasureLoot "+plr.pclass[this.gpid].DarkTreasureNextDrops[3]+" "+treasure_type+" X X");
   }
   PosChangeAdd(distance) {
-    if(this.last_pos_changes.length >= config.anti_cheat.period_in_ticks) this.last_pos_changes.shift();
+    if(this.last_pos_changes.length >= 10) this.last_pos_changes.shift();
     this.last_pos_changes.push(distance);
   }
   PosChangeSum() {
@@ -2815,7 +2816,7 @@ function updateHasSense(before,after,pid,flags)
     
     if(flags[3]!="T") {
       plr.pclass[pid].PosChangeAdd(position_change);
-      if(plr.pclass[pid].PosChangeSum() > config.anti_cheat.max_movement_per_period) return false;
+      if(plr.pclass[pid].PosChangeSum()*5 > config.anti_cheat.max_movement_speed) return false;
     }
     else {
       if(position_change > 150 || !plr.pclass[pid].allowed_teleport_small) return false;
@@ -2859,9 +2860,11 @@ wss.on("connection", function connection(ws,req)
   const client_ip = req.socket.remoteAddress;
 
   //IP bans execute
+  var retbol = false;
   config.banned_ips.forEach(function(ip){
-    if(client_ip.endsWith(ip)) { ws.close(); return; };
+    if(client_ip.endsWith(ip)) { ws.close(); retbol=true; };
   });
+  if(retbol) return;
 
   //Connection limiter (+)
   if(!con_map.has(client_ip)) con_map.set(client_ip,0);
@@ -2901,6 +2904,12 @@ wss.on("connection", function connection(ws,req)
 
     if (arg[0] == "/AllowConnection") // 1[nick] 2[RedVersion] 3[ConID]
     {
+      //IP bans execute 2
+      config.banned_ips.forEach(function(ip){
+        if(client_ip.endsWith(ip)) { ws.close(); retbol = true; };
+      });
+      if(retbol) return;
+
       if(!VerifyCommand(arg,["nick","short","EndID"])) return;
 
       var bV = arg[2] != serverRedVersion;
@@ -2961,6 +2970,7 @@ wss.on("connection", function connection(ws,req)
           );
           se3_ws[i] = ws;
           se3_wsS[i] = "menu";
+          IPv4s[i] = client_ip;
           console.log(hourHeader + plr.nicks[i] + " connected: " + i + "");
           return;
         }
@@ -5008,6 +5018,12 @@ function listenForMessages()
           config.banned_players.push(arg[1]);
           console.log("Banned player: "+arg[1]);
           saveConfig();
+
+          var indof = plr.nicks.indexOf(arg[1]);
+          if(indof!=-1 && !nickWrong(arg[1])) {
+            kick(indof);
+            console.log("Kicked player: "+arg[1]);
+          }
         }
         else console.log("This player is already banned.");
       }
@@ -5032,6 +5048,13 @@ function listenForMessages()
           config.banned_ips.push(arg[1]);
           console.log("Banned IPv4: "+arg[1]);
           saveConfig();
+
+          var i;
+          for(i=0;i<max_players;i++) {
+            if(IPv4s[i]!=undefined)
+              if(IPv4s[i].endsWith(arg[1]) && plr.nicks[i]!="0")
+                kick(i);
+          }
         }
         else console.log("This IPv4 is already banned.");
       }
@@ -5084,7 +5107,6 @@ function listenForMessages()
       {
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1])) {
-          var tnik = plr.nicks[indof];
           kick(indof);
           console.log("Kicked player: "+arg[1]);
         }
@@ -5149,7 +5171,7 @@ function listenForMessages()
         var i,current_players=0,plmem=[];
         for(i=0;i<max_players;i++) {
           if(se3_wsS[i]!="") {
-            plmem.push("[" + i + "]: " + plr.nicks[i] + " (" + se3_wsS[i] + ")");
+            plmem.push("[" + i + "]: " + plr.nicks[i] + " (" + se3_wsS[i] + ") "+IPv4s[i]);
             current_players++;
           }
         }
@@ -5157,13 +5179,31 @@ function listenForMessages()
         for(i=0;i<max_players;i++) if(plmem[i]) console.log(plmem[i]);
         console.log("");
       }
+      else if(message=="connections")
+      {
+        console.log('\nConnections [/'+config.max_connections_per_ip+']:');
+        con_map.forEach((value, key) => {
+          console.log(`${key} (${value})`);
+        });
+        console.log("");
+      }
+      else if(arg[0]=="getip" && arg.length==2 && arg[1])
+      {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1]))
+          console.log("Player "+arg[1]+" has the following IPv4 address: "+IPv4s[indof]);
+        else
+          console.log("Couldn't find "+arg[1]+" online.");
+      }
       else if(message=="help")
       {
         console.log("\n------ List of all commands ------\n");
 
         console.log("'help' - Displays this documentation.");
         console.log("'save' - Saves server data. (happens automatically once per 15 seconds)");
-        console.log("'players' - Displays a list of all online players.");
+        console.log("'players' - Displays a list of all players.");
+        console.log("'connections' - Displays a list of all WebSocket connections.");
+        console.log("'getip [nickname]' - Displays player's IPv4 address.")
         console.log("'stop' / 'quit' / 'exit' - Stops the server.\n");
 
         console.log("'ban [nickname]' - Bans a player.");

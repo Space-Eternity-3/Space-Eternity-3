@@ -1877,12 +1877,15 @@ public class SC_control : MonoBehaviour {
 			int mined = int.Parse(arg[1]);
 			int group = int.Parse(arg[2]);
 			bool actualDrill = group==ActualDrillGroup && ActualDrillType!=-1;
-			if(actualDrill && SC_slots.InvHaveB(mined,1,true,true,true,0))
+			if(mined!=0)
 			{
-				int slot = SC_slots.InvChange(mined,1,true,true,true);
-				SendMTP("/DrillGet "+connectionID+" "+mined+" "+slot);
+				if(actualDrill && SC_slots.InvHaveB(mined,1,true,true,true,0))
+				{
+					int slot = SC_slots.InvChange(mined,1,true,true,true);
+					SendMTP("/DrillGet "+connectionID+" "+mined+" "+slot);
+				}
+				else SendMTP("/DrillGet "+connectionID+" "+mined+" 25");
 			}
-			else SendMTP("/DrillGet "+connectionID+" "+mined+" 25");
 			if(actualDrill) SendMTP("/DrillAsk "+connectionID+" "+ActualDrillType+" "+ActualDrillGroup);
 		}
 		if(arg[0]=="/RetTreasureLoot")
