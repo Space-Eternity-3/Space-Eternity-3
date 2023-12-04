@@ -58,6 +58,7 @@ public class SC_data : MonoBehaviour
     public string volume="0,5";
 	public string music="0,5";
 	public string compass_mode="0";
+    public string has_played="0";
     public string[] TempFileConID = new string[11];
     public string[,] UniverseX = new string[8,3];
 
@@ -485,6 +486,7 @@ public class SC_data : MonoBehaviour
             else dataSourceStorage=sr.ReadLine();
 			music=float.Parse(sr.ReadLine())+"";
 			compass_mode=int.Parse(sr.ReadLine())+"";
+            has_played=int.Parse(sr.ReadLine())+"";
 
             CloseRead();
             if(menu) DatapackTranslate();
@@ -676,6 +678,7 @@ public class SC_data : MonoBehaviour
             else SaveLineCrLf(dataSource);
 			SaveLineCrLf(music);
 			SaveLineCrLf(compass_mode);
+            SaveLineCrLf(has_played);
 
             CloseWrite();
             

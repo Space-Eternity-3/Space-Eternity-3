@@ -1,15 +1,15 @@
 New features (gameplay):
 
-- added "copper facilities", (temporarily disabled)
+nothing yet :)
 
 New features (technical):
 
 - chat added, press "T" or "/" to send a message, press F2 to hide all messages instantly
 - added SE3 accounts, you can register or login in main menu
 - added nickname-protection system on servers based on SE3 accounts, enable 'require_se3_account' in config.json
-- added whitelist system for servers
-- added banned players list for servers
-- added banned IPs list for servers
+- added command system on servers
+- added whitelist and banlist on servers
+- added "First Time in SE3" window
 
 Old feature changes:
 
@@ -17,7 +17,6 @@ Old feature changes:
 - drill efficiency upgrade nerfed +15% -> +12%
 - all craftings reworked, check in game for details
 - stone collider is now bigger, so it's easier to collect it
-- boss damage sound volume reduced: 0,35 -> 0,3 + pitch changed
 
 Artistic changes:
 
@@ -28,6 +27,7 @@ Artistic changes:
 - asteroid and wall textures reworked, there are no pixels visible now
 - reworked SE3 logo and added version subtitle to it
 - font changed everywhere
+- boss damage sound volume reduced: 0,35 -> 0,3 + pitch changed
 
 UI changes:
 

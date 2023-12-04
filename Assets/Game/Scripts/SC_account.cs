@@ -32,6 +32,8 @@ public class SC_account : MonoBehaviour
     public bool use_local_authorization = false;
     public string authorizationServer = "ws://localhost:27683";
     public string accountPage = "se3.page";
+    public string tutorialPage = "se3.page";
+    public string trailerPage = "se3.page";
 
     public bool logged = false;
     public bool confirming = false;
@@ -168,13 +170,7 @@ public class SC_account : MonoBehaviour
     }
     public void _More()
     {
-        UnityEngine.Debug.Log("Sending to "+accountPage);
-        ProcessStartInfo psi = new ProcessStartInfo
-        {
-            FileName = accountPage,
-            UseShellExecute = true
-        };
-        Process.Start(psi);
+        SendToPage(accountPage);
     }
     public void _CloseConditional()
     {
@@ -295,5 +291,27 @@ public class SC_account : MonoBehaviour
         if(n==4) IF_p1.textComponent.fontSize = 40;
         if(n==4) IF_p2.textComponent.fontSize = 40;
         if(n==2 || n==4) IF_n1.textComponent.fontSize = 40;
+    }
+    public void GoToTutorial()
+    {
+        SendToPage(tutorialPage);
+    }
+    public void GoToTrailer()
+    {
+        SendToPage(trailerPage);
+    }
+    public void DiscardHowToPlay()
+    {
+        SC_data.has_played = "1";
+    }
+    public void SendToPage(string s)
+    {
+        UnityEngine.Debug.Log("Sending to "+s);
+        ProcessStartInfo psi = new ProcessStartInfo
+        {
+            FileName = s,
+            UseShellExecute = true
+        };
+        Process.Start(psi);
     }
 }
