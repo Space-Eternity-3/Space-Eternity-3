@@ -30,18 +30,7 @@ public class SC_backpack : MonoBehaviour
 
         if(yy>0&&!all) yy=1;
         
-		if(!(n>=15 && n!=17))
-		{
-			if(yy!=0&&SC_slots.InvHaveB(xx,1,true,false,true,0)&&SC_slots.InvHaveB(xx,-yy,false,true,true,0))
-			{
-				int slI = SC_slots.InvChange(xx,yy,true,false,true);
-				int slB = SC_slots.InvChange(xx,-yy,false,true,true);
-				
-				if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+yy+" "+slI+" "+slB);
-			}
-			else SC_slots.InvHaveB(-1,-1,true,true,false,2);
-		}
-		else
+		if(n>=15 && n!=17)
 		{
 			if(yy!=0&&SC_slots.InvHaveB(xx,1,true,false,true,0)&&SC_slots.BackpackX[n]==xx&&SC_slots.BackpackYA[n]>0)
 			{
@@ -53,7 +42,21 @@ public class SC_backpack : MonoBehaviour
 				SC_slots.BackpackYA[n] -= yy;
 				SC_slots.BackpackYB[n] -= yy;
 				SC_slots.PopInv(n+9,-1);
-				if(n==15) SC_control.power_V = 0f;
+				if(n==15) {
+                    SC_control.power_V = 0f;
+                    if(SC_control.impulse_enabled) SC_control.RemoveImpulse();
+                }
+				
+				if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+yy+" "+slI+" "+slB);
+			}
+			else SC_slots.InvHaveB(-1,-1,true,true,false,2);
+		}
+        else
+		{
+			if(yy!=0&&SC_slots.InvHaveB(xx,1,true,false,true,0)&&SC_slots.InvHaveB(xx,-yy,false,true,true,0))
+			{
+				int slI = SC_slots.InvChange(xx,yy,true,false,true);
+				int slB = SC_slots.InvChange(xx,-yy,false,true,true);
 				
 				if((int)Communtron4.position.y==100) SC_control.SendMTP("/Backpack "+SC_control.connectionID+" "+xx+" "+yy+" "+slI+" "+slB);
 			}

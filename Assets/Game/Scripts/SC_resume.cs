@@ -27,7 +27,7 @@ public class SC_resume : MonoBehaviour
 				if(!bos.multiplayer)
 					bos.GiveUpSGP();
 				else
-					bos.GiveUpMTP(false);
+					bos.GiveUpMTP();
 			}
 		}
 	}

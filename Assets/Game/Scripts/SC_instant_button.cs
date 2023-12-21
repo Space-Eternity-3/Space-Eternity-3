@@ -88,23 +88,6 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
 				if(index==2) SC_resume.Quit();
                 if(index==3) SC_resume.GiveUp();
 			}
-            if(ID==12) SC_account.RemoveWarning();
-        }
-        else if(mode==1)
-        {
-            if(ID==4) SC_backpack.Select(index,false);
-            if(ID==5)
-			{
-				if(!special)
-                {
-                    if(SC_bp_upg.state==1) SC_backpack.Import(index,false);
-                    if(SC_bp_upg.state==2) SC_backpack.ImportJunk(index,false);
-                }
-				else SC_backpack.ImportArt(index);
-			}
-        }
-        if(mode==0 || mode==1)
-        {
             if(ID==11) if(button.interactable && button.enabled)
             {
                 SC_structure rts = transform.root.GetComponent<SC_structure>();
@@ -131,6 +114,20 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
                         }
                     }
             }
+            if(ID==12) SC_account.RemoveWarning();
+        }
+        else if(mode==1)
+        {
+            if(ID==4) SC_backpack.Select(index,false);
+            if(ID==5)
+			{
+				if(!special)
+                {
+                    if(SC_bp_upg.state==1) SC_backpack.Import(index,false);
+                    if(SC_bp_upg.state==2) SC_backpack.ImportJunk(index,false);
+                }
+				else SC_backpack.ImportArt(index);
+			}
         }
     }
 }

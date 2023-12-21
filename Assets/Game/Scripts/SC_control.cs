@@ -45,6 +45,8 @@ public class SC_control : MonoBehaviour {
 	public Transform respawn_point;
 	public Text servername,pingname;
 	public Text TextConstYou;
+	public RectTransform PauseMenuRect;
+
 	float mX,mY,X,Y,F=0.3f;
 
 	public Renderer engine;
@@ -403,7 +405,10 @@ public class SC_control : MonoBehaviour {
 				}
 				power_V = 1f;
 			}
-			else InfoUp("Potion blocked",380);
+			else {
+				if(AllowingPotion("power-unlocked")) InfoUp("Potion blocked",380);
+				else InfoUp("Power bar required",380);
+			}
 
 			//Blank potion
 			if(SC_slots.InvHaving(61)) if((AllowingPotion("blank")))
@@ -727,7 +732,7 @@ public class SC_control : MonoBehaviour {
 				if((int)Communtron4.position.y!=100)
 					bos.GiveUpSGP();
 				else
-					bos.GiveUpMTP(true);
+					bos.GiveUpMTP();
 			}
 		}
 
@@ -739,7 +744,6 @@ public class SC_control : MonoBehaviour {
 		Debug.Log("Player died");
 		Screen1.targetDisplay=1;
 		Screen2.targetDisplay=1;
-		Screen3.targetDisplay=0;
 				
 		SC_invisibler.invisible = false;
 		RemoveImpulse();
@@ -790,8 +794,15 @@ public class SC_control : MonoBehaviour {
 		Instantiate(ImmortalParticles,transform.position,transform.rotation);
 		Debug.Log("Player avoided death");
 	}
+	bool scr3updated = false;
 	public void esc_press(bool bo)
 	{
+		if(!scr3updated) {
+			PauseMenuRect.localPosition = new Vector3(0f,0f,0f);
+			Screen3.enabled = false;
+			scr3updated = true;
+		}
+
 		if(bo) escaped = true;
 		pause = !pause;
 		Screen3.enabled = pause;
@@ -2021,7 +2032,8 @@ public class SC_control : MonoBehaviour {
 		
 		Screen1.targetDisplay=0;
 		Screen2.targetDisplay=0;
-		Screen3.enabled = false;
+		Screen3.enabled = true;
+		PauseMenuRect.localPosition = new Vector3(0f,10000f,0f);
 
 		worldID=(int)Communtron4.position.y;
 		worldDIR=SC_data.savesDIR+"UniverseData"+worldID+"/";

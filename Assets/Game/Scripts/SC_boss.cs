@@ -617,9 +617,8 @@ public class SC_boss : MonoBehaviour
         if(dataID[2]!=2) return;
         dataID[4] = 1;
     }
-    public void GiveUpMTP(bool killed)
+    public void GiveUpMTP()
     {
-        if(dataID[2]!=2) return;
         SC_control.SendMTP("/GiveUpTry "+SC_control.connectionID+" "+bID);
     }
     Vector3 NextToRandomGate()

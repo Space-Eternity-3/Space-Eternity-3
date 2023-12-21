@@ -63,7 +63,8 @@ const default_config = {
 	"banned_ips": [],
 	"anti_cheat": {
     "max_movement_speed": 100,
-		"bullet_spawn_allow_radius": 3
+		"bullet_spawn_allow_radius": 3,
+    "power_speculative_minimum_value": -0.2
 	}
 };
 if(!existsF("./config.json")) {
@@ -289,16 +290,13 @@ class CPlayer {
     this.last_pos_changes = [];
     this.allowed_teleport_small = false;
     this.force_teleport_respawn = false;
-    this.spam_handler = { //[last, max, wait_time, mode, kick, last_date] (TPS independent system)
-      pre_command: [0,3,0,"limit",true,0],
-      player_update: [0,60,1000,"spam",true,0],
-      impulse_start: [0,1,(GplGet("impulse_cooldown")-1)*20,"cooldown",true,0],
-      invisibility_pulse: [0,10,1000,"spam",false,0],
-    };
+    this.ctrlPower = 0;
+    this.powerRegenBlocked = false;
   }
-  DataImport(rsp_x,rsp_y) {
+  DataImport(rsp_x,rsp_y,ctrl_power) {
     this.Reset();
     this.ModifyRespawn(rsp_x,rsp_y);
+    this.ctrlPower = ctrl_power;
   }
   ModifyRespawn(rsp_x,rsp_y) {
     this.respawn_x = func.parseFloatU(rsp_x);
@@ -447,6 +445,7 @@ const scrTemplate = {
   dataX: [],
   dataY: [],
   bulCols: [],
+  givenUpPlayers: [],
   bID: -1,
   type: 0,
   posCX: 0,
@@ -1214,6 +1213,28 @@ function getProtRegenMultiplier(art)
 	else return func.parseFloatU(gameplay[17]);
 }
 
+function HealFLOAT(pid,hp)
+{
+  var artid = plr.backpack[pid].split(";")[30] - 41;
+  if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
+
+  var sth1 = plr.sHealth[pid];
+
+  var heal_size = hp+"";
+  var potHHH = func.parseFloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + func.parseFloatU(gameplay[26]);
+	if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
+	var heal=0.02*func.parseFloatU(heal_size)/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
+  if(heal<0) heal=0;
+        
+  plr.sHealth[pid] += heal;
+  if(plr.sHealth[pid]>1) plr.sHealth[pid]=1;
+
+  var sth2 = plr.sHealth[pid];
+
+  var del = ((sth2-sth1)+"").replaceAll(".",",");
+  var abl = ((sth2)+"").replaceAll(".",",");
+  sendTo(se3_ws[pid],"R "+del+" "+plr.immID[pid]+" "+plr.livID[pid]+" "+abl); //Medium type message
+}
 function DamageFLOAT(pid,dmg)
 {
   dmg = func.parseFloatU(dmg);
@@ -1502,7 +1523,7 @@ setInterval(function () { // <interval #2>
         }
       }
 
-      //Health regeneration
+      //Health regeneration & Power speculation
       for(i=0;i<max_players;i++)
       {
         if(plr.data[i]!="0" && plr.data[i]!="1" && se3_wsS[i]=="game")
@@ -1510,21 +1531,9 @@ setInterval(function () { // <interval #2>
           var artid = plr.backpack[i].split(";")[30] - 41;
           if(plr.backpack[i].split(";")[31]==0) artid = -41;
 
-          var sth1 = plr.sHealth[i];
-
-          if(plr.sHealth[i]<1 && plr.sRegTimer[i]==0)
-		      {
-			      var potHH = func.parseFloatU(plr.upgrades[i].split(";")[0]) + getProtLevelAdd(artid) + func.parseFloatU(gameplay[26]);
-			      if(potHH<-50) potHH = -50; if(potHH>56.397) potHH = 56.397;
-            var true_add = unit * getProtRegenMultiplier(artid) * func.parseFloatU(gameplay[5]) / (Math.ceil(50*Math.pow(health_base,potHH))/50);
-			      if(true_add>0) plr.sHealth[i] += true_add;
-		      }
-          if(plr.sHealth[i]>1) plr.sHealth[i]=1;
-          var sth2 = plr.sHealth[i];
-
-          var del = ((sth2-sth1)+"").replaceAll(".",",");
-          var abl = ((sth2)+"").replaceAll(".",",");
-          sendTo(se3_ws[i],"R "+del+" "+plr.immID[i]+" "+plr.livID[i]+" "+abl); //Medium type message
+          //Health regeneration
+          if(plr.sRegTimer[i]==0 && plr.sHealth[i]<1)
+            HealFLOAT(i,50 * unit * getProtRegenMultiplier(artid) * func.parseFloatU(gameplay[5]));
           
           if(plr.sRegTimer[i]>0)
 	        {
@@ -1532,6 +1541,16 @@ setInterval(function () { // <interval #2>
 			      else plr.sRegTimer[i]-=2;
 			      if(plr.sRegTimer[i]<0) plr.sRegTimer[i]=0;
 		      }
+
+          //Power speculation
+          if(plr.pclass[i].ctrlPower < config.anti_cheat.power_speculative_minimum_value) {
+            kick(i); continue;
+          }
+          if(plr.pclass[i].ctrlPower < 1 && !plr.pclass[i].powerRegenBlocked) {
+            if(artid==2) plr.pclass[i].ctrlPower += unit * func.parseFloatU(gameplay[18]); //IMPULSE
+            if(artid==3) plr.pclass[i].ctrlPower += unit * func.parseFloatU(gameplay[21]); //ILLUSION
+            if(plr.pclass[i].ctrlPower > 1) plr.pclass[i].ctrlPower = 1;
+          }
         }
       }
 
@@ -1860,8 +1879,20 @@ setInterval(function () { //<interval #3>
 }, 20);
 
 //Kick functions
-function kick(i) {
+function kick(i)
+{
+  //Player saving
+  var artid = plr.backpack[i].split(";")[30] - 41;
+  if(plr.backpack[i].split(";")[31]==0) artid = -41;
+
+  var pats = plr.data[i].split(";");
+  var power_spec = plr.pclass[i].ctrlPower;
+  if(power_spec < 0) power_spec = 0; if(power_spec > 1) power_spec = 1;
+  if([2,3].includes(artid)) pats[11] = (power_spec+"").replaceAll(".",",");
+  plr.data[i] = pats.join(";");
   SaveAllNow();
+
+  //Player cleaning
   console.log(hourHeader + plr.nicks[i] + " disconnected");
   var pom = se3_ws[i];
   se3_ws[i] = "";
@@ -2656,6 +2687,7 @@ function kill(pid)
 
   plr.pclass[pid].force_teleport_respawn = true;
   plr.pclass[pid].last_pos_changes = [];
+  plr.pclass[pid].ctrlPower = 0;
 
   if(plr.players[pid]=="0" || plr.players[pid]=="1") return;
 
@@ -2953,7 +2985,7 @@ wss.on("connection", function connection(ws,req)
           if (plr.upgrades[i] == "0") plr.upgrades[i] = "0;0;0;0;0";
           plr.sHealth[i] = func.parseFloatU(plr.data[i].split(";")[8]);
           plr.sRegTimer[i] = func.parseFloatU(plr.data[i].split(";")[10]);
-          plr.pclass[i].DataImport(plr.data[i].split(";")[6],plr.data[i].split(";")[7]);
+          plr.pclass[i].DataImport(plr.data[i].split(";")[6],plr.data[i].split(";")[7],func.parseFloatU(plr.data[i].split(";")[11]));
           SaveAllNow();
 
           plr.conID[i] = arg[3];
@@ -3053,31 +3085,46 @@ wss.on("connection", function connection(ws,req)
       var memX = func.parseFloatU(plr.data[arg[1]].split(";")[0]);
       var memY = func.parseFloatU(plr.data[arg[1]].split(";")[1]);
 
+      var hiddenFlags = "";
       plr.players[arg[1]] = censured;
-      if(censured!="1") plr.data[arg[1]] = censured;
+      if(censured!="1")
+      {
+        if(func.parseIntU(censured.split(";")[5].split("&")[1])%25==1) hiddenFlags += "T";
+        else hiddenFlags += "F";
+        plr.data[arg[1]] = censured;
+      }
+      else hiddenFlags += "F";
 
+      //Small technicals
       if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = 250;
-
       sendTo(ws,"P"+arg[3]); //Short type command
 
-      //Flags explained
+      // Flags explained
       // [0] - impulseEnabled
-      // [1] - impulseStarted
+      // [1] - impulseStarted     | POWER -= IMPULSE
       // [2] - invisibilityPulse
       // [3] - doTeleport
 
-      //flags questioning
+      // Hidden flags
+      // [0] - invisible          | POWER_REGEN_BLOCKED, POWER -= ILLUSION_USE
+
+      //Flags questioning
       var artef = getPlayerArtefact(arg[1]);
-      if(artef!=2) { arg[4][0]="F"; arg[4][1]="F"; };
-      if(artef!=3) { arg[4][2]="F"; };
+      if(artef!=2 && (arg[4][0]=="T" || arg[4][1]=="T")) {kick(arg[1]); return;} //IMPULSE
+      if(artef!=3 && (hiddenFlags[0]=="T" || arg[4][2]=="T")) {kick(arg[1]); return;} //ILLUSION
 
-      if(arg[4][1]=="T") plr.impulsed[arg[1]] = [];
+      //Flags executing
+      if(arg[4][1]=="T") {
+        plr.pclass[arg[1]].ctrlPower -= 0.2;
+        plr.impulsed[arg[1]] = [];
+      }
+      if(hiddenFlags[0]=="T") {
+        plr.pclass[arg[1]].ctrlPower -= unit * func.parseFloatU(gameplay[22]);
+      }
+      plr.pclass[arg[1]].powerRegenBlocked = (hiddenFlags[0]=="T") || (arg[4][0]=="T");
+      if(arg[4][2]=="T") sendToAllPlayers("/RetInvisibilityPulse " + arg[1] + " none X X");
 
-      if(arg[4][2]=="T") sendToAllPlayers(
-        "/RetInvisibilityPulse " + arg[1] + " none X X"
-      );
-
-      //impulse damage
+      //Impulse damage
       var j, caray = censured.split(";");
       if(caray.length>1 && arg[4][0]=="T")
       {
@@ -3196,6 +3243,7 @@ wss.on("connection", function connection(ws,req)
           {
             var gCountEnd = fobDataChange(fobID, fobIndex, "5", "-10");
             scrs[i].dataY[2-2] = 1;
+            scrs[i].givenUpPlayers = [];
             resetScr(i);
             sendToAllPlayers(
               "/RetFobsDataChange " +
@@ -3238,9 +3286,10 @@ wss.on("connection", function connection(ws,req)
           }
           if(found_me) {
             if(players_inside==1) scrs[i].dataY[4-2] = 1;
-            else {
+            else if(!scrs[i].givenUpPlayers.includes(plr.nicks[arg[1]])) {
               sendTo(ws,"/RetGiveUpTeleport "+arg[1]+" "+bID+" 1024 X "+blivID);
-              plr.pclass[arg[1]].allowed_teleport_small = true; //might turn "true" for a longer time when player dies, but it only allows for one short-distance teleportation with cheats
+              plr.pclass[arg[1]].allowed_teleport_small = true;
+              scrs[i].givenUpPlayers.push(plr.nicks[arg[1]]);
             }
           }
           else if(players_inside==0) scrs[i].dataY[4-2] = 1;
@@ -3406,8 +3455,16 @@ wss.on("connection", function connection(ws,req)
       var safeCopyB = plr.backpack[bpPlaID];
 
       if (invChangeTry(bpPlaID, bpItem, bpCount, bpSlotI))
-        if (invChangeTry(bpPlaID, bpItem, -bpCount, bpSlotB)) return;
+        if (invChangeTry(bpPlaID, bpItem, -bpCount, bpSlotB))
+        {
+          //Success
+          if(bpSlotB=="24") { //changed artefact slot
+            plr.pclass[bpPlaID].ctrlPower = 0;
+          }
+          return;
+        }
 
+      //Abort
       plr.inventory[bpPlaID] = safeCopyI;
       plr.backpack[bpPlaID] = safeCopyB;
       kick(bpPlaID);
@@ -3509,32 +3566,20 @@ wss.on("connection", function connection(ws,req)
 
       if(arg[2]=="1" || arg[2]=="2" || arg[2]=="3")
       {
-        var artid = plr.backpack[pid].split(";")[30] - 41;
-        if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
-
-        var sth1 = plr.sHealth[pid];
-
         var heal_size;
         if(arg[2]=="1") heal_size = gameplay[31];
         if(arg[2]=="2") heal_size = gameplay[39];
         if(arg[2]=="3") heal_size = "10000";
-
-        var potHHH = func.parseFloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + func.parseFloatU(gameplay[26]);
-		    if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
-		    var heal=0.02*func.parseFloatU(heal_size)/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
-        if(heal<0) heal=0;
-        
-        plr.sHealth[pid] += heal;
-        if(plr.sHealth[pid]>1) plr.sHealth[pid]=1;
-
-        var sth2 = plr.sHealth[pid];
-
-        var del = ((sth2-sth1)+"").replaceAll(".",",");
-        var abl = ((sth2)+"").replaceAll(".",",");
-        sendTo(ws,"R "+del+" "+plr.immID[pid]+" "+plr.livID[pid]+" "+abl); //Medium type message
+        HealFLOAT(arg[1],heal_size);
         sendTo(ws,"/RetHeal "+arg[1]+" "+arg[2]+" X X");
       }
-      else return;
+
+      if(arg[2]=="5" || arg[2]=="3")
+      {
+        var artid = plr.backpack[arg[1]].split(";")[30] - 41;
+        if(plr.backpack[arg[1]].split(";")[31]=="0") artid = -41;
+        if(artid==2 || artid==3) plr.pclass[arg[1]].ctrlPower = 1;
+      }
     }
     if (arg[0] == "/JunkDiscard") // 1[PlayerID] 2[Item] 3[Count]
     {
@@ -3986,6 +4031,7 @@ wss.on("connection", function connection(ws,req)
           tpl.dataX = [];
           tpl.dataY = [];
           tpl.bulCols = [];
+          tpl.givenUpPlayers = [];
           tpl.dataX = [func.parseIntU(lc3T[0]),func.parseIntU(lc3T[1])];
           for(i=2;i<=60;i++) tpl.dataY[i-2] = 0;
           var tpl2 = {x:0,y:0}; tpl2.x = tpl.posCX; tpl2.y = tpl.posCY;
@@ -5116,8 +5162,21 @@ function listenForMessages()
       {
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1])) {
-          DamageFLOAT(indof,func.parseFloatU(arg[2]));
+          var amnt = func.parseFloatU(arg[2]);
+          if(amnt>=0) DamageFLOAT(indof,amnt);
+          else HealFLOAT(indof,-amnt)
           console.log("Applied damage to player "+arg[1]+": "+arg[2]+"hp");
+        }
+        else console.log("This player is not on a server.");
+      }
+      else if(arg[0]=="heal" && arg.length==3 && arg[1] && arg[2])
+      {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1])) {
+          var amnt = func.parseFloatU(arg[2]);
+          if(amnt>=0) HealFLOAT(indof,amnt);
+          else DamageFLOAT(indof,-amnt);
+          console.log("Healed player "+arg[1]+": "+arg[2]+"hp");
         }
         else console.log("This player is not on a server.");
       }
@@ -5219,6 +5278,7 @@ function listenForMessages()
 
         console.log("'kick [nickname]' - Kicks a player.");
         console.log("'damage [nickname] [hp]' - Applies damage to a player.");
+        console.log("'heal [nickname] [hp]' - Heals a player.");
         console.log("'give [nickname] [item] [amount]' - Gives an item to a player.");
         console.log("'tp [nickname] [x] [y]' - Teleports a player to specified coordinates.");
         console.log("'tp [nickname] to [target-nickname]' - Teleports a player to another player.");

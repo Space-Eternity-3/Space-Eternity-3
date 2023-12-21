@@ -20,10 +20,13 @@ public class SC_fobs : MonoBehaviour
     public int DropID, DropCount;
     public bool PickUp;
     public bool ShotTurn, GrowTurn, GeyzerTurn;
-    public bool IsEmpty, IsStorage, IsTreasure;
-    public bool CandySource;
+    public bool IsEmpty, IsStorage, IsTreasure, IsResistant;
     public bool WindObject;
     public bool StaticStorage;
+
+    public int ResistanceSize, ResistanceCounter;
+    public Vector3 ResistanceParticleVector;
+    public Transform ResistanceParticles;
 
     public int ShotID, BulletID, GrowID, GeyzerID, ObjID, ObjID2;
     public int GrowTimeMin, GrowTimeMax;
@@ -65,6 +68,7 @@ public class SC_fobs : MonoBehaviour
     public bool lsb;
     bool started = false;
 	bool colied = false;
+    bool resisting = false;
 
     bool localRendererMem = true; //Local temp variable
     bool localRendererMem2 = true; //Memory of renderer state
@@ -480,6 +484,12 @@ public class SC_fobs : MonoBehaviour
                 SC_data.World[a,21+index*2,c]=GrowTimeLeft+"";
             }
         }
+        if(resisting)
+        {
+            if(ResistanceCounter%10==0) Instantiate(ResistanceParticles,transform.position,transform.rotation);
+            ResistanceCounter++;
+        }
+        else ResistanceCounter = 0;
     }
     bool topDistance(float minDis)
     {
@@ -562,6 +572,30 @@ public class SC_fobs : MonoBehaviour
 						SC_control.InvisiblityPulseSend();
                     }
                     Replace(0,multiplayer);
+                }
+            }
+        }
+        resisting = false;
+        if(IsResistant&&distance<15f&&Communtron1.position.z==0f&&!SC_backpack.destroyLock&&SC_push.clicked_on==0&&FobInteractable(ObjID)&&MTPblocker<=0)
+        {
+            if(Input.GetMouseButton(0)&&
+            Communtron2.position.x==0f&&Communtron3.position.y==0f)
+            {
+                resisting = true;
+                if(ResistanceCounter>=ResistanceSize)
+                {
+                    if(SC_slots.InvHaveB(DropID,1,true,true,true,1))
+                    {
+                        slot = SC_slots.InvChange(DropID,DropCount,true,true,false);
+
+                        if(multiplayer)
+                        {
+                            MTPblocker++;
+                            SendBreak(ObjID,slot); //Resistant break
+						    SC_control.InvisiblityPulseSend();
+                        }
+                        Replace(0,multiplayer);
+                    }
                 }
             }
         }
@@ -670,5 +704,6 @@ public class SC_fobs : MonoBehaviour
 			com1act=false;
             Communtron1.position+=new Vector3(1f,0f,0f);
 		}
+        resisting = false;
     }
 }

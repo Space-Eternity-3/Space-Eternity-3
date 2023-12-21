@@ -284,14 +284,6 @@ public class SC_account : MonoBehaviour
         }
         SC_data.Save("settings");
     }
-    public void ReloadCarets(int n)
-    {
-        //One time reload
-        if(n==2) IF_a1.textComponent.fontSize = 40;
-        if(n==4) IF_p1.textComponent.fontSize = 40;
-        if(n==4) IF_p2.textComponent.fontSize = 40;
-        if(n==2 || n==4) IF_n1.textComponent.fontSize = 40;
-    }
     public void GoToTutorial()
     {
         SendToPage(tutorialPage);

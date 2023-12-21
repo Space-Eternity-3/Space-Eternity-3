@@ -59,7 +59,6 @@ craftings
 		2: gold(2) -> golden_drill;
 		3: magnetic_stone(3) -> magnetic_lamp;
 		4: stone(3) + small_diamond -> stone_with_crystals;
-		5: red_stone(3) -> red_spikes;
 	}
 	<Category>7
 	{
@@ -117,7 +116,8 @@ drill_loot
 	magnetic: magnetic_stone(100%);
 	red: red_stone(100%);
 	diamond: small_diamond(2%);
-	metalic: stone(50%) + blank_element(5,5%);
+	metalic: stone(50%);
+	bone: bone(94,5%) + blank_element(5,5%);
 }
 modified_drops
 {
@@ -228,7 +228,7 @@ gameplay
 	copper_bullet_cooldown: 7;
     red_bullet_cooldown: 7;
     coal_bullet_cooldown: 7;
-    fire_bullet_cooldown: 11;
+    fire_bullet_cooldown: 10;
     unstable_bullet_cooldown: 14;
     impulse_cooldown: 10;
 
@@ -282,26 +282,22 @@ gameplay
 	<TREASURE LOOTTABLES>
 	treasure_loot:
 		8-3-6-0-1249-
-		4-1-1-1250-2499-
-		54-2-4-2500-3749-
-		40-1-1-3750-4999-
-		48-1-2-5000-5599-
-		55-1-2-5600-6799-
-		57-1-2-6800-7999-
-		10-3-7-8000-8999-
-		5-3-7-9000-9999;
+		54-2-4-1250-2499-
+		48-1-2-2500-3399-
+		55-1-2-3400-5199-
+		57-1-2-5200-6999-
+		10-4-8-7000-8499-
+		5-4-8-8500-9999;
 	dark_treasure_loot:
 		66-3-6-0-1199-
-		70-1-1-1200-2399-
-		54-2-4-2400-3599-
-		40-1-1-3600-4799-
-		33-1-3-4800-4949-
-		48-1-3-4950-5799-
-		61-1-2-5800-6799-
-		59-1-2-6800-7799-
-		71-1-1-7800-8199-
-		10-2-6-8200-9299-
-		5-3-7-9300-9999;
+		54-2-4-1200-2399-
+		48-1-3-2400-3299-
+		59-1-2-3300-4849-
+		61-1-2-4850-6399-
+		71-1-1-6400-6999-
+		10-3-7-7000-8399-
+		5-4-8-8400-9799-
+		33-1-3-9800-9999;
 }
 generator_settings
 {
@@ -317,9 +313,6 @@ generator_settings
 		<Size>9: stone(50%) + coal(20%) + grass(15%) + magnetic(15%);
 		<Size>10: stone(35%) + coal(15%) + grass(25%) + magnetic(25%);
 	}
-	
-	<---BIOMES--->
-	
 	<Hell biome> 1
 	{
 		chance: 8%;
@@ -352,9 +345,6 @@ generator_settings
 		<Size>4: grass(60%) + magnetic(34%) + gold(6%);
 		<Size>5: grass(60%) + magnetic(34%) + gold(6%);
 	}
-	
-	<---STRUCTURES--->
-	
 	<Arena> 4
 	{
 		chance: 4%;
@@ -390,6 +380,9 @@ generator_settings
 		];
 		
 		all_sizes: stoneB(100%);
+		<Size>5: bone(60%) + stoneB(40%);
+		<Size>6: bone(60%) + stoneB(40%);
+		<Size>7: bone(60%) + stoneB(40%);
 	}
 	<Dark cementery> 7
 	{
@@ -402,6 +395,9 @@ generator_settings
 		];
 		
 		all_sizes: dark(100%);
+		<Size>5: bone(60%) + dark(40%);
+		<Size>6: bone(60%) + dark(40%);
+		<Size>7: bone(60%) + dark(40%);
 	}
 	<Star> 8
 	{
@@ -420,11 +416,17 @@ generator_settings
 		chance: 0%;
 		settings: [
 			radius = 60,
-			density = 80%,
+			density = 90%,
 			priority = 24,
 		];
 		
-		all_sizes: metalicB(50%) + copperA(35%) + bedrock(15%);
+		<Size>4: metalic(100%);
+		<Size>5: metalic(100%);
+		<Size>6: bone(100%);
+		<Size>7: copperA(70%) + metalic(30%);
+		<Size>8: copperA(70%) + metalic(30%);
+		<Size>9: copperA(50%) + bedrock(50%);
+		<Size>10: bedrock(100%);
 	}
 	<max 31 biomes + default>
 }
@@ -435,7 +437,7 @@ objects_generate
 	stoneB: stone(15%) + bone(20%) + stone_tomb(24%) + treasure(6%) + dead_alien(1%) + pumpkin(1%);
 	dark: dark_stone(15%) + bone(12%) + dark_tomb(24%) + dark_treasure(6%) + lava_geyzer(8%) + gold(3%);
 	copper: copper(35%);
-	copperA: copper(35%) + packed_copper(20%);
+	copperA: copper(35%) + packed_copper(15%) + copper_chimney(5%);
 	gold: gold(25%);
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%);
 	amethyst: small_amethyst(20%) + medium_amethyst(20%) + large_amethyst(20%);
@@ -447,9 +449,9 @@ objects_generate
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	metalic: stone(35%) + metal_piece(25%);
 	metalicA: stone(35%) + metal_piece(25%) + unstable_matter(8%);
-	metalicB: stone(35%) + metal_piece(15%) + storage(25%);
 	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
 	bedrockA: bedrock_stone(30%) + packed_bedrock(15%) + unstable_matter(20%);
+	bone: bone(45%);
 	other: unstable_matter(20%);
 }
 game_translate <low-level settings>
@@ -469,6 +471,7 @@ game_translate <low-level settings>
 		10: diamond;
 		11: metalic;
 		12: bedrock;
+		13: bone;
 	}
 	Items_and_objects
 	{
@@ -486,7 +489,7 @@ game_translate <low-level settings>
 		12: bush;
 		13: alien;
 		14: big_bush;
-		15: old_pumpkin;				<not used>
+		15: copper_chimney;
 		16: magnetic_stone;
 		17: packed_stone;
 		18: packed_copper;
