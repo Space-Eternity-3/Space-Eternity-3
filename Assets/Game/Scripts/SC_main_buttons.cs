@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class SC_main_buttons : MonoBehaviour {
 
 	public Canvas[] Screens;
-	public RectTransform[] ScreenParents;
 	public SC_connection SC_connection;
 	public SC_data SC_data;
 	public SC_account SC_account;
@@ -19,31 +18,18 @@ public class SC_main_buttons : MonoBehaviour {
 	public RectTransform ParScreen2, ParScreen5;
 
 	public Text info_rel;
-	public int start_SAS = 0;
 
 	void Start()
 	{
 		Time.timeScale = 1f;
 		fullS=Screen.fullScreen;
-		SAS(-2);
+		foreach(Canvas cnv in Screens)
+			cnv.enabled = true;
 
-		if(SC_data.TempFile=="-1") start_SAS = 1;
-		if(SC_data.TempFile=="-2") start_SAS = 2;
-		if(SC_data.has_played=="0") start_SAS = 5;
-
-		foreach(RectTransform rct in ScreenParents) {
-			rct.localPosition = new Vector3(0f,10000f,0f);
-		}
-		ScreenParents[start_SAS].localPosition = new Vector3(0f,0f,0f);
-	}
-	bool screen_started = false;
-	void ScreensStartUpdate()
-	{
-		SAS(start_SAS);
-
-		foreach(RectTransform rct in ScreenParents) {
-			rct.localPosition = new Vector3(0f,0f,0f);
-		}
+		SAS(0);
+		if(SC_data.TempFile=="-1") SAS(1); //singleplayer return
+		if(SC_data.TempFile=="-2") SAS(2); //multiplayer return
+		//if(SC_data.has_played=="0") start_SAS = 5; //how to play page
 	}
 	public void Button5PermanentExit()
 	{
@@ -52,11 +38,6 @@ public class SC_main_buttons : MonoBehaviour {
 	}
 	void Update()
 	{
-		if(Input.GetMouseButtonDown(0) && !screen_started) {
-			ScreensStartUpdate();
-			screen_started = true;
-		}
-
 		if(Input.GetKeyDown(KeyCode.Escape)) SAS(0);
 		if(Input.GetKeyDown(KeyCode.F11)) fullS=!fullS;
             
@@ -84,20 +65,14 @@ public class SC_main_buttons : MonoBehaviour {
 		// -2 - all
 
 		int i,lngt=Screens.Length;
-		bool base_false = false; if(n==-2) base_false = true;
-		for(i=0;i<lngt;i++) Screens[i].enabled = base_false;
-		if(n==0)
-		{
-            SC_data.RemoveWarning();
-			SC_account.RemoveWarning();
-		}
-		if(n>=0) Screens[n].enabled=true;
+		int base_false = 1; if(n==-2) base_false = 0;
+		for(i=0;i<lngt;i++) Screens[i].targetDisplay = base_false;
+		if(n>=0) Screens[n].targetDisplay = 0;
 		if(n==3)
 		{
 			//MAIN MENU, CAN BE HERE
 			SC_settings[] SC_settings = FindObjectsOfType<SC_settings>();
-			foreach(SC_settings ss in SC_settings)
-			{
+			foreach(SC_settings ss in SC_settings) {
 				ss.valueRead();
 			}
 		}

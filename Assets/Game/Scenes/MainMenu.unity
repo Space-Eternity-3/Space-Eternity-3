@@ -40292,7 +40292,6 @@ MonoBehaviour:
   ParScreen2: {fileID: 1738348584}
   ParScreen5: {fileID: 613791062}
   info_rel: {fileID: 1548638901}
-  start_SAS: 0
 --- !u!114 &1205799744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -53655,7 +53654,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Adress
+  m_Text: Address
 --- !u!222 &1758212286
 CanvasRenderer:
   m_ObjectHideFlags: 0

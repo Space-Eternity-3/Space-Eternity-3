@@ -45,7 +45,6 @@ public class SC_control : MonoBehaviour {
 	public Transform respawn_point;
 	public Text servername,pingname;
 	public Text TextConstYou;
-	public RectTransform PauseMenuRect;
 
 	float mX,mY,X,Y,F=0.3f;
 
@@ -190,6 +189,7 @@ public class SC_control : MonoBehaviour {
 	public float at_unstable_regen3;
 	public float unstabling_max_deviation;
 	
+	public int actualTarDisp = 0; //no F1 included
 	bool escaped = false;
 	string RPU = "XXX";
 	int MTPloadedCounter=0;
@@ -259,11 +259,16 @@ public class SC_control : MonoBehaviour {
 	}
 	public void LaterUpdate()
 	{
-		Screen1.enabled = !f1;
-		Screen2.enabled = !f1;
+		//Screens visibility
+		int f1TarDisp;
+		if(!f1) f1TarDisp = actualTarDisp; else f1TarDisp = 1;
+		Screen1.targetDisplay = f1TarDisp;
+		Screen2.targetDisplay = f1TarDisp;
+
 		for(int ji=1;ji<max_players;ji++){
 			NC[ji].enabled = !f1 && (PL[ji].ArtSource % 25!=1);
 		}
+
 		List<SC_pulse_bar> spbs = SC_lists.SC_pulse_bar;
 		foreach(SC_pulse_bar spb in spbs) {
 			spb.canvas.enabled = !f1;
@@ -405,10 +410,7 @@ public class SC_control : MonoBehaviour {
 				}
 				power_V = 1f;
 			}
-			else {
-				if(AllowingPotion("power-unlocked")) InfoUp("Potion blocked",380);
-				else InfoUp("Power bar required",380);
-			}
+			else InfoUp("Potion blocked",380);
 
 			//Blank potion
 			if(SC_slots.InvHaving(61)) if((AllowingPotion("blank")))
@@ -673,7 +675,6 @@ public class SC_control : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.F1)) f1 = !f1;
 		
 		//Game pause
-		if(Screen3.enabled) f1 = false;
 		if(Input.GetKeyUp("escape"))
 		{
 			escaped = false;
@@ -742,8 +743,7 @@ public class SC_control : MonoBehaviour {
 			damageBalance = 0;
 		}
 		Debug.Log("Player died");
-		Screen1.targetDisplay=1;
-		Screen2.targetDisplay=1;
+		actualTarDisp = 1;
 				
 		SC_invisibler.invisible = false;
 		RemoveImpulse();
@@ -794,30 +794,18 @@ public class SC_control : MonoBehaviour {
 		Instantiate(ImmortalParticles,transform.position,transform.rotation);
 		Debug.Log("Player avoided death");
 	}
-	bool scr3updated = false;
 	public void esc_press(bool bo)
 	{
-		if(!scr3updated) {
-			PauseMenuRect.localPosition = new Vector3(0f,0f,0f);
-			Screen3.enabled = false;
-			scr3updated = true;
-		}
-
 		if(bo) escaped = true;
 		pause = !pause;
-		Screen3.enabled = pause;
+		if(pause) Screen3.targetDisplay = 0;
+		else Screen3.targetDisplay = 1;
 		if((int)Communtron1.position.z == 0)
 		{
 			if(pause)
-			{
-				Screen1.targetDisplay = 1;
-				Screen2.targetDisplay = 1;
-			}
+				actualTarDisp = 1;
 			else
-			{
-				Screen1.targetDisplay = 0;
-				Screen2.targetDisplay = 0;
-			}
+				actualTarDisp = 0;
 		}
 		if(pause && (int)Communtron4.position.y!=100) {Time.timeScale = 0f; timeStop = true;}
 		else {Time.timeScale = 1f; timeStop = false;}
@@ -1139,10 +1127,8 @@ public class SC_control : MonoBehaviour {
 		
 		//reducing bars
 		if(health_V>1f) health_V=1f;
-		if(turbo_V>1f) turbo_V=1f;
-		if(turbo_V<0f) turbo_V=0f;
-		if(power_V>1f) power_V=1f;
-		if(power_V<0f) power_V=0f;
+		if(turbo_V>1f) turbo_V=1f; if(turbo_V<0f) turbo_V=0f;
+		if(power_V>1f) power_V=1f; if(power_V<0f) power_V=0f;
 
 		//Bullet update
 		List<SC_bullet> buls = SC_lists.SC_bullet;
@@ -2030,10 +2016,9 @@ public class SC_control : MonoBehaviour {
 		for(j=0;j<9;j++)
 			betterInvConverted[j]=new Vector3(0f,0f,0f);
 		
-		Screen1.targetDisplay=0;
-		Screen2.targetDisplay=0;
+		actualTarDisp = 0;
 		Screen3.enabled = true;
-		PauseMenuRect.localPosition = new Vector3(0f,10000f,0f);
+		Screen3.targetDisplay = 1;
 
 		worldID=(int)Communtron4.position.y;
 		worldDIR=SC_data.savesDIR+"UniverseData"+worldID+"/";

@@ -247,7 +247,7 @@ public class SC_account : MonoBehaviour
         catch(Exception) {
             Account.interactable = false;
             connected_to_authorizer = false;
-            if(Screen5.enabled) SC_main_buttons.SAS(0);
+            if(Screen5.targetDisplay==0) SC_main_buttons.SAS(0);
             return false;
         }
         return true;

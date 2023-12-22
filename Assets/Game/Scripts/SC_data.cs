@@ -1488,6 +1488,14 @@ public class SC_data : MonoBehaviour
 	{
 		return (Array.IndexOf(tags.Replace('[','_').Replace(']','_').Replace('_',',').Split(','),tag)>-1);
 	}
+    public string TagSpecialGet(string tags, string tag)
+	{
+		string[] tagList = tags.Replace('[','_').Replace(']','_').Replace('_',',').Split(',');
+        foreach(string tg in tagList) {
+            if(tg.Split('-')[0]==tag) return tg;
+        }
+        return "empty";
+	}
     bool IntsAll(string str, int div)
     {
         string[] strs = str.Split(';');

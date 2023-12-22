@@ -44,6 +44,8 @@ UI changes:
 - locked backpack slots are now marked with text "Upgrade X"
 - there will appear text "Power bar required" when trying to use power potion and not wearing a proper artefact
 - battle can be activated only using LMB from now
+- 'adress' changed to 'address' in main menu placeholder field
+- F1 is now independent of pause menu
 
 Default datapack changes:
 
@@ -126,5 +128,5 @@ Bug fixes:
 - bullet invisible server projections were spawning one frame ahead of their real position
 - dark asteroid had not a wall variant in seon language
 - when player died in multiplayer while fighting boss alone, boss fight was still going
-- some texts could change their apparence when updating
+- some texts could change their appearence when updating
 - impulse was not ending after removing impulse artefact

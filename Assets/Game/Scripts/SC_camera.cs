@@ -80,8 +80,7 @@ public class SC_camera : MonoBehaviour {
 				SC_control.power_V=0f;
 				if(!SC_control.pause)
 				{
-					SC_control.Screen1.targetDisplay=0;
-					SC_control.Screen2.targetDisplay=0;
+					SC_control.actualTarDisp = 0;
 				}
 				SC_control.playerR.velocity=new Vector3(0f,0f,0f);
 				SC_control.living=true;

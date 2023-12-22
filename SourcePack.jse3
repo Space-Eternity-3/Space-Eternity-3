@@ -316,7 +316,9 @@ generator_settings
 	<Hell biome> 1
 	{
 		chance: 8%;
-		settings: [];
+		settings: [
+			bgcolor-150-20-0
+		];
 	
 		<Size>4: coal(100%);
 		<Size>5: coal(100%);
@@ -329,7 +331,9 @@ generator_settings
 	<Geyzer biome> 2
 	{
 		chance: 8%;
-		settings: [];
+		settings: [
+			bgcolor-20-120-0
+		];
 	
 		all_sizes: stoneA(100%);
 		<Size>5: stoneA(70%) + magneticA(30%);
@@ -411,7 +415,7 @@ generator_settings
 		
 		all_sizes: coalA(100%);
 	}
-	<Copper facility> 9
+	<Copper facilities> 9
 	{
 		chance: 0%;
 		settings: [

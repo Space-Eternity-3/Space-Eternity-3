@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 104
+  controlID: 152
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -408,23 +408,23 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
-      m_LastClickedID: 0
-      m_ExpandedIDs: 2cfbffff
+      m_SelectedIDs: 1aa30600
+      m_LastClickedID: 434970
+      m_ExpandedIDs: 7c09feff860afeffd4f2feffbe1fffff8e3bffff50d0ffff2cfbffff7a3a05001e3b0500883b05009640050014a50600
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: WorldCanvas2
+        m_OriginalName: WorldCanvas2
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: 435476
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 8}
       m_SearchString: 
@@ -715,9 +715,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -6.6659913, y: -146.86804, z: 0}
+    m_Target: {x: 529.62683, y: 440.3647, z: 3.2216797}
     speed: 2
-    m_Value: {x: -6.6659913, y: -146.86804, z: 0}
+    m_Value: {x: 529.62683, y: 440.3647, z: 3.2216797}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -763,13 +763,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.14804299, y: -0.055523112, z: -0.0005269842, w: -0.9883285}
+    m_Target: {x: -0.037157577, y: 0.007862147, z: -0.009047548, w: -1.0001346}
     speed: 2
-    m_Value: {x: -0.14791045, y: -0.055473402, z: -0.0005265124, w: -0.9874437}
+    m_Value: {x: -0.037124302, y: 0.007855106, z: -0.009039446, w: -0.9992389}
   m_Size:
-    m_Target: 30.776419
+    m_Target: 248.11295
     speed: 2
-    m_Value: 30.776419
+    m_Value: 248.11295
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -836,22 +836,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Game/Materials2/Asteroids
+    - Assets/Game/Scenes
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Game/Materials2/Asteroids
+  - Assets/Game/Scenes
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\lenovo\Documents\GitHub\Space-Eternity-3
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 116}
-    m_SelectedIDs: be8c0000
-    m_LastClickedID: 36030
-    m_ExpandedIDs: 00000000848c0000988c0000c08c000000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 79}
+    m_SelectedIDs: ce8c0000
+    m_LastClickedID: 36046
+    m_ExpandedIDs: 00000000888c00009e8c000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -879,7 +879,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000848c0000
+    m_ExpandedIDs: 00000000888c0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
