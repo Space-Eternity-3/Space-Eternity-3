@@ -10,7 +10,6 @@ New features (technical):
 - added nickname-protection system on servers based on SE3 accounts, enable 'require_se3_account' in config.json
 - added command system to server console, type 'help' for more info
 - added whitelist and banlist on servers
-- added "First Time in SE3" window
 
 Old feature changes:
 
@@ -41,7 +40,7 @@ UI changes:
 - settings credits reworked
 - reworked SE3 logo and added version subtitle to it
 - font changed everywhere
-- locked backpack slots are now marked with text "Upgrade X"
+- locked backpack slots are now marked with text "Upgrade 1/2/3/4/5"
 - there will appear text "Power bar required" when trying to use power potion and not wearing a proper artefact
 - battle can be activated only using LMB from now
 - 'adress' changed to 'address' in main menu placeholder field
@@ -113,6 +112,7 @@ c) Others
 - unstable loop sound volume reduced: 0.4 -> 0.25 (to be less annoying)
 - removed 2 junkyard messages because of wrong text wrapping
 - bullet invisible server projections do not spawn anymore as physical objects
+- biome offset system updated, updating universe may move a star and destroy part of terrain around it
 
 Bug fixes:
 
@@ -130,3 +130,4 @@ Bug fixes:
 - when player died in multiplayer while fighting boss alone, boss fight was still going
 - some texts could change their appearence when updating
 - impulse was not ending after removing impulse artefact
+- biome offset was too big in some cases, which could result in weird generation like completely overwritten or enclave biomes

@@ -31,7 +31,6 @@ public class SC_fun : MonoBehaviour
 	public List<int> GenListsB2 = new List<int>();
 	BiomeOfUlam[] mems = new BiomeOfUlam[36];
 	int currentBOU=0;
-    public float biome_sector_size;
 	public float seek_default_angle;
 	public float camera_add;
 	public bool arms_did = false;
@@ -540,33 +539,29 @@ public class SC_fun : MonoBehaviour
 
 		return got_now;
 	}
+	public int DeltaOfSize(int size)
+	{
+		if(size<=80 && size>=61) return 10;
+		if(size<=60 && size>=40) return 30;
+		if(size<=39 && size>=20) return 10;
+		return 0;
+
+		//old formula (Beta 2.1 and older):
+		//return 90f - 20*((int)(Mathf.Ceil(size/20f)));
+	}
 	public Vector3 GetBiomeMoveR(int ulam)
     {
 		string bstr=GetBiomeString(ulam);
         float size=GetBiomeSize(ulam);
 		string tags=GetBiomeTag(ulam);
-		if(size==900f || TagContains(tags,"centred")) return new Vector3(0f,0f,0f);
+		if(TagContains(tags,"centred")) return new Vector3(0f,0f,0f);
 		
 		int bint=int.Parse(GetBiomeString(ulam).Split('b')[1]);
-        string red=LocalMove(ulam);
-        float dX=0f, dY=0f;
-		float maxD=(biome_sector_size*2-20f)/2f;
-		
-		int[] ulXY = UlamToXY(ulam);
-		bool[] alXY = new bool[2]; alXY[0]=true; alXY[1]=true;
-		
-		if(true)
-		{
-			if(alXY[0]) dX = (int.Parse(red.Split(';')[0])-1)*(maxD-20f*Mathf.Ceil(size/20f));
-			if(alXY[1]) dY = (int.Parse(red.Split(';')[1])-1)*(maxD-20f*Mathf.Ceil(size/20f));
-		}
-		else
-		{
-			if(alXY[0]) dX = (int.Parse(red.Split(';')[0])-1)*(maxD-size);
-			if(alXY[1]) dY = (int.Parse(red.Split(';')[1])-1)*(maxD-size);
-		}
-		
-        return new Vector3(dX,dY,0f);
+        string[] lcMov = LocalMove(ulam).Split(';');
+		int[] locMov = {int.Parse(lcMov[0])-1, int.Parse(lcMov[1])-1};
+		int delta_move = DeltaOfSize((int)size);
+
+		return delta_move * new Vector3(locMov[0],locMov[1],0f);
     }
 	public float GetBiomeSizeR(int ulam)
     {
@@ -642,10 +637,23 @@ public class SC_fun : MonoBehaviour
 	{
 		return (Array.IndexOf(tags.Replace('[','_').Replace(']','_').Replace('_',',').Split(','),tag)>-1);
 	}
+	public bool IsBiggerPriority(int ulam1, int ulam2, int prio1, int prio2)
+	{
+		if(prio1 > prio2) return true;
+		else if(prio1 == prio2) {
+			int rnd1 = pseudoRandom100(ulam1+seed);
+			int rnd2 = pseudoRandom100(ulam2+seed);
+			if(rnd1 > rnd2) return true;
+			else if(rnd1 == rnd2) {
+				if(ulam1 > ulam2) return true;
+			}
+		}
+		return false;
+	}
 	public int TrueBiomeUlam(Vector3 cenPos, Vector3 astPos)
 	{
-		int ux = (int)(cenPos.x/biome_sector_size);
-		int uy = (int)(cenPos.y/biome_sector_size);
+		int ux = (int)(cenPos.x/100f);
+		int uy = (int)(cenPos.y/100f);
 		int i;
 		
 		Vector3[] udels = new Vector3[9];
@@ -663,35 +671,20 @@ public class SC_fun : MonoBehaviour
 		for(i=0;i<9;i++) ulams[i] = CheckID(ux+(int)udels[i].x,uy+(int)udels[i].y);
 		
 		bool[] insp = new bool[9];
-		for(i=0;i<9;i++) insp[i] = ((SC_control.Pitagoras(cenPos+GetBiomeMove(ulams[i])+biome_sector_size*udels[i]-astPos) < GetBiomeSize(ulams[i])));
+		for(i=0;i<9;i++) insp[i] = ((SC_control.Pitagoras(cenPos+GetBiomeMove(ulams[i])+100f*udels[i]-astPos) < GetBiomeSize(ulams[i])));
 	
 		int proper = 0;
 		int prr = 0;
+		
 		for(i=0;i<9;i++)
 		{
 			if(insp[i])
 			{
 				int locP = bP[int.Parse(GetBiomeString(ulams[i]).Split('b')[1])];
-				if(locP > prr)
+				if(IsBiggerPriority(ulams[i],ulams[proper],locP,prr))
 				{
 					proper = i;
 					prr = locP;
-				}
-				else if(locP == prr)
-				{
-					if(pseudoRandom100(ulams[i]+seed) > pseudoRandom100(ulams[proper]+seed))
-					{
-						proper = i;
-						prr = locP;
-					}
-					else if(pseudoRandom100(ulams[i]+seed) == pseudoRandom100(ulams[proper]+seed))
-					{
-						if(ulams[i] > ulams[proper])
-						{
-							proper = i;
-							prr = locP;
-						}
-					}
 				}
 			}
 		}
@@ -706,13 +699,13 @@ public class SC_fun : MonoBehaviour
 		//Ulam segment
 		int[] astXY = UlamToXY(ID);
 		Vector3 astPos = new Vector3(astXY[0]*10f,astXY[1]*10f,0f);
-		Vector3 BS = biome_sector_size * new Vector3(Mathf.Round(astPos.x/biome_sector_size),Mathf.Round(astPos.y/biome_sector_size),0f);
+		Vector3 BS = 100f * new Vector3(Mathf.Round(astPos.x/100f),Mathf.Round(astPos.y/100f),0f);
 		int ulam = TrueBiomeUlam(BS,astPos);
 
 		//Distance segment
 		int[] tupXY = UlamToXY(ulam);
 		
-		BS = biome_sector_size * new Vector3(tupXY[0],tupXY[1],0f);
+		BS = 100f * new Vector3(tupXY[0],tupXY[1],0f);
 		BS += GetBiomeMove(ulam);
 		
 		float dX = astPos.x - BS.x;
@@ -721,10 +714,6 @@ public class SC_fun : MonoBehaviour
 		
 		retu[0]=distance; retu[1]=ulam;
 		return retu;
-	}
-	public int GetBiomePriority(int ulam)
-	{
-		return bP[int.Parse(GetBiomeString(ulam).Split('b')[1])];
 	}
 	public void BTPT()
 	{

@@ -11,6 +11,24 @@ public class SC_bg_color : MonoBehaviour
     public SC_data SC_data;
     public SC_fun SC_fun;
 
+    struct SBiomeFC
+    {
+        public int ulam;
+        public int type;
+        public int priority;
+        public float distance;
+        public float color_weight;
+    }
+
+    Color32 MultiLerp4(Color32[] colors, float[] weights)
+    {
+        float w1 = weights[1] / (weights[0]+weights[1]);
+        float w2 = weights[3] / (weights[2]+weights[3]);
+        float w3 = (weights[2]+weights[3]) / ((weights[0]+weights[1]) + (weights[2]+weights[3]));
+        Color32 col1 = Color32.Lerp(colors[0],colors[1],w1);
+        Color32 col2 = Color32.Lerp(colors[2],colors[3],w2);
+        return Color32.Lerp(col1,col2,w3);
+    }
     void Start()
     {
         int i;
@@ -47,40 +65,68 @@ public class SC_bg_color : MonoBehaviour
 		udels[7] = new Vector3(0f,-1f,0f);
 		udels[8] = new Vector3(1f,-1f,0f);
 
-        int i;
+        int i,j;
         for(i=0;i<9;i++)
             udels[i] = pos_big + udels[i];
         
-        int[] types = new int[9];
-        float[] to_full = new float[9];
-        float[] to_emptiness = new float[9];
+        SBiomeFC[] biomeData = new SBiomeFC[9];
 
         for(i=0;i<9;i++)
         {
-            int ulam = SC_fun.CheckID((int)udels[i].x,(int)udels[i].y);
-            int type = int.Parse(SC_fun.GetBiomeString(ulam).Split('b')[1]);
-            types[i] = type;
+            biomeData[i].ulam = SC_fun.CheckID((int)udels[i].x,(int)udels[i].y);
+            biomeData[i].type = int.Parse(SC_fun.GetBiomeString(biomeData[i].ulam).Split('b')[1]);
 
             udels[i]*=100;
-            if(type==0) {
-                to_full[i] = 10000;
-                to_emptiness[i] = -10000 + gradient_size;
+            if(biomeData[i].type==0) {
+                biomeData[i].distance = 10000f;
+                biomeData[i].priority = -1;
             }
             else {
-                float radius = SC_fun.GetBiomeSize(ulam);
-                Vector3 move = SC_fun.GetBiomeMove(ulam);
-                udels[i] += move;
-                float distance = Vector3.Distance(pos,udels[i]);
-                to_full[i] = distance - radius;
-                to_emptiness[i] = -to_full[i] + gradient_size;
+                udels[i] += SC_fun.GetBiomeMove(biomeData[i].ulam);
+                biomeData[i].distance = Vector3.Distance(pos,udels[i]) - SC_fun.GetBiomeSize(biomeData[i].ulam);
+                biomeData[i].priority = SC_fun.bP[biomeData[i].type];
             }
         }
 
+        //Include only local biomes
+        List<SBiomeFC> biomes = new List<SBiomeFC>();
         for(i=0;i<9;i++)
+            if(biomeData[i].type!=0 && biomeData[i].distance < gradient_size/2) {
+                if(biomeData[i].distance < -gradient_size/2) biomeData[i].color_weight = 1f;
+                else biomeData[i].color_weight = 1f-(biomeData[i].distance + gradient_size/2)/gradient_size;
+                biomes.Add(biomeData[i]);
+            }
+        if(biomes.Count > 2) UnityEngine.Debug.LogWarning("More than 2 biomes on player.");
+
+        if(biomes.Count == 0) //Set default color
+            Background.material.color = BgColors[0];
+        else if(biomes.Count == 1) //Set mix of 2 biome colors
+            Background.material.color = Color32.Lerp(BgColors[0],BgColors[biomes[0].type],biomes[0].color_weight);
+        else if(biomes.Count == 2) //Biome overlapping handler
         {
-            //Make better colors
-            if(to_full[i]<=0)
-                Background.material.color = BgColors[types[i]];
+            //Biome 0 will have bigger priority
+            if(SC_fun.IsBiggerPriority(biomes[1].ulam,biomes[0].ulam,biomes[1].priority,biomes[0].priority))
+            {
+                SBiomeFC pom = biomes[0];
+                biomes[0] = biomes[1];
+                biomes[1] = pom;
+            }
+            bool full0 = biomes[0].color_weight==1f;
+            bool full1 = biomes[1].color_weight==1f;
+
+            if(full0) //Entirely in biome 0
+                Background.material.color = BgColors[biomes[0].type];
+            else if(full1) {//Biome 0 and 1 gradient
+                Background.material.color = Color32.Lerp(BgColors[biomes[1].type],BgColors[biomes[0].type],biomes[0].color_weight); }
+            else { //Triple meeting point
+                float x,y,x1,y1;
+                x1 = biomes[0].color_weight; x = 1-x1;
+                y1 = biomes[1].color_weight; y = 1-y1;
+                Background.material.color = MultiLerp4(
+                    new Color32[] { BgColors[biomes[0].type], BgColors[biomes[0].type], BgColors[biomes[1].type], BgColors[0] },
+                    new float[] { x1*y , x1*y1 , x*y1 , x*y }
+                );
+            }
         }
     }
 }
