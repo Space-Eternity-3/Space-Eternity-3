@@ -51,6 +51,7 @@ public class SC_fun : MonoBehaviour
 	public int[] bD = new int[32];
 	public int[] bP = new int[32];
 	public int[] bC = new int[32];
+	public int[] bS = new int[32];
 	
 	public bool[,] bbW = new bool[32,81];
 	public bool[,] bbH = new bool[32,81];
@@ -730,6 +731,7 @@ public class SC_fun : MonoBehaviour
 			bD[i] = 60; //denity [%]
 			bP[i] = 16; //priority
 			bC[i] = 0; //structure ID
+			bS[i] = 80; //color gradient default center
 			
 			for(j=0;j<=80;j++) bbW[i,j] = false;
 			for(j=0;j<=80;j++) bbH[i,j] = false;
@@ -764,8 +766,10 @@ public class SC_fun : MonoBehaviour
 				if(TagContains(tags,"min="+j)) bMI[i]=j;
 			for(j=0;j<=80;j++)
 				if(TagContains(tags,"max="+j)) bMA[i]=j;
-			for(j=0;j<=100;j++)
+			for(j=0;j<=80;j++)
 				if(TagContains(tags,"radius="+j)) {bMI[i]=j; bMA[i]=j;}
+			for(j=0;j<=80;j++)
+				if(TagContains(tags,"gradient="+j)) bS[i]=j;
 			
 			for(j=0;j<=100;j++)
 				if(TagContains(tags,"density="+j+"%")) bD[i]=j;

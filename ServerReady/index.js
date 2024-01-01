@@ -3102,7 +3102,7 @@ wss.on("connection", function connection(ws,req)
       // Flags explained
       // [0] - impulseEnabled
       // [1] - impulseStarted     | POWER -= IMPULSE
-      // [2] - invisibilityPulse
+      // [2] - invisibilityPulse (relict)
       // [3] - doTeleport
 
       // Hidden flags
@@ -3122,7 +3122,6 @@ wss.on("connection", function connection(ws,req)
         plr.pclass[arg[1]].ctrlPower -= unit * func.parseFloatU(gameplay[22]);
       }
       plr.pclass[arg[1]].powerRegenBlocked = (hiddenFlags[0]=="T") || (arg[4][0]=="T");
-      if(arg[4][2]=="T") sendToAllPlayers("/RetInvisibilityPulse " + arg[1] + " none X X");
 
       //Impulse damage
       var j, caray = censured.split(";");

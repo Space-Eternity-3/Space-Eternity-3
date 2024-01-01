@@ -7,13 +7,12 @@ public class SC_bg_color : MonoBehaviour
 {
     public bool technical_triple_point;
     public int gradient_size;
-    public int battle_range;
-    public int boss_gradient_size;
     public Color32[] BossColors = new Color32[7];
     public Color32[] BgColors = new Color32[32];
     public Renderer Background;
     public SC_data SC_data;
     public SC_fun SC_fun;
+    public SC_boss SC_boss; //global mother boss
 
     struct SBiomeFC
     {
@@ -29,31 +28,23 @@ public class SC_bg_color : MonoBehaviour
         List<SC_boss> boses = SC_fun.SC_control.SC_lists.SC_boss;
         foreach(SC_boss bos in boses)
         {
-            //Check distance
-            float fcr = bos.GetArenaFcr();
-            if(fcr >= battle_range + boss_gradient_size) continue;
-
-            //Transition between arena and space
-            float perc_1;
-            if(fcr <= battle_range) perc_1 = 1f;
-            else perc_1 = 1f - (fcr-battle_range)/boss_gradient_size;
-
-            //Transition between peace and battle
-            float perc_2 = bos.BattlePercentage();
-            if(perc_2 == 0f) continue;
-
-            return Color32.Lerp(bgcolor,BossColors[bos.type],perc_1*perc_2);
+            float rat = bos.GetTransitionFraction(bos.GetArenaFcr());
+            if(rat!=0f) return FluentLerp(bgcolor,BossColors[bos.type],rat);
         }
         return bgcolor;
+    }
+    Color32 FluentLerp(Color32 A, Color32 B, float perc)
+    {
+        return Color32.Lerp(A,B,SC_boss.FluentFraction(perc));
     }
     Color32 MultiLerp4(Color32[] colors, float[] weights)
     {
         float w1 = weights[1] / (weights[0]+weights[1]);
         float w2 = weights[3] / (weights[2]+weights[3]);
         float w3 = (weights[2]+weights[3]) / ((weights[0]+weights[1]) + (weights[2]+weights[3]));
-        Color32 col1 = Color32.Lerp(colors[0],colors[1],w1);
-        Color32 col2 = Color32.Lerp(colors[2],colors[3],w2);
-        return Color32.Lerp(col1,col2,w3);
+        Color32 col1 = FluentLerp(colors[0],colors[1],w1);
+        Color32 col2 = FluentLerp(colors[2],colors[3],w2);
+        return FluentLerp(col1,col2,w3);
     }
     void Start()
     {
@@ -114,7 +105,9 @@ public class SC_bg_color : MonoBehaviour
             }
             else {
                 udels[i] += SC_fun.GetBiomeMove(biomeData[i].ulam);
-                biomeData[i].distance = Vector3.Distance(pos,udels[i]) - SC_fun.GetBiomeSize(biomeData[i].ulam);
+                float gradient_size = SC_fun.GetBiomeSize(biomeData[i].ulam);
+                if(SC_fun.bS[biomeData[i].type] < gradient_size) gradient_size = SC_fun.bS[biomeData[i].type];
+                biomeData[i].distance = Vector3.Distance(pos,udels[i]) - gradient_size;
                 biomeData[i].priority = SC_fun.bP[biomeData[i].type];
             }
         }
@@ -132,7 +125,7 @@ public class SC_bg_color : MonoBehaviour
         if(biomes.Count == 0) //Set default color
             Background.material.color = BgColors[0];
         else if(biomes.Count == 1) //Set mix of 2 biome colors
-            Background.material.color = Color32.Lerp(BgColors[0],BgColors[biomes[0].type],biomes[0].color_weight);
+            Background.material.color = FluentLerp(BgColors[0],BgColors[biomes[0].type],biomes[0].color_weight);
         else if(biomes.Count == 2) //Biome overlapping handler
         {
             //Biome 0 will have bigger priority
@@ -148,7 +141,7 @@ public class SC_bg_color : MonoBehaviour
             if(full0) //Entirely in biome 0
                 Background.material.color = BgColors[biomes[0].type];
             else if(full1) {//Biome 0 and 1 gradient
-                Background.material.color = Color32.Lerp(BgColors[biomes[1].type],BgColors[biomes[0].type],biomes[0].color_weight); }
+                Background.material.color = FluentLerp(BgColors[biomes[1].type],BgColors[biomes[0].type],biomes[0].color_weight); }
             else { //Triple meeting point
                 if(technical_triple_point) SC_fun.SC_control.InfoUp("Triple point",200);
                 float x,y,x1,y1;

@@ -810,11 +810,6 @@ public class SC_control : MonoBehaviour {
 		if(pause && (int)Communtron4.position.y!=100) {Time.timeScale = 0f; timeStop = true;}
 		else {Time.timeScale = 1f; timeStop = false;}
 	}
-	public void InvisiblityPulseSend()
-	{
-		if(SC_invisibler.invisible)
-			flag_invisibility_pulse = true;
-	}
 	public void MainSaveData()
 	{
 		int z;

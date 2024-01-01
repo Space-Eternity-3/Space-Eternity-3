@@ -94,6 +94,8 @@ public class CSmoothMemory
 
 public class SC_boss : MonoBehaviour
 {
+    public bool disable_force_give_up;
+
     public Transform TestBossNick;
     public Transform Boss;
     public Transform CanvPS;
@@ -352,13 +354,29 @@ public class SC_boss : MonoBehaviour
             if(transform.GetComponent<SC_seon_remote>().SC_structure==null)
                 FixedUpdateT();
     }
+    public float FluentFraction(float f)
+    {
+        return f*f*((-2)*f+3);
+    }
+    public float GetTransitionFraction(float distance)
+    {
+        float ret = 0f;
+        if(dataID2_client==2) ret = 1f;
+        if(dataID2_client==1) ret = Mathf.Min(dataID3_client,40)/40f;
+        if(dataID2_client==3 || dataID2_client==4) ret = Mathf.Max(40-dataID3_client,0)/40f;
+        
+        if(distance < 40f) distance = 40f;
+        if(distance > 80f) distance = 80f;
+        float X = 1 - (distance-40f)/40f;
+        return FluentFraction(X*ret);
+    }
 
     void Update()
     {
+        bool in_arena_vision = InArena("vision");
         bool in_arena_range = InArena("range");
-        if(in_arena_range && dataID2_client==2) SC_control.SC_fun.camera_add = -12.5f;
-        if(in_arena_range && dataID2_client==1) SC_control.SC_fun.camera_add = -12.5f * Mathf.Min(dataID3_client,40)/40f;
-        if(in_arena_range && dataID2_client>=3) SC_control.SC_fun.camera_add = -12.5f * Mathf.Max(40-dataID3_client,0)/40f;
+        float fcr = GetArenaFcr();
+        if(in_arena_vision) SC_control.SC_fun.camera_add = -12.5f * GetTransitionFraction(fcr);
     }
 
     //Strange data, do not touch, no one understands, even creator
@@ -409,9 +427,11 @@ public class SC_boss : MonoBehaviour
         string iar="F"; if(InArena("range")) iar="T";
 
         //Force give up counter
-        if(!multiplayer && !InArena("range") && dataID[2]==2) force_give_up_counter++;
-        else force_give_up_counter = 0;
-        if(force_give_up_counter>=50) GiveUpSGP();
+        if(!disable_force_give_up) {
+            if(!multiplayer && !InArena("range") && dataID[2]==2) force_give_up_counter++;
+            else force_give_up_counter = 0;
+            if(force_give_up_counter>=50) GiveUpSGP();
+        }
 
         //Multiplayer boss refresher
         if(multiplayer && SC_control.livTime%5==0)
@@ -615,11 +635,6 @@ public class SC_boss : MonoBehaviour
         return SC_control.Pitagoras(
             (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
         );
-    }
-    public float BattlePercentage()
-    {
-        SC_seon_remote srm = gameObject.GetComponent<SC_seon_remote>();
-        return 1f - ((float)srm.current_hide) / ((float)srm.hiding_time);
     }
     public void GiveUpSGP()
     {

@@ -550,7 +550,6 @@ public class SC_fobs : MonoBehaviour
                 {
                     MTPblocker++;
                     SendPlace(hId,slot); //Fob place
-					SC_control.InvisiblityPulseSend();
                 }
 				SC_control.public_placed = true;
                 Replace(hId,multiplayer);
@@ -569,7 +568,6 @@ public class SC_fobs : MonoBehaviour
                     {
                         MTPblocker++;
                         SendBreak(ObjID,slot); //Fob break
-						SC_control.InvisiblityPulseSend();
                     }
                     Replace(0,multiplayer);
                 }
@@ -578,6 +576,8 @@ public class SC_fobs : MonoBehaviour
         resisting = false;
         if(IsResistant&&distance<15f&&Communtron1.position.z==0f&&!SC_backpack.destroyLock&&SC_push.clicked_on==0&&FobInteractable(ObjID)&&MTPblocker<=0)
         {
+            Debug.LogWarning("Resistance is not finished yet!");
+
             if(Input.GetMouseButton(0)&&
             Communtron2.position.x==0f&&Communtron3.position.y==0f)
             {
@@ -592,7 +592,6 @@ public class SC_fobs : MonoBehaviour
                         {
                             MTPblocker++;
                             SendBreak(ObjID,slot); //Resistant break
-						    SC_control.InvisiblityPulseSend();
                         }
                         Replace(0,multiplayer);
                     }
@@ -612,7 +611,6 @@ public class SC_fobs : MonoBehaviour
                     {
                         MTPblocker++;
                         SendBreak(ObjID,slot); //Storage break
-						SC_control.InvisiblityPulseSend();
                     }
                     Replace(0,multiplayer);
                 }
@@ -662,7 +660,6 @@ public class SC_fobs : MonoBehaviour
                         {
                             MTPblocker++;
                             SendBreak(ObjID,slot); //Treasure break
-						    SC_control.InvisiblityPulseSend();
                         }
                         Replace(0,multiplayer);
                     }

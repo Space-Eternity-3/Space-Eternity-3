@@ -7,6 +7,7 @@ public class SC_structure : MonoBehaviour
 {
 	public SC_fun SC_fun;
 	public SC_control SC_control;
+	public SC_boss SC_boss; //global mother boss!
 	public Transform legs;
 	public Transform Communtron1;
 	

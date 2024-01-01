@@ -181,9 +181,9 @@ public class SC_seon_remote : MonoBehaviour
         float fraction_hide = current_hide; fraction_hide /= hiding_time;
         float fraction_extension = current_extension; fraction_extension /= extending_time;
 
-        if(fraction_hide!=1f) transform.localPosition += fraction_hide * localHide;
+        if(fraction_hide!=1f) transform.localPosition += SC_structure.SC_boss.FluentFraction(fraction_hide) * localHide;
         else transform.localPosition += localHidden;
-        transform.localPosition += fraction_extension * localExtended;
-        if(fraction_hide!=1f) transform.localScale = (1f-fraction_hide) * normalScale;
+        transform.localPosition += SC_structure.SC_boss.FluentFraction(fraction_extension) * localExtended;
+        if(fraction_hide!=1f) transform.localScale = (1f-SC_structure.SC_boss.FluentFraction(fraction_hide)) * normalScale;
     }
 }

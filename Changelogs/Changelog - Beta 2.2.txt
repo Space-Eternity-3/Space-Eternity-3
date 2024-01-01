@@ -19,6 +19,8 @@ Old feature changes:
 - all craftings reworked, check in game for details
 - stone collider is now bigger, so it's easier to collect it
 - removed old pumpkin, replaced it with a copper chimney
+- invisibility pulses removed when modifing the world, trolling with illusion artefact is now easier :)
+- damage invisibility pulse time reduced: 25+3 -> 20+3
 
 Artistic changes:
 
@@ -26,9 +28,10 @@ Artistic changes:
 - fob destroy particle effect reworked
 - grass asteroid reflects less light now
 - coal asteroid and coal bullets are darker now
-- asteroid and wall textures reworked, there are no pixels visible now
+- asteroid and wall textures reworked, pixels are less noticable
 - boss damage sound volume reduced: 0,35 -> 0,3 + pitch changed
 - artefact lights changed a bit (not very noticeable)
+- all 0-1 animations (hiding, camera zoom, bgcolor etc.) are less sharp from now
 
 UI changes:
 
@@ -72,8 +75,10 @@ Default datapack changes:
 - changed seon codes in datapack
 - added bone asteroids to both types cementeries
 - treasures updated: shrinked junk loot, a bit rarer treasures
-- you can use bgcolor-X-X-X biome tags to customize background color
-- you can use boss.1.color-X-X-X biome tags to customize boss background color (see default colors [here])
+- new biome tags:
+  - use bgcolor-X-X-X biome tag to customize background color
+  - use boss.1.color-X-X-X biome tag to customize boss background color (see default colors [here])
+  - use gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
 
 Configurables:
 
@@ -134,3 +139,4 @@ Bug fixes:
 - some texts could change their appearence when updating
 - impulse was not ending after removing impulse artefact
 - biome offset was too big in some cases, which could result in weird generation like completely overwritten or enclave biomes
+- it was possible to create biomes with sizes 81-100 using datapacks (only using radius=X tag)

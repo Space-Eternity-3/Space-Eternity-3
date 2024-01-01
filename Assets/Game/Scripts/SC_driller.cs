@@ -86,7 +86,7 @@ public class SC_driller : MonoBehaviour
             {
                 drillTime = 1000000;
                 int mined = GetMined();
-                SC_Fob21.Fob2Drilled(mined);
+                if(mined!=0) SC_Fob21.Fob2Drilled(mined);
             }
             if(!drilling) drillTime = 1000000;
             drillTime--;
