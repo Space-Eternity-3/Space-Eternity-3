@@ -95,13 +95,13 @@ public class SC_universe : MonoBehaviour
             playBu.enabled=true;
             if(iuv) {
                 playT.text="Update";
-                playT.fontSize=42;
+                playT.fontSize=44;
             }
         }
         else
         {
             playT.text="Incompatible";
-            playT.fontSize=38;
+            playT.fontSize=36;
         }
     }
     void Update()

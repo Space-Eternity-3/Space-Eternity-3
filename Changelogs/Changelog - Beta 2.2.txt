@@ -2,6 +2,7 @@ New features (gameplay):
 
 - added bone asteroids
 - added copper chimneys (hidden objects, available only through datapacks)
+- added background colors dependent of biome and active boss
 
 New features (technical):
 
@@ -27,6 +28,7 @@ Artistic changes:
 - coal asteroid and coal bullets are darker now
 - asteroid and wall textures reworked, there are no pixels visible now
 - boss damage sound volume reduced: 0,35 -> 0,3 + pitch changed
+- artefact lights changed a bit (not very noticeable)
 
 UI changes:
 
@@ -39,7 +41,7 @@ UI changes:
 - in the right UI segment small letter-buttons were replaced with arrows
 - settings credits reworked
 - reworked SE3 logo and added version subtitle to it
-- font changed everywhere
+- font changed in the main menu
 - locked backpack slots are now marked with text "Upgrade 1/2/3/4/5"
 - there will appear text "Power bar required" when trying to use power potion and not wearing a proper artefact
 - battle can be activated only using LMB from now
@@ -65,21 +67,22 @@ Default datapack changes:
   - level 4: amethyst 12 -> 20
   - level 5: amethyst 20 -> 30
 - redA (id=25) object generation replaced with other (id=2) object generation
-- blank element is drillable from bone asteroid instead of metalic
+- blank element is now drillable from bone asteroid instead of metalic
 - both types of cementeries contain bone asteroids
 - changed seon codes in datapack
 - added bone asteroids to both types cementeries
 - treasures updated: shrinked junk loot, a bit rarer treasures
+- you can use bgcolor-X-X-X biome tags to customize background color
+- you can use boss.1.color-X-X-X biome tags to customize boss background color (see default colors [here])
 
 Configurables:
 
-- a lot of new config variables
-- max_players in config is set to 10 by default
+- a lot of new server config variables
 - all bosbul related commands removed from seon, they are now part of the boss object and are no longer configurable
 - removed biome tag "full"
 - added upgrade variables in gameplay segment to allow customization of upgrade prices
-- removed all structural tags except for struct=X, transferred all built-in structures into custom structures
-- added "star2" to command "summon" in seon, it summons an unfinished ghost-like ornament creature
+- removed all structural tags except for struct=X, moved all built-in structures into custom structures
+- added "star2" to command "summon" in seon, it summons a weird ornament creature
 - seon changes:
   - removed command "asteroid blocker disable"
   - added command "asteroid blocker reward" - disabled only in structure state "b3r"

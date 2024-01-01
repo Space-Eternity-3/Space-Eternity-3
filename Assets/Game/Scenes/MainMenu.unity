@@ -40275,13 +40275,6 @@ MonoBehaviour:
   - {fileID: 1706223728}
   - {fileID: 613791061}
   - {fileID: 1588741683}
-  ScreenParents:
-  - {fileID: 2099682110}
-  - {fileID: 688781332}
-  - {fileID: 1020750729}
-  - {fileID: 203902807}
-  - {fileID: 230510491}
-  - {fileID: 1263351345}
   SC_connection: {fileID: 35467495}
   SC_data: {fileID: 35467493}
   SC_account: {fileID: 466491862}
@@ -50875,7 +50868,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1581822061}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -55390,7 +55383,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1973185339}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}

@@ -5,7 +5,11 @@ using System;
 
 public class SC_bg_color : MonoBehaviour
 {
+    public bool technical_triple_point;
     public int gradient_size;
+    public int battle_range;
+    public int boss_gradient_size;
+    public Color32[] BossColors = new Color32[7];
     public Color32[] BgColors = new Color32[32];
     public Renderer Background;
     public SC_data SC_data;
@@ -20,6 +24,28 @@ public class SC_bg_color : MonoBehaviour
         public float color_weight;
     }
 
+    Color32 BossBattleLerp(Color32 bgcolor)
+    {
+        List<SC_boss> boses = SC_fun.SC_control.SC_lists.SC_boss;
+        foreach(SC_boss bos in boses)
+        {
+            //Check distance
+            float fcr = bos.GetArenaFcr();
+            if(fcr >= battle_range + boss_gradient_size) continue;
+
+            //Transition between arena and space
+            float perc_1;
+            if(fcr <= battle_range) perc_1 = 1f;
+            else perc_1 = 1f - (fcr-battle_range)/boss_gradient_size;
+
+            //Transition between peace and battle
+            float perc_2 = bos.BattlePercentage();
+            if(perc_2 == 0f) continue;
+
+            return Color32.Lerp(bgcolor,BossColors[bos.type],perc_1*perc_2);
+        }
+        return bgcolor;
+    }
     Color32 MultiLerp4(Color32[] colors, float[] weights)
     {
         float w1 = weights[1] / (weights[0]+weights[1]);
@@ -31,9 +57,12 @@ public class SC_bg_color : MonoBehaviour
     }
     void Start()
     {
-        int i;
-        for(i=0;i<32;i++) {
-            string tag = SC_data.TagSpecialGet(SC_data.BiomeTags[i],"bgcolor");
+        int i,j;
+        for(i=0;i<32;i++) for(j=-1;j<=6;j++)
+        {
+            string tag;
+            if(j==-1) tag = SC_data.TagSpecialGet(SC_data.BiomeTags[i],"bgcolor");
+            else tag = SC_data.TagSpecialGet(SC_data.BiomeTags[i],"boss."+j+".color");
             string[] tags = tag.Split('-');
             if(tags.Length < 4) continue;
             byte R=0,G=0,B=0;
@@ -44,10 +73,12 @@ public class SC_bg_color : MonoBehaviour
             }catch(Exception) {
                 continue;
             }
-            BgColors[i] = new Color32(R,G,B,255);
+            Color32 new_color = new Color32(R,G,B,255);
+            if(j==-1) BgColors[i] = new_color;
+            else BossColors[j] = new_color;
         }
     }
-    void Update()
+    void LateUpdate()
     {
         Vector3 pos = SC_fun.SC_control.player.position; pos = new Vector3(pos.x,pos.y,0f);
         Vector3 pos_big = new Vector3((float)Math.Round(pos.x/100f),(float)Math.Round(pos.y/100f),0f);
@@ -119,6 +150,7 @@ public class SC_bg_color : MonoBehaviour
             else if(full1) {//Biome 0 and 1 gradient
                 Background.material.color = Color32.Lerp(BgColors[biomes[1].type],BgColors[biomes[0].type],biomes[0].color_weight); }
             else { //Triple meeting point
+                if(technical_triple_point) SC_fun.SC_control.InfoUp("Triple point",200);
                 float x,y,x1,y1;
                 x1 = biomes[0].color_weight; x = 1-x1;
                 y1 = biomes[1].color_weight; y = 1-y1;
@@ -128,5 +160,7 @@ public class SC_bg_color : MonoBehaviour
                 );
             }
         }
+
+        Background.material.color = BossBattleLerp(Background.material.color);
     }
 }

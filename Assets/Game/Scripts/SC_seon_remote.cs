@@ -24,8 +24,8 @@ public class SC_seon_remote : MonoBehaviour
     public bool jump = true;
     public bool started_already = false;
 
-    int current_extension = 0;
-    int current_hide = 0;
+    public int current_extension = 0;
+    public int current_hide = 0;
 
     public int hiding_time = 1;
     public int extending_time = 1;

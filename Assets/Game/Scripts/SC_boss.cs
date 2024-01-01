@@ -600,17 +600,26 @@ public class SC_boss : MonoBehaviour
     }
     public bool InArena(string rngvs)
     {
-        if(mother) return false;
-        
-        float fcr = SC_control.Pitagoras(
-            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
-        );
+        float fcr = GetArenaFcr();
         bool in_arena_range = (fcr<=37f);
         bool in_arena_vision = (fcr<=80f);
 
         if(rngvs=="range") return in_arena_range;
         if(rngvs=="vision") return in_arena_vision;
         return false;
+    }
+    public float GetArenaFcr()
+    {
+        if(mother) return 999999f;
+
+        return SC_control.Pitagoras(
+            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
+        );
+    }
+    public float BattlePercentage()
+    {
+        SC_seon_remote srm = gameObject.GetComponent<SC_seon_remote>();
+        return 1f - ((float)srm.current_hide) / ((float)srm.hiding_time);
     }
     public void GiveUpSGP()
     {

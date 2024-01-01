@@ -317,7 +317,7 @@ generator_settings
 	{
 		chance: 8%;
 		settings: [
-			bgcolor-255-34-0
+			bgcolor-255-174-181,
 		];
 	
 		<Size>4: coal(100%);
@@ -332,7 +332,7 @@ generator_settings
 	{
 		chance: 8%;
 		settings: [
-			bgcolor-176-176-176
+			bgcolor-255-252-220,
 		];
 	
 		all_sizes: stoneA(100%);
@@ -343,7 +343,9 @@ generator_settings
 	<Alien biome> 3
 	{
 		chance: 8%;
-		settings: [];
+		settings: [
+			bgcolor-100-255-208,
+		];
 	
 		all_sizes: grass(60%) + magnetic(40%);
 		<Size>4: grass(60%) + magnetic(34%) + gold(6%);
@@ -353,6 +355,7 @@ generator_settings
 	{
 		chance: 4%;
 		settings: [
+			bgcolor-212-218-224,
 			structural, struct=4,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
@@ -365,6 +368,7 @@ generator_settings
 	{
 		chance: 0,4%;
 		settings: [
+			bgcolor-212-218-224,
 			structural, struct=5,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
@@ -377,6 +381,7 @@ generator_settings
 	{
 		chance: 2,7%;
 		settings: [
+			bgcolor-255-252-220,
 			structural, struct=1,
 			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 50,
@@ -392,6 +397,7 @@ generator_settings
 	{
 		chance: 1,3%;
 		settings: [
+			bgcolor-255-174-181,
 			structural, struct=2,
 			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 50,
@@ -407,6 +413,7 @@ generator_settings
 	{
 		chance: 2%;
 		settings: [
+			bgcolor-255-245-140,
 			structural, struct=3,
 			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 40,
