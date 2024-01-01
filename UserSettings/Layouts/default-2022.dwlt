@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 989
   m_ShowMode: 4
-  m_Title: Inspector
+  m_Title: Game
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -74,7 +74,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 106
+  controlID: 105
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 105
+  controlID: 104
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -222,7 +222,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 104
+  controlID: 178
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -310,7 +310,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 12128aff6a128afffc1f8affee208aff40d68affee9a8bff489b8bffdaa88bffcca98bff3e858cffe62a91ffc62495ff1cbd95ff4ac995ffa2c995ff34d795ff26d895ff623099ff4e9a9bff52229cffa88b9fffb677a0ff847fa0ff2686a0ff4e56a1ff025ea1ffa464a1ffea70a1ff5471a1ffe67ea1ffd87fa1ff7cd8a2ff40e0a2ffe2e6a2ffe864a4ffb66ca4ff5873a4ffc603a5ff9a0ba5ff3c12a5ff961ea5ffe61ea5ff782ca5ff6a2da5ffdef2a6ff2ef3a6ffc000a7ffb201a7ff56bba7ff04c3a7ffa6c9a7ffd216aeff741daeffe8deb3ff28dfb3ffbaecb3ffacedb3ffeeebb9ff6c7ebfff2c94c1ff6c94c1fffea1c1fff0a2c1ffe039c7ff203ac7ffb647c7ffac48c7ffe21ccbffb8a7d9ffd4cdddff8282deffdaa2dfff3c22efffcecbf8ff2cfbffffec5a0000964c03001c4904006e620700a4b607002ac20b005e641000729c110026c21400b0dd160060f21600080c1700a80c170006631d00a6ed1f009e1c200004ae23001ee62400ac60250064952700c46d2800446a290046a82f00aa463000545c3000506b3000ea6d3000
+      m_ExpandedIDs: 2cfbffffe4630000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -751,7 +751,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 79}
     m_SelectedIDs: c28c0000
     m_LastClickedID: 36034
-    m_ExpandedIDs: 00000000888c0000968c0000c28c00008acd2000a2cd200000ca9a3bffffff7f
+    m_ExpandedIDs: 00000000888c00009c8c000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -900,7 +900,7 @@ MonoBehaviour:
     m_ControlHash: -371814159
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 1404
+  m_LastVerticalScrollValue: 0
   m_GlobalObjectId: 
   m_InspectorMode: 0
   m_LockTracker:

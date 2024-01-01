@@ -53,10 +53,12 @@ const default_config = {
 	"universe_name": "ServerUniverse",
 	"max_players": 10,
 	"max_connections_per_ip": 10,
+  "trust_proxy": false,
 	"port": 27683,
 	"pvp": true,
 	"show_positions": true,
 	"require_se3_account": false,
+  "authorization_waiting_time": 15,
 	"whitelist_enabled": false,
 	"whitelist": [],
 	"banned_players": [],
@@ -142,8 +144,8 @@ function connectToAuthServer() {
         }
         else if(arg[0]=="/RetAuthorizeUser")
         {
-          //Add nick with conID for 8 seconds
-          waiting_authorized.push([arg[1],arg[2],8]);
+          //Add nick with conID for X seconds
+          waiting_authorized.push([arg[1],arg[2],config.authorization_waiting_time]);
         }
         else
         {
@@ -401,6 +403,8 @@ for(ki=1;ki<max_players;ki++)
     else if(kd[kj]!="pclass")
       plr[kd[kj]].push(plr[kd[kj]][0]);
   }
+
+var AlienDatabase = {};
 
 var growT = [];
 var growW = [];
@@ -1346,6 +1350,12 @@ setInterval(function () { // <interval #2>
           waiting_authorized.splice(vi,1);
           vi--; wa_lngt--;
         }
+      }
+
+      for (let vrb in AlienDatabase) {
+        AlienDatabase[vrb][1]--;
+        if (AlienDatabase[vrb][1] == 0)
+          delete AlienDatabase[vrb];
       }
     }
 
@@ -2889,7 +2899,11 @@ setInterval(coSekundeFunction, 1 * 1000);
 wss.on("connection", function connection(ws,req)
 {
   //get IP
-  const client_ip = req.socket.remoteAddress;
+  let client_ip;
+  if (config.trust_proxy) {
+    client_ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+  }
+  else client_ip = req.socket.remoteAddress;
 
   //IP bans execute
   var retbol = false;
@@ -3200,6 +3214,7 @@ wss.on("connection", function connection(ws,req)
 
       if(arg[4]=="40") //dead alien turn
         if ( checkFobChange(arg[2], arg[3], "13", "23") || checkFobChange(arg[2], arg[3], "25", "27") ) {
+          AlienDatabase[arg[2]+";"+arg[3]] = [getBlockAt(arg[2],arg[3]),3];
           fobChange(arg[2], arg[3], "40");
           sendToAllPlayers("/RetGeyzerTurn " + arg[2] + " " + arg[3] + " X X");
         }
@@ -3769,12 +3784,15 @@ wss.on("connection", function connection(ws,req)
 
       var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
 
-      if ((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) ||
-         (["13", "23", "25", "27"].includes(fStartFob1) &&
-         checkFobChange(fUlamID, fPlaceID, "40", "-1"))) && !overolded)
+      var adb = AlienDatabase[fUlamID+";"+fPlaceID];
+      var udb = "NONE"; if(adb!=undefined) udb = adb[0]+"";
+      var mTurnable = (checkFobChange(fUlamID, fPlaceID, "40", "-1") && [fStartFob1,fStartFob2].includes(udb));
+
+      if ((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) || mTurnable) && !overolded)
       {
         if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
         {
+          if(mTurnable) delete AlienDatabase[fUlamID+";"+fPlaceID];
           if(treasure_type!=-1) plr.pclass[fPlayerID].TreasureArrayUpdate(treasure_type,true);
           fobChange(fUlamID, fPlaceID, "0");
           fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
