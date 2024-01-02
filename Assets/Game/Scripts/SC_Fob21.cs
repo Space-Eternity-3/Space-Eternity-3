@@ -188,10 +188,15 @@ public class SC_Fob21 : MonoBehaviour {
 	}
 	public void SaveSGP()
 	{
+		string s_item="", s_count="";
+		if(count!=0) {
+			s_item = item+"";
+			s_count = count+"";
+		}
 		string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
         int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]);
-		SC_data.World[a,21+uID*2,c]=item+"";
-		SC_data.World[a,22+uID*2,c]=count+"";
+		SC_data.World[a,21+uID*2,c]=s_item;
+		SC_data.World[a,22+uID*2,c]=s_count;
 	}
 	bool Req(int mode)
 	{

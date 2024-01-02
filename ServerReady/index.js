@@ -1609,30 +1609,34 @@ setInterval(function () { // <interval #2>
       //[Grow]
        var i,
        lngt = growT.length;
-      for (i = 0; i < lngt; i++) {
+      for (i = 0; i < lngt; i++)
+      {
         growW[i]--;
-        if (growW[i] > 0) {
-         var ulam = growT[i].split("g")[0];
+        if (growW[i] > 0)
+        {
+          var ulam = growT[i].split("g")[0];
           var place = growT[i].split("g")[1];
-         var det = asteroidIndex(ulam);
+          var det = asteroidIndex(ulam);
           var tume = chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)];
           tume -= 5;
 
-         if (tume > 0) {
+          if (tume > 0) {
             chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] = tume;
-          } else {
-           serverGrow(ulam, place);
-           growT.remove(i);
+          }
+          else {
+            serverGrow(ulam, place);
+            growT.remove(i);
             growW.remove(i);
             lngt--;
             i--;
           }
-        } else {
+        }
+        else {
           growT.remove(i);
           growW.remove(i);
-         lngt--;
-         i--;
-       }
+          lngt--;
+          i--;
+        }
       }
 
       //[Driller]
@@ -2366,8 +2370,7 @@ function serverGrow(ulam, place) {
     if (!["5", "6", "25"].includes(bef)) return;
     chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] = "";
     chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] = "";
-    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] =
-      growSolid[bef].split(";")[2];
+    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] = growSolid[bef].split(";")[2];
     sendToAllPlayers("/RetGrowNow " + ulam + " " + place + " X X");
   }
 }
@@ -2424,7 +2427,8 @@ function drillGet(det,stackedItem) {
   else typp = typp % 16;
   return drillItemGet(typp,stackedItem);
 }
-function growActive(ulam) {
+function growActive(ulam)
+{
   var i, block, tim, ind;
   var tab = [];
   var blockTab = [];
@@ -2436,14 +2440,15 @@ function growActive(ulam) {
   if(typpu<0) typpu = 0;
   else typpu = typpu % 16;
 
-  for (i = 0; i < 20; i++) {
+  for (i = 0; i < 20; i++)
+  {
     block = blockTab[i];
-    if (
-      ["25"].includes(block) ||
-      (["5", "6"].includes(block) && typpu == 6)
-    ) {
-      if (!growT.includes(ulam + "g" + i)) {
-        if (chunk_data[det[0]][det[1]][21 + 2 * i] == "") {
+    if(["25"].includes(block) || (["5", "6"].includes(block) && typpu == 6))
+    {
+      if (!growT.includes(ulam + "g" + i))
+      {
+        if (chunk_data[det[0]][det[1]][21 + 2 * i] == "")
+        {
           tab = growSolid[block].split(";");
           tim = func.randomInteger(tab[0], tab[1]);
           chunk_data[det[0]][det[1]][21 + 2 * i] = tim;
@@ -2537,7 +2542,7 @@ function checkFobChange(ulam, place, start1, start2) {
   if(chunk_data[det[0]][det[1]][0]=="1024") return false;
 
   if (
-    chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] != "" &&
+    !["","0"].includes(chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)]) &&
     (start1 == 21 || start2 == 21) //2 not required, driller item might disappear
   ) return false;
 
@@ -3690,7 +3695,7 @@ wss.on("connection", function connection(ws,req)
 
       var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
 
-      if (checkFobChange(fUlamID, fPlaceID, "0", "-1") && !overolded)
+      if (checkFobChange(fUlamID, fPlaceID, "0", "48") && !overolded)
       {
         if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
         {

@@ -112,6 +112,7 @@ b) Server run
 - bullet removing after kick is now on server side, client bullets no longer disappear when returning to menu
 - config.json and authConfig.json files will now generate automatically
 - impulse and invisibility power anti-cheat implemented
+- from the server point of view unstable matter is an empty space too (replacable with other fobs)
 
 c) Others
 - settings format changed to fit official account text field data (username and password)
@@ -121,6 +122,7 @@ c) Others
 - removed 2 junkyard messages because of wrong text wrapping
 - bullet invisible server projections do not spawn anymore as physical objects
 - biome offset system updated, updating universe may move a star and destroy part of terrain around it
+- asteroid blocker no longer works for geyzer turn and bullet turn
 
 Bug fixes:
 
@@ -140,3 +142,5 @@ Bug fixes:
 - impulse was not ending after removing impulse artefact
 - biome offset was too big in some cases, which could result in weird generation like completely overwritten or enclave biomes
 - it was possible to create biomes with sizes 81-100 using datapacks (only using radius=X tag)
+- singleplayer storages could break on servers
+- object growth could corrupt the world on singleplayer by removing 19th asteroid object on the asteroid

@@ -418,7 +418,7 @@ public class SC_fobs : MonoBehaviour
             bul.controller &&
             bul.gun_owner==0 &&
             bul.mode=="present" &&
-            ShotTurn && !isSeonBlocked()
+            ShotTurn
         ){
 			bul.turn_used = true; bul.MakeDestroy(false);
             if((bul.type==BulletID || BulletID==0) && (ShotID!=48 || !bul.virtuall))
@@ -463,33 +463,28 @@ public class SC_fobs : MonoBehaviour
             SC_snd_loop.sound_pos[loopSndID] = transform.position;
 
         if(mother) return;
-        if(inGeyzer>0&&(GeyzerTurn && !isSeonBlocked()))
+
+        //Geyzer turn
+        if(inGeyzer>0 && GeyzerTurn)
         {
             GeyzerTime++;
             if(GeyzerTime>=140)
             {
-                if(!multiplayer) Replace(GeyzerID,multiplayer);
+                if(!multiplayer) { Replace(GeyzerID,multiplayer); return; }
                 else SC_control.SendMTP("/GeyzerTurnTry "+SC_control.connectionID+" "+ID+" "+index+" "+GeyzerID);
             }
         }
-        if(GrowTurn&&!multiplayer)
+
+        //Grow turn
+        if(GrowTurn && !multiplayer)
         {
-            if(GrowTimeLeft==0) Replace(GrowID,multiplayer);
+            if(GrowTimeLeft==0) { Replace(GrowID,multiplayer); return; }
             GrowTimeLeft--;
 
-            if(!multiplayer)
-            {
-                string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
-                int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]);
-                SC_data.World[a,21+index*2,c]=GrowTimeLeft+"";
-            }
+            string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
+            int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]);
+            SC_data.World[a,21+index*2,c]=GrowTimeLeft+"";
         }
-        if(resisting)
-        {
-            if(ResistanceCounter%10==0) Instantiate(ResistanceParticles,transform.position,transform.rotation);
-            ResistanceCounter++;
-        }
-        else ResistanceCounter = 0;
     }
     bool topDistance(float minDis)
     {
@@ -570,31 +565,6 @@ public class SC_fobs : MonoBehaviour
                         SendBreak(ObjID,slot); //Fob break
                     }
                     Replace(0,multiplayer);
-                }
-            }
-        }
-        resisting = false;
-        if(IsResistant&&distance<15f&&Communtron1.position.z==0f&&!SC_backpack.destroyLock&&SC_push.clicked_on==0&&FobInteractable(ObjID)&&MTPblocker<=0)
-        {
-            Debug.LogWarning("Resistance is not finished yet!");
-
-            if(Input.GetMouseButton(0)&&
-            Communtron2.position.x==0f&&Communtron3.position.y==0f)
-            {
-                resisting = true;
-                if(ResistanceCounter>=ResistanceSize)
-                {
-                    if(SC_slots.InvHaveB(DropID,1,true,true,true,1))
-                    {
-                        slot = SC_slots.InvChange(DropID,DropCount,true,true,false);
-
-                        if(multiplayer)
-                        {
-                            MTPblocker++;
-                            SendBreak(ObjID,slot); //Resistant break
-                        }
-                        Replace(0,multiplayer);
-                    }
                 }
             }
         }
