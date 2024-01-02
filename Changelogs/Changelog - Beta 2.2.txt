@@ -11,6 +11,8 @@ New features (technical):
 - added nickname-protection system on servers based on SE3 accounts, enable 'require_se3_account' in config.json
 - added command system to server console, type 'help' for more info
 - added whitelist and banlist on servers
+- added fob72 (total vacuum) which is a removed fob place, used in arenas from now
+  - might result in strange structure of old arenas
 
 Old feature changes:
 
@@ -67,8 +69,8 @@ Default datapack changes:
   - level 1: gold 3 -> 5
   - level 2: gold 6 -> 10
   - level 3: gold 10 -> 15
-  - level 4: amethyst 12 -> 20
-  - level 5: amethyst 20 -> 30
+  - level 4: amethyst 12 -> 25
+  - level 5: amethyst 20 -> 40
 - redA (id=25) object generation replaced with other (id=2) object generation
 - blank element is now drillable from bone asteroid instead of metalic
 - both types of cementeries contain bone asteroids
@@ -121,7 +123,8 @@ c) Others
 - unstable loop sound volume reduced: 0.4 -> 0.25 (to be less annoying)
 - removed 2 junkyard messages because of wrong text wrapping
 - bullet invisible server projections do not spawn anymore as physical objects
-- biome offset system updated, updating universe may move a star and destroy part of terrain around it
+- biome offset system updated:
+  - updating universe may move a star and destroy part of terrain around it
 - asteroid blocker no longer works for geyzer turn and bullet turn
 
 Bug fixes:
@@ -144,3 +147,4 @@ Bug fixes:
 - it was possible to create biomes with sizes 81-100 using datapacks (only using radius=X tag)
 - singleplayer storages could break on servers
 - object growth could corrupt the world on singleplayer by removing 19th asteroid object on the asteroid
+- seon's sphere drill script wasn't working

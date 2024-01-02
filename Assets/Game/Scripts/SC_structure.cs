@@ -324,6 +324,7 @@ public class SC_structure : MonoBehaviour
 							ras.GetComponent<SC_drill>().type=prmaterial;
 
 						ras.GetChild(0).localScale = new Vector3(prsize,prsize,0.75f*prsize);
+						ras.GetComponent<SphereCollider>().radius = prsize/2f;
 
 						if(prmaterial==0) ras.GetChild(0).GetComponent<Renderer>().material = ras.GetComponent<SC_material>().Materials2[UnityEngine.Random.Range(0,3)];
 						else ras.GetChild(0).GetComponent<Renderer>().material = ras.GetComponent<SC_material>().Materials[prmaterial];
