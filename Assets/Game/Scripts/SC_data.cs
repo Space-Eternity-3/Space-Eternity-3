@@ -17,7 +17,6 @@ public class SC_data : MonoBehaviour
     public string savesDIR="../../saves/";
     public string datapacksDIR="./Datapacks/";
     public string gameDIR="./";
-    public TextAsset SourcePackJse3;
 
     public string worldDIR,asteroidDIR;
     int worldID=0;
@@ -25,7 +24,6 @@ public class SC_data : MonoBehaviour
     bool multiplayer;
     public bool menu;
     public bool crashed;
-    public string example=""; //Default datapack
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
@@ -33,12 +31,10 @@ public class SC_data : MonoBehaviour
     
 	bool lockData = false;
 	bool remember = false;
+    string CustomDataPath;
 
     public int[] imgID = new int[16384];
 	public int[] imgCO = new int[16384];
-
-    string CustomDataPath="DEFAULT";
-    string PreData="";
 
     public Transform Communtron4;
     public SC_control SC_control;
@@ -97,8 +93,13 @@ public class SC_data : MonoBehaviour
     public string[] translateAsteroid = new string[16];
     //---------------------------------------------
     public string version="";
-    public string dataSource="";
-    string dataSourceStorage="";
+
+    //Datapack strings
+    public TextAsset SourcePackJse3;
+    string example="";              // Static default datapack
+    string dataSource="";           // Settings.Datapack holder in MainMenu | Data source for jse3 translation
+    string PreData="";              // Emergency datapack holder
+    string dataSourceStorage="";    // Settings.Datapack holder in SampleScene
 
         string[] gpl_info = new string[]{
             
@@ -342,6 +343,9 @@ public class SC_data : MonoBehaviour
         for(i=0;i<11;i++) TempFileConID[i]="";
         for(i=0;i<4;i++) MultiplayerInput[i]="";
         for(i=0;i<8;i++) for(j=0;j<3;j++) UniverseX[i,j]="";
+        dataSource=example;
+        PreData=example;
+        dataSourceStorage=example;
     }
     void ResetAwakeWorld()
     {
@@ -351,8 +355,6 @@ public class SC_data : MonoBehaviour
         for(i=0;i<5;i++) upgrades[i]="0";
         for(i=0;i<8;i++) data[i]="";
         for(i=0;i<16000;i++) biome_memories[i]="";
-        dataSource=example;
-        dataSourceStorage=example;
     }
     void Start()
     {
@@ -404,15 +406,15 @@ public class SC_data : MonoBehaviour
         example = SourcePackJse3.text.Replace('\r',' ').Replace('\n',' ');
 		
 		int i,j,k;
-		PreData=example;
         ResetAwakeUniversal();
         ResetAwakeWorld();
         for(i=0;i<100;i++) for(j=0;j<61;j++) for(k=0;k<16;k++) World[i,j,k]="";
 		
         if(menu)
         {
-            dataSource=example;
-            DatapackTranslate();
+            PreData = example;
+            dataSource = example;
+            DatapackTranslate(); //Starting default translate DEFAULT
         }
     }
     public void WorldID_Interpretate(int n)
@@ -489,7 +491,7 @@ public class SC_data : MonoBehaviour
             has_played=int.Parse(sr.ReadLine())+"";
 
             CloseRead();
-            if(menu) DatapackTranslate();
+            if(menu) DatapackTranslate(); //Remember translate SETTINGS
         }
         prePath=GetPath("UniverseInfo")+"Universe";
         for(i=1;i<=8;i++)
@@ -512,8 +514,8 @@ public class SC_data : MonoBehaviour
                 else
                 {
                     UniverseX[i-1,0]="0";
-                    UniverseX[i-1,1]="DEFAULT~"+example;
-                    UniverseX[i-1,2]=clientVersion;
+                    UniverseX[i-1,1]="DEFAULT~unknown";
+                    UniverseX[i-1,2]="Unknown";
                 }
             }
         }
@@ -606,19 +608,18 @@ public class SC_data : MonoBehaviour
         }
 
         string[] pod_fal=(UniverseX[worldID-1,1]+"~").Split('~');
-        if(pod_fal[0]!="DEFAULT")
+        if(pod_fal[0]!="DEFAULT") // se3 -> data (custom)
         {
             string effer=pod_fal[1];
             for(i=2;i<pod_fal.Length;i++) effer+="~"+pod_fal[i];
             DatapackMultiplayerLoad(effer);
             return;
         }
-		else
+		else // jse3 -> data (default)
 		{
-			dataSource = example;
-			PreData = example;
 			remember = true;
-			DatapackTranslate();
+            PreData = example;
+            dataSource = example; DatapackTranslate(); //Default in-universe translate DEFAULT
 		}
     }
     public void CollectUpdateDatapack()
@@ -627,21 +628,22 @@ public class SC_data : MonoBehaviour
         int i;
         DirQ(datapacksDIR);
 
+        PreData = dataSource;
+
         int lngt=CustomDataPath.Length;
         string str=CustomDataPath;
         try{
             
             file=CustomDataPath;
             OpenRead(file);
-            dataSource=sr.ReadToEnd().Replace('\r',' ').Replace('\n',' ');
+            string rd = sr.ReadToEnd().Replace('\r',' ').Replace('\n',' ');
             CloseRead();
-            DatapackTranslate();
+            dataSource = rd; DatapackTranslate(); //Selector translate SELECTED
 
         }catch(Exception)
         {
             CloseRead();
-            dataSource=PreData;
-            DatapackTranslate();
+            dataSource = PreData; DatapackTranslate(); //Emergency pre translate PRE
             return;
         }
     }
@@ -669,8 +671,8 @@ public class SC_data : MonoBehaviour
             SaveLineCrLf(MultiplayerInput[1]);
             SaveLineCrLf(MultiplayerInput[2]);
             SaveLineCrLf(MultiplayerInput[3]);
-            if(!menu) SaveLineCrLf(dataSourceStorage);
-            else SaveLineCrLf(dataSource);
+            if(menu) SaveLineCrLf(dataSource);
+            else SaveLineCrLf(dataSourceStorage);
 			SaveLineCrLf(music);
 			SaveLineCrLf(compass_mode);
             SaveLineCrLf(has_played);
@@ -707,7 +709,7 @@ public class SC_data : MonoBehaviour
             {
                 path=pathPre+i+"/";
                 file=path+"UniverseInfo.se3";
-                if(UniverseX[i-1,0]!="")
+                if(UniverseX[i-1,1]!="DEFAULT~unknown" && UniverseX[i-1,0]!="")
                 {
                     DirQ(path);
 
@@ -952,17 +954,15 @@ public class SC_data : MonoBehaviour
         if(paths.Length==0) return;
         CustomDataPath = paths[0];
 
-        PreData=dataSource;
         CollectUpdateDatapack();
         Save("settings");
     }
     public void ResetDatapack()
     {
-        PreData=dataSource;
         warning_text4.text="";
         warning_field4.localPosition=new Vector3(10000f,0f,0f);
-        dataSource=example;
-        DatapackTranslate();
+        PreData=example;
+        dataSource=example; DatapackTranslate(); //Reset translate DEFAULT
         Save("settings");
     }
     public void RemoveWarning()
@@ -981,9 +981,8 @@ public class SC_data : MonoBehaviour
 
         if(dataSource!=PreData)
         {
-            dataSource=PreData;
             if(!menu && (worldID>=1 && worldID<=8)) remember = true;
-            DatapackTranslate();
+            dataSource = PreData; DatapackTranslate(); //Error translating translate PRE
         }
         else
         {

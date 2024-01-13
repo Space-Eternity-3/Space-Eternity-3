@@ -12,8 +12,8 @@ craftings
 {
 	<Category>1
 	{
-		title_image: copper;
-		1: stone(5) -> packed_copper;
+		title_image: packed_stone;
+		1: stone(5) -> packed_stone;
 		2: copper(5) -> packed_copper;
 		3: gold(5) -> packed_gold;
 		4: coal(5) -> packed_coal;
@@ -439,6 +439,14 @@ generator_settings
 		<Size>9: copperA(50%) + bedrock(50%);
 		<Size>10: bedrock(100%);
 	}
+	<Test structure> 10
+	{
+		chance: 0%;
+		settings: [
+			radius=80, structural, centred, spawn,
+			ring.inner.change ->0, struct=6
+		];
+	}
 	<max 31 biomes + default>
 }
 objects_generate
@@ -746,5 +754,62 @@ custom_structures <advanced settings>
 		summon #29 asteroid 6 2 ,49,50,,,,,,,,50,49 asteroid hide
 		summon #30 sphere 6 12 from #29 to #30 move 0 -2
 	
+	]';
+	
+	<test structure> 6: '[
+		
+		summon #0 asteroid 7 0 x move -75 0
+		summon #1 asteroid 7 1 x move -65 0
+		summon #2 asteroid 7 2 x move -55 0
+		summon #3 asteroid 7 3 x move -45 0
+		summon #4 asteroid 7 4 x move -35 0
+		summon #5 asteroid 7 5 x move -25 0
+		summon #6 asteroid 7 6 x move -15 0
+		summon #7 asteroid 7 7 x move -5 0
+		summon #8 asteroid 7 8 x move 5 0
+		summon #9 asteroid 7 9 x move 15 0
+		summon #10 asteroid 7 10 x move 25 0
+		summon #11 asteroid 7 11 x move 35 0
+		summon #12 asteroid 7 12 x move 45 0
+		summon #13 asteroid 7 13 x move 55 0
+		summon #14 asteroid 7 14 x move 65 0
+		summon #15 asteroid 7 15 x move 75 0
+		
+		summon #100 wall 0 move -75 0
+		summon #101 wall 1 move -65 0
+		summon #102 wall 2 move -55 0
+		summon #103 wall 3 move -45 0
+		summon #104 wall 4 move -35 0
+		summon #105 wall 5 move -25 0
+		summon #106 wall 6 move -15 0
+		summon #107 wall 7 move -5 0
+		summon #108 wall 8 move 5 0
+		summon #109 wall 9 move 15 0
+		summon #110 wall 10 move 25 0
+		summon #111 wall 11 move 35 0
+		summon #112 wall 12 move 45 0
+		summon #113 wall 13 move 55 0
+		summon #114 wall 14 move 65 0
+		summon #115 wall 15 move 75 0
+		from #100 to #115 move 0 5
+		
+		summon #200 piston 0 move -75 0
+		summon #201 piston 1 move -65 0
+		summon #202 piston 2 move -55 0
+		summon #203 piston 3 move -45 0
+		summon #204 piston 4 move -35 0
+		summon #205 piston 5 move -25 0
+		summon #206 piston 6 move -15 0
+		summon #207 piston 7 move -5 0
+		summon #208 piston 8 move 5 0
+		summon #209 piston 9 move 15 0
+		summon #210 piston 10 move 25 0
+		summon #211 piston 11 move 35 0
+		summon #212 piston 12 move 45 0
+		summon #213 piston 13 move 55 0
+		summon #214 piston 14 move 65 0
+		summon #215 piston 15 move 75 0
+		from #200 to #215 move 0 -5
+		
 	]';
 }

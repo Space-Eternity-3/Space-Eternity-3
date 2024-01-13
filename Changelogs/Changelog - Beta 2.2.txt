@@ -13,6 +13,7 @@ New features (technical):
 - added whitelist and banlist on servers
 - added fob72 (total vacuum) which is a removed fob place, used in arenas from now
   - might result in strange structure of old arenas
+- universes without UniverseInfo.se3 file are marked as "Time: 00:00, Version: Unknown" and are always possible to update
 
 Old feature changes:
 

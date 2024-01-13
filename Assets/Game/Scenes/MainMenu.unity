@@ -1482,12 +1482,10 @@ MonoBehaviour:
   savesDIR: ../../saves/
   datapacksDIR: ./Datapacks/
   gameDIR: ./
-  SourcePackJse3: {fileID: 4900000, guid: ae4e7a41aed1a0b408b3ef6156da7716, type: 3}
   worldDIR: 
   asteroidDIR: 
   menu: 1
   crashed: 0
-  example: 
   clientVersion: Beta 2.2
   clientRedVersion: Beta_2_2
   DEV_mode: 0
@@ -20518,6 +20516,8 @@ MonoBehaviour:
   - 
   - 
   version: 
+  SourcePackJse3: {fileID: 4900000, guid: ae4e7a41aed1a0b408b3ef6156da7716, type: 3}
+  example: 
   dataSource: 
 --- !u!114 &35467495
 MonoBehaviour:
@@ -20545,6 +20545,7 @@ MonoBehaviour:
   connectionState: 0
   UpdatableVersions:
   - Beta 2.1
+  - Unknown
 --- !u!1 &39346224
 GameObject:
   m_ObjectHideFlags: 0
