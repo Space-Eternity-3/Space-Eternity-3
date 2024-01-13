@@ -126,6 +126,8 @@ c) Others
 - biome offset system updated:
   - updating universe may move a star and destroy part of terrain around it
 - asteroid blocker no longer works for geyzer turn and bullet turn
+- if datapack file not present in the server directory, the default datapack will be loaded + (datapack not present there by default)
+- custom datapacks with name set to "DEFAULT" will now pretend to have it set to "CUSTOM" (both on server and local side)
 
 Bug fixes:
 
@@ -148,3 +150,10 @@ Bug fixes:
 - singleplayer storages could break on servers
 - object growth could corrupt the world on singleplayer by removing 19th asteroid object on the asteroid
 - seon's sphere drill script wasn't working
+- geyzer wind wasn't dynamically updating its position to be on geyzer after introducing moving objects in Beta 1.14
+- only .jse3 files (and not .txt) could be imported as a datapack in the game menu
+
+Universe updating warnings
+
+- 8/9 of all stars will move a bit and destroy part of terrain around them
+- old arenas will contain fobs, which should be deleted normally (fobs overlapping with walls and pistons)

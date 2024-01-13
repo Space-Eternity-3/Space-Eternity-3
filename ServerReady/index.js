@@ -4744,16 +4744,10 @@ function finalTranslate(varN) {
     );
   }
 
-  if (version != serverVersion) {
-    datapackError("Wrong version or empty version variable");
-  }
-  if (datName == "") {
-    datapackError("Datapack name can't be empty");
-  }
+  if(version!=serverVersion) datapackError("Wrong version or empty version variable");
+  if(datName=="") datapackError("Datapack name can't be empty");
 
-  try {
-    checkDatapackGoodE();
-  } catch {
+  try { checkDatapackGoodE(); } catch {
     datapackError("Unknown error detected");
   }
 }
@@ -4935,11 +4929,14 @@ if (!existsF(universe_name + "/UniverseInfo.se3"))
   {
     datapackjse3 = readF("Datapack.jse3");
     datapackTranslate("NoName~" + datapackjse3);
+    if(datapackjse3==defaultjse3) verF = "DEFAULT";
+    else verF = "Custom Data";
   }
-  else crash("File Datapack.se3 doesn't exist");
-
-  if(datapackjse3==defaultjse3) verF = "DEFAULT";
-  else verF = "Custom Data";
+  else
+  {
+    datapackTranslate("NoName~" + defaultjse3);
+    verF = "DEFAULT";
+  }
 
   clientDatapacksVar = clientDatapacks();
   uniTime = 0;
@@ -4951,7 +4948,7 @@ if (!existsF(universe_name + "/UniverseInfo.se3"))
   );
 
   if(verF=="Custom Data" && datName=="DEFAULT") console.log("Datapack imported: CUSTOM");
-  else console.log("Datapack imported: " + datName + "");
+  else console.log("Datapack imported: " + datName);
 }
 else
 {

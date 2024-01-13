@@ -395,6 +395,9 @@ public class SC_fobs : MonoBehaviour
             localRendererMem=false;
         }
 
+        if(WindObject && !mother)
+            mainWind.position = transform.position;
+
         if(onu>0) onu--;
         if(!mother)
         {

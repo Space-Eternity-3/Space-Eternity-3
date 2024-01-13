@@ -23086,7 +23086,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: c2836dd97a42bcf46b824682cefd1137, type: 3}
+  m_Texture: {fileID: 2800000, guid: 4f21f657eafe66a4fa56a9484299312a, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -31921,7 +31921,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: c2836dd97a42bcf46b824682cefd1137, type: 3}
+  m_Texture: {fileID: 2800000, guid: 4f21f657eafe66a4fa56a9484299312a, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -50868,7 +50868,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1581822061}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -55383,7 +55383,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1973185339}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}

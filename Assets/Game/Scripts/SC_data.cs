@@ -629,7 +629,7 @@ public class SC_data : MonoBehaviour
 
         int lngt=CustomDataPath.Length;
         string str=CustomDataPath;
-        if(str[lngt-5]=='.'&&str[lngt-4]=='j'&&str[lngt-3]=='s'&&str[lngt-2]=='e'&&str[lngt-1]=='3') try{
+        try{
             
             file=CustomDataPath;
             OpenRead(file);
@@ -643,11 +643,6 @@ public class SC_data : MonoBehaviour
             dataSource=PreData;
             DatapackTranslate();
             return;
-        }
-        else
-        {
-            dataSource=PreData;
-            DatapackTranslate();
         }
     }
     public void Save(string E)
@@ -1470,7 +1465,9 @@ public class SC_data : MonoBehaviour
 		if(cur1000biome>1000) {DatapackError("Total biome chance can't be over 1000p. Current: "+cur1000biome+"p. 1p = 0,1%. Note: structural option doubles 'p' ussage, but the chance is still multiplied by 1."); return;}
 
         if(version!=clientVersion) {DatapackError("Wrong version or empty version variable."); return;}
-        if(datapack_name.text=="DEFAULT"&&dataSource!=example) {DatapackError("Custom datapack name can't be DEFAULT. Change it using a text editor."); return;}
+        if(datapack_name.text=="DEFAULT" && dataSource!=example) { datapack_name.text = "CUSTOM";
+            //DatapackError("Custom datapack name can't be DEFAULT. Change it using a text editor."); return;
+        }
         if(datapack_name.text=="") {DatapackError("Datapack name can't be empty. Change it using a text editor."); return;}
 		
 		try{

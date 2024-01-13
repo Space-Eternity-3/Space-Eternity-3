@@ -271,7 +271,7 @@ public class SC_account : MonoBehaviour
         IF_n1.text = SC_data.MultiplayerInput[0];
         IF_a1.text = SC_data.MultiplayerInput[1];
         IF_p1.text = SC_data.MultiplayerInput[2];
-        if(SC_data.MultiplayerInput[3]==IF_n1.text) delayed_login = true;
+        if(SC_data.MultiplayerInput[3]==IF_n1.text && IF_n1.text!="") delayed_login = true;
     }
     public void AllInputSave()
     {
