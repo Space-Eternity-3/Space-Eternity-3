@@ -147,6 +147,7 @@ public class SC_control : MonoBehaviour {
 	public SC_gameplay_set SC_gameplay_set;
 	public SC_inv_mover SC_inv_mover; //left
 	public SC_chat SC_chat;
+	public SC_difficulty SC_difficulty;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -1380,6 +1381,7 @@ public class SC_control : MonoBehaviour {
 		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
 		dmg=0.02f*dmg/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
+		if(dmg>1f) dmg=1f;
 		CookedDamage(dmg);
 
 		//KILL BY CLIENT
@@ -1451,8 +1453,9 @@ public class SC_control : MonoBehaviour {
 			{
 				dmLicz=20;
 				float head_ache = head_ache=collision.impulse.magnitude-CME + 3f;
-				float hai=float.Parse(SC_data.Gameplay[7])*head_ache*1.2f;
+				float hai=float.Parse(SC_data.Gameplay[7])*Mathf.Pow(SC_fun.difficulty,0.5f)*head_ache*1.2f;
 				if(AllowCollisionDamage() && hai>0) {
+					if(SC_fun.difficulty==10000f) hai = 10000f;
 					damage_ringed = true;
 					DamageFLOAT(hai);
 				}
@@ -1491,6 +1494,7 @@ public class SC_control : MonoBehaviour {
 				else if(neme=="star_collider_big") 	SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_star_time"));
 				else if(neme=="S-fire") 			SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_starandus_geyzer_time"));
 				
+				dmgg *= SC_fun.difficulty;
 				if(dmgg > max_framal_damage) max_framal_damage = dmgg;
 			}
 		}
@@ -1918,6 +1922,10 @@ public class SC_control : MonoBehaviour {
 			float y = float.Parse(arg[2]);
 			SendMTP("/CommandTp "+connectionID+" "+arg[1]+" "+arg[2]);
 			player.position = new Vector3(x,y,player.position.z);
+		}
+		if(arg[0]=="/RetDifficultySet")
+		{
+			SC_difficulty.HardSet(int.Parse(arg[1]));
 		}
 
 		//Other scripts

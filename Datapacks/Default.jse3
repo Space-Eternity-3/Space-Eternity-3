@@ -111,13 +111,13 @@ drill_loot
 	copper: copper(92%) + turbo_element(8%);
 	gold: gold(30%);
 	grass: bush(70%) + stone(22%) + magic_element(8%);
-	amethyst: small_amethyst(30%) + power_element(4%);
+	amethyst: small_amethyst(30%) + power_element(2%);
 	coal: coal(100%);
 	magnetic: magnetic_stone(100%);
 	red: red_stone(100%);
 	diamond: small_diamond(2%);
 	metalic: stone(50%);
-	bone: bone(94,5%) + blank_element(5,5%);
+	bone: bone(94%) + blank_element(6%);
 }
 modified_drops
 {
@@ -186,9 +186,9 @@ gameplay
     upg_3_item: 10;
     upg_3_cost: 15;
     upg_4_item: 5;
-    upg_4_cost: 25;
+    upg_4_cost: 20;
     upg_5_item: 5;
-    upg_5_cost: 40;
+    upg_5_cost: 30;
 	
 	<ARTEFACTS>
 	at_protection_health_level_add: 2,272;

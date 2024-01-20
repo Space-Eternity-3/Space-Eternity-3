@@ -21,7 +21,7 @@ public class SC_adecodron : MonoBehaviour
             Vector3 force = new Vector3(0f,0f,0f);
             if(plar!=cent) force = Vector3.Normalize(plar-cent) * push_force;
             SC_control.playerR.velocity = force;
-            if(cooldown<25) SC_control.DamageFLOAT(enter_damage * float.Parse(SC_control.SC_data.Gameplay[32]));
+            if(cooldown<25) SC_control.DamageFLOAT(enter_damage * float.Parse(SC_control.SC_data.Gameplay[32]) * SC_control.SC_fun.difficulty);
             cooldown = 50;
         }
     }

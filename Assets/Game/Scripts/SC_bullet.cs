@@ -92,7 +92,7 @@ public class SC_bullet : MonoBehaviour
         else
         {
             //Boss pre-define
-            gob.normal_damage = SC_fun.boss_damages[typ] * float.Parse(SC_fun.SC_data.Gameplay[32]);
+            gob.normal_damage = SC_fun.boss_damages[typ] * float.Parse(SC_fun.SC_data.Gameplay[32]) * SC_fun.difficulty;
         }
 
         if(next_bullet_virtual)

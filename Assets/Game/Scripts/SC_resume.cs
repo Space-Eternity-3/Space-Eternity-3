@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SC_resume : MonoBehaviour
 {
     public SC_control SC_control;
-	public Transform normal_menu;
-	public Transform giveup_menu;
+	public Button GiveUpButton;
 	
 	public void Resume()
 	{
@@ -38,13 +38,6 @@ public class SC_resume : MonoBehaviour
 	}
 	void Update()
 	{
-		if(SC_control.bos_num > 0) {
-			normal_menu.localPosition = new Vector3(10000f,0f,0f);
-			giveup_menu.localPosition = new Vector3(0f,0f,0f);
-		}
-		else {
-			normal_menu.localPosition = new Vector3(0f,0f,0f);
-			giveup_menu.localPosition = new Vector3(10000f,0f,0f);
-		}
+		GiveUpButton.interactable = (SC_control.bos_num > 0);
 	}
 }

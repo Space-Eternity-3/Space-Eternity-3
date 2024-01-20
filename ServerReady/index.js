@@ -56,6 +56,7 @@ const default_config = {
   "trust_proxy": false,
 	"port": 27683,
 	"pvp": true,
+  "difficulty": 2,
 	"show_positions": true,
 	"require_se3_account": false,
   "authorization_waiting_time": 15,
@@ -74,6 +75,7 @@ if(!existsF("./config.json")) {
   console.log("File config.json generated.");
 }
 const config = require("./config.json");
+if(config.difficulty<0 || config.difficulty>5) config.difficulty=2;
 
 //AuthConfig generator
 const default_authConfig = {
@@ -222,6 +224,10 @@ var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,1 ,1,0,0,0,0,0,0,0,0
 
 if(Number.isInteger(config.max_players))
   max_players = config.max_players;
+
+var tab_difficulty = [0,0.7,1,1.43,2,10000];
+var difficulty = tab_difficulty[config.difficulty];
+var difficulty_name_tab = ["NONE","EASY","NORMAL","HARD","DIABOLIC","IMPOSSIBLE"];
 
 var pvp = true;
 if(config.pvp==false) pvp = false;
@@ -700,7 +706,7 @@ class CInfo
       tpl.pos.x = tpl.start.x;
       tpl.pos.y = tpl.start.y;
 
-      tpl.normal_damage = boss_damages[type] * func.parseFloatU(gameplay[32]);
+      tpl.normal_damage = boss_damages[type] * func.parseFloatU(gameplay[32]) * difficulty;
       if(type==3||type==13) tpl.is_unstable = true;
       else tpl.is_unstable = false;
 
@@ -3083,6 +3089,8 @@ wss.on("connection", function connection(ws,req)
       sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[2]+" 1 X X");
       sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[3]+" 1 X X");
 
+      sendTo(ws,"/RetDifficultySet "+config.difficulty+" X X");
+
       //Join info
       console.log(hourHeader + plr.nicks[arg[1]] + " joined the game");
       return;
@@ -5273,6 +5281,32 @@ function listenForMessages()
         else
           console.log("Couldn't find "+arg[1]+" online.");
       }
+      else if(message=="difficulty get")
+      {
+        console.log("The current difficulty is "+difficulty_name_tab[config.difficulty]+" ("+config.difficulty+")");
+      }
+      else if(arg[0]=="difficulty" && arg.length==3 && arg[1]=="set")
+      {
+        var diff_pars = func.parseIntU(arg[2]);
+        if(diff_pars<0 || diff_pars>5) diff_pars=0;
+        if(diff_pars==config.difficulty)
+        {
+          console.log("Difficulty is already "+difficulty_name_tab[diff_pars]);
+        }
+        else {
+          config.difficulty = diff_pars;
+          difficulty = tab_difficulty[diff_pars];
+          sendToAllPlayers("/RetDifficultySet "+diff_pars+" X X");
+          var info_difficulty = "Difficulty set to "+difficulty_name_tab[diff_pars];
+          console.log(info_difficulty);
+          sendToAllPlayers(
+            "/RetInfoClient " +
+              (info_difficulty).replaceAll(" ", "`") +
+              " -1 X X"
+          );
+          saveConfig();
+        }
+      }
       else if(message=="help")
       {
         console.log("\n------ List of all commands ------\n");
@@ -5282,6 +5316,8 @@ function listenForMessages()
         console.log("'players' - Displays a list of all players.");
         console.log("'connections' - Displays a list of all WebSocket connections.");
         console.log("'getip [nickname]' - Displays player's IPv4 address.")
+        console.log("'difficulty get' - Displays the actual server difficulty.");
+        console.log("'difficulty set [1-4]' - Changes the server difficulty.");
         console.log("'stop' / 'quit' / 'exit' - Stops the server.\n");
 
         console.log("'ban [nickname]' - Bans a player.");

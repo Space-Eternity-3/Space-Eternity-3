@@ -3,6 +3,8 @@ New features (gameplay):
 - added bone asteroids
 - added copper chimneys (hidden objects, available only through datapacks)
 - added background colors dependent of biome and active boss
+- added various difficulties: EASY, NORMAL, HARD, DIABOLIC + hidden: NONE, IMPOSSIBLE
+  - difficulties affect all damage received by enemies, crash damage and static damage
 
 New features (technical):
 
@@ -24,6 +26,7 @@ Old feature changes:
 - removed old pumpkin, replaced it with a copper chimney
 - invisibility pulses removed when modifing the world, trolling with illusion artefact is now easier :)
 - damage invisibility pulse time reduced: 25+3 -> 20+3
+- recreated pause menu to fit difficulty change menu
 
 Artistic changes:
 
@@ -61,7 +64,7 @@ Default datapack changes:
 - that means all cementery chance increased: 3% -> 4%
 - unstable bullet speed: 0,35 -> 0,4
 - impulse damage: 8 -> 10
-- power element drill chance: 5,5% -> 4%
+- power element drill chance: 5,5% -> 2%
 - fire bullet player cooldown: 11 -> 10, that means:
   - fire bullet DPS (to players): 18,18 -> 20,00
   - fire bullet DPS (to bosses): 23,86 -> 26,25
@@ -70,18 +73,15 @@ Default datapack changes:
   - level 1: gold 3 -> 5
   - level 2: gold 6 -> 10
   - level 3: gold 10 -> 15
-  - level 4: amethyst 12 -> 25
-  - level 5: amethyst 20 -> 40
+  - level 4: amethyst 12 -> 20
+  - level 5: amethyst 20 -> 30
 - redA (id=25) object generation replaced with other (id=2) object generation
-- blank element is now drillable from bone asteroid instead of metalic
+- blank element is now drillable from bone asteroid instead of metalic and drill chance changed: 5,5% -> 6%
 - both types of cementeries contain bone asteroids
 - changed seon codes in datapack
 - added bone asteroids to both types cementeries
 - treasures updated: shrinked junk loot, a bit rarer treasures
-- new biome tags:
-  - use bgcolor-X-X-X biome tag to customize background color
-  - use boss.1.color-X-X-X biome tag to customize boss background color (see default colors [here])
-  - use gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
+- changed biome tags to fit new background changes
 
 Configurables:
 
@@ -94,6 +94,10 @@ Configurables:
 - seon changes:
   - removed command "asteroid blocker disable"
   - added command "asteroid blocker reward" - disabled only in structure state "b3r"
+- new biome tags:
+  - use bgcolor-X-X-X biome tag to customize background color
+  - use boss.1.color-X-X-X biome tag to customize boss background color (see default colors [here])
+  - use gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
 
 Important technical changes:
 
@@ -129,6 +133,7 @@ c) Others
 - asteroid blocker no longer works for geyzer turn and bullet turn
 - if datapack file not present in the server directory, the default datapack will be loaded + (datapack not present there by default)
 - custom datapacks with name set to "DEFAULT" will now pretend to have it set to "CUSTOM" (both on server and local side)
+- universes can now store file "difficulty.txt", which stores the actual universe difficulty
 
 Bug fixes:
 

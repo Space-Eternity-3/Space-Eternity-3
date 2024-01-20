@@ -74,7 +74,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 51
+  controlID: 94
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 50
+  controlID: 93
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -222,7 +222,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 49
+  controlID: 92
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -242,8 +242,8 @@ MonoBehaviour:
     y: 0
     width: 1047
     height: 663
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 202, y: 221}
+  m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -308,20 +308,20 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: a2532300
+      m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 8291ccff4034d2ff4634d2ff4a3ed2ffec44d2ff2ad7d2ff30d7d2ff34e1d2ffd6e7d2ff6248d5ff6848d5ff6c52d5ff0e59d5ff14ead5ff1aead5ff1ef4d5ffc0fad5ff382be7ffd038e7ffa8b1feffcac3feff2cfbffff964c00005a120f00a2210f0020121c0012321c00
+      m_ExpandedIDs: 38428dff86428dff20508dff12518dff829391ffce7c92ff1e7d92ffb88a92ffaa8b92ff6acf93fff0279dfff8289dff42d5adff1428bdffaa4ec6ff2408ceffda32d0ffd000d1ff66d3d1ff7a90d2ff1eefdaff3271dcffc6f6e0ff32fae0ff1ebce1ff6289e2ff74c0ecff0866eeffe477f0ff9033f3ff785bfaff3addfeff2cfbffffa4510000e4520000025c0000545d0000f0660000547000009a730000007a00009c7c0000e87c0000ec7f0000e480000002810000e8fc0a00d0fd0a00baff0a00c6010b009e060b00dc070b0066080b0050b80b0088b90b00bcc20b002ec80b003ad70b0068da0b0094e30b0090e60b0088e70b00fce90b0018ec0b00b44d1600a2521600aa58160050741600ccea1600c2f51600681117000a6e180000791800a6941800da471900d0521900766e190048981b00369d1b003ea31b00e4be1b00c6932300bc9e230062ba23007e3e2c00963e2c0032402c0092442c003c472c0048472c00d85c360016663600d47d3600e07f360088843600e2a73e0082b23e0078ce3e006673400050754000347c4000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: StGate
-        m_OriginalName: StGate
+        m_Name: cont_wall
+        m_OriginalName: cont_wall
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 987738
+        m_UserData: 3575202
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
         m_OriginalEventType: 0
@@ -615,9 +615,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 36.42488, y: -1.6862772, z: -0.77801037}
+    m_Target: {x: 1420.7133, y: 531.0865, z: -17.040161}
     speed: 2
-    m_Value: {x: 36.42488, y: -1.6862772, z: -0.77801037}
+    m_Value: {x: 1420.7133, y: 531.0865, z: -17.040161}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -663,13 +663,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.006167554, y: -0.012796252, z: -0.010198942, w: -1.0007728}
+    m_Target: {x: -0.017845185, y: -0.011567909, z: -0.0107285585, w: -1.0006742}
     speed: 2
-    m_Value: {x: 0.006161851, y: -0.01278442, z: -0.010189512, w: -0.9998474}
+    m_Value: {x: -0.01782811, y: -0.0115568405, z: -0.0107182935, w: -0.9997168}
   m_Size:
-    m_Target: 11.840129
+    m_Target: 294.2657
     speed: 2
-    m_Value: 11.840129
+    m_Value: 294.2657
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -736,22 +736,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Game/Materials2/Pistons
+    - Assets/Game/Scenes
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Game/Materials2/Pistons
+  - Assets/Game/Scenes
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\lenovo\Documents\GitHub\Space-Eternity-3
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 85}
-    m_SelectedIDs: cee01600
-    m_LastClickedID: 1499342
-    m_ExpandedIDs: 00000000505900006abf010096bf010000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 79}
+    m_SelectedIDs: e0990000
+    m_LastClickedID: 39392
+    m_ExpandedIDs: 00000000b28c0000c88c000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -779,7 +779,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000050590000
+    m_ExpandedIDs: 00000000b28c0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
