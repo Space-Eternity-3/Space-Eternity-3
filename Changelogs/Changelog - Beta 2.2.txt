@@ -82,6 +82,7 @@ Default datapack changes:
 - added bone asteroids to both types cementeries
 - treasures updated: shrinked junk loot, a bit rarer treasures
 - changed biome tags to fit new background changes
+- copper bullet boss damage (Protector) buff: 4 -> 5
 
 Configurables:
 
@@ -158,8 +159,9 @@ Bug fixes:
 - seon's sphere drill script wasn't working
 - geyzer wind wasn't dynamically updating its position to be on geyzer after introducing moving objects in Beta 1.14
 - only .jse3 files (and not .txt) could be imported as a datapack in the game menu
+- there was a relict-datapack Darks.jse3 in a "Datapacks" folder
 
 Universe updating warnings
 
-- 8/9 of all stars will move a bit and destroy part of terrain around them
+- 8/9 of all stars will move a bit and destroy part of terrain around them, take care of your star-storage rooms
 - old arenas will contain fobs, which should be deleted normally (fobs overlapping with walls and pistons)

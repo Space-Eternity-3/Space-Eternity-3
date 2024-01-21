@@ -26,7 +26,7 @@ On singleplayer the game uses "PlayerData.se3" file. On multiplayer all player d
 
 ------ Protection ------
 
-If your server is commercial, you may need to protect the server from hackers. You should activate the nickname verification
+If your server is commercial, you may need to protect it from hackers. You should activate the nickname verification
 system to require from players the valid SE3 account to join. You will also be able to customize your server address. Start
 your server to see the instruction.
 

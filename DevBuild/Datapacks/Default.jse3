@@ -252,7 +252,7 @@ gameplay
 	boss_bullet_brainwave_damage: 6;
 	boss_bullet_rocket_damage: 12;
 	boss_bullet_spikeball_damage: 7;
-	boss_bullet_copper_damage: 4;
+	boss_bullet_copper_damage: 5;
 	boss_bullet_red_damage: 5;
 	boss_bullet_unstable_damage: 6;
 	boss_bullet_graviton_damage: 3;

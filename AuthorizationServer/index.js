@@ -176,17 +176,21 @@ const reg_map = new Map();
 const msg_map = new Map();
 
 const max_cons = 5; //at one moment
-const max_regs = 3; //per minute
+const max_regs = 10; //per hour
 const max_msgs = 15; //per second
 const max_msgs_kick = 50; //per second
 
 //Connection limiter functions
-function coMinuteFunction() {
+function coGodzineFunction() {
   reg_map.clear();
+}
+function coMinuteFunction() {
+  //reg_map.clear();
 }
 function coSekundeFunction() {
   msg_map.clear();
 }
+setInterval(coGodzineFunction, 60 * 60 * 1000);
 setInterval(coMinuteFunction, 60 * 1000);
 setInterval(coSekundeFunction, 1 * 1000);
 
@@ -248,20 +252,21 @@ wss.on("connection", function connection(ws,req) {
       if(amt >= max_msgs_kick) { ws.close(); return; }
       if(amt >= max_msgs) { return; }
     }
-    if(arg[0]=="/Register") {
-      if(!reg_map.has(client_ip)) reg_map.set(client_ip,1);
-      else {
-        var amt = reg_map.get(client_ip);
-        reg_map.set(client_ip, amt+1);
-        if(amt >= max_regs) { sendTo(ws,req,"/RetLogin 15"); return; }
-      }
-    }
 
     //REGISTER
     if(arg[0]=="/Register" && argsize==3) //Register 1[nickname] 2[password] NP
     {
       if(arg[2].length <=6 || arg[2].length >=33) {sendTo(ws,req,"/RetLogin 8"); return;}
-      sendTo(ws,req,"/RetLogin "+Register(arg[1],arg[2]));
+
+      //filter registration spam
+      var amt = 0;
+      if(reg_map.has(client_ip)) amt = reg_map.get(client_ip);
+      if(amt >= max_regs) { sendTo(ws,req,"/RetLogin 15"); return; }
+
+      //registration try and add to spam counter if success
+      var reg_effect = Register(arg[1],arg[2]);
+      if(reg_effect==1) reg_map.set(client_ip, amt+1);
+      sendTo(ws,req,"/RetLogin "+reg_effect);
     }
 
     //LOGIN

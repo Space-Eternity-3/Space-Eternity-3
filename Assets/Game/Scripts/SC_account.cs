@@ -210,8 +210,8 @@ public class SC_account : MonoBehaviour
                 case 3: SetWarning("User with this nickname already exists."); break;
                 case 4: SetWarning("Wrong nickname."); break;
                 case 5: SetWarning("Wrong password."); break;
-                case 8: SetWarning("Wrong password lenght (must be 7-32 characters)."); break; //Will never be executed from here because of client side filter
-                case 15: SetWarning("Registration limit from this IP reached. Please, wait one minute."); break;
+                case 8: SetWarning("Wrong password lenght (must be 7-32 characters)."); break; //Will never execute from here because of client side filter
+                case 15: SetWarning("Registration limit from this IP reached. Please, wait one hour."); break;
                 default: SetWarning("Unknown error."); break;
             }
         }
