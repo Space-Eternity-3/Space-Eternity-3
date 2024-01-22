@@ -1455,7 +1455,6 @@ public class SC_control : MonoBehaviour {
 				float head_ache = head_ache=collision.impulse.magnitude-CME + 3f;
 				float hai=float.Parse(SC_data.Gameplay[7])*Mathf.Pow(SC_fun.difficulty,0.5f)*head_ache*1.2f;
 				if(AllowCollisionDamage() && hai>0) {
-					if(SC_fun.difficulty==10000f) hai = 10000f;
 					damage_ringed = true;
 					DamageFLOAT(hai);
 				}

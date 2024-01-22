@@ -76,6 +76,10 @@ public class SC_main_buttons : MonoBehaviour {
 				ss.valueRead();
 			}
 		}
+		if(n==0)
+		{
+			SC_account.RemoveWarning();
+		}
 
 		//Nick field location changer
 		if(n==2) NameField.SetParent(Name2parent,false);

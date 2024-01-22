@@ -4,7 +4,7 @@ New features (gameplay):
 - added copper chimneys (hidden objects, available only through datapacks)
 - added background colors dependent of biome and active boss
 - added various difficulties: EASY, NORMAL, HARD, DIABOLIC + hidden: NONE, IMPOSSIBLE
-  - difficulties affect all damage received by enemies, crash damage and static damage
+  - difficulties affect damage received by everything except for other players and remote damage
 
 New features (technical):
 

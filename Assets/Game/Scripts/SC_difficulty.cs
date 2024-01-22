@@ -19,6 +19,7 @@ public class SC_difficulty : MonoBehaviour
     public Color32[] ImageColors = new Color32[6];
 
     public int min_difficulty = 1, max_difficulty = 4;
+    public int min_ctrl = 1, max_ctrl = 5;
     public int local_difficulty = 2;
 
     string fileName="";
@@ -38,8 +39,9 @@ public class SC_difficulty : MonoBehaviour
         otp_image.color = ImageColors[local_difficulty];
         otp_text.text = TextTexts[local_difficulty];
 
-        Arrow1.interactable = (local_difficulty > min_difficulty);
-        Arrow2.interactable = (local_difficulty < max_difficulty);
+        bool ctrl = Input.GetKey(KeyCode.LeftControl);
+        Arrow1.interactable = (local_difficulty > min_difficulty || (ctrl && local_difficulty > min_ctrl));
+        Arrow2.interactable = (local_difficulty < max_difficulty || (ctrl && local_difficulty < max_ctrl));
     }
     public void HardSet(int diff)
     {
@@ -47,6 +49,8 @@ public class SC_difficulty : MonoBehaviour
         local_difficulty = diff;
         min_difficulty = diff;
         max_difficulty = diff;
+        Arrow1.GetComponent<Transform>().position = new Vector3(0f,10000f,0f);
+        Arrow2.GetComponent<Transform>().position = new Vector3(0f,10000f,0f);
     }
     public void ChangeDifficulty(bool right)
     {

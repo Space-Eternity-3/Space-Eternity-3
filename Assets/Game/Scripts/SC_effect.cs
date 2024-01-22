@@ -55,7 +55,7 @@ public class SC_effect : MonoBehaviour
         {
             if(damage_cycle_timer % cycle_period == 0)
             {
-                SC_control.DamageFLOAT(SC_fun.boss_damages_cyclic[effect]*float.Parse(SC_fun.SC_data.Gameplay[36]));
+                SC_control.DamageFLOAT(SC_fun.boss_damages_cyclic[effect]*float.Parse(SC_fun.SC_data.Gameplay[36])*SC_fun.difficulty);
             }
             damage_cycle_timer--;
         }

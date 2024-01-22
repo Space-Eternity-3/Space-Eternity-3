@@ -706,7 +706,7 @@ class CInfo
       tpl.pos.x = tpl.start.x;
       tpl.pos.y = tpl.start.y;
 
-      tpl.normal_damage = boss_damages[type] * func.parseFloatU(gameplay[32]) * difficulty;
+      tpl.normal_damage = boss_damages[type] * func.parseFloatU(gameplay[32]);
       if(type==3||type==13) tpl.is_unstable = true;
       else tpl.is_unstable = false;
 
@@ -1296,7 +1296,7 @@ function CookedDamage(pid,dmg,if_ringed)
   else sendToAllPlayers("/RetEmitParticles "+pid+" 18 "+xx+" "+yy+" X X");
   sendToAllPlayers("/RetInvisibilityPulse "+pid+" wait X X");
 }
-function getBulletDamage(type,owner,pid,bll)
+function getBulletDamage(pid,bll)
 {
   var artid,is_bos;
   if(pid==-2) { //unstable boss
@@ -1315,13 +1315,16 @@ function getBulletDamage(type,owner,pid,bll)
   }
   if(artid!=6 || !bll.is_unstable)
   {
-    if(!is_bos) return bll.normal_damage;
+    if(!is_bos) {
+      if(bll.owner>=0) return bll.normal_damage;
+      else return bll.normal_damage * difficulty;
+    }
     else {
       var damage_modifier = 1;
       if(bll.type==3) damage_modifier = func.parseFloatU(gameplay[37]);
       if(bll.type==15) damage_modifier = func.parseFloatU(gameplay[38]);
       if(bll.type==15 && pid==-3) damage_modifier = 0;
-      return bll.normal_damage*damage_modifier;
+      return bll.normal_damage * damage_modifier;
     }
   }
   else return 0;
@@ -1473,13 +1476,13 @@ setInterval(function () { // <interval #2>
             if(func.CollisionLinearCheck(xc,yc,0.92))
             {
               if(bullet_air_consistence[bulletsT[i].type]==0) {
-                if( DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j, bulletsT[i]) ) != "K")
+                if( DamageFLOAT(j, getBulletDamage(j, bulletsT[i]) ) != "K")
                   sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" X "+plr.livID[j]);
                 destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], false);
                 break;
               }
               else if(!bulletsT[i].damaged.includes(j)) {
-                if( DamageFLOAT(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, j, bulletsT[i]) ) != "K")
+                if( DamageFLOAT(j, getBulletDamage(j, bulletsT[i]) ) != "K")
                   sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" X "+plr.livID[j]);
                 bulletsT[i].damaged.push(j);
               }
@@ -1499,9 +1502,9 @@ setInterval(function () { // <interval #2>
             var yc = scrs[j].posCY + func.ScrdToFloat(scrs[j].dataY[9-2]);
             if(func.CollisionLinearCheck(xc,yc,7.5))
             {
-              if(scrs[j].type==6) DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -2, bulletsT[i]) );
-              else if(scrs[j].type==4) DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -3, bulletsT[i]) );
-              else DamageBoss(j, getBulletDamage(bulletsT[i].type, bulletsT[i].owner, -1, bulletsT[i]) );
+              if(scrs[j].type==6) DamageBoss(j, getBulletDamage(-2, bulletsT[i]) );
+              else if(scrs[j].type==4) DamageBoss(j, getBulletDamage(-3, bulletsT[i]) );
+              else DamageBoss(j, getBulletDamage(-1, bulletsT[i]) );
               destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
               break;
             }
@@ -5306,6 +5309,10 @@ function listenForMessages()
           );
           saveConfig();
         }
+      }
+      else if(arg[0]=="say" && arg.length>=2 && arg[1])
+      {
+
       }
       else if(message=="help")
       {
