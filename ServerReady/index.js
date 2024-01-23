@@ -216,7 +216,6 @@ var connectionAddress = "IP or DNS + port";
 if(config.require_se3_account) connectionAddress = "se3://" + authConfig.server_name;
 
 var IPv4s = [];
-var activeConnections = [];
 
 var boss_damages = [0,0,0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,0,0 ,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var other_bullets_colliders = [0,0.14,0.14,0.12,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.14,0.08 ,1.68,0.25,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
@@ -274,6 +273,141 @@ function TreasureDrop(str)
       }
     } catch { return "8;1"; }
     return "8;1";
+}
+
+let d0,d1,d_ulam;
+class WorldData
+{
+    //Technical methods
+    static Load(ulam) //Loads X;Y data to memory
+    {
+        const det = asteroidIndex(ulam);
+        d_ulam = ulam;
+        d0 = det[0];
+        d1 = det[1];
+    }
+    static DataGenerate(gencode) //Generates data from gencode
+    {
+        let i;
+        for(i=0;i<=60;i++) WorldData.UpdateData(i,0);
+        if(gencode=="BOSS")
+        {
+            WorldData.UpdateType(1024);
+            for(i=1;i<=60;i++) WorldData.UpdateData(i,0);
+        }
+        else
+        {
+            /*
+                Gencode:
+                [size]b[biome]b[fobCode] -> biome based code, calculate type from biome
+                [size]t[type]t[fobCode] -> type based code, type is given
+            */
+
+            //Gencode parse
+            const sep = gencode.includes('t') ? 't' : 'b';
+            const elements = gencode.split(sep);
+
+            //Size parse
+            const size = parseInt(elements[0]);
+
+            //Type parse
+            const type = (sep=='t') ? parseInt(elements[1]) : WorldData.CalculateFromString(typeSet[parseInt(elements[1])*7 + size-4]);
+
+            //Gens parse
+            const gens = Array(20).fill(-1);
+            if(elements.length>2) {
+                const s_gens = elements[2].split(';');
+                for(i=0;(i<s_gens.length && i<20);i++) {
+                    if(!isNaN(parseInt(s_gens[i]))) gens[i] = parseInt(s_gens[i]);
+                }
+            }
+            
+            //Generate type and fobs
+            WorldData.UpdateType(type);
+            for(i=1;i<=size*2;i++)
+            {
+                let gen = gens[i-1];
+                if(gen==-1) gen = WorldData.CalculateFromString(fobGenerate[type]);
+                WorldData.UpdateFob(i,gen);
+            }
+        }
+    }
+    
+    //Read methods
+    static GetData(place) //Returns the place data ("" -> 0)
+    {
+        let got = chunk_data[d0][d1][place];
+        return (!isNaN(parseInt(got))) ? parseInt(got) : 0;
+    }
+    static GetNbt(place,index) //Returns the fob nbt data ("" -> 0)
+    {
+        return WorldData.GetData(21+index+2*(place-1));
+    }
+    static GetFob(place) //Returns the fob (0-127)
+    {
+        let got = chunk_data[d0][d1][place];
+        if(!isNaN(parseInt(got)))
+        {
+            let num = parseInt(got);
+            if(num>=0 && num<=127) return num;
+            else return -1;
+        }
+        else return -1;
+    }
+    static GetType() //Returns data type (0-63 or 1024)
+    {
+        let got = chunk_data[d0][d1][0];
+        if(!isNaN(parseInt(got)))
+        {
+            let num = parseInt(got);
+            if((num>=0 && num<=63) || num==1024) return num;
+            else return -1;
+        }
+        else return -1;
+    }
+
+    //Write methods
+    static UpdateData(place,data) //Updates data (0 -> "")
+    {
+        if(data!=0) chunk_data[d0][d1][place] = data+"";
+        else chunk_data[d0][d1][place] = "";
+    }
+    static UpdateNbt(place,index,data) //Updates nbt data (0 -> "")
+    {
+        WorldData.UpdateData(21+index+2*(place-1),data);
+    }
+    static UpdateFob(place,data) //Updates the fob (0-127)
+    {
+        WorldData.ResetNbt(place);
+        if(data>=0 && data<=127) chunk_data[d0][d1][place] = data+"";
+        else chunk_data[d0][d1][place] = "0";
+    }
+    static UpdateType(data) //Updates data type (0-63 or 1024)
+    {
+        if((data>=0 && data<=63) || data==1024) chunk_data[d0][d1][0] = data+"";
+        else chunk_data[d0][d1][0] = "";
+    }
+
+    //Private methods
+    static ResetNbt(place) //Resets fob nbt data ("")
+    {
+        WorldData.UpdateNbt(place,0,0);
+        WorldData.UpdateNbt(place,1,0);
+    }
+    static CalculateFromString(chance_string)
+    {
+        let decider = func.randomInteger(0,999);
+        const s_nums = chance_string.split(';');
+        let i,lngt = Math.floor(s_nums.length/3), V,A,B;
+        for(i=0;i<lngt;i++)
+        {
+            V = parseInt(s_nums[3*i + 0]);
+            A = parseInt(s_nums[3*i + 1]);
+            B = parseInt(s_nums[3*i + 2]);
+            if(decider>=A && decider<=B) return V;
+        }
+        return 0;
+    }
 }
 
 class CPlayer {
@@ -1615,58 +1749,64 @@ setInterval(function () { // <interval #2>
 
     if((date_before-date_start) % 100 == 0) //precisely 10 times per second
     {
-      //[Grow]
-       var i,
-       lngt = growT.length;
-      for (i = 0; i < lngt; i++)
-      {
-        growW[i]--;
-        if (growW[i] > 0)
+        //Grow loop
+        var i,lngt = growT.length;
+        for(i=0;i<lngt;i++)
         {
-          var ulam = growT[i].split("g")[0];
-          var place = growT[i].split("g")[1];
-          var det = asteroidIndex(ulam);
-          var tume = chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)];
-          tume -= 5;
-
-          if (tume > 0) {
-            chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] = tume;
-          }
-          else {
-            serverGrow(ulam, place);
-            growT.remove(i);
-            growW.remove(i);
-            lngt--;
-            i--;
-          }
-        }
-        else {
-          growT.remove(i);
-          growW.remove(i);
-          lngt--;
-          i--;
-        }
+            growW[i]--;
+            if(growW[i] > 0)
+            {
+                var ulam = growT[i].split("g")[0];
+                var place = growT[i].split("g")[1];
+                WorldData.Load(ulam);
+                var tume = WorldData.GetNbt(func.parseIntU(place)+1,0);
+                
+                tume -= 5;
+                if(tume > 0) WorldData.UpdateNbt(func.parseIntU(place)+1,0,tume)
+                else
+                {
+                    serverGrow(ulam, place);
+                    growT.remove(i);
+                    growW.remove(i);
+                    lngt--; i--;
+                    growActive(ulam);
+                }
+            }
+            else
+            {
+                growT.remove(i);
+                growW.remove(i);
+                lngt--; i--;
+            }
       }
 
-      //[Driller]
+      //Driller loop
       lngt = drillT.length;
-      for (i = 0; i < lngt; i++) {
-       drillW[i]--;
-        if (drillW[i] > 0) {
-           drillC[i] -= 5;
-        if (drillC[i] <= 0) {
-           var ulam = drillT[i].split("w")[0];
-           var place = drillT[i].split("w")[1];
-           serverDrill(ulam, place);
-           drillC[i] = func.randomInteger(180, 420); //it is two times in a code
-         }
-        } else {
-          drillT.remove(i);
-          drillW.remove(i);
-          drillC.remove(i);
-          lngt--;
-          i--;
-        }
+      for(i=0;i<lngt;i++)
+      {
+          drillW[i]--;
+          if(drillW[i] > 0)
+          {
+              drillC[i] -= 5;
+              if(drillC[i] <= 0)
+              {
+                  var ulam = drillT[i].split("w")[0];
+                  var place = drillT[i].split("w")[1];
+                  serverDrill(ulam, place);
+                  drillT.remove(i);
+                  drillW.remove(i);
+                  drillC.remove(i);
+                  lngt--; i--;
+                  growActive(ulam);
+              }
+          }
+          else
+          {
+              drillT.remove(i);
+              drillW.remove(i);
+              drillC.remove(i);
+              lngt--; i--;
+          }
       }
 
       //[Chunks]
@@ -1811,8 +1951,9 @@ function resetScr(i)
 
     //Add 1 to wave number
     scrs[i].dataX[1]++;
-    var det = asteroidIndex(scrs[i].bID);
-    chunk_data[det[0]][det[1]][1] = scrs[i].dataX[1]+"";
+    WorldData.Load(scrs[i].bID);
+    WorldData.UpdateData(1,scrs[i].dataX[1]);
+
     sendToAllPlayers(
       "/RetEmitParticles -1 10 "+
       ((func.ScrdToFloat(mem8)+scrs[i].posCX)+"").replaceAll(".",",")+" "+
@@ -2372,44 +2513,50 @@ function GetRSD(str)
   return eff;
 }
 
-function serverGrow(ulam, place) {
-  var det = asteroidIndex(ulam);
-  if (chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] != "") {
-    var bef = chunk_data[det[0]][det[1]][func.parseIntU(place) + 1];
-    if (!["5", "6", "25"].includes(bef)) return;
-    chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] = "";
-    chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] = "";
-    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] = growSolid[bef].split(";")[2];
-    sendToAllPlayers("/RetGrowNow " + ulam + " " + place + " X X");
-  }
+function serverGrow(ulam, place)
+{
+    WorldData.Load(ulam);
+    var fob_here = WorldData.GetFob(func.parseIntU(place)+1);
+    if([5,6,25].includes(fob_here))
+    {
+        WorldData.UpdateFob(func.parseIntU(place)+1,func.parseIntU(growSolid[fob_here].split(";")[2])); //Mtp counters handling around this function
+        sendToAllPlayers("/RetGrowNow " + ulam + " " + place + " X X");
+    }
 }
-function serverDrill(ulam, place) {
-  var det = asteroidIndex(ulam);
-  if (chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == "2") {
-    var gItem = drillGet(det,chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)]);
-    if (gItem == "0") return;
-    var gCountEnd = func.parseIntU(
-      chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)]
-    );
-    gCountEnd++;
+function serverDrill(ulam, place)
+{
+    WorldData.Load(ulam);
+    if([2].includes(WorldData.GetFob(func.parseIntU(place)+1)))
+    {
+        var stackedItem = WorldData.GetNbt(func.parseIntU(place)+1,0);
+        var type = WorldData.GetType() % 16;
+        var gItem = func.parseIntU(drillItemGet(type,stackedItem));
 
-    chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] = gItem;
-    chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] = gCountEnd;
+        if(gItem==0) return;
+        var gCountEnd = WorldData.GetNbt(func.parseIntU(place)+1,1) + 1;
 
-    sendToAllPlayers(
-      "/RetFobsDataChange " +
-        ulam +
-        " " +
-        place +
-        " " +
-        gItem +
-        " 1 -1 " +
-        gCountEnd +
-        " 2 X X"
-    );
-  }
+        WorldData.UpdateNbt(func.parseIntU(place)+1,0,gItem);
+        WorldData.UpdateNbt(func.parseIntU(place)+1,1,gCountEnd);
+
+        sendToAllPlayers("/RetFobsDataChange "+ulam+" "+place+" "+gItem+" 1 -1 "+gCountEnd+" 2 X X");
+    }
 }
-function handDrillTimeGet(pid) {
+function drillItemGet(ast,stackedItem)
+{
+  var ltdt = drillLoot[ast].split(";");
+  var lngt = ltdt.length;
+  var rnd = func.randomInteger(0, 999);
+  var i;
+  for (i=0;i*3+2<lngt;i++) {
+    if (rnd >= ltdt[i*3+1] && rnd <= ltdt[i*3+2]) {
+      if(stackedItem==0 || stackedItem==ltdt[i*3]) return ltdt[i*3];
+      else return 0;
+    }
+  }
+  return 0;
+}
+function handDrillTimeGet(pid)
+{
   var upg3hugity = 1.12;
   var upg3down = 90, upg3up = 210;
   var matpow = upg3hugity ** (func.parseFloatU(plr.upgrades[pid].split(";")[2])+func.parseFloatU(gameplay[2]));
@@ -2417,79 +2564,50 @@ function handDrillTimeGet(pid) {
 	up = Math.round(upg3up/matpow);
 	return func.randomInteger(down,up);
 }
-function drillItemGet(ast,stackedItem) {
-  var ltdt = drillLoot[ast].split(";");
-  var lngt = ltdt.length;
-  var rnd = func.randomInteger(0, 999);
-  var i;
-  for (i=0;i*3+2<lngt;i++) {
-    if (rnd >= ltdt[i*3+1] && rnd <= ltdt[i*3+2]) {
-      if(stackedItem==0 || stackedItem=="" || stackedItem==ltdt[i*3]) return ltdt[i*3];
-      else return 0;
-    }
-  }
-  return 0;
-}
-function drillGet(det,stackedItem) {
-  var typp = func.parseIntU(chunk_data[det[0]][det[1]][0]+"");
-  if(typp<0) typp=0;
-  else typp = typp % 16;
-  return drillItemGet(typp,stackedItem);
-}
 function growActive(ulam)
 {
-  var i, block, tim, ind;
-  var tab = [];
-  var blockTab = [];
+    var i, block, tim;
+    WorldData.Load(ulam);
+    var type = WorldData.GetType();
+    if(!(type>=0 && type<=63)) return;
+    type = type % 16;
 
-  var det = asteroidIndex(ulam);
-  for (i = 0; i < 20; i++) blockTab[i] = chunk_data[det[0]][det[1]][i + 1];
-
-  var typpu = func.parseIntU(chunk_data[det[0]][det[1]][0]+"");
-  if(typpu<0) typpu = 0;
-  else typpu = typpu % 16;
-
-  for (i = 0; i < 20; i++)
-  {
-    block = blockTab[i];
-    if(["25"].includes(block) || (["5", "6"].includes(block) && typpu == 6))
+    for(i=0;i<20;i++)
     {
-      if (!growT.includes(ulam + "g" + i))
-      {
-        if (chunk_data[det[0]][det[1]][21 + 2 * i] == "")
+        block = WorldData.GetFob(i+1);
+        if([25].includes(block) || ([5,6].includes(block) && type==6)) //Grow segment
         {
-          tab = growSolid[block].split(";");
-          tim = func.randomInteger(tab[0], tab[1]);
-          chunk_data[det[0]][det[1]][21 + 2 * i] = tim;
+            if(!growT.includes(ulam+"g"+i))
+            {
+                if(WorldData.GetNbt(i+1,0)==0)
+                {
+                    var tab = growSolid[block].split(";");
+                    tim = func.randomInteger(tab[0], tab[1]);
+                    WorldData.UpdateNbt(i+1,0,tim);
+                }
+                growT.push(ulam+"g"+i);
+                growW.push(100);
+            }
+            else growW[growT.indexOf(ulam+"g"+i)] = 100;
         }
-        growT.push(ulam + "g" + i);
-        growW.push(100);
-      }
-      ind = growT.indexOf(ulam + "g" + i);
-      growW[ind] = 100;
+        if([2].includes(block) && WorldData.GetNbt(i+1,1) < 5) //Driller segment
+        {
+            if(!drillT.includes(ulam+"w"+i))
+            {
+                tim = func.randomInteger(180, 420);
+                drillT.push(ulam+"w"+i);
+                drillW.push(100);
+                drillC.push(tim);
+            }
+            else drillW[drillT.indexOf(ulam+"w"+i)] = 100;
+        }
     }
-    if (
-      ["2"].includes(block) &&
-      (chunk_data[det[0]][det[1]][22 + 2 * i] == "" ||
-        chunk_data[det[0]][det[1]][22 + 2 * i] < 5)
-    ) {
-      if (!drillT.includes(ulam + "w" + i)) {
-        tim = func.randomInteger(180, 420); //it is two times in a code
-        drillT.push(ulam + "w" + i);
-        drillW.push(100);
-        drillC.push(tim);
-      }
-      ind = drillT.indexOf(ulam + "w" + i);
-      drillW[ind] = 100;
-    }
-  }
 }
-function nbtReset(ulam, place) {
-  var ind,
-    det = asteroidIndex(ulam);
-  chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] = "";
-  chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] = "";
 
+function mtpCountersReset(ulam, place)
+{
+  var ind;
+  
   if (growT.includes(ulam + "g" + place)) {
     ind = growT.indexOf(ulam + "g" + place);
     growT.remove(ind);
@@ -2546,116 +2664,83 @@ function invChangeTry(invID, item, count, slot) {
 }
 
 //Fobs change functions
-function checkFobChange(ulam, place, start1, start2) {
-  var det = asteroidIndex(ulam);
-  if(chunk_data[det[0]][det[1]][0]=="1024") return false;
+function checkFobChange(ulam, place, start1, start2)
+{  
+  WorldData.Load(ulam);
+  type_here = WorldData.GetType();
 
-  if (
-    !["","0"].includes(chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)]) &&
-    (start1 == 21 || start2 == 21) //2 not required, driller item might disappear
-  ) return false;
+  if(!(type_here>=0 && type_here<=63)) return false; //must be asteroid
+  if((start1==21 || start2==21) && WorldData.GetNbt(func.parseIntU(place)+1,1)!=0) return false; //driller can be broken always
 
-  if (
-    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == start1 ||
-    chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] == start2
-  ) return true;
-  else return false;
+  var fob_here = WorldData.GetFob(func.parseIntU(place)+1);
+  return (fob_here==start1 || fob_here==start2);
 }
-function fobChange(ulam, place, end) {
-  var det = asteroidIndex(ulam);
-  chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] = end;
-  nbtReset(ulam, place);
+
+function fobChange(ulam, place, end)
+{
+  WorldData.Load(ulam);
+  WorldData.UpdateFob(func.parseIntU(place) + 1, end);
+  mtpCountersReset(ulam,place);
   growActive(ulam);
 }
 
 //Fob21 change functions
-function checkFobDataChange(ulam, place, item, deltaCount, id21) {
-  var det = asteroidIndex(ulam);
-  if (chunk_data[det[0]][det[1]][func.parseIntU(place) + 1] != id21) {
-    return false;
-  }
+function checkFobDataChange(ulam, place, item, deltaCount, id21)
+{
+  var max_count;
+  if(id21==21) max_count = 35;
+  else if(id21==2) max_count = 5;
+  else if(id21==52) max_count = 10;
+  else return false;
 
-  var max_count = -1;
-  if (id21 == 21) max_count = 35;
-  if (id21 == 2) max_count = 5;
-  if (id21 == 52) max_count = 10;
+  WorldData.Load(ulam);
+  type_here = WorldData.GetType();
 
-  if (
-    chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] == "" ||
-    chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] == 0 ||
-    chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] == item
-  ) {
-    var countEnd = func.parseIntU(
-      chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)]
-    );
-    countEnd += func.parseIntU(deltaCount);
-    if (countEnd >= 0 && countEnd <= max_count) return true;
-    else {
-      return false;
-    }
-  } else {
-    return false;
+  if(!(type_here>=0 && type_here<=63)) return false; //must be asteroid
+  if(WorldData.GetFob(func.parseIntU(place)+1) != id21) return false; //must be good storage
+
+  var item_here = WorldData.GetNbt(func.parseIntU(place)+1,0);
+  var count_here = WorldData.GetNbt(func.parseIntU(place)+1,1);
+  if(item_here==item || count_here==0)
+  {
+      var countEnd = count_here + func.parseIntU(deltaCount);
+      return (countEnd>=0 && countEnd<=max_count);
   }
+  else return false;
 }
-function fobDataChange(ulam, place, item, deltaCount) {
-  var det = asteroidIndex(ulam);
-  var countEnd = func.parseIntU(chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)]);
-  countEnd += func.parseIntU(deltaCount);
-
-  if (countEnd != 0) {
-    chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] = item;
-    chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] = countEnd;
+function fobDataChange(ulam, place, item, deltaCount)
+{
+  WorldData.Load(ulam);
+  var countEnd = WorldData.GetNbt(func.parseIntU(place)+1,1) + func.parseIntU(deltaCount);
+  if(countEnd != 0) {
+    WorldData.UpdateNbt(func.parseIntU(place)+1,0,func.parseIntU(item));
+    WorldData.UpdateNbt(func.parseIntU(place)+1,1,func.parseIntU(countEnd));
   } else {
-    chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] = "";
-    chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] = "";
+    WorldData.UpdateNbt(func.parseIntU(place)+1,0,0);
+    WorldData.UpdateNbt(func.parseIntU(place)+1,1,0);
   }
   return countEnd;
 }
 
 //Fobs data functions
-function nbts(ulam) {
-  var i,
-    det = asteroidIndex(ulam),
-    tabR = [],
-    newR;
-  for (i = 21; i < 61; i += 2) {
-    if (
-      chunk_data[det[0]][det[1]][i] != "" &&
-      chunk_data[det[0]][det[1]][i + 1] != ""
-    )
-      tabR.push(
-        chunk_data[det[0]][det[1]][i] + ";" + chunk_data[det[0]][det[1]][i + 1]
-      );
-    else tabR.push("0;0");
-  }
-  newR = tabR.join(" ");
-  return newR;
+function nbts(ulam)
+{
+    var i,tabR = [];
+    WorldData.Load(ulam);
+    for(i=1;i<=20;i++) {
+      tabR.push(WorldData.GetNbt(i,0) + ";" + WorldData.GetNbt(i,1));
+    }
+    return tabR.join(" ");
 }
-function nbt(ulam, place, lt, nw) {
-  var det = asteroidIndex(ulam);
-  if (lt == "n") {
-    if (
-      chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] != "" &&
-      chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)] != ""
-    )
-      return (
-        chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] +
-        ";" +
-        chunk_data[det[0]][det[1]][22 + 2 * func.parseIntU(place)]
-      );
-    else return nw;
-  }
-  if (lt == "g") {
-    if (chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)] != "")
-      return chunk_data[det[0]][det[1]][21 + 2 * func.parseIntU(place)];
-    else return nw;
-  }
+function nbt(ulam, place)
+{
+  WorldData.Load(ulam);
+  return WorldData.GetNbt(func.parseIntU(place)+1,0) + ";" + WorldData.GetNbt(func.parseIntU(place)+1,1);
 }
-function getBlockAt(ulam, place) {
-  var det = asteroidIndex(ulam);
-  var eff = chunk_data[det[0]][det[1]][func.parseIntU(place) + 1];
-  if (eff != "") return eff;
-  else return -1;
+function getBlockAt(ulam, place)
+{
+  WorldData.Load(ulam);
+  return WorldData.GetFob(func.parseIntU(place) + 1);
 }
 
 //ScrShapeAdd
@@ -2740,50 +2825,6 @@ function immortal(pid)
   var xx = plr.players[pid].split(";")[0];
   var yy = plr.players[pid].split(";")[1];
   sendToAllPlayers("/RetEmitParticles "+pid+" 5 "+xx+" "+yy+" X X");
-}
-
-//Asteroid functions
-function sazeConvert(saze) {
-  return func.parseIntU(saze.split("b")[1]) * 7 + func.parseIntU(saze.split("b")[0]) - 4;
-}
-function generateAsteroid(saze) {
-  var typeDatas;
-
-  if (saze.split("").includes("b")) {
-    typeDatas = typeSet[sazeConvert(saze)];
-    if (typeDatas != "") typeDatas = typeDatas.split(";");
-    else typeDatas = "0;0;999".split(";");
-  } else if (saze.split("").includes("t")) {
-    typeDatas = (saze.split("t")[1] + ";0;999").split(";");
-  } else typeDatas = "0;0;999".split(";");
-
-  var rand = func.randomInteger(0, 999);
-  var i = 0,
-    j,
-    k;
-  while (!(rand >= typeDatas[i + 1] && rand <= typeDatas[i + 2]) && i < 1000)
-    i += 3;
-  if (i >= 1000) td = "0";
-  else td = typeDatas[i];
-
-  var strobj = "";
-  var typeDatas2 = fobGenerate[td].split(";");
-  var how_many = 2 * func.parseIntU(saze); //parse all before first letter
-
-  for (j = 0; j < how_many; j++) {
-    k = 0;
-    rand = func.randomInteger(0, 999);
-    while (
-      !(rand >= typeDatas2[k + 1] && rand <= typeDatas2[k + 2]) &&
-      k < 1000
-    )
-      k += 3;
-    if (saze.split("").includes("t") && saze.split("t")[2].split(";")[j] != "")
-      strobj = strobj + ";" + func.parseIntU(saze.split("t")[2].split(";")[j]);
-    else if (k >= 1000) strobj = strobj + ";0";
-    else strobj = strobj + ";" + typeDatas2[k];
-  }
-  return td + strobj;
 }
 
 //Get player commands
@@ -3454,7 +3495,7 @@ wss.on("connection", function connection(ws,req)
         "/RetFobsDataCorrection " +
           gUlamID + " " +
           gPlaceID + " " +
-          nbt(gUlamID, gPlaceID, "n", "0;0") + ";" + gDeltaCount + " " +
+          nbt(gUlamID, gPlaceID) + ";" + gDeltaCount + " " +
           gPlayerID + " " +
           gID21 +
           " X X"
@@ -3704,14 +3745,14 @@ wss.on("connection", function connection(ws,req)
       var fCount = "-1";
       var fSlot = arg[5];
 
-      var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
+      var fFob21TT = nbt(fUlamID, fPlaceID);
 
       if (checkFobChange(fUlamID, fPlaceID, "0", "48") && !overolded)
       {
         if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
         {
           fobChange(fUlamID, fPlaceID, fEndFob);
-          fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
+          fFob21TT = nbt(fUlamID, fPlaceID);
           sendToAllPlayers(
             "/RetFobsChange " +
               fUlamID + " " +
@@ -3798,7 +3839,7 @@ wss.on("connection", function connection(ws,req)
         treasure_type = 1;
       }
 
-      var fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
+      var fFob21TT = nbt(fUlamID, fPlaceID);
 
       var adb = AlienDatabase[fUlamID+";"+fPlaceID];
       var udb = "NONE"; if(adb!=undefined) udb = adb[0]+"";
@@ -3811,7 +3852,7 @@ wss.on("connection", function connection(ws,req)
           if(mTurnable) delete AlienDatabase[fUlamID+";"+fPlaceID];
           if(treasure_type!=-1) plr.pclass[fPlayerID].TreasureArrayUpdate(treasure_type,true);
           fobChange(fUlamID, fPlaceID, "0");
-          fFob21TT = nbt(fUlamID, fPlaceID, "n", "0;0");
+          fFob21TT = nbt(fUlamID, fPlaceID);
           sendToAllPlayers(
             "/RetFobsChange " +
               fUlamID + " " +
@@ -3993,25 +4034,27 @@ wss.on("connection", function connection(ws,req)
       if (!checkPlayerG(arg[3],ws)) return;
 
       var ulamID = arg[1];
-      var localSize = arg[2];
+      var generation_code = arg[2];
 
-      var lc3T, lc3;
-      var det = asteroidIndex(ulamID);
-      if (chunk_data[det[0]][det[1]][0] == "" || func.parseIntU(chunk_data[det[0]][det[1]][0]) >= 1024) {
-        lc3 = generateAsteroid(localSize);
-        lc3T = lc3.split(";");
-        for (i = 0; i <= 20; i++) chunk_data[det[0]][det[1]][i] = lc3T[i];
-      } else {
-        lc3 = chunk_data[det[0]][det[1]][0];
-        for (i = 1; i <= 20; i++) lc3 += ";" + chunk_data[det[0]][det[1]][i];
-      }
+      WorldData.Load(ulamID);
+			var type = WorldData.GetType();
+			if(!(type>=0 && type<=63)) //NOT EXISTS
+			{
+				WorldData.DataGenerate(generation_code);
+				type = WorldData.GetType();
+			}
+      var lc3 = type;
+			for(i=1;i<=20;i++) {
+				lc3 += ";"+WorldData.GetFob(i);
+			}
+
       growActive(ulamID);
 
       sendTo(ws,
         "/RetAsteroidData " +
           ulamID + " " +
           lc3 + " " +
-          nbts(ulamID, "n", "0;0") +
+          nbts(ulamID) +
           " X X"
       );
     }
@@ -4020,7 +4063,6 @@ wss.on("connection", function connection(ws,req)
       if (!checkPlayerG(arg[1],ws)) return;
 
       var bID = arg[2];
-      var scrID = arg[3];
       var bossType = arg[4];
       var bossPosX = arg[5];
       var bossPosY = arg[6];
@@ -4037,25 +4079,13 @@ wss.on("connection", function connection(ws,req)
 
       if(inds==-1)
       {
-        if(scrID=="1024")
-        {
-          var det = asteroidIndex(bID);
-          if (chunk_data[det[0]][det[1]][0]!=scrID)
-          {
-            //Not exists
-            lc3 = scrID;
-            for(i=1;i<=60;i++) lc3 += ";0";
+          WorldData.Load(bID);
+          if(WorldData.GetType()!=1024) {
+              WorldData.DataGenerate("BOSS");
           }
-          else
-          {
-            //Exists
-            lc3 = chunk_data[det[0]][det[1]][0]+";"+chunk_data[det[0]][det[1]][1];
-            for(i=2;i<=60;i++) lc3 += ";0";
-          }
-          
-          lc3T = lc3.split(";");
-          for(i=0;i<=60;i++) chunk_data[det[0]][det[1]][i] = lc3T[i];
+          var trX1 = WorldData.GetData(1);
 
+          //Boss initialization
           var tpl = Object.assign({},scrTemplate);
           tpl.bID = bID;
           tpl.type = bossType;
@@ -4065,13 +4095,13 @@ wss.on("connection", function connection(ws,req)
           tpl.dataY = [];
           tpl.bulCols = [];
           tpl.givenUpPlayers = [];
-          tpl.dataX = [func.parseIntU(lc3T[0]),func.parseIntU(lc3T[1])];
+          tpl.dataX = [1024,trX1];
           for(i=2;i<=60;i++) tpl.dataY[i-2] = 0;
           var tpl2 = {x:0,y:0}; tpl2.x = tpl.posCX; tpl2.y = tpl.posCY;
           tpl.behaviour = new CBoss(bossType,tpl2,tpl.dataX,tpl.dataY,visionInfo);
           scrs.push(tpl);
 
-          //Bosbul static commands
+          //Bosbul static commands (temporary)
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,36.39999,0,0,171]);
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,36.39999,90,172]);
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-36.39999,0,180,173]);
@@ -4104,8 +4134,6 @@ wss.on("connection", function connection(ws,req)
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,15.1068,-33.64291,292.5,1092]);
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21831,-26.21851,315,1093]);
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64282,-15.10704,337.5,1094]);
-        }
-        else return;
       }
     }
     if (arg[0] == "/TryInsertBiome") {
@@ -5309,10 +5337,6 @@ function listenForMessages()
           );
           saveConfig();
         }
-      }
-      else if(arg[0]=="say" && arg.length>=2 && arg[1])
-      {
-
       }
       else if(message=="help")
       {

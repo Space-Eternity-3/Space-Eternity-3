@@ -4,7 +4,7 @@ New features (gameplay):
 - added copper chimneys (hidden objects, available only through datapacks)
 - added background colors dependent of biome and active boss
 - added various difficulties: EASY, NORMAL, HARD, DIABOLIC + hidden: NONE, IMPOSSIBLE
-  - difficulties affect damage received by everything except for other players and remote damage
+  - difficulties affect damage received by everything except for other players, potions and remote damage
 
 New features (technical):
 
@@ -87,13 +87,13 @@ Default datapack changes:
 Configurables:
 
 - a lot of new server config variables
-- all bosbul related commands removed from seon, they are now part of the boss object and are no longer configurable
+- all bosbul related commands removed from seon, they are now part of the boss object and are no longer configurable (will be changed)
 - removed biome tag "full"
 - added upgrade variables in gameplay segment to allow customization of upgrade prices
 - removed all structural tags except for struct=X, moved all built-in structures into custom structures
 - added "star2" to command "summon" in seon, it summons a weird ornament creature
 - seon changes:
-  - removed command "asteroid blocker disable"
+  - removed command "asteroid blocker enable/disable"
   - added command "asteroid blocker reward" - disabled only in structure state "b3r"
 - new biome tags:
   - use bgcolor-X-X-X biome tag to customize background color
@@ -134,7 +134,9 @@ c) Others
 - asteroid blocker no longer works for geyzer turn and bullet turn
 - if datapack file not present in the server directory, the default datapack will be loaded + (datapack not present there by default)
 - custom datapacks with name set to "DEFAULT" will now pretend to have it set to "CUSTOM" (both on server and local side)
-- universes can now store file "difficulty.txt", which stores the actual universe difficulty
+- universes can now store file "difficulty.txt", which stores the actual universe difficulty (only singleplayer)
+- error fob is now 72 (total vacuum) instead of 0 (empty)
+- reworked communication with terrain files from code level
 
 Bug fixes:
 
@@ -160,6 +162,8 @@ Bug fixes:
 - geyzer wind wasn't dynamically updating its position to be on geyzer after introducing moving objects in Beta 1.14
 - only .jse3 files (and not .txt) could be imported as a datapack in the game menu
 - there was a relict-datapack Darks.jse3 in a "Datapacks" folder
+- driller on multiplayer could drill more items than it had capacity
+- using control to pick up all items from a storage could sometimes cause "Inventory full" message to appear
 
 Universe updating warnings
 

@@ -220,11 +220,8 @@ public class SC_fobs : MonoBehaviour
         
         if(!MTPchange)
         {
-            string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
-            int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]);
-            SC_data.World[a,index+1,c]=id+"";
-            SC_data.World[a,21+index*2,c]="";
-            SC_data.World[a,22+index*2,c]="";
+            WorldData.Load(X,Y);
+            WorldData.UpdateFob(index+1,id);
         }
 
         //In game replace
@@ -239,7 +236,7 @@ public class SC_fobs : MonoBehaviour
 				gobT=Instantiate(SC_asteroid.GenPlaceT[tid],transform.position,transform.rotation);
 			}catch(Exception)
 			{
-				gobT=Instantiate(SC_asteroid.GenPlaceT[0],transform.position,transform.rotation);
+				gobT=Instantiate(SC_asteroid.GenPlaceT[72],transform.position,transform.rotation);
 			}
         }
         else
@@ -357,29 +354,23 @@ public class SC_fobs : MonoBehaviour
             DropCount=int.Parse(drp[1]);
         }
 
-        if(GrowTurn&&!mother)
+        if(GrowTurn && !mother)
         {
             if(!multiplayer)
             {
-                string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
-                int c=int.Parse(uAst[0]), a=int.Parse(uAst[1]);
+                WorldData.Load(X,Y);
 
-                if(!((int.Parse(SC_data.World[a,0,c])%16==6 && (ObjID==5||ObjID==6)) || ObjID==25))
+                if((WorldData.GetType()%16==6 && (ObjID==5||ObjID==6)) || ObjID==25)
                 {
-                    GrowTimeLeft=99999999;
-                }
-                else
-                {
-                    if(SC_data.World[a,21+index*2,c]!="")
+                    int nbt1 = WorldData.GetNbt(index+1,0);
+                    if(nbt1==0)
                     {
-                        GrowTimeLeft=int.Parse(SC_data.World[a,21+index*2,c]);
+                        GrowTimeLeft = UnityEngine.Random.Range(GrowTimeMin,GrowTimeMax+1);
+                        WorldData.UpdateNbt(index+1,0,GrowTimeLeft);
                     }
-                    else
-                    {
-                        GrowTimeLeft=UnityEngine.Random.Range(GrowTimeMin,GrowTimeMax+1);
-                        SC_data.World[a,21+index*2,c]=GrowTimeLeft+"";
-                    }
+                    else GrowTimeLeft = nbt1;
                 }
+                else GrowTimeLeft=99999999;
             }
             else GrowTimeLeft=99999999;
         }
@@ -481,12 +472,11 @@ public class SC_fobs : MonoBehaviour
         //Grow turn
         if(GrowTurn && !multiplayer)
         {
-            if(GrowTimeLeft==0) { Replace(GrowID,multiplayer); return; }
             GrowTimeLeft--;
+            if(GrowTimeLeft==0) { Replace(GrowID,multiplayer); return; }
 
-            string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
-            int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]);
-            SC_data.World[a,21+index*2,c]=GrowTimeLeft+"";
+            WorldData.Load(X,Y);
+            WorldData.UpdateNbt(index+1,0,GrowTimeLeft);
         }
     }
     bool topDistance(float minDis)
@@ -516,7 +506,7 @@ public class SC_fobs : MonoBehaviour
     public bool isSeonBlocked()
     {
         if(asst.reward_blocker) return (asst.strucutral_parent.GetComponent<SC_structure>().actual_state != "R");
-        else return (asst.permanent_blocker || asst.temporary_blocker);
+        else return (asst.temporary_blocker);
     }
     void OnMouseOver()
     {

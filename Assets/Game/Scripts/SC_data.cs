@@ -404,6 +404,8 @@ public class SC_data : MonoBehaviour
         }
 
         example = SourcePackJse3.text.Replace('\r',' ').Replace('\n',' ');
+
+        WorldData.SC_data = this;
 		
 		int i,j,k;
         ResetAwakeUniversal();

@@ -921,11 +921,7 @@ public class SC_structure : MonoBehaviour
 						i++;
 						SC_asteroid ast = st_structs[current].GetComponent<SC_asteroid>();
 
-						if(arg[i]=="enable")
-						{
-							ast.permanent_blocker = true;
-						}
-						else if(arg[i]=="reward")
+						if(arg[i]=="reward")
 						{
 							ast.reward_blocker = true;
 						}

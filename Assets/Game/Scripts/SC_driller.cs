@@ -60,9 +60,8 @@ public class SC_driller : MonoBehaviour
     int GetTimeDrill() {return UnityEngine.Random.Range(180,420);}
     int GetMined()
     {
-        string[] uAst = SC_data.GetAsteroid(SC_fobs.X,SC_fobs.Y).Split(';');
-        int c=int.Parse(uAst[0]), a=int.Parse(uAst[1]);
-        int get_type = int.Parse(SC_data.World[a,0,c]);
+        WorldData.Load(SC_fobs.X,SC_fobs.Y);
+        int get_type = WorldData.GetType();
         if(get_type<0) get_type = 0;
         else get_type = get_type % 16;
         return SC_asteroid.SetLoot(get_type);

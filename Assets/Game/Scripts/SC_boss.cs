@@ -239,32 +239,14 @@ public class SC_boss : MonoBehaviour
 
         if(!multiplayer) //If singleplayer
         {
-            string[] uAst = SC_data.GetAsteroid(bX,bY).Split(';');
-			int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]),i;
-				
-            dataID[0]=scrID;
-			if(SC_data.World[a,0,c]!=scrID+"")
-			{
-				//Not exists
-				for(i=1;i<=60;i++){
-                    dataID[i] = 0;
-                }
-				SC_data.World[a,0,c]=dataID[0]+"";
-				for(i=1;i<=60;i++){
-					SC_data.World[a,i,c]=dataID[i]+"";
-				}
-			}
-			else
-			{
-				//Exists
-				for(i=1;i<=60;i++){
-                    try{
-					    dataID[i] = int.Parse(SC_data.World[a,i,c]);
-                    }catch(Exception){
-                        dataID[i] = 0;
-                    }
-				}
-			}
+            int i;
+            WorldData.Load(bX,bY);
+            if(WorldData.GetType()!=1024) {
+                WorldData.DataGenerate("BOSS");
+            }
+            for(i=0;i<=60;i++) {
+                dataID[i] = WorldData.GetData(i);
+            }
 			StateUpdate();
         }
         else //If multiplayer
@@ -329,9 +311,8 @@ public class SC_boss : MonoBehaviour
     }
     void SaveSGP()
 	{
-		string[] uAst = SC_data.GetAsteroid(bX,bY).Split(';');
-        int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]),i;
-		for(i=0;i<=60;i++) SC_data.World[a,i,c]=dataID[i]+"";
+        WorldData.Load(bX,bY);
+        for(int i=1;i<=60;i++) WorldData.UpdateData(i,dataID[i]);
 	}
     void CreateShooterProjection(float rad, float angle_rad, int typ, CShooter shooter)
     {

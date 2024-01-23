@@ -21,7 +21,7 @@ public class SC_control : MonoBehaviour {
 	public GameObject CommuntronM1;
 	public Transform player;
 	public Transform player_illusion;
-	public Transform camera;
+	public Transform Camera;
 	public Transform explosion;
 	public Transform explosionM;
 	public Transform explosion2;
@@ -511,7 +511,7 @@ public class SC_control : MonoBehaviour {
 		}
 		
 		//cam pos
-		camera.position=new Vector3(player.position.x,player.position.y,camera.position.z);
+		Camera.position=new Vector3(player.position.x,player.position.y,Camera.position.z);
 
 
 		if(!timeStop){

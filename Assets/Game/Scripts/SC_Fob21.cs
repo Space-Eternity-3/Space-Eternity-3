@@ -188,15 +188,9 @@ public class SC_Fob21 : MonoBehaviour {
 	}
 	public void SaveSGP()
 	{
-		string s_item="", s_count="";
-		if(count!=0) {
-			s_item = item+"";
-			s_count = count+"";
-		}
-		string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
-        int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]);
-		SC_data.World[a,21+uID*2,c]=s_item;
-		SC_data.World[a,22+uID*2,c]=s_count;
+		WorldData.Load(X,Y);
+		WorldData.UpdateNbt(uID+1,0,item);
+		WorldData.UpdateNbt(uID+1,1,count);
 	}
 	bool Req(int mode)
 	{
@@ -235,10 +229,13 @@ public class SC_Fob21 : MonoBehaviour {
 				if(Input.GetKey(KeyCode.LeftControl)) its=35;
 				
 				for(i=0;i<its;i++)
-				if(SC_slots.InvHaveB(item,1,true,true,true,1))
 				{
-					pressed_0 = true;
-					ClickUpdate(0);
+					if(item!=0)
+					if(SC_slots.InvHaveB(item,1,true,true,true,1))
+					{
+						pressed_0 = true;
+						ClickUpdate(0);
+					}
 				}
 			}
 			else if(!Input.GetMouseButton(0)) pressed_0 = false;
@@ -271,17 +268,13 @@ public class SC_Fob21 : MonoBehaviour {
 		if((int)Communtron4.position.y!=100)
 		{
 			//singleplayer load
-			string[] uAst = SC_data.GetAsteroid(X,Y).Split(';');
-            int c=int.Parse(uAst[0]),a=int.Parse(uAst[1]);
-			if(SC_data.World[a,21+uID*2,c]!="")
-			{
-				item=int.Parse(SC_data.World[a,21+uID*2,c]);
-				count=int.Parse(SC_data.World[a,22+uID*2,c]);
-			}
+			WorldData.Load(X,Y);
+			item = WorldData.GetNbt(uID+1,0);
+			count = WorldData.GetNbt(uID+1,1);
 		}
 		else
 		{
-			//multiplayer load
+			//multiplayer load ( #2021_code )
 			item=int.Parse(gameObject.name.Split(';')[0]);
 			count=int.Parse(gameObject.name.Split(';')[1]);
 		}
