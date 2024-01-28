@@ -16,7 +16,7 @@ public class SC_point_expand : MonoBehaviour {
 		int tX=(int)Mathf.Round(transform.position.x/sector_size);
 		int tY=(int)Mathf.Round(transform.position.y/sector_size);
 		
-		int ID=SC_fun.CheckID(tX,tY);
+		int ID=SC_fun.MakeUlam(tX,tY);
 		if(X<=20000&&X>=-20000&&Y<=20000&&Y>=-20000)
 		{
 			if(mode==0)

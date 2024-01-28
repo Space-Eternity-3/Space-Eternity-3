@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class SC_long_strings : MonoBehaviour
 {
-    public string AsteroidBase;
-    public string BiomeBase;
-	public string BiomeNewBase;
-	public string AsteroidSizeBase;
+    public string AsteroidBase; //long1
+	public string BiomeNewBase; //long2
+	public string AsteroidSizeBase; //long3
 
     /*
     

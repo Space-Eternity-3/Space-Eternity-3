@@ -91,6 +91,7 @@ if(!existsF("./authConfig.json")) {
   console.log("File authConfig.json generated.");
 }
 const authConfig = require("./authConfig.json");
+const { randomFillSync } = require("crypto");
 
 //Authorization server variables
 var waiting_authorized = [];
@@ -275,6 +276,279 @@ function TreasureDrop(str)
     return "8;1";
 }
 
+// ------------------------------------- \\
+// ------------- GENERATOR ------------- \\
+// ------------------------------------- \\
+
+
+// RANDOMIZATION CLASS
+
+const long1 = readF("./technical_data/AsteroidBase.se3");
+const long2 = readF("./technical_data/BiomeNewBase.se3");
+const long3 = readF("./technical_data/AsteroidSizeBase.se3");
+class Deterministics
+{
+    //Fully deterministic functions
+    static Random10e2(sour)
+    {
+		    sour = sour % 15000;
+		    let psInt = (long2[2*sour+0]+"") + (long2[2*sour+1]+"");
+		    return parseInt(psInt);
+	  }
+	  static Random10e3(sour) //long2 works best for 10e3
+    {
+		    sour = sour % 10000;
+		    let psInt = (long2[3*sour+0]+"") + (long2[3*sour+1]+"") + (long2[3*sour+2]+"");
+		    return parseInt(psInt);
+	  }
+	  static Random10e4(sour)
+    {
+		    sour = sour % 7500;
+		    let psInt = (long2[4*sour+0]+"") + (long2[4*sour+1]+"") + (long2[4*sour+2]+"") + (long2[4*sour+3]+"");
+		    return parseInt(psInt);
+	  }
+	  static Random10e5(sour)
+    {
+		    sour = sour % 6000;
+		    let psInt = (long2[5*sour+0]+"") + (long2[5*sour+1]+"") + (long2[5*sour+2]+"") + (long2[5*sour+3]+"") + (long2[5*sour+4]+"");
+		    return parseInt(psInt);
+	  }
+    static AnyRandom(div,sour)
+    {
+        return Deterministics.Random10e5(sour) % div;
+    }
+    static CalculateFromString(chance_string,sour)
+    {
+        let decider = Deterministics.Random10e3(sour);
+        const s_nums = chance_string.split(';');
+        let i,lngt = Math.floor(s_nums.length/3), V,A,B;
+        for(i=0;i<lngt;i++)
+        {
+            V = parseInt(s_nums[3*i + 0]);
+            A = parseInt(s_nums[3*i + 1]);
+            B = parseInt(s_nums[3*i + 2]);
+            if(decider>=A && decider<=B) return V;
+        }
+        return 0;
+    }
+}
+
+
+// GENERATION LAYER 1 (outer) -> Biome and structure specify
+
+class CBiomeInfo
+{
+    constructor(ulam)
+    {
+        this.biome = Generator.GetBiome(ulam);
+        this.size = Generator.GetBiomeSize(ulam,this.biome);
+        this.move = Generator.GetBiomeMove(ulam,this.biome,this.size);
+    }
+}
+
+class Generator
+{
+    static seed;
+
+    static tag_min = new Array(32).fill();
+    static tag_max = new Array(32).fill();
+    static tag_density = new Array(32).fill();
+    static tag_priority = new Array(32).fill();
+    static tag_struct = new Array(32).fill();
+    static tag_gradient = new Array(32).fill();
+    static tag_grid = new Array(32).fill();
+    static tag_spawn = new Array(32).fill();
+    static tag_centred = new Array(32).fill();
+    static tag_structural = new Array(32).fill();
+
+    static max_dict_size = 64;
+    static WorldMap = new Map();
+
+    //Initializes seed in generator, returns the actual seed string
+    static SetSeed(s_seed)
+    {
+        if(!isNaN(parseInt(s_seed)))
+        {
+            Generator.seed = parseInt(s_seed);
+            return s_seed;
+        }
+        else
+        {
+            Generator.seed = func.randomInteger(0,9999999);
+            return Generator.seed+"";
+        }
+    }
+
+    //Converts all biome tags into arrays
+    static TagNumbersInitialize()
+    {
+        let i,j;
+        for(i=0;i<32;i++)
+        {
+            Generator.tag_min[i] = 65;
+            Generator.tag_max[i] = 80;
+            Generator.tag_density[i] = 60;
+            Generator.tag_priority[i] = 16;
+            Generator.tag_struct[i] = 0;
+            Generator.tag_gradient[i] = 80;
+            Generator.tag_grid[i] = false;
+            Generator.tag_spawn[i] = false;
+            Generator.tag_centred[i] = false;
+            Generator.tag_structural[i] = false;
+
+            let tags = biomeTags[i];
+
+            for(j=0;j<=80;j++)
+                if(tagContains(tags,"min="+j)) Generator.tag_min[i]=j;
+            for(j=0;j<=80;j++)
+                if(tagContains(tags,"max="+j)) Generator.tag_max[i]=j;
+            for(j=0;j<=80;j++)
+                if(tagContains(tags,"radius="+j)) { Generator.tag_min[i]=j; Generator.tag_max[i]=j; }
+            
+            for(j=0;j<=100;j++)
+                if(tagContains(tags,"density="+j+"%")) Generator.tag_density[i]=j;
+            for(j=1;j<=31;j++)
+                if(tagContains(tags,"priority="+j)) Generator.tag_priority[i]=j;
+            for(j=1;j<=31;j++)
+                if(tagContains(tags,"struct="+j)) Generator.tag_struct[i]=j;
+
+            for(j=0;j<=80;j++)
+                if(tagContains(tags,"gradient="+j)) Generator.tag_gradient[i]=j;
+
+            if(tagContains(tags,"grid")) Generator.tag_grid[i] = true;
+            if(tagContains(tags,"spawn")) Generator.tag_spawn[i] = true;
+            if(tagContains(tags,"centred")) Generator.tag_centred[i] = true;
+            if(tagContains(tags,"structural")) Generator.tag_structural[i] = true;
+
+            if(Generator.tag_min[i] > Generator.tag_max[i])
+            {
+                let pom = Generator.tag_min[i];
+                Generator.tag_min[i] = Generator.tag_max[i];
+                Generator.tag_max[i] = pom;
+            }
+
+            if(Generator.tag_structural[i]) Generator.tag_priority[i] = 32;
+            else Generator.tag_struct[i] = 0;
+        }
+
+        Generator.tag_priority[0] = 0;
+        Generator.tag_struct[0] = 0;
+        Generator.tag_structural[0] = false;
+    }
+
+    //Generator partly independent methods
+    static MixID(ID,sed)
+    {
+        return ID+sed*2;
+    }
+    static BaseMove(ID)
+    {
+        let ird = Generator.MixID(ID,seed) % 9;
+        switch(ird)
+        {
+            case 0: return [0,0];
+            case 2: return [0,1];
+            case 8: return [0,2];
+            case 3: return [1,0];
+            case 7: return [1,1];
+            case 1: return [1,2];
+            case 5: return [2,0];
+            case 4: return [2,1];
+            case 6: return [2,2];
+            default: return [0,0];
+        }
+    }
+	  static DeltaOfSize(size)
+	  {
+		    if(size<=80 && size>=61) return 10;
+		    if(size<=60 && size>=40) return 30;
+		    if(size<=39 && size>=20) return 10;
+		    return 0;
+	  }
+	  static IsBiggerPriority(ulam1, ulam2, prio1, prio2)
+	  {
+		    if(prio1 > prio2) return true;
+		    else if(prio1 == prio2) {
+			      let rnd1 = Deterministics.Random10e2(ulam1+Generator.seed);
+			      let rnd2 = Deterministics.Random10e2(ulam2+Generator.seed);
+			      if(rnd1 > rnd2) return true;
+			      else if(rnd1 == rnd2) {
+				        if(ulam1 > ulam2) return true;
+			      }
+		    }
+        return false;
+	  }
+
+    //Dictionary access
+    static GetBiomeData(ulam)
+    {
+        if(!Generator.WorldMap.has(ulam))
+        {
+            let lngt = Generator.WorldMap.size;
+            if(lngt >= Generator.max_dict_size) Generator.WorldMap.clear();
+            Generator.WorldMap.set(ulam,new CBiomeInfo(ulam));
+            return Generator.WorldMap.get(ulam);
+        }
+        else return Generator.WorldMap.get(ulam);
+    }
+
+    //Basement functions
+    static GetBiome(ulam)
+    {
+        //Unconditional biome 0
+        if((ulam>=2 && ulam<=9) || ulam%2==0) return 0;
+
+        //Memories check and generate
+        //let biome = findBiome(ulam);
+        let biome = -1;
+        if(biome==-1)
+        {
+            let i;
+            if(ulam==1)
+            {
+                biome = 0;
+                for(i=1;i<=31;i++)
+                    if(Generator.tag_spawn[i]) biome = i;
+            }
+            else
+            {
+                biome = Deterministics.CalculateFromString(biomeChances,ulam+Generator.seed);
+            }
+            //insertBiome(ulam,biome);
+        }
+
+        //Structures erase
+        if(!Generator.tag_structural[biome]) return biome;
+        else
+        {
+            const XY = ulamToXY(ulam);
+            if(!(XY[0]%2==0 || XY[1]%2==0)) return 0;
+            else return biome;
+        }
+    }
+    static GetBiomeSize(ulam,biome)
+    {
+        if(biome==0) return -1;
+		    let ps_rand = Deterministics.Random10e4(ulam+seed) % ((Generator.tag_max[biome]-Generator.tag_min[biome])+1);
+		    return Generator.tag_min[biome] + ps_rand;
+    }
+    static GetBiomeMove(ulam,biome,size)
+    {
+        if(Generator.tag_centred[biome]) return [0,0];
+        let move_multiplier = Generator.DeltaOfSize(size);
+        let move_raw = Generator.BaseMove(ulam);
+        return [move_multiplier*(move_raw[0]-1),move_multiplier*(move_raw[1]-1)];
+    }
+}
+
+
+// GENERATION LAYER 2 (middle) -> Gameplay objects create
+
+// coming soon
+
+
+// GENERATION LAYER 3 (inner) -> Fobs and files communication
+
 let d0,d1,d_ulam;
 class WorldData
 {
@@ -282,9 +556,9 @@ class WorldData
     static Load(ulam) //Loads X;Y data to memory
     {
         const det = asteroidIndex(ulam);
-        d_ulam = ulam;
         d0 = det[0];
         d1 = det[1];
+        d_ulam = func.parseIntU(ulam);
     }
     static DataGenerate(gencode) //Generates data from gencode
     {
@@ -311,7 +585,7 @@ class WorldData
             const size = parseInt(elements[0]);
 
             //Type parse
-            const type = (sep=='t') ? parseInt(elements[1]) : WorldData.CalculateFromString(typeSet[parseInt(elements[1])*7 + size-4]);
+            const type = (sep=='t') ? parseInt(elements[1]) : Deterministics.CalculateFromString(typeSet[parseInt(elements[1])*7 + size-4], d_ulam + Generator.seed);
 
             //Gens parse
             const gens = Array(20).fill(-1);
@@ -327,7 +601,7 @@ class WorldData
             for(i=1;i<=size*2;i++)
             {
                 let gen = gens[i-1];
-                if(gen==-1) gen = WorldData.CalculateFromString(fobGenerate[type]);
+                if(gen==-1) gen = Deterministics.CalculateFromString(fobGenerate[type], 20*((d_ulam + Generator.seed) % 1000000)+i);
                 WorldData.UpdateFob(i,gen);
             }
         }
@@ -394,21 +668,10 @@ class WorldData
         WorldData.UpdateNbt(place,0,0);
         WorldData.UpdateNbt(place,1,0);
     }
-    static CalculateFromString(chance_string)
-    {
-        let decider = func.randomInteger(0,999);
-        const s_nums = chance_string.split(';');
-        let i,lngt = Math.floor(s_nums.length/3), V,A,B;
-        for(i=0;i<lngt;i++)
-        {
-            V = parseInt(s_nums[3*i + 0]);
-            A = parseInt(s_nums[3*i + 1]);
-            B = parseInt(s_nums[3*i + 2]);
-            if(decider>=A && decider<=B) return V;
-        }
-        return 0;
-    }
 }
+// ----------------------------------------- \\
+// ------------- GENERATOR END ------------- \\
+// ----------------------------------------- \\
 
 class CPlayer {
   constructor(pid) {
@@ -4067,7 +4330,7 @@ wss.on("connection", function connection(ws,req)
       var bossPosX = arg[5];
       var bossPosY = arg[6];
 
-      var lc3T, lc3, inds=-1, lngts=scrs.length;
+      var lc3, inds=-1, lngts=scrs.length;
 
       for(i=0;i<lngts;i++)
       {
@@ -4083,6 +4346,7 @@ wss.on("connection", function connection(ws,req)
           if(WorldData.GetType()!=1024) {
               WorldData.DataGenerate("BOSS");
           }
+          else for(i=2;i<=60;i++) WorldData.UpdateData(i,0);
           var trX1 = WorldData.GetData(1);
 
           //Boss initialization
@@ -4963,7 +5227,7 @@ console.log("-------------------------------");
 
 if (!existsF(universe_name + "/UniverseInfo.se3"))
 {
-  var datapackjse3, defaultjse3 = readF("server_technicals/DefaultDatapack.jse3");
+  var datapackjse3, defaultjse3 = readF("technical_data/DefaultDatapack.jse3");
   if(existsF("Datapack.jse3"))
   {
     datapackjse3 = readF("Datapack.jse3");
@@ -5020,16 +5284,11 @@ else
   console.log("Datapack loaded");
 }
 
-//Seed read
-if (!existsF(universe_name + "/Seed.se3")) {
-  seed = func.randomInteger(0, 10000000);
-  writeF(universe_name + "/Seed.se3", seed + "\r\n");
-  console.log("New seed generated: " + seed + "");
-}
-else {
-  seed = func.parseIntU(readF(universe_name + "/Seed.se3").split("\r\n")[0]);
-  writeF(universe_name + "/Seed.se3", seed + "\r\n");
-}
+//Generator initialize
+if(existsF(universe_name + "/Seed.se3")) seed = readF(universe_name + "/Seed.se3").split("\r\n")[0];
+seed = func.parseIntE(Generator.SetSeed(seed));
+writeF(universe_name + "/Seed.se3", seed + "\r\n");
+Generator.TagNumbersInitialize();
 
 //Biome memories read
 var dii;

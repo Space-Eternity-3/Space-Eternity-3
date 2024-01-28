@@ -73,7 +73,7 @@ public class SC_structure : MonoBehaviour
 
 		//SEON
 		if(SeonSource!=null) SeonField = SeonSource.text;
-		overrand = SC_fun.pseudoRandom10e5(ID+SC_fun.seed);
+		overrand = Deterministics.Random10e5(ID+SC_fun.seed);
 		string final_seon = TxtToSeonArray(SeonField);
 		SeonGenerate(final_seon);
 	}
@@ -289,7 +289,7 @@ public class SC_structure : MonoBehaviour
 						scaling_blocker++;
 				
 						int[] sXY = BuildXY(current);
-						ast.proto = true; ast.X=sXY[0]; ast.Y=sXY[1]; ast.ID=SC_fun.CheckID(ast.X,ast.Y);
+						ast.proto = true; ast.X=sXY[0]; ast.Y=sXY[1]; ast.ID=SC_fun.MakeUlam(ast.X,ast.Y);
 						ast.protsize = prsize;
 						ast.prottype = prtype;
 						ast.fobCode = prfobs;
@@ -354,7 +354,7 @@ public class SC_structure : MonoBehaviour
 						bos.SC_structure = transform.GetComponent<SC_structure>();
 
 						int[] sXY = BuildXY(current);
-						bos.bX=sXY[0]; bos.bY=sXY[1]; bos.bID=SC_fun.CheckID(bos.bX,bos.bY); bos.sID=ID;
+						bos.bX=sXY[0]; bos.bY=sXY[1]; bos.bID=SC_fun.MakeUlam(bos.bX,bos.bY); bos.sID=ID;
 						bos.type = prboss;
 
 						bos.StartFromStructure();

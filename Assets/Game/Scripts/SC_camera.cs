@@ -125,6 +125,13 @@ public class SC_camera : MonoBehaviour {
 			}
 		}
 		SC_fun.SeedSet(worldID);
+		
+		if(worldID!=100) {
+			SC_data.seed = Generator.SetSeed(SC_data.seed);
+			SC_data.Save("seed");
+		}
+		else Generator.SetSeed(SC_data.TempFileConID[8].Split('&')[0]);
+		
 		if(worldID!=100)
 		{
 			TotalTime=int.Parse(SC_data.UniverseX[worldID-1,0]);

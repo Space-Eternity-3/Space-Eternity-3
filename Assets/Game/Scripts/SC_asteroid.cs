@@ -65,9 +65,9 @@ public class SC_asteroid : MonoBehaviour {
 	{
 		if(ID==1) return;
 		string tags = SC_data.BiomeTags[int.Parse(biome.Split('b')[1])];
-		if(SC_fun.TagContains(tags,"grid")) return;
+		if(SC_data.TagContains(tags,"grid")) return;
 		
-		int r121 = SC_fun.pseudoRandom1000(ID+SC_fun.seed) % 121;
+		int r121 = Deterministics.Random10e3(ID+SC_fun.seed) % 121;
 		float dE = 5f - (S+2f)*0.35f;
 		float dZ = (r121/11-5) * dE * 0.2f;
 		float dW = (r121%11-5) * dE * 0.2f;
@@ -98,7 +98,7 @@ public class SC_asteroid : MonoBehaviour {
 		if(ID!=1) GetBiome();
 		if(!proto) size = SC_fun.GetSize(ID);
 		else size = protsize;
-		if(!proto) Move(size,SC_fun.GetMove(X,Y));
+		if(!proto) Move(size,SC_fun.LocalMove(ID));
 
 		normalScale = transform.localScale;
 		asteroidScale = new Vector3(1f,1f,0.75f)*size;

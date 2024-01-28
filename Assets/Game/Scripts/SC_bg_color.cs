@@ -95,7 +95,7 @@ public class SC_bg_color : MonoBehaviour
 
         for(i=0;i<9;i++)
         {
-            biomeData[i].ulam = SC_fun.CheckID((int)udels[i].x,(int)udels[i].y);
+            biomeData[i].ulam = SC_fun.MakeUlam((int)udels[i].x,(int)udels[i].y);
             biomeData[i].type = int.Parse(SC_fun.GetBiomeString(biomeData[i].ulam).Split('b')[1]);
 
             udels[i]*=100;
@@ -129,7 +129,7 @@ public class SC_bg_color : MonoBehaviour
         else if(biomes.Count == 2) //Biome overlapping handler
         {
             //Biome 0 will have bigger priority
-            if(SC_fun.IsBiggerPriority(biomes[1].ulam,biomes[0].ulam,biomes[1].priority,biomes[0].priority))
+            if(Generator.IsBiggerPriority(biomes[1].ulam,biomes[0].ulam,biomes[1].priority,biomes[0].priority))
             {
                 SBiomeFC pom = biomes[0];
                 biomes[0] = biomes[1];

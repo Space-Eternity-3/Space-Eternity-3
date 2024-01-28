@@ -403,15 +403,28 @@ public class SC_data : MonoBehaviour
             savesDIR = Application.persistentDataPath+"/saves/"; // "../../saves/";
         }
 
+        //Example datapack load
         example = SourcePackJse3.text.Replace('\r',' ').Replace('\n',' ');
 
-        WorldData.SC_data = this;
+        //Static classes initialization
+        if(!menu)
+        {
+            WorldData.SC_data = this;
+            Generator.SC_data = this;
+            Generator.SC_fun = SC_control.SC_fun;
+            Generator.WorldMap.Clear();
+            Deterministics.long1 = SC_control.SC_fun.SC_long_strings.AsteroidBase;
+            Deterministics.long2 = SC_control.SC_fun.SC_long_strings.BiomeNewBase;
+            Deterministics.long3 = SC_control.SC_fun.SC_long_strings.AsteroidSizeBase;
+        }
 		
+        //Reset data
 		int i,j,k;
         ResetAwakeUniversal();
         ResetAwakeWorld();
         for(i=0;i<100;i++) for(j=0;j<61;j++) for(k=0;k<16;k++) World[i,j,k]="";
 		
+        //Starting datapack translate
         if(menu)
         {
             PreData = example;

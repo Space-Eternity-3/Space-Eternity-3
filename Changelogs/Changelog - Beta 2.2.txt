@@ -98,9 +98,9 @@ Configurables:
 - new biome tags:
   - use bgcolor-X-X-X biome tag to customize background color
   - use boss.1.color-X-X-X biome tag to customize boss background color (see default colors [here])
-  - use gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
+  - use tag gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
 
-Important technical changes:
+Technical changes:
 
 a) Server connecting
 - the max lagging time in main menu is 3 seconds from now and it happens only during the nick verification process
@@ -137,6 +137,8 @@ c) Others
 - universes can now store file "difficulty.txt", which stores the actual universe difficulty (only singleplayer)
 - error fob is now 72 (total vacuum) instead of 0 (empty)
 - reworked communication with terrain files from code level
+- reworked biome generation API and copied it to the server
+- asteroid type set and fobs generation are now deterministic based on seed
 
 Bug fixes:
 
@@ -168,4 +170,9 @@ Bug fixes:
 Universe updating warnings
 
 - 8/9 of all stars will move a bit and destroy part of terrain around them, take care of your star-storage rooms
-- old arenas will contain fobs, which should be deleted normally (fobs overlapping with walls and pistons)
+- old arenas will contain fobs, which should be removed normally (fobs overlapping with walls and pistons)
+
+Delayed changes
+
+- remove ring.X.change tag
+- remove swap tag

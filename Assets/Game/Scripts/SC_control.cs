@@ -2062,6 +2062,7 @@ public class SC_control : MonoBehaviour {
 		//IL_barrier -= unit * SC_artefacts.powerRM[3];
 		
 		SC_fun.BTPT();
+		Generator.TagNumbersInitialize();
 
 		int i;
 		float tX=0f,tY=0f,tH=0f,tF=0f,tP=0f,tVx=0f,tVy=0f;
