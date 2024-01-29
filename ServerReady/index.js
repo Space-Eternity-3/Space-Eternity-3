@@ -208,7 +208,8 @@ var serverVersion = "Beta 2.2";
 var serverRedVersion = "Beta_2_2";
 var clientDatapacksVar = "";
 var seed;
-var biome_memories = new Array(16000);
+var biome_memories = new Array(16000).fill("");
+var biome_memories_state = new Array(16000).fill(0);
 var hourHeader = "";
 var gpl_number = 122;
 var max_players = 10;
@@ -497,10 +498,12 @@ class Generator
     {
         //Unconditional biome 0
         if((ulam>=2 && ulam<=9) || ulam%2==0) return 0;
+        let XY = ulamToXY(ulam);
+        if(XY[0] < -2000 || XY[0] >= 2000) return 0;
+        if(XY[1] < -2000 || XY[1] >= 2000) return 0;
 
         //Memories check and generate
-        //let biome = findBiome(ulam);
-        let biome = -1;
+        let biome = FindBiome(ulam);
         if(biome==-1)
         {
             let i;
@@ -514,7 +517,7 @@ class Generator
             {
                 biome = Deterministics.CalculateFromString(biomeChances,ulam+Generator.seed);
             }
-            //insertBiome(ulam,biome);
+            InsertBiome(ulam,biome);
         }
 
         //Structures erase
@@ -903,9 +906,17 @@ typeSet.fill(""); Object.seal(typeSet);
 gameplay.fill(""); Object.seal(gameplay);
 modifiedDrops.fill(""); Object.seal(modifiedDrops);
 
-function Num31ToChar(num) {
-  if (num < 10) return String.fromCharCode(48 + num)+"";
-  return String.fromCharCode(55 + num)+"";
+function Num31ToChar(num)
+{
+    if (num < 10) return String.fromCharCode(48 + num)+"";
+    return String.fromCharCode(55 + num)+"";
+}
+function CharToNum31(ch)
+{
+		if(ch=='-') return -1;
+		var num = ch.charCodeAt(0);
+		if(num < 65) return num-48;
+		else return num-55;
 }
 
 function replaceCharAtIndex(inputStr, index, newChar) {
@@ -1585,12 +1596,21 @@ process.on("SIGUSR2", exitHandler.bind(null, { exit: true })); //???
 //process.on('exit', exitHandler.bind(null,{cleanup:true})); //???
 
 //Save optimalize functions
-function SaveAllNow() {
-  var i,
-    lngt = chunk_data.length;
-  for (i = 0; i < max_players; i++) if (checkPlayerCn(i, plr.conID[i])) savePlayer(i);
-  for (i = 0; i < lngt; i++) chunkSave(i);
-  writeF(universe_name + "/Biomes.se3", biome_memories.join("\r\n") + "\r\n");
+function SaveAllNow()
+{
+    var i,lngt = chunk_data.length;
+    for(i=0;i<max_players;i++) if (checkPlayerCn(i, plr.conID[i])) savePlayer(i);
+    for(i=0;i<lngt;i++) chunkSave(i);
+    for(i=0;i<16000;i++)
+    {
+        if(biome_memories_state[i]==3 && biome_memories[i]!="")
+        {
+            writeF(universe_name + "/Biomes/Memory_"+i+".se3", biome_memories[i]+"\r\n");
+            biome_memories_state[i] = 2;
+        }
+    }
+    var natete = universe_name + "/Biomes.se3";
+    if(existsF(natete)) removeF(natete);
 }
 
 //Save all once per 15 seconds (or less if lags)
@@ -3329,7 +3349,7 @@ wss.on("connection", function connection(ws,req)
               clientDatapacksVar + " " +
               plr.upgrades[i] + " " +
               plr.backpack[i] + " " +
-              seed+"&"+(biome_memories.join("?")) +
+              seed+"&"+MemoriesForClient(plr.data[i]) +
               " X X"
           );
           se3_ws[i] = ws;
@@ -4285,6 +4305,13 @@ wss.on("connection", function connection(ws,req)
         );
       }
     }
+    if (arg[0] == "/RequestMemories") // 1[PlayerID] 2[MemoryID]
+    {
+      if(!VerifyCommand(arg,["PlaID","0-16k"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+      
+      sendTo(ws,"/RetMemoryData "+arg[2]+"$"+biome_memories[func.parseIntU(arg[2])]+" X X");
+    }
 
 
     //---------------//
@@ -4399,25 +4426,6 @@ wss.on("connection", function connection(ws,req)
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21831,-26.21851,315,1093]);
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64282,-15.10704,337.5,1094]);
       }
-    }
-    if (arg[0] == "/TryInsertBiome") {
-      //TryInsertBiome 1[PlayerID] 2[Ulam] 3[Biome]
-      if (!checkPlayerG(arg[1],ws)) return;
-      
-      var ulam = func.parseIntU(arg[2]);
-      var biome = func.parseIntU(arg[3]);
-
-      var ln = Math.floor(ulam / 1000);
-			var id = ulam % 1000;
-			if(ln>=16000)
-			{
-				id += (ln-15999) * 1000;
-				ln = 15999;
-			}
-			while(biome_memories[ln].length <= id)
-				biome_memories[ln] += '-';
-			if(biome_memories[ln][id]=="-") biome_memories[ln] = replaceCharAtIndex(biome_memories[ln], id, Num31ToChar(biome));
-
     }
   });
 });
@@ -4624,6 +4632,11 @@ function VerifyCommand(args,formats)
         var p = func.parseIntP(test);
         if(isNaN(p)) return false;
         if(![0,23,25].includes(p)) return false;
+      }
+      else if(sw=="0-16k") {
+        var p = func.parseIntP(test);
+        if(isNaN(p)) return false;
+        if(p < 0 || p >= 16000) return false;
       }
       else console.log("Error: Unknown format: "+sw);
     }
@@ -5225,6 +5238,8 @@ function GplGet(str)
 //Start functions
 console.log("-------------------------------");
 
+console.log("Initializing datapack...");
+
 if (!existsF(universe_name + "/UniverseInfo.se3"))
 {
   var datapackjse3, defaultjse3 = readF("technical_data/DefaultDatapack.jse3");
@@ -5284,21 +5299,120 @@ else
   console.log("Datapack loaded");
 }
 
+//Biome memories functions
+function BiomeMemoriesUpdate()
+{
+		var old_data = new Array(16000).fill("");
+		var i,j;
+		for(i=0;i<16000;i++)
+		{
+			  old_data[i] = biome_memories[i];
+			  biome_memories[i] = "";
+		}
+		for(i=0;i<16000;i++)
+		{
+  			var lngt = old_data[i].length;
+			  for(j=1;j<lngt;j+=2) //only odd
+			  {
+				    var ulam = i*1000 + j;
+				    var biome = CharToNum31(old_data[i][j]);
+				    if(biome!=-1) InsertBiome(ulam,biome);
+			  }
+			  biome_memories_state[i] = 3;
+		}
+}
+function FindBiome(ulam)
+{
+		var LnId = UlamToLnId(ulam);
+		var ln = LnId[0];
+		var id = LnId[1];
+
+		if(biome_memories[ln].length <= id) return -1;
+		var cand = CharToNum31(biome_memories[ln][id]);
+		if(cand < 0 || cand > 31) return -1;
+		else return cand;
+}
+function InsertBiome(ulam,biome)
+{
+		var LnId = UlamToLnId(ulam);
+		var ln = LnId[0];
+		var id = LnId[1];
+
+		while(biome_memories[ln].length <= id)
+			biome_memories[ln] += '-';
+
+    biome_memories[ln] = replaceCharAtIndex(biome_memories[ln],id,Num31ToChar(biome));
+		biome_memories_state[ln] = 3;
+}
+function UlamToLnId(ulam)
+{
+		var XY = ulamToXY(ulam);
+		XY[0] += 2000;
+		XY[1] += 2000; //0-3999
+		var X = Math.floor(XY[0] / 32);
+		var Y = Math.floor(XY[1] / 32);
+		var x = XY[0] % 32;
+		var y = XY[1] % 32;
+		var ln = 125*X + Y;
+		var id = 32*x + y;
+		return [ln,id];
+}
+function MemoriesForClient(client_data)
+{
+  var spl = client_data.split(";");
+  return [
+    [7812,biome_memories[7812]].join("$"),
+    MemoriesOfCoords(func.parseFloatU(spl[0]),func.parseFloatU(spl[1])),
+    MemoriesOfCoords(func.parseFloatU(spl[6]),func.parseFloatU(spl[7]))
+  ].join("?");
+}
+function MemoriesOfCoords(x,y)
+{
+    x = Math.round(x/3200);
+    y = Math.round(y/3200);
+    if(x<-61) x=-61; if(x>61) x=61;
+    if(y<-61) y=-61; if(y>61) y=61;
+    x += 62;
+    y += 62;
+    var ln = 125*x + y;
+    var a = [
+      ln-125-1, ln-125, ln-125+1,
+      ln-1, ln, ln+1,
+      ln+125-1, ln+125, ln+125+1
+    ],b=[];
+    var i;
+    for(i=0;i<9;i++)
+      b[i] = a[i] + "$" + biome_memories[a[i]];
+    return b.join("?");
+}
+
+//Biome memories read
+console.log("Initializing generator...");
+var dii;
+if(existsF(universe_name + "/Biomes.se3"))
+{
+    var rtr = readF(universe_name + "/Biomes.se3").split("\r\n");
+    for(dii=0;dii<16000;dii++)
+        biome_memories[dii] = rtr[dii];
+    BiomeMemoriesUpdate();
+}
+else
+{
+    for(dii=0;dii<16000;dii++)
+    {
+        var natete = universe_name + "/Biomes/Memory_"+dii+".se3";
+        if(existsF(natete)) biome_memories[dii] = readF(natete).split("\r\n")[0];
+        biome_memories_state[dii] = 2;
+    }
+}
+
 //Generator initialize
 if(existsF(universe_name + "/Seed.se3")) seed = readF(universe_name + "/Seed.se3").split("\r\n")[0];
 seed = func.parseIntE(Generator.SetSeed(seed));
 writeF(universe_name + "/Seed.se3", seed + "\r\n");
 Generator.TagNumbersInitialize();
 
-//Biome memories read
-var dii;
-for(dii=0;dii<16000;dii++) biome_memories[dii] = "";
-
-if (existsF(universe_name + "/Biomes.se3")) {
-  var rtr = readF(universe_name + "/Biomes.se3").split("\r\n");
-  for(dii=0;(dii<16000 && dii<rtr.length);dii++)
-    biome_memories[dii] = rtr[dii];
-}
+console.log("Generator active");
 
 function laggy_comment(nn)
 {
@@ -5522,6 +5636,7 @@ function listenForMessages()
           var x = bef[0].replaceAll(".",",");
           var y = bef[1].replaceAll(".",",");
           give_array_add_temp("TP "+arg[1]+" "+x+" "+y);
+          sendTo(se3_ws[indof1],"/RetMemoryData "+MemoriesForClient([x,y,0,0,0,0,0,0].join(";"))+" X X");
           sendTo(se3_ws[indof1],"/RetCommandTp "+x+" "+y+" X X");
         }
         else console.log("At least one of these players is not on a server.");
@@ -5533,6 +5648,7 @@ function listenForMessages()
           var x = (func.parseFloatU(arg[2])+"").replaceAll(".",",");
           var y = (func.parseFloatU(arg[3])+"").replaceAll(".",",");
           give_array_add_temp("TP "+arg[1]+" "+x+" "+y);
+          sendTo(se3_ws[indof],"/RetMemoryData "+MemoriesForClient([x,y,0,0,0,0,0,0].join(";"))+" X X");
           sendTo(se3_ws[indof],"/RetCommandTp "+x+" "+y+" X X");
         }
         else console.log("This player is not on a server.");
@@ -5638,6 +5754,7 @@ function listenForMessages()
 listenForMessages();
 
 //Starting ending
+console.log("-------------------------------");
 console.log("Server started on version: " + serverVersion + "");
 console.log("Universe directory: " + universe_name + "");
 console.log("Max players: " + max_players + "");

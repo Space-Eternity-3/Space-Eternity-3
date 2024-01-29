@@ -358,6 +358,10 @@ public static class Generator
     {
         //Unconditional biome 0
         if((ulam>=2 && ulam<=9) || ulam%2==0) return 0;
+        int[] XY = SC_fun.UlamToXY(ulam);
+        if(XY[0] < -2000 || XY[0] >= 2000) return 0;
+        if(XY[1] < -2000 || XY[1] >= 2000) return 0;
+        
 
         //Memories check and generate
         int biome = SC_fun.FindBiome(ulam);
@@ -381,7 +385,6 @@ public static class Generator
         if(!tag_structural[biome]) return biome;
         else
         {
-            int[] XY = SC_fun.UlamToXY(ulam);
             if(!(XY[0]%2==0 || XY[1]%2==0)) return 0;
             else return biome;
         }

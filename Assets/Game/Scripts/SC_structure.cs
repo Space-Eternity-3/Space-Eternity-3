@@ -73,7 +73,7 @@ public class SC_structure : MonoBehaviour
 
 		//SEON
 		if(SeonSource!=null) SeonField = SeonSource.text;
-		overrand = Deterministics.Random10e5(ID+SC_fun.seed);
+		overrand = Deterministics.Random10e5(ID+Generator.seed);
 		string final_seon = TxtToSeonArray(SeonField);
 		SeonGenerate(final_seon);
 	}

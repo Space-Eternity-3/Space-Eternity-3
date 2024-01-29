@@ -13,7 +13,6 @@ public class SC_fun : MonoBehaviour
     public Texture Item20u, Item55u, Item57u, Item59u, Item61u, Item63u, Item71u;
 	
     public float volume;
-    public int seed;
 	public List<int> GenListsB0 = new List<int>();
 	public List<int> GenListsB1 = new List<int>();
 	public float seek_default_angle;
@@ -47,31 +46,6 @@ public class SC_fun : MonoBehaviour
     public SC_data SC_data;
     public SC_long_strings SC_long_strings;
 
-    public void SeedSet(int world)
-    {
-        if(world!=100)
-        {
-            if(!Directory.Exists(SC_data.worldDIR))
-            {
-                UnityEngine.Debug.LogError("Not existing universe is openned.");
-                SC_control.MenuReturn();
-            }
-            if(SC_data.seed!="") seed=int.Parse(SC_data.seed);
-            else
-            {
-                seed=UnityEngine.Random.Range(0,10000000);
-                SC_data.seed=seed+"";
-                SC_data.Save("seed");
-            }
-        }
-        else
-        {
-			string raw = SC_data.TempFileConID[8];
-			string[] rw = raw.Split('&');
-            if(rw[0]!="") seed=int.Parse(rw[0]);
-            else SC_control.MenuReturn();
-        }
-    }
 	public void BTPT()
 	{
 		//BIOME TAG PRE TRANSLATE
@@ -234,52 +208,71 @@ public class SC_fun : MonoBehaviour
 	}
 
 	//BiomeMemories methods
+	public void BiomeMemoriesUpdate()
+	{
+		string[] old_data = new string[16000];
+		int i,j;
+		for(i=0;i<16000;i++)
+		{
+			old_data[i] = SC_data.biome_memories[i];
+			SC_data.biome_memories[i] = "";
+		}
+		for(i=0;i<16000;i++)
+		{
+			int lngt = old_data[i].Length;
+			for(j=1;j<lngt;j+=2) //only odd
+			{
+				int ulam = i*1000 + j;
+				int biome = CharToNum31(old_data[i][j]);
+				if(biome!=-1) InsertBiome(ulam,biome);
+			}
+			SC_data.biome_memories_state[i] = 3;
+		}
+	}
 	public int FindBiome(int ulam)
 	{
-		try {
+		int[] LnId = UlamToLnId(ulam);
+		int ln = LnId[0];
+		int id = LnId[1];
+		SC_data.MemorySureMake(ln);
 
-			int ln = ulam / 1000;
-			int id = ulam % 1000;
-			if(ln>=16000)
-			{
-				id += (ln-15999) * 1000;
-				ln = 15999;
-			}
-			if(SC_data.biome_memories[ln].Length <= id) return -1;
-			int cand = CharToNum31(SC_data.biome_memories[ln][id]);
-			if(cand < 0 || cand > 31) return -1;
-			else return cand;
-
-		} catch(Exception) {
-			Debug.LogWarning("FindBiome error");
-			return -1;
-		}
-
-		return -1;
+		if(SC_data.biome_memories[ln].Length <= id) return -1;
+		int cand = CharToNum31(SC_data.biome_memories[ln][id]);
+		if(cand < 0 || cand > 31) return -1;
+		else return cand;
 	}
 	public void InsertBiome(int ulam, int biome)
 	{
-		if((int)SC_control.Communtron4.position.y!=100)
-		{
-			int ln = ulam / 1000;
-			int id = ulam % 1000;
-			if(ln>=16000)
-			{
-				id += (ln-15999) * 1000;
-				ln = 15999;
-			}
-			while(SC_data.biome_memories[ln].Length <= id)
-				SC_data.biome_memories[ln] += '-';
+		if((int)SC_control.Communtron4.position.y==100) return;
+
+		int[] LnId = UlamToLnId(ulam);
+		int ln = LnId[0];
+		int id = LnId[1];
+
+		while(SC_data.biome_memories[ln].Length <= id)
+			SC_data.biome_memories[ln] += '-';
 			
-			int i;
-			StringBuilder ret = new StringBuilder();
-			for(i=0;i<id;i++) ret.Append(SC_data.biome_memories[ln][i]);
-			ret.Append(Num31ToChar(biome));
-			for(i=id+1;i<SC_data.biome_memories[ln].Length;i++) ret.Append(SC_data.biome_memories[ln][i]);
-			SC_data.biome_memories[ln] = ret.ToString();
-		}
-		else
-			SC_control.SendMTP("/TryInsertBiome "+SC_control.connectionID+" "+ulam+" "+biome);
+		int i;
+		StringBuilder ret = new StringBuilder();
+		for(i=0;i<id;i++) ret.Append(SC_data.biome_memories[ln][i]);
+		ret.Append(Num31ToChar(biome));
+		for(i=id+1;i<SC_data.biome_memories[ln].Length;i++) ret.Append(SC_data.biome_memories[ln][i]);
+		SC_data.biome_memories[ln] = ret.ToString();
+
+		SC_data.biome_memories_state[ln] = 3;
+	}
+	public int[] UlamToLnId(int ulam)
+	{
+		int[] XY = UlamToXY(ulam);
+		XY[0] += 2000;
+		XY[1] += 2000; //0-3999
+		int X = XY[0] / 32;
+		int Y = XY[1] / 32;
+		int x = XY[0] % 32;
+		int y = XY[1] % 32;
+		int ln = 125*X + Y;
+		int id = 32*x + y;
+		return new int[]{ln,id};
 	}
 	public char Num31ToChar(int num)
 	{
@@ -297,7 +290,7 @@ public class SC_fun : MonoBehaviour
 	//Layer 2 methods
 	public int GetSize(int ID)
     {
-		int IDm=MixID(ID,seed);
+		int IDm=MixID(ID,Generator.seed);
 		return (int)SC_long_strings.AsteroidSizeBase[(IDm%65536-1)/2]-48;
     }
 	public float[] GetBiomeDAU(int ID)
@@ -367,7 +360,7 @@ public class SC_fun : MonoBehaviour
 	}
 	public bool AsteroidCheck(int ID)
     {
-        int IDm=MixID(ID,seed);
+        int IDm=MixID(ID,Generator.seed);
         if(ID==1) return false;
         if(IDm%2==0) return false;
 		int it = (int)SC_long_strings.AsteroidBase[(IDm%65536-1)/2];
@@ -403,8 +396,6 @@ public class SC_fun : MonoBehaviour
 		return bC[bint];
 	}
 
-//-----------------------------------------------------------------------------------------------
-
 	//Generator partly independent methods
     int MixID(int ID,int sed)
     {
@@ -412,7 +403,7 @@ public class SC_fun : MonoBehaviour
     }
     public string LocalMove(int ID)
     {
-        int ird=(MixID(ID,seed)*2)%18;
+        int ird=(MixID(ID,Generator.seed)*2)%18;
         switch(ird)
         {
             case 0: return "0;0";
@@ -428,7 +419,7 @@ public class SC_fun : MonoBehaviour
         }
     }
 
-	//Memorized functions
+	//Sheep in the wolf's coat
 	public Vector3 GetBiomeMove(int ulam)
 	{
 		return Generator.GetBiomeData(ulam).move;

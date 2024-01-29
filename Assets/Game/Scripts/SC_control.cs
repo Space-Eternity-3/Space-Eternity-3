@@ -274,6 +274,27 @@ public class SC_control : MonoBehaviour {
 		foreach(SC_pulse_bar spb in spbs) {
 			spb.canvas.enabled = !f1;
 		}
+
+		//Multiplayer memories control
+		int lX = (int)Mathf.Round(player.position.x/3200f);
+		int lY = (int)Mathf.Round(player.position.y/3200f);
+		if(lX<-61) lX=-61; if(lX>61) lX=61;
+		if(lY<-61) lY=-61; if(lY>61) lY=61;
+		lX += 62; lY += 62; int ln = lX*125 + lY;
+		int[] indexes = new int[]{
+			ln-125-1, ln-125, ln-125+1,
+			ln-1, ln, ln+1,
+			ln+125-1, ln+125, ln+125+1
+		};
+		for(int li=0;li<9;li++)
+		{
+			if(SC_data.biome_memories_state[indexes[li]]==0)
+			{
+				SC_data.biome_memories_state[indexes[li]] = 1;
+				UnityEngine.Debug.Log("Sent request: "+indexes[li]);
+				SendMTP("/RequestMemories "+connectionID+" "+indexes[li]);
+			}
+		}
 		
 		if(!timeStop){
 		
@@ -1926,6 +1947,10 @@ public class SC_control : MonoBehaviour {
 		{
 			SC_difficulty.HardSet(int.Parse(arg[1]));
 		}
+		if(arg[0]=="/RetMemoryData")
+		{
+			LoadBiomeMemoriesMtp(arg[1].Split('?'));
+		}
 
 		//Other scripts
 		if(arg[0]=="/RetAsteroidData")
@@ -2012,6 +2037,16 @@ public class SC_control : MonoBehaviour {
 	{
 		SC_gameplay_set.GameplayAwakeSet();
 	}
+	public void LoadBiomeMemoriesMtp(string[] tabb)
+	{
+		foreach(string str in tabb)
+		{
+			string[] stb = str.Split('$');
+			int stb_ind = int.Parse(stb[0]);
+			SC_data.biome_memories[stb_ind] = stb[1];
+			SC_data.biome_memories_state[stb_ind] = 2;
+		}
+	}
 	public void AfterAwake()
 	{
 		int j;
@@ -2043,12 +2078,7 @@ public class SC_control : MonoBehaviour {
 			string[] rw = SC_data.TempFileConID[8].Split('&');
 			if(rw.Length>=2)
 			{
-				string[] tabb = rw[1].Split('?');
-				if(tabb.Length>=16000)
-				{
-					int ri;
-					for(ri=0;ri<16000;ri++) SC_data.biome_memories[ri] = tabb[ri];
-				}
+				LoadBiomeMemoriesMtp(rw[1].Split('?'));
 			}
 		}
 

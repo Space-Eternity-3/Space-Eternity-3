@@ -120,11 +120,9 @@ public class SC_camera : MonoBehaviour {
 
 			if(SC_data.UniverseX[worldID-1,2]!=SC_data.clientVersion) {
 				SC_data.UniverseX[worldID-1,2] = SC_data.clientVersion;
-				SC_data.Save("UniverseX");
 				Debug.Log("Version of Universe"+worldID+" updated to "+SC_data.clientVersion);
 			}
 		}
-		SC_fun.SeedSet(worldID);
 		
 		if(worldID!=100) {
 			SC_data.seed = Generator.SetSeed(SC_data.seed);

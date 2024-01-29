@@ -171,6 +171,7 @@ Universe updating warnings
 
 - 8/9 of all stars will move a bit and destroy part of terrain around them, take care of your star-storage rooms
 - old arenas will contain fobs, which should be removed normally (fobs overlapping with walls and pistons)
+- some structures on the world border might be erased as well as some asteroids (200 000 coordinates from spawn)
 
 Delayed changes
 

@@ -65,6 +65,7 @@ public class SC_data : MonoBehaviour
     public string[] data = new string[8];
     public string[,] inventory = new string[9,2];
     public string[] biome_memories = new string[16000];
+    public int[] biome_memories_state = new int[16000]; // 0-empty, 1-requested, 2-received, 3-modified
 
     //Asteroids
     public int asteroidCounter=0;
@@ -455,6 +456,7 @@ public class SC_data : MonoBehaviour
             case "Settings": return settingsDIR;
             case "Seed": return worldDIR;
             case "Biomes": return worldDIR;
+            case "Biomes2": return worldDIR+"Biomes/";
             case "PlayerData": return worldDIR;
             case "generated": return asteroidDIR;
             default: return "./ERROR/";
@@ -602,6 +604,8 @@ public class SC_data : MonoBehaviour
             for(i=0;i<16000;i++) biome_memories[i]=sr.ReadLine();
             
             CloseRead();
+
+            SC_control.SC_fun.BiomeMemoriesUpdate();
         }
 
         }catch(Exception)
@@ -662,6 +666,28 @@ public class SC_data : MonoBehaviour
             return;
         }
     }
+    public void MemorySureMake(int n)
+    {
+        if(biome_memories_state[n]>=2) return;
+        if((int)Communtron4.position.y==100)
+        {
+            throw(new Exception("Can't generate biome instantly, not enough data."));
+        }
+
+        string path = GetPath("Biomes2");
+        string file = path+"Memory_"+n+".se3";
+
+        if(Directory.Exists(path)) if(File.Exists(file))
+        {
+            OpenRead(file);
+
+            biome_memories[n] = sr.ReadLine();
+
+            CloseRead();
+        }
+
+        biome_memories_state[n] = 2;
+    }
     public void Save(string E)
     {
         if(crashed&&E!="temp") return;
@@ -671,6 +697,7 @@ public class SC_data : MonoBehaviour
 
         DirQ(savesDIR);
         DirQ(settingsDIR);
+        DirQ(GetPath("Biomes2"));
         if(worlded) DirQ(asteroidDIR);
 
         if(E=="settings")
@@ -762,19 +789,30 @@ public class SC_data : MonoBehaviour
         }
         if(E=="biomes")
         {
-            file=GetFile("Biomes");
-
-            try{
-            OpenWrite(file);
-            
-            writingStorage = string.Join("\r\n",biome_memories) + "\r\n";
-
-            CloseWrite();
-
-            }catch(Exception)
+            for(i=0;i<16000;i++)
             {
-                SaveCrash("Biomes");
+                if(biome_memories_state[i]==3 && biome_memories[i]!="")
+                {
+                    file = GetPath("Biomes2") + "Memory_"+i+".se3";
+
+                    try{
+                    OpenWrite(file);
+
+                    SaveLineCrLf(biome_memories[i]);
+
+                    CloseWrite();
+
+                    }catch(Exception)
+                    {
+                        SaveCrash("Biomes2");
+                    }
+
+                    biome_memories_state[i] = 2;
+                }
             }
+
+            file = GetFile("Biomes");
+            if(File.Exists(file)) File.Delete(file);
         }
         if(E=="player_data")
         {

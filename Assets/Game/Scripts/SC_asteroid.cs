@@ -67,7 +67,7 @@ public class SC_asteroid : MonoBehaviour {
 		string tags = SC_data.BiomeTags[int.Parse(biome.Split('b')[1])];
 		if(SC_data.TagContains(tags,"grid")) return;
 		
-		int r121 = Deterministics.Random10e3(ID+SC_fun.seed) % 121;
+		int r121 = Deterministics.Random10e3(ID+Generator.seed) % 121;
 		float dE = 5f - (S+2f)*0.35f;
 		float dZ = (r121/11-5) * dE * 0.2f;
 		float dW = (r121%11-5) * dE * 0.2f;
