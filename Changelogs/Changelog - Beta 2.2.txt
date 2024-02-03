@@ -114,7 +114,7 @@ b) Server run
 - server will no longer crash after receiving a wrong message (if it does, contact with the game developer)
 - server communication protocol was drastically reworked in client -> server commands, check server code comments for more information
 - server anti-cheat improved (there was completely no anti-cheat before)
-- player bullet speed will be always reduced to 1.2 units when too big
+- player bullet speed will always be reduced to 1.2 units when too big
 - hour header on server improved, it will additionally display date
 - information display design on server console changed a bit, removed unnecessary rectangular brackets []
 - bullet removing after kick is now on server side, client bullets no longer disappear when returning to menu
@@ -126,6 +126,8 @@ c) Others
 - settings format changed to fit official account text field data (username and password)
 - nicks can only contain english letters, numbers, and following characters: _ -
 - game will close immediately after exception or error and save its crash into crash.log file
+  - unnecessary try-catches in SC_data script removed to fit this system
+  - saving game files is impossibe after crash
 - unstable loop sound volume reduced: 0.4 -> 0.25 (to be less annoying)
 - removed 2 junkyard messages because of wrong text wrapping
 - bullet invisible server projections do not spawn anymore as physical objects
@@ -139,6 +141,7 @@ c) Others
 - reworked communication with terrain files from code level
 - reworked biome generation API and copied it to the server
 - asteroid type set and fobs generation are now deterministic based on seed
+- biome memories system reworked, splitted one giant file into smaller terrain files
 
 Bug fixes:
 

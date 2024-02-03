@@ -99,7 +99,6 @@ public class SC_camera : MonoBehaviour {
 	{
 		SC_data.CollectAwakeUniversal();
 		fullS=Screen.fullScreen;
-		if(SC_data.crashed) return;
 
 		camZ=float.Parse(SC_data.camera_zoom);
 		worldID=int.Parse(SC_data.TempFile);
@@ -116,7 +115,6 @@ public class SC_camera : MonoBehaviour {
 		{
 			SC_data.WorldID_Interpretate(worldID);
 			SC_data.CollectAwakeWorld();
-			if(SC_data.crashed) return;
 
 			if(SC_data.UniverseX[worldID-1,2]!=SC_data.clientVersion) {
 				SC_data.UniverseX[worldID-1,2] = SC_data.clientVersion;

@@ -33,8 +33,11 @@ public class SC_main_buttons : MonoBehaviour {
 	}
 	public void Button5PermanentExit()
 	{
+		#if UNITY_EDITOR
 		Debug.Log("Permanent Quit");
+		#else
 		Application.Quit();
+		#endif
 	}
 	void Update()
 	{

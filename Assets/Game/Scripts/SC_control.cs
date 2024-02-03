@@ -276,23 +276,26 @@ public class SC_control : MonoBehaviour {
 		}
 
 		//Multiplayer memories control
-		int lX = (int)Mathf.Round(player.position.x/3200f);
-		int lY = (int)Mathf.Round(player.position.y/3200f);
-		if(lX<-61) lX=-61; if(lX>61) lX=61;
-		if(lY<-61) lY=-61; if(lY>61) lY=61;
-		lX += 62; lY += 62; int ln = lX*125 + lY;
-		int[] indexes = new int[]{
-			ln-125-1, ln-125, ln-125+1,
-			ln-1, ln, ln+1,
-			ln+125-1, ln+125, ln+125+1
-		};
-		for(int li=0;li<9;li++)
+		if((int)Communtron4.position.y==100)
 		{
-			if(SC_data.biome_memories_state[indexes[li]]==0)
+			int lX = (int)Mathf.Round(player.position.x/3200f);
+			int lY = (int)Mathf.Round(player.position.y/3200f);
+			if(lX<-61) lX=-61; if(lX>61) lX=61;
+			if(lY<-61) lY=-61; if(lY>61) lY=61;
+			lX += 62; lY += 62; int ln = lX*125 + lY;
+			int[] indexes = new int[]{
+				ln-125-1, ln-125, ln-125+1,
+				ln-1, ln, ln+1,
+				ln+125-1, ln+125, ln+125+1
+			};
+			for(int li=0;li<9;li++)
 			{
-				SC_data.biome_memories_state[indexes[li]] = 1;
-				UnityEngine.Debug.Log("Sent request: "+indexes[li]);
-				SendMTP("/RequestMemories "+connectionID+" "+indexes[li]);
+				if(SC_data.biome_memories_state[indexes[li]]==0)
+				{
+					SC_data.biome_memories_state[indexes[li]] = 1;
+					UnityEngine.Debug.Log("Sent request: "+indexes[li]);
+					SendMTP("/RequestMemories "+connectionID+" "+indexes[li]);
+				}
 			}
 		}
 		

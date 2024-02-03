@@ -277,6 +277,18 @@ function TreasureDrop(str)
     return "8;1";
 }
 
+function getAllSe3Files(folderPath) {
+  try{
+      const files = fs.readdirSync(folderPath);
+      const textFiles = files.filter(file => {
+          const filePath = path.join(folderPath, file);
+          const fileStats = fs.statSync(filePath);
+          return fileStats.isFile() && file.endsWith('.se3');
+      });
+      return textFiles;
+  }catch{ return []; }
+}
+
 // ------------------------------------- \\
 // ------------- GENERATOR ------------- \\
 // ------------------------------------- \\
@@ -5238,8 +5250,6 @@ function GplGet(str)
 //Start functions
 console.log("-------------------------------");
 
-console.log("Initializing datapack...");
-
 if (!existsF(universe_name + "/UniverseInfo.se3"))
 {
   var datapackjse3, defaultjse3 = readF("technical_data/DefaultDatapack.jse3");
@@ -5265,8 +5275,8 @@ if (!existsF(universe_name + "/UniverseInfo.se3"))
     [uniTime, uniMiddle, uniVersion, ""].join("\r\n")
   );
 
-  if(verF=="Custom Data" && datName=="DEFAULT") console.log("Datapack imported: CUSTOM");
-  else console.log("Datapack imported: " + datName);
+  if(verF=="Custom Data" && datName=="DEFAULT") console.log("Datapack imported: CUSTOM (1/2)");
+  else console.log("Datapack imported: " + datName+" (1/2)");
 }
 else
 {
@@ -5279,7 +5289,7 @@ else
         " != " +
         serverVersion +
         "\r\nYou can update your universe by removing file " + universe_name + "/UniverseInfo.se3" +
-        "\r\nBe sure that file Datapack.jse3 contains a default datapack before updating." +
+        "\r\nBe sure that there is no file Datapack.jse3 to import the default datapack." +
         "\r\nNote that universe updating is supported only when updating Beta 2.1 or newer universes\r\nand only when they use a default datapack."
     );
 
@@ -5296,7 +5306,7 @@ else
     [uniTime, uniMiddle, uniVersion, ""].join("\r\n")
   );
 
-  console.log("Datapack loaded");
+  console.log("Datapack loaded (1/2)");
 }
 
 //Biome memories functions
@@ -5387,7 +5397,6 @@ function MemoriesOfCoords(x,y)
 }
 
 //Biome memories read
-console.log("Initializing generator...");
 var dii;
 if(existsF(universe_name + "/Biomes.se3"))
 {
@@ -5398,11 +5407,17 @@ if(existsF(universe_name + "/Biomes.se3"))
 }
 else
 {
-    for(dii=0;dii<16000;dii++)
+    var mem_files = getAllSe3Files(universe_name + "/Biomes/");
+    for(dii=0;dii<mem_files.length;dii++)
     {
-        var natete = universe_name + "/Biomes/Memory_"+dii+".se3";
-        if(existsF(natete)) biome_memories[dii] = readF(natete).split("\r\n")[0];
-        biome_memories_state[dii] = 2;
+        const mem_file = mem_files[dii];
+        const wyodr = parseInt(mem_file.match(/\d+/));
+        if("Memory_"+wyodr+".se3" == mem_file)
+        {
+            var natete = universe_name + "/Biomes/Memory_"+wyodr+".se3";
+            biome_memories[wyodr] = readF(natete).split("\r\n")[0];
+            biome_memories_state[wyodr] = 2;
+        }
     }
 }
 
@@ -5412,7 +5427,7 @@ seed = func.parseIntE(Generator.SetSeed(seed));
 writeF(universe_name + "/Seed.se3", seed + "\r\n");
 Generator.TagNumbersInitialize();
 
-console.log("Generator active");
+console.log("Generator initialized (2/2)");
 
 function laggy_comment(nn)
 {

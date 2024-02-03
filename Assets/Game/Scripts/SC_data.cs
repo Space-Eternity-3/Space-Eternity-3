@@ -23,7 +23,6 @@ public class SC_data : MonoBehaviour
     bool worlded=false;
     bool multiplayer;
     public bool menu;
-    public bool crashed;
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
@@ -299,7 +298,6 @@ public class SC_data : MonoBehaviour
     }
     void OpenWrite(string file)
     {
-        CloseWrite();
         fw = new FileStream(file, FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough);
         sw = new StreamWriter(fw);
         writingStorage = "";
@@ -310,30 +308,19 @@ public class SC_data : MonoBehaviour
     }
     void CloseWrite()
     {
-        try{
-            sw.Write(writingStorage);
-            sw.Close();
-            fw.Close();
-        }catch(Exception){}
+        sw.Write(writingStorage);
+        sw.Close();
+        fw.Close();
     }
     void OpenRead(string file)
     {
-        CloseRead();
         fr = new FileStream(file, FileMode.Open);
         sr = new StreamReader(fr);
     }
     void CloseRead()
     {
-        try{
-            sr.Close();
-            fr.Close();
-        }catch(Exception){}
-    }
-    void SaveCrash(string nam)
-    {
-        CloseWrite();
-        crashed=true;
-        UnityEngine.Debug.LogError(nam+" can not be saved.");
+        try{ sr.Close(); }catch(Exception){}
+        try{ fr.Close(); }catch(Exception){}
     }
     void ResetAwakeUniversal()
     {
@@ -542,13 +529,7 @@ public class SC_data : MonoBehaviour
             CloseRead();
             UnityEngine.Debug.LogWarning("File "+file+" is broken. Deleting it...");
 
-            try{
-                if(File.Exists(file)) File.Delete(file);
-            }catch(Exception)
-            {
-                UnityEngine.Debug.LogError("Broken file can't be deleted.");
-                throw;
-            }
+            if(File.Exists(file)) File.Delete(file);
 
             ResetAwakeUniversal();
             CollectAwakeUniversal();
@@ -613,13 +594,7 @@ public class SC_data : MonoBehaviour
             CloseRead();
             UnityEngine.Debug.LogWarning("File "+file+" is broken. Deleting it...");
 
-            try{
-                if(File.Exists(file)) File.Delete(file);
-            }catch(Exception)
-            {
-                UnityEngine.Debug.LogError("Broken file can't be deleted.");
-                throw;
-            }
+            if(File.Exists(file)) File.Delete(file);
 
             ResetAwakeWorld();
             CollectAwakeWorld();
@@ -663,7 +638,6 @@ public class SC_data : MonoBehaviour
         {
             CloseRead();
             dataSource = PreData; DatapackTranslate(); //Emergency pre translate PRE
-            return;
         }
     }
     public void MemorySureMake(int n)
@@ -690,7 +664,7 @@ public class SC_data : MonoBehaviour
     }
     public void Save(string E)
     {
-        if(crashed&&E!="temp") return;
+        if(Globals.emergency_save_terminate) return;
 
         string file,path,pathPre;
         int i,j;
@@ -704,9 +678,7 @@ public class SC_data : MonoBehaviour
         {
             file=GetFile("Settings");
 
-            try{
             OpenWrite(file);
-            
             SaveLineCrLf(volume);
             SaveLineCrLf(camera_zoom);
             SaveLineCrLf(MultiplayerInput[0]);
@@ -718,30 +690,16 @@ public class SC_data : MonoBehaviour
 			SaveLineCrLf(music);
 			SaveLineCrLf(compass_mode);
             SaveLineCrLf(has_played);
-
             CloseWrite();
-            
-            }catch(Exception)
-            {
-                SaveCrash("Settings");
-            }
         }
         if(E=="temp")
         {
             file=GetFile("Temp");
 
-            try{
             OpenWrite(file);
-            
             SaveLineCrLf(TempFile);
             for(i=0;i<11;i++) SaveLineCrLf(TempFileConID[i]);
-            
             CloseWrite();
-
-            }catch(Exception)
-            {
-                SaveCrash("TempFile");
-            }
         }
         if(E=="universeX")
         {
@@ -755,19 +713,11 @@ public class SC_data : MonoBehaviour
                 {
                     DirQ(path);
 
-                    try{
                     OpenWrite(file);
-                    
                     SaveLineCrLf(UniverseX[i-1,0]);
                     SaveLineCrLf(UniverseX[i-1,1]);
                     SaveLineCrLf(UniverseX[i-1,2]);
-
                     CloseWrite();
-
-                    }catch(Exception)
-                    {
-                        SaveCrash("UniverseInfo"+i);
-                    }
                 }
             }
         }
@@ -775,17 +725,9 @@ public class SC_data : MonoBehaviour
         {
             file=GetFile("Seed");
 
-            try{
             OpenWrite(file);
-            
             SaveLineCrLf(seed);
-
             CloseWrite();
-
-            }catch(Exception)
-            {
-                SaveCrash("Seed");
-            }
         }
         if(E=="biomes")
         {
@@ -795,17 +737,9 @@ public class SC_data : MonoBehaviour
                 {
                     file = GetPath("Biomes2") + "Memory_"+i+".se3";
 
-                    try{
                     OpenWrite(file);
-
                     SaveLineCrLf(biome_memories[i]);
-
                     CloseWrite();
-
-                    }catch(Exception)
-                    {
-                        SaveCrash("Biomes2");
-                    }
 
                     biome_memories_state[i] = 2;
                 }
@@ -826,17 +760,9 @@ public class SC_data : MonoBehaviour
 
             file=GetFile("PlayerData");
 
-            try{
             OpenWrite(file);
-            
             for(i=0;i<4;i++) SaveLineCrLf(effectTab[i]);
-
             CloseWrite();
-
-            }catch(Exception)
-            {
-                SaveCrash("PlayerData");
-            }
         }
     }
     public string GetAsteroid(int X,int Y)
@@ -891,12 +817,10 @@ public class SC_data : MonoBehaviour
                 try{
 
                 OpenRead(file);
-
                 for(i=0;i<=100;i++)
                 {
                     lines[i]=sr.ReadLine();
                 }
-
                 CloseRead();
 
                 if(seed==lines[0]) for(i=0;i<100;i++)
@@ -917,13 +841,8 @@ public class SC_data : MonoBehaviour
                     UnityEngine.Debug.LogWarning("Asteroid file "+file+" is broken. Generating new...");
 					AsteroidReset(asteroidCounter);
 
-                    try{
-                        if(File.Exists(file)) File.Delete(file);
-                    }catch(Exception)
-                    {
-                        UnityEngine.Debug.LogError("Broken file can't be deleted.");
-                        throw;
-                    }
+                    if(File.Exists(file)) File.Delete(file);
+                    
                     return GetAsteroid(X,Y);
                 }
             }
@@ -956,6 +875,7 @@ public class SC_data : MonoBehaviour
     }
     public void SaveAsteroid(int A)
     {
+        if(Globals.emergency_save_terminate) return;
         if(WorldSector[A]=="") return;
 
         int i,j;
@@ -966,8 +886,6 @@ public class SC_data : MonoBehaviour
         string[] gPos = WorldSector[A].Split(';');
         int gX=int.Parse(gPos[0]),gY=int.Parse(gPos[1]);
         file=filePre+"_"+gX+"_"+gY+".se3";
-        
-        try{
 
         OpenWrite(file);
         
@@ -981,11 +899,6 @@ public class SC_data : MonoBehaviour
         }
 
         CloseWrite();
-
-        }catch(Exception)
-        {
-            SaveCrash("Asteroids "+file);
-        }
     }
     public void OpenDataDir()
     {
@@ -1705,7 +1618,7 @@ public class SC_data : MonoBehaviour
 	}
 
     //Error handlers
-    public static void SaveErrorLog(string errorMessage)
+    void SaveErrorLog(string errorMessage)
     {
         string logFileName = "crash.log";
         string logEntry = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] {errorMessage}";
@@ -1716,21 +1629,40 @@ public class SC_data : MonoBehaviour
                 writer.WriteLine(logEntry);
             }
             #if !UNITY_EDITOR
-            Process.Start("notepad.exe", logFileName);
+            if(!Globals.emergency_save_terminate)
+                Process.Start("notepad.exe", logFileName);
             #endif
         }
         catch (Exception) {}
+
+        Globals.emergency_save_terminate = true;
     }
     void HandleLog(string logString, string stackTrace, LogType type)
     {
-        if (type == LogType.Error || type == LogType.Exception)
+        if ((type == LogType.Error || type == LogType.Exception))
         {
-            SaveErrorLog(logString);
+            #if !UNITY_EDITOR
+            SaveErrorLog(logString+"\r\nTrace:\r\n"+stackTrace);
             Application.Quit();
+            #endif
         }
     }
     void OnDestroy()
     {
         Application.logMessageReceivedThreaded -= HandleLog;
+    }
+}
+
+public static class Globals
+{
+    public static bool emergency_save_terminate = false;
+
+    public static int intParse(string s)
+    {
+        return 0;
+    }
+    public static float floatParse(string s)
+    {
+        return 0f;
     }
 }

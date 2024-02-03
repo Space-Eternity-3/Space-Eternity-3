@@ -60,7 +60,6 @@ public class SC_connection : MonoBehaviour
     void Awake()
     {
         SC_data.CollectAwakeUniversal();
-        if(SC_data.crashed) return;
     }
     string adressConvert(string ador)
     {
@@ -316,6 +315,17 @@ public class SC_connection : MonoBehaviour
     }
     void True_connect()
     {
+        if(IF_adress.text=="") {
+            V_Stop();
+            SC_account.SetWarningRaw("Aborted: Server address field can't be empty.");
+            return;
+        }
+        if(IF_nickname.text=="") {
+            V_Stop();
+            SC_account.SetWarningRaw("Aborted: Nickname field can't be empty.");
+            return;
+        }
+
         conID = GenerateRandomNumber(1,999999999)+"";
 
         string raw_url = IF_adress.text;
