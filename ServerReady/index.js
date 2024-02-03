@@ -4002,9 +4002,9 @@ wss.on("connection", function connection(ws,req)
       if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
-      var indof = give_array.indexOf("GIVE "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
+      var indof = give_array.indexOf("give "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
       if(indof!=-1) {
-        give_array[indof] = undefined;
+        give_array[indof] = "USED";
         if(!invChangeTry(arg[1],arg[2],arg[3],arg[4])) {kick(arg[1]); return;}
         console.log("Given "+arg[3]+"x item("+arg[2]+") to: "+plr.nicks[arg[1]]);
       }
@@ -4016,9 +4016,9 @@ wss.on("connection", function connection(ws,req)
       if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
-      var indof = give_array.indexOf("TP "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
+      var indof = give_array.indexOf("tp "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
       if(indof!=-1) {
-        give_array[indof] = undefined;
+        give_array[indof] = "USED";
         var bef = plr.players[arg[1]].split(";");
         bef[0] = func.parseFloatU(arg[2]);
         bef[1] = func.parseFloatU(arg[3]);
@@ -4594,7 +4594,7 @@ function VerifyCommand(args,formats)
       else if(sw=="ulamList") {
         var splitTab = test.split(";");
         var j,jngt = splitTab.length - 1;
-        if(jngt >= 512) return false;
+        if(jngt >= 1024) return false;
         for(j=1;j<jngt;j++)
         {
           var p = func.parseIntP(splitTab[j]);
@@ -5485,8 +5485,10 @@ const rl = readline.createInterface({
 
 function give_array_add_temp(element) {
   var ind = give_array.push(element) - 1;
+  console.log("Set promise: "+give_array[ind]);
   setTimeout(function() {
-          give_array[ind] = undefined;
+      if(give_array[ind]!="USED") console.log("Promise expired: "+give_array[ind]);
+      give_array[ind] = undefined;
   }, 3000);
 }
 function saveConfig() {
@@ -5495,239 +5497,35 @@ function saveConfig() {
 function listenForMessages()
 {
   rl.question('', (message) => {
-    if(["stop","quit","exit"].includes(message))
-    {
-      rl.close();
-      process.emit("SIGINT");
-    }
+    if(["stop","quit","exit"].includes(message)) Commands.stop();
     else
     {
       var arg = message.split(" ");
-      if(message=="") {}
-      else if(arg[0]=="ban" && arg.length==2 && arg[1])
-      {
-        if(!config.banned_players.includes(arg[1])) {
-          config.banned_players.push(arg[1]);
-          console.log("Banned player: "+arg[1]);
-          saveConfig();
 
-          var indof = plr.nicks.indexOf(arg[1]);
-          if(indof!=-1 && !nickWrong(arg[1])) {
-            kick(indof);
-            console.log("Kicked player: "+arg[1]);
-          }
-        }
-        else console.log("This player is already banned.");
-      }
-      else if(arg[0]=="unban" && arg.length==2 && arg[1])
-      {
-        var indof = config.banned_players.indexOf(arg[1]);
-        if(indof!=-1) {
-          config.banned_players.splice(indof,1);
-          console.log("Unbanned player: "+arg[1]);
-          saveConfig();
-        }
-        else console.log("This player is not banned.");
-      }
-      else if(message=="banlist")
-      {
-        console.log("All banned players: ");
-        console.log(config.banned_players);
-      }
-      else if(arg[0]=="banip" && arg.length==2 && arg[1])
-      {
-        if(!config.banned_ips.includes(arg[1])) {
-          config.banned_ips.push(arg[1]);
-          console.log("Banned IPv4: "+arg[1]);
-          saveConfig();
+      if(message == "save") Commands.save();
+      else if(message == "players") Commands.players();
+      else if(message == "connections") Commands.connections();
+      else if(message == "difficulty get") Commands.difficultyGet();
+      else if(message == "banlist") Commands.banlist();
+      else if(message == "baniplist") Commands.baniplist();
+      else if(message == "whitelist list") Commands.whitelistList();
+      else if(message == "whitelist toggle") Commands.whitelistToggle();
 
-          var i;
-          for(i=0;i<max_players;i++) {
-            if(IPv4s[i]!=undefined)
-              if(IPv4s[i].endsWith(arg[1]) && plr.nicks[i]!="0")
-                kick(i);
-          }
-        }
-        else console.log("This IPv4 is already banned.");
-      }
-      else if(arg[0]=="unbanip" && arg.length==2 && arg[1])
-      {
-        var indof = config.banned_ips.indexOf(arg[1]);
-        if(indof!=-1) {
-          config.banned_ips.splice(indof,1);
-          console.log("Unbanned IPv4: "+arg[1]);
-          saveConfig();
-        }
-        else console.log("This IPv4 is not banned.");
-      }
-      else if(message=="baniplist")
-      {
-        console.log("All banned IPv4s: ");
-        console.log(config.banned_ips);
-      }
-      else if(arg[0]=="whitelist" && arg[1]=="add" && arg.length==3 && arg[2])
-      {
-        if(!config.whitelist.includes(arg[2])) {
-          config.whitelist.push(arg[2]);
-          console.log("Added player to whitelist: "+arg[2]);
-          saveConfig();
-        }
-        else console.log("This player is already whitelisted.");
-      }
-      else if(arg[0]=="whitelist" && arg[1]=="remove" && arg.length==3 && arg[2])
-      {
-        var indof = config.whitelist.indexOf(arg[2]);
-        if(indof!=-1) {
-          config.whitelist.splice(indof,1);
-          console.log("Removed player from whitelist: "+arg[1]);
-          saveConfig();
-        }
-        else console.log("This player is not whitelisted.");
-      }
-      else if(message=="whitelist toggle")
-      {
-        config.whitelist_enabled = !config.whitelist_enabled;
-        console.log("Whitelist toggled to: "+config.whitelist_enabled);
-        saveConfig();
-      }
-      else if(message=="whitelist list")
-      {
-        console.log("All players on whitelist: ");
-        console.log(config.whitelist);
-      }
-      else if(arg[0]=="kick" && arg.length==2 && arg[1])
-      {
-        var indof = plr.nicks.indexOf(arg[1]);
-        if(indof!=-1 && !nickWrong(arg[1])) {
-          kick(indof);
-          console.log("Kicked player: "+arg[1]);
-        }
-        else console.log("This player is not on a server.");
-      }
-      else if(arg[0]=="damage" && arg.length==3 && arg[1] && arg[2])
-      {
-        var indof = plr.nicks.indexOf(arg[1]);
-        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1])) {
-          var amnt = func.parseFloatU(arg[2]);
-          if(amnt>=0) DamageFLOAT(indof,amnt);
-          else HealFLOAT(indof,-amnt)
-          console.log("Applied damage to player "+arg[1]+": "+arg[2]+"hp");
-        }
-        else console.log("This player is not on a server.");
-      }
-      else if(arg[0]=="heal" && arg.length==3 && arg[1] && arg[2])
-      {
-        var indof = plr.nicks.indexOf(arg[1]);
-        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1])) {
-          var amnt = func.parseFloatU(arg[2]);
-          if(amnt>=0) HealFLOAT(indof,amnt);
-          else DamageFLOAT(indof,-amnt);
-          console.log("Healed player "+arg[1]+": "+arg[2]+"hp");
-        }
-        else console.log("This player is not on a server.");
-      }
-      else if(arg[0]=="give" && arg.length==4 && arg[1] && arg[2] && arg[3])
-      {
-        var indof = plr.nicks.indexOf(arg[1]);
-        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1])) {
-          var item = func.parseIntU(arg[2]);
-          var count = func.parseIntU(arg[3]);
-          if(item>=1 && count>=1) {
-            give_array_add_temp("GIVE "+arg[1]+" "+item+" "+count);
-            sendTo(se3_ws[indof],"/RetCommandGive "+item+" "+count+" X X");
-          }
-          else console.log("Item and count should be greater than 0.");
-        }
-        else console.log("This player is not on a server.");
-      }
-      else if(arg[0]=="tp" && arg.length==4 && arg[1] && arg[2]=="to" && arg[3])
-      {
-        var indof1 = plr.nicks.indexOf(arg[1]);
-        var indof2 = plr.nicks.indexOf(arg[3]);
-        if(indof1!=-1 && !nickWrong(arg[1]) && se3_wsS[indof1]=="game" && !inHeaven(indof1) &&
-           indof2!=-1 && !nickWrong(arg[3]) && se3_wsS[indof2]=="game" && !inHeaven(indof2))
-        {
-          var bef = plr.players[indof2].split(";");
-          var x = bef[0].replaceAll(".",",");
-          var y = bef[1].replaceAll(".",",");
-          give_array_add_temp("TP "+arg[1]+" "+x+" "+y);
-          sendTo(se3_ws[indof1],"/RetMemoryData "+MemoriesForClient([x,y,0,0,0,0,0,0].join(";"))+" X X");
-          sendTo(se3_ws[indof1],"/RetCommandTp "+x+" "+y+" X X");
-        }
-        else console.log("At least one of these players is not on a server.");
-      }
-      else if(arg[0]=="tp" && arg.length==4 && arg[1] && arg[2] && arg[3])
-      {
-        var indof = plr.nicks.indexOf(arg[1]);
-        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1])) {
-          var x = (func.parseFloatU(arg[2])+"").replaceAll(".",",");
-          var y = (func.parseFloatU(arg[3])+"").replaceAll(".",",");
-          give_array_add_temp("TP "+arg[1]+" "+x+" "+y);
-          sendTo(se3_ws[indof],"/RetMemoryData "+MemoriesForClient([x,y,0,0,0,0,0,0].join(";"))+" X X");
-          sendTo(se3_ws[indof],"/RetCommandTp "+x+" "+y+" X X");
-        }
-        else console.log("This player is not on a server.");
-      }
-      else if(message=="save")
-      {
-        SaveAllNow();
-        console.log("Data saved manually");
-      }
-      else if(message=="players")
-      {
-        var i,current_players=0,plmem=[];
-        for(i=0;i<max_players;i++) {
-          if(se3_wsS[i]!="") {
-            plmem.push("[" + i + "]: " + plr.nicks[i] + " (" + se3_wsS[i] + ") "+IPv4s[i]);
-            current_players++;
-          }
-        }
-        console.log("\nPlayers ["+current_players+"/"+max_players+"]:");
-        for(i=0;i<max_players;i++) if(plmem[i]) console.log(plmem[i]);
-        console.log("");
-      }
-      else if(message=="connections")
-      {
-        console.log('\nConnections [/'+config.max_connections_per_ip+']:');
-        con_map.forEach((value, key) => {
-          console.log(`${key} (${value})`);
-        });
-        console.log("");
-      }
-      else if(arg[0]=="getip" && arg.length==2 && arg[1])
-      {
-        var indof = plr.nicks.indexOf(arg[1]);
-        if(indof!=-1 && !nickWrong(arg[1]))
-          console.log("Player "+arg[1]+" has the following IPv4 address: "+IPv4s[indof]);
-        else
-          console.log("Couldn't find "+arg[1]+" online.");
-      }
-      else if(message=="difficulty get")
-      {
-        console.log("The current difficulty is "+difficulty_name_tab[config.difficulty]+" ("+config.difficulty+")");
-      }
-      else if(arg[0]=="difficulty" && arg.length==3 && arg[1]=="set")
-      {
-        var diff_pars = func.parseIntU(arg[2]);
-        if(diff_pars<0 || diff_pars>5) diff_pars=0;
-        if(diff_pars==config.difficulty)
-        {
-          console.log("Difficulty is already "+difficulty_name_tab[diff_pars]);
-        }
-        else {
-          config.difficulty = diff_pars;
-          difficulty = tab_difficulty[diff_pars];
-          sendToAllPlayers("/RetDifficultySet "+diff_pars+" X X");
-          var info_difficulty = "Difficulty set to "+difficulty_name_tab[diff_pars];
-          console.log(info_difficulty);
-          sendToAllPlayers(
-            "/RetInfoClient " +
-              (info_difficulty).replaceAll(" ", "`") +
-              " -1 X X"
-          );
-          saveConfig();
-        }
-      }
+      else if(arg.length==2 && arg[0]=="kick") Commands.kick(arg);
+      else if(arg.length==3 && arg[0]=="difficulty" && arg[1]=="set") Commands.difficultySet(arg);
+      else if(arg.length==2 && arg[0]=="ban") Commands.ban(arg);
+      else if(arg.length==2 && arg[0]=="unban") Commands.unban(arg);
+      else if(arg.length==2 && arg[0]=="banip") Commands.banip(arg);
+      else if(arg.length==2 && arg[0]=="unbanip") Commands.unbanip(arg);
+      else if(arg.length==2 && arg[0]=="getip") Commands.getip(arg);
+      else if(arg.length==3 && arg[0]=="whitelist" && arg[1]=="add") Commands.whitelistAdd(arg);
+      else if(arg.length==3 && arg[0]=="whitelist" && arg[1]=="remove") Commands.whitelistRemove(arg);
+
+      else if(arg.length==3 && arg[0]=="health") Commands.health(arg);
+      else if(arg.length==4 && arg[0]=="give") Commands.give(arg);
+      else if(arg.length==4 && arg[0]=="tp" && arg[2]=="to") Commands.tpPlayer(arg);
+      else if(arg.length==4 && arg[0]=="tp") Commands.tpCoords(arg);
+
       else if(message=="help")
       {
         console.log("\n------ List of all commands ------\n");
@@ -5749,12 +5547,11 @@ function listenForMessages()
         console.log("'baniplist' - Displays a list of all banned IPv4s.\n");
 
         console.log("'whitelist add/remove [nickname]' - Adds or removes a player to/from whitelist.");
-        console.log("'whitelist toggle' - Enables/disables whitelist.");
-        console.log("'whitelist list' - Displays all players on whitelist.\n");
-
+        console.log("'whitelist list' - Displays all players on whitelist.");
+        console.log("'whitelist toggle' - Enables/disables whitelist.\n");
+      
         console.log("'kick [nickname]' - Kicks a player.");
-        console.log("'damage [nickname] [hp]' - Applies damage to a player.");
-        console.log("'heal [nickname] [hp]' - Heals a player.");
+        console.log("'health [nickname] [hp]' - Modifies hp of a player.");
         console.log("'give [nickname] [item] [amount]' - Gives an item to a player.");
         console.log("'tp [nickname] [x] [y]' - Teleports a player to specified coordinates.");
         console.log("'tp [nickname] to [target-nickname]' - Teleports a player to another player.");
@@ -5767,6 +5564,253 @@ function listenForMessages()
   });
 }
 listenForMessages();
+
+//Command functions
+class Commands
+{
+    static save()
+    {
+        SaveAllNow();
+        console.log("Data saved manually");
+    }
+    static players()
+    {
+        var i,current_players=0,plmem=[];
+        for(i=0;i<max_players;i++)
+        {
+            if(se3_wsS[i]!="")
+            {
+                plmem.push("[" + i + "]: " + plr.nicks[i] + " (" + se3_wsS[i] + ") "+IPv4s[i]);
+                current_players++;
+            }
+        }
+        console.log("\nPlayers ["+current_players+"/"+max_players+"]:");
+        for(i=0;i<max_players;i++) if(plmem[i]) console.log(plmem[i]);
+        console.log("");
+    }
+    static connections()
+    {
+        console.log('\nConnections ['+con_map.size+'/'+config.max_connections_per_ip+']:');
+        con_map.forEach((value, key) => {
+            console.log(`${key} (${value})`);
+        });
+        console.log("");
+    }
+    static difficultyGet()
+    {
+        console.log("The current difficulty is "+difficulty_name_tab[config.difficulty]+" ("+config.difficulty+")");
+    }
+    static stop()
+    {
+        rl.close();
+        process.emit("SIGINT");
+    }
+    static banlist()
+    {
+        console.log("All banned players: ");
+        console.log(config.banned_players);
+    }
+    static baniplist()
+    {
+        console.log("All banned IPv4s: ");
+        console.log(config.banned_ips);
+    }
+    static whitelistList()
+    {
+        console.log("All players on whitelist: ");
+        console.log(config.whitelist);
+    }
+    static whitelistToggle()
+    {
+        config.whitelist_enabled = !config.whitelist_enabled;
+        console.log("Whitelist toggled to: "+config.whitelist_enabled);
+        saveConfig();
+    }
+    static getip(arg)
+    {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1]))
+            console.log("Player "+arg[1]+" has the following IPv4 address: "+IPv4s[indof]);
+        else
+            console.log("This player is offline.");
+    }
+    static difficultySet(arg)
+    {
+        var diff_pars = func.parseIntP(arg[2]);
+        if(isNaN(diff_pars) || diff_pars < 0 || diff_pars > 5)
+        {
+            console.log("Couldn't set such difficulty.");
+        }
+        else if(diff_pars==config.difficulty)
+        {
+            console.log("Difficulty is already "+difficulty_name_tab[diff_pars]);
+        }
+        else
+        {
+            config.difficulty = diff_pars;
+            difficulty = tab_difficulty[diff_pars];
+            sendToAllPlayers("/RetDifficultySet "+diff_pars+" X X");
+            var info_difficulty = "Difficulty set to "+difficulty_name_tab[diff_pars];
+            console.log(info_difficulty);
+            sendToAllPlayers(
+                "/RetInfoClient " +
+                (info_difficulty).replaceAll(" ", "`") +
+                " -1 X X"
+            );
+            saveConfig();
+        }
+    }
+    static ban(arg)
+    {
+        if(!config.banned_players.includes(arg[1]))
+        {
+            config.banned_players.push(arg[1]);
+            console.log("Banned player: "+arg[1]);
+            saveConfig();
+            Commands.kick(["kick ",arg[1]])
+        }
+        else console.log("This player is already banned.");
+    }
+    static unban(arg)
+    {
+        var indof = config.banned_players.indexOf(arg[1]);
+        if(indof!=-1)
+        {
+            config.banned_players.splice(indof,1);
+            console.log("Unbanned player: "+arg[1]);
+            saveConfig();
+        }
+        else console.log("This player is not banned.");
+    }
+    static banip(arg)
+    {
+        if(!config.banned_ips.includes(arg[1]))
+        {
+            config.banned_ips.push(arg[1]);
+            console.log("Banned IPv4: "+arg[1]);
+            saveConfig();
+
+            var i;
+            for(i=0;i<max_players;i++) {
+                if(IPv4s[i]!=undefined)
+                if(IPv4s[i].endsWith(arg[1]) && plr.nicks[i]!="0") kick(i);
+            }
+      }
+      else console.log("This IPv4 is already banned.");
+    }
+    static unbanip(arg)
+    {
+        var indof = config.banned_ips.indexOf(arg[1]);
+        if(indof!=-1)
+        {
+            config.banned_ips.splice(indof,1);
+            console.log("Unbanned IPv4: "+arg[1]);
+            saveConfig();
+        }
+        else console.log("This IPv4 is not banned.");
+    }
+    static whitelistAdd(arg)
+    {
+        if(!config.whitelist.includes(arg[2]))
+        {
+            config.whitelist.push(arg[2]);
+            console.log("Added player to whitelist: "+arg[2]);
+            saveConfig();
+        }
+        else console.log("This player is already whitelisted.");
+    }
+    static whitelistRemove(arg)
+    {
+        var indof = config.whitelist.indexOf(arg[2]);
+        if(indof!=-1)
+        {
+            config.whitelist.splice(indof,1);
+            console.log("Removed player from whitelist: "+arg[1]);
+            saveConfig();
+        }
+        else console.log("This player is not whitelisted.");
+    }
+    static kick(arg)
+    {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1]))
+        {
+            kick(indof);
+            console.log("Kicked player: "+arg[1]);
+        }
+        else console.log("This player is not on a server.");
+    }
+    static health(arg)
+    {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
+        {
+            var amnt = func.parseFloatP(arg[2]);
+            if(isNaN(amnt) || amnt==0)
+            {
+                console.log("Couldn't modify hp in such way.");
+            }
+            else if(amnt>0)
+            {
+                HealFLOAT(indof,amnt);
+                console.log("Healed player "+arg[1]+": "+arg[2]+"hp");
+
+            }
+            else if(amnt<0)
+            {
+                DamageFLOAT(indof,-amnt);
+                console.log("Hurted player "+arg[1]+": "+arg[2]+"hp");
+            }
+        }
+        else console.log("This player is not in a physical form.");
+    }
+    static give(arg)
+    {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
+        {
+            var item = func.parseIntP(arg[2]);
+            var count = func.parseIntP(arg[3]);
+            
+            if(isNaN(item) || isNaN(count)) {
+                console.log("Item and count should be integers.");
+            }
+            if(item<=0 || count<=0 || item>127) {
+                console.log("Wrong numbers were used.");
+            }
+            else {
+                give_array_add_temp("give "+arg[1]+" "+item+" "+count);
+                sendTo(se3_ws[indof],"/RetCommandGive "+item+" "+count+" X X");
+            }
+        }
+        else console.log("This player is not in a physical form.");
+    }
+    static tpCoords(arg)
+    {
+        var indof = plr.nicks.indexOf(arg[1]);
+        if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
+        {
+            var x = (func.parseFloatU(arg[2])+"").replaceAll(".",",");
+            var y = (func.parseFloatU(arg[3])+"").replaceAll(".",",");
+            give_array_add_temp("tp "+arg[1]+" "+x+" "+y);
+            sendTo(se3_ws[indof],"/RetMemoryData "+MemoriesForClient([x,y,0,0,0,0,0,0].join(";"))+" X X");
+            sendTo(se3_ws[indof],"/RetCommandTp "+x+" "+y+" X "+plr.livID[indof]);
+        }
+        else console.log("This player is not in a physical form.");
+    }
+    static tpPlayer(arg)
+    {
+        var indof1 = plr.nicks.indexOf(arg[1]);
+        var indof2 = plr.nicks.indexOf(arg[3]);
+        if(indof1!=-1 && !nickWrong(arg[1]) && se3_wsS[indof1]=="game" && !inHeaven(indof1) &&
+           indof2!=-1 && !nickWrong(arg[3]) && se3_wsS[indof2]=="game" && !inHeaven(indof2))
+        {
+            var bef = plr.players[indof2].split(";");
+            Commands.tpCoords(["tp",arg[1],bef[0],bef[1]]);
+        }
+        else console.log("At least one of these players is not in a physical form.");
+    }
+}
 
 //Starting ending
 console.log("-------------------------------");
