@@ -26,6 +26,7 @@ public class SC_object_holder : MonoBehaviour
     //Other variables
     public Dictionary<int, Transform> Transforms = new Dictionary<int, Transform>();
     public string actual_state = "default";
+    public int scaling_blocker = 0;
     public SC_boss SC_boss;
 
     //Script references
@@ -125,6 +126,8 @@ public class SC_object_holder : MonoBehaviour
                     ast.GetComponent<SphereCollider>().enabled = false;
                     ast.GetComponent<Renderer>().enabled = false;
                 }
+                ast.SC_object_holder = this;
+                scaling_blocker++;
             }
             if(Objects[j].obj=="sphere")
             {

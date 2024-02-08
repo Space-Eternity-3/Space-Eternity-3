@@ -1962,7 +1962,8 @@ public class SC_control : MonoBehaviour {
 			List<SC_asteroid> SCT_asteroid = SC_lists.SC_asteroid;
 			foreach(SC_asteroid aul in SCT_asteroid)
 			{
-				aul.onMSG(cmdThis);
+				if(arg[1]==aul.ID+"")
+					aul.onMSG(cmdThis);
 			}
 		}
 		if(arg[0]=="/RSD"||

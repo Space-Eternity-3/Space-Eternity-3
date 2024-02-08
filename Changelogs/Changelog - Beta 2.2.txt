@@ -16,6 +16,7 @@ New features (technical):
 - added fob72 (total vacuum) which is a removed fob place, used in arenas from now
   - might result in strange structure of old arenas
 - universes without UniverseInfo.se3 file are marked as "Time: 00:00, Version: Unknown" and are always possible to update
+- you can drill from pistons now
 
 Old feature changes:
 
@@ -148,6 +149,7 @@ c) Others
 - star particles scaling changed to hierarchy
 - reworked the whole world generation system code, but it works still the same
 - there is a limit (5) of asteroids possible to generate in one frame
+- the dead geyzer sound object no longer lags the game
 
 Bug fixes:
 

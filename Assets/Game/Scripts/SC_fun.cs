@@ -7,13 +7,16 @@ using System.Text;
 
 public class SC_fun : MonoBehaviour
 {
-	[TextArea(15,20)]
-	public string TestStructure;
-
     public Transform Communtron1;
+	public GameObject[] GenPlaceT = new GameObject[128];
+	public GameObject[] GenPlaceM = new GameObject[18];
     public Material[] M = new Material[128];
     public Texture[] Item = new Texture[128];
     public Texture Item20u, Item55u, Item57u, Item59u, Item61u, Item63u, Item71u;
+	public Material[] texture = new Material[16];
+	public Material[] textureStone;
+	public Material[] textureDark;
+	public Material textureERROR;
 	
     public float volume;
 	public float seek_default_angle;

@@ -7,14 +7,14 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 2.2'; <Don't change>
-name: 'Cementeries'; <Rename it>
+name: 'Catst'; <Rename it>
 craftings
 {
 	<Category>1
 	{
 		title_image: packed_stone;
-		1: stone -> copper_bullet(99999);
-		2: stone -> small_amethyst(99999);
+		1: stone(5) -> packed_stone;
+		2: copper(5) -> packed_copper;
 		3: gold(5) -> packed_gold;
 		4: coal(5) -> packed_coal;
 		5: magnetic_stone(5) -> packed_magnetic_stone;
@@ -369,7 +369,7 @@ generator_settings
 		chance: 0,4%;
 		settings: [
 			bgcolor-212-218-224,
-			structural, struct=5,
+			structural, struct=5, spawn,
 			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
 			density = 100%,
@@ -398,7 +398,7 @@ generator_settings
 		chance: 1,3%;
 		settings: [
 			bgcolor-255-174-181,
-			structural, struct=2, spawn,
+			structural, struct=2,
 			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 50,
 			density = 100%,
@@ -580,171 +580,121 @@ custom_structures <advanced settings>
 	]';
 	<star> 3: '[
 	
-		summon #1 star
+		catch # 1 summon star
 	
 	]';
 	<arena> 4: '[
 	
-		setrandom %5
-		summon #50 respblock 41,5284
+		catch # 200 summon hole 50
+		catch # 201 summon respblock 41,5284
 
-		summon #1 asteroid 8 12 72,,,,,,,,72,72,,,,,,72 move 2 2 rotate 11,25
-		summon #2 asteroid 8 12 72,,,,,,,,72,72,,,,,,72 move -2 2 rotate 101,25
-		summon #3 asteroid 8 12 72,,,,,,,,72,72,,,,,,72 move -2 -2 rotate 191,25
-		summon #4 asteroid 8 12 72,,,,,,,,72,72,,,,,,72 move 2 -2 rotate 281,25
-		summon #5 asteroid 8 12 72,,,,,,,,72,72,,,,,,72 move 2 -2 rotate -11,25
-		summon #6 asteroid 8 12 72,,,,,,,,72,72,,,,,,72 move -2 -2 rotate -101,25
-		summon #7 asteroid 8 12 72,,,,,,,,72,72,,,,,,72 move -2 2 rotate -191,25
-		summon #8 asteroid 8 12 72,,,,,,,,72,72,,,,,,72 move 2 2 rotate -281,25
-		from #1 to #4 move 35 -0,5
-		from #5 to #8 move 35 0,5
+		catch # 1-8 summon asteroid 8 12 72,,,,,,,,72,72,,,,,,72
+		catch # 1 move 2 2 rotate 11,25
+		catch # 2 move -2 2 rotate 101,25
+		catch # 3 move -2 -2 rotate 191,25
+		catch # 4 move 2 -2 rotate 281,25
+		catch # 5 move 2 -2 rotate -11,25
+		catch # 6 move -2 -2 rotate -101,25
+		catch # 7 move -2 2 rotate -191,25
+		catch # 8 move 2 2 rotate -281,25
+		catch # 1-4 move 35 -0,5
+		catch # 5-8 move 35 0,5
 
-		summon #9 asteroid 7 12 72,,,,,,,72,72,,,,,72 move 2 2 rotate 33,75
-		summon #10 asteroid 7 12 72,,,,,,,72,72,,,,,72 move 2 2 rotate 56,25
-		summon #11 asteroid 7 12 72,,,,,,,72,72,,,,,72 move -2 2 rotate 123,75
-		summon #12 asteroid 7 12 72,,,,,,,72,72,,,,,72 move -2 2 rotate 146,25
-		summon #13 asteroid 7 12 72,,,,,,,72,72,,,,,72 move -2 -2 rotate 213,75
-		summon #14 asteroid 7 12 72,,,,,,,72,72,,,,,72 move -2 -2 rotate 236,25
-		summon #15 asteroid 7 12 72,,,,,,,72,72,,,,,72 move 2 -2 rotate 303,75
-		summon #16 asteroid 7 12 72,,,,,,,72,72,,,,,72 move 2 -2 rotate 326,25
-		from #9 to #16 move 35 0
+		catch # 9-16 summon asteroid 7 12 72,,,,,,,72,72,,,,,72
+		catch # 9-10 move 2 2 rotate 33,75 mod 22,5
+		catch # 11-12 move -2 2 rotate 123,75 mod 22,5
+		catch # 13-14 move -2 -2 rotate 213,75 mod 22,5
+		catch # 15-16 move 2 -2 rotate 303,75 mod 22,5
+		catch # 9-16 move 35 0
 
-		summon #59 wall 12 move 2 2 rotate 22,5
-		summon #60 wall 12 move 2 2 rotate 45
-		summon #61 wall 12 move 2 2 rotate 67,5
-		summon #62 wall 12 move -2 2 rotate 112,5
-		summon #63 wall 12 move -2 2 rotate 135
-		summon #64 wall 12 move -2 2 rotate 157,5
-		summon #65 wall 12 move -2 -2 rotate 202,5
-		summon #66 wall 12 move -2 -2 rotate 225
-		summon #67 wall 12 move -2 -2 rotate 247,5
-		summon #68 wall 12 move 2 -2 rotate 292,5
-		summon #69 wall 12 move 2 -2 rotate 315
-		summon #70 wall 12 move 2 -2 rotate 337,5
-		from #59 to #70 move 34,25 0
+		catch # 59-70 summon wall 12
+		catch # 59-61 move 2 2 rotate 22,5 mod 22,5
+		catch # 62-64 move -2 2 rotate 112,5 mod 22,5
+		catch # 65-67 move -2 -2 rotate 202,5 mod 22,5
+		catch # 68-70 move 2 -2 rotate 292,5 mod 22,5
+		catch # 59-70 move 34,25 0
 
-		summon #17 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #18 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #19 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #20 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #21 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #22 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #23 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #24 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #25 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #26 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #27 asteroid 4 12 0,0,0,0,0,0,0,0
-		summon #28 asteroid 4 12 0,0,0,0,0,0,0,0
-		from #59 to #70 steal 4 from delta -42
+		catch # 17-28 summon asteroid 4 12 0,0,0,0,0,0,0,0
+		catch # 59-70 steal fromdelta -42
 
-		summon #51 piston move 36,4 6,4
-		summon #52 piston move -36,4 6,4
-		summon #53 piston move 36,4 -6,4 rotate 180
-		summon #54 piston move -36,4 -6,4 rotate 180
-		summon #55 piston rotate 90 move 36,4 6,4
-		summon #56 piston rotate 90 move -36,4 6,4
-		summon #57 piston rotate 90 move 36,4 -6,4 rotate 180
-		summon #58 piston rotate 90 move -36,4 -6,4 rotate 180
+		catch # 51-58 summon piston 12
+		catch # 51 move 36,4 6,4
+		catch # 52 move -36,4 6,4
+		catch # 53 move 36,4 -6,4 rotate 180
+		catch # 54 move -36,4 -6,4 rotate 180
+		catch # 55 rotate 90 move 36,4 6,4
+		catch # 56 rotate 90 move -36,4 6,4
+		catch # 57 rotate 90 move 36,4 -6,4 rotate 180
+		catch # 58 rotate 90 move -36,4 -6,4 rotate 180
 
-		from #51 to #52 extension 0 -3,6 40
-		from #53 to #54 extension 0 3,6 40
-		from #55 to #56 extension 3,6 0 40
-		from #57 to #58 extension -3,6 0 40
+		catch # 202-205 summon animator
+		catch # 51-52 setanimator 202 catch # 202 animate extending when default,B1,B2,B3 0 -3,6
+		catch # 53-54 setanimator 203 catch # 203 animate extending when default,B1,B2,B3 0 3,6
+		catch # 55-56 setanimator 204 catch # 204 animate extending when default,B1,B2,B3 3,6 0
+		catch # 57-58 setanimator 205 catch # 205 animate extending when default,B1,B2,B3 -3,6 0
 
-		from #51 to #58 list extended doing a1b1,a2b2,a3b3
-		from #51 to #58 list extended done default,B1,B2,B3
-		from #51 to #58 list extended undoing b1a1,b2a2,b3a3,b1a2,b2a3,b3r
+		setrand 5
+		ifrand 0 catch # 0 summon boss 1 catch # 29 summon asteroid 6 12 42,49,50,0,0,0,0,0,0,0,50,49
+		ifrand 1 catch # 0 summon boss 2 catch # 29 summon asteroid 6 12 43,49,50,0,0,0,0,0,0,0,50,49
+		ifrand 2 catch # 0 summon boss 3 catch # 29 summon asteroid 6 12 44,49,50,0,0,0,0,0,0,0,50,49
+		ifrand 3 catch # 0 summon boss 4 catch # 29 summon asteroid 6 12 45,49,50,0,0,0,0,0,0,0,50,49
+		ifrand 4 catch # 0 summon boss 6 catch # 29 summon asteroid 6 12 47,49,50,0,0,0,0,0,0,0,50,49
+		ifrand break
+		catch # 30 summon asteroid 6 12 52,53,50,0,0,0,0,0,0,0,50,53
+		catch # 29-30 move 0 -2
 
-		summon #71 empty summon #72 empty
-		summon #30 asteroid 6 12 52,53,50,0,0,0,0,0,0,0,50,53
-		ifrandom 0 summon #0 boss 1 summon #29 asteroid 6 12 42,49,50,0,0,0,0,0,0,0,50,49
-		ifrandom 1 summon #0 boss 2 summon #29 asteroid 6 12 43,49,50,0,0,0,0,0,0,0,50,49
-		ifrandom 2 summon #0 boss 3 summon #29 asteroid 6 12 44,49,50,0,0,0,0,0,0,0,50,49
-		ifrandom 3 summon #0 boss 4 summon #29 asteroid 6 12 45,49,50,0,0,0,0,0,0,0,50,49
-		ifrandom 4 summon #0 boss 6 summon #29 asteroid 6 12 47,49,50,0,0,0,0,0,0,0,50,49
-		ifrandom break
-		from #29 to #30 move 0 -2
-		catch #29 parent set #71 asteroid blocker reward
-		catch #30 parent set #72
-
-		catch #71
-		list hidden done default,A1,A2,A3,B1,B2,B3,a1b1,a2b2,a3b3,b1a1,b2a2,b3a3,b1a2,b2a3
-		list hidden undoing b3r
-		list hidden undone R
-		hidesmooth 0 40
-
-		catch #72
-		list hidden doing a1b1,a2b2,a3b3
-		list hidden done default,B1,B2,B3,b3r,R
-		list hidden undoing b1a1,b2a2,b3a3,b1a2,b2a3
-		list hidden undone A1,A2,A3
-		hidesmooth 0 40
-	
+		catch # 71-72 summon animator
+		catch # 29 setanimator 71 catch # 71 animate hiding when default,A1,A2,A3,B1,B2,B3
+		catch # 30 setanimator 72 catch # 72 animate hiding when default,B1,B2,B3,R
+		
 	]';
 	<catastrophic arena> 5: '[
 	
-		summon #50 respblock 41,5284
+		catch # 200 summon hole 50
+		catch # 201 summon respblock 41,5284
 
-		summon #1 asteroid 8 28 72,,,,,,,,72,72,,,,,,72 move 2 2 rotate 11,25
-		summon #2 asteroid 8 28 72,,,,,,,,72,72,,,,,,72 move -2 2 rotate 101,25
-		summon #3 asteroid 8 28 72,,,,,,,,72,72,,,,,,72 move -2 -2 rotate 191,25
-		summon #4 asteroid 8 28 72,,,,,,,,72,72,,,,,,72 move 2 -2 rotate 281,25
-		summon #5 asteroid 8 28 72,,,,,,,,72,72,,,,,,72 move 2 -2 rotate -11,25
-		summon #6 asteroid 8 28 72,,,,,,,,72,72,,,,,,72 move -2 -2 rotate -101,25
-		summon #7 asteroid 8 28 72,,,,,,,,72,72,,,,,,72 move -2 2 rotate -191,25
-		summon #8 asteroid 8 28 72,,,,,,,,72,72,,,,,,72 move 2 2 rotate -281,25
-		from #1 to #4 move 35 -0,5
-		from #5 to #8 move 35 0,5
+		catch # 1-8 summon asteroid 8 28 72,,,,,,,,72,72,,,,,,72
+		catch # 1 move 2 2 rotate 11,25
+		catch # 2 move -2 2 rotate 101,25
+		catch # 3 move -2 -2 rotate 191,25
+		catch # 4 move 2 -2 rotate 281,25
+		catch # 5 move 2 -2 rotate -11,25
+		catch # 6 move -2 -2 rotate -101,25
+		catch # 7 move -2 2 rotate -191,25
+		catch # 8 move 2 2 rotate -281,25
+		catch # 1-4 move 35 -0,5
+		catch # 5-8 move 35 0,5
 
-		summon #9 asteroid 7 28 72,,,,,,,72,72,,,,,72 move 2 2 rotate 33,75
-		summon #10 asteroid 7 28 72,,,,,,,72,72,,,,,72 move 2 2 rotate 56,25
-		summon #11 asteroid 7 28 72,,,,,,,72,72,,,,,72 move -2 2 rotate 123,75
-		summon #12 asteroid 7 28 72,,,,,,,72,72,,,,,72 move -2 2 rotate 146,25
-		summon #13 asteroid 7 28 72,,,,,,,72,72,,,,,72 move -2 -2 rotate 213,75
-		summon #14 asteroid 7 28 72,,,,,,,72,72,,,,,72 move -2 -2 rotate 236,25
-		summon #15 asteroid 7 28 72,,,,,,,72,72,,,,,72 move 2 -2 rotate 303,75
-		summon #16 asteroid 7 28 72,,,,,,,72,72,,,,,72 move 2 -2 rotate 326,25
-		from #9 to #16 move 35 0
+		catch # 9-16 summon asteroid 7 28 72,,,,,,,72,72,,,,,72
+		catch # 9-10 move 2 2 rotate 33,75 mod 22,5
+		catch # 11-12 move -2 2 rotate 123,75 mod 22,5
+		catch # 13-14 move -2 -2 rotate 213,75 mod 22,5
+		catch # 15-16 move 2 -2 rotate 303,75 mod 22,5
+		catch # 9-16 move 35 0
 
-		summon #59 wall 12 move 2 2 rotate 22,5
-		summon #60 wall 12 move 2 2 rotate 45
-		summon #61 wall 12 move 2 2 rotate 67,5
-		summon #62 wall 12 move -2 2 rotate 112,5
-		summon #63 wall 12 move -2 2 rotate 135
-		summon #64 wall 12 move -2 2 rotate 157,5
-		summon #65 wall 12 move -2 -2 rotate 202,5
-		summon #66 wall 12 move -2 -2 rotate 225
-		summon #67 wall 12 move -2 -2 rotate 247,5
-		summon #68 wall 12 move 2 -2 rotate 292,5
-		summon #69 wall 12 move 2 -2 rotate 315
-		summon #70 wall 12 move 2 -2 rotate 337,5
-		from #59 to #70 move 34,25 0
+		catch # 59-70 summon wall 12
+		catch # 59-61 move 2 2 rotate 22,5 mod 22,5
+		catch # 62-64 move -2 2 rotate 112,5 mod 22,5
+		catch # 65-67 move -2 -2 rotate 202,5 mod 22,5
+		catch # 68-70 move 2 -2 rotate 292,5 mod 22,5
+		catch # 59-70 move 34,25 0
 
-		summon #17 asteroid 4 2 x
-		summon #18 asteroid 4 2 x
-		summon #19 asteroid 4 2 x
-		summon #20 asteroid 4 2 x
-		summon #21 asteroid 4 2 x
-		summon #22 asteroid 4 2 x
-		summon #23 asteroid 4 2 x
-		summon #24 asteroid 4 2 x
-		summon #25 asteroid 4 2 x
-		summon #26 asteroid 4 2 x
-		summon #27 asteroid 4 2 x
-		summon #28 asteroid 4 2 x
-		from #59 to #70 steal 4 from delta -42
+		catch # 17-28 summon asteroid 4 2 x
+		catch # 59-70 steal fromdelta -42
 
-		summon #51 piston move 36,4 6,4
-		summon #52 piston move -36,4 6,4
-		summon #53 piston move 36,4 -6,4 rotate 180
-		summon #54 piston move -36,4 -6,4 rotate 180
-		summon #55 piston rotate 90 move 36,4 6,4
-		summon #56 piston rotate 90 move -36,4 6,4
-		summon #57 piston rotate 90 move 36,4 -6,4 rotate 180
-		summon #58 piston rotate 90 move -36,4 -6,4 rotate 180
+		catch # 51-58 summon piston 12
+		catch # 51 move 36,4 6,4
+		catch # 52 move -36,4 6,4
+		catch # 53 move 36,4 -6,4 rotate 180
+		catch # 54 move -36,4 -6,4 rotate 180
+		catch # 55 rotate 90 move 36,4 6,4
+		catch # 56 rotate 90 move -36,4 6,4
+		catch # 57 rotate 90 move 36,4 -6,4 rotate 180
+		catch # 58 rotate 90 move -36,4 -6,4 rotate 180
 
-		summon #29 asteroid 6 2 ,49,50,,,,,,,,50,49 asteroid hide
-		summon #30 sphere 6 12 from #29 to #30 move 0 -2
+		catch # 29 summon asteroid 6 2 ,49,50,,,,,,,,50,49 hide
+		catch # 30 summon sphere 6 12
+		catch # 29-30 move 0 -2
 	
 	]';
 }

@@ -417,11 +417,11 @@ public class CObjectInfo
 
         int i;
         string[] given_states = p_when.Split(',');
-        string[] st_array = {"R","A1","A2","A3","B1","B2","B3"};
-        bool[] have = new bool[7];
+        string[] st_array = {"R","A1","A2","A3","B1","B2","B3","default"};
+        bool[] have = new bool[8];
 
         //Static states
-        for(i=0;i<7;i++)
+        for(i=0;i<8;i++)
         {
             have[i] = (Array.IndexOf(given_states,st_array[i])>=0);
             if(have[i]) animation_when_done += st_array[i]+";";
@@ -462,7 +462,6 @@ public class CObjectInfo
         if(p_type=="hiding")
         {
             animation_type = 1;
-            animation_when_done += "default;";
         }
         if(p_type=="extending")
         {
@@ -566,7 +565,7 @@ public static class Universe
     public static int RangedIntParse(string str, int min, int max)
     {
         int n = min;
-        int.TryParse(str, out n);
+        if(!int.TryParse(str, out n)) return min;
         if(n < min || n > max) n = min;
         return n;
     }
@@ -655,7 +654,7 @@ public static class Universe
         int struct_id = Generator.tag_struct[biomeInfo.biome];
         if(struct_id==0) return Build;
 
-        string[] SeonArgs = TxtToSeonArray(/*SC_fun.SC_data.CustomStructures[struct_id]*/SC_fun.TestStructure);
+        string[] SeonArgs = TxtToSeonArray(SC_fun.SC_data.CustomStructures[struct_id]);
         Vector3 base_position = 100 * new Vector3(X,Y,0f) + biomeInfo.move;
         int setrand=0, ifrand=-1, setrand_initializer = Ulam + Generator.seed;
 
@@ -668,19 +667,14 @@ public static class Universe
             {
                 if(SeonArgs[i]=="setrand")
                 {
-                    int a=1;
-                    int.TryParse(SeonArgs[i+1],out a);
-                    if(a<1 || a>1000) a=1;
+                    int a = RangedIntParse(SeonArgs[i+1],1,1000);
                     setrand_initializer = Deterministics.Random10e5(setrand_initializer);
                     setrand = setrand_initializer % a;
                     i++; continue;
                 }
                 if(SeonArgs[i]=="ifrand")
                 {
-                    int a=1;
-                    int.TryParse(SeonArgs[i+1],out a);
-                    if(a<-1 || a>999) a=-1;
-                    ifrand = a;
+                    ifrand = RangedIntParse(SeonArgs[i+1],-1,999);
                     i++; continue;
                 }
             }
@@ -819,8 +813,8 @@ public static class Universe
                     }
                     for(i=0;i<a;i++)
                     {
-                        Build[b].RotateS(2*i,(Build[H].rotation+90f)+"");
-                        Build[b].RotateS(2*i+1,(Build[H].rotation-90f)+"");
+                        Build[b].RotateS(2*i,(Build[H].rotation-90f)+"");
+                        Build[b].RotateS(2*i+1,(Build[H].rotation+90f)+"");
                         Build[b].MoveS(2*i,(start_dx + i*1.7f)+"","1,5");
                         Build[b].MoveS(2*i+1,(start_dx + i*1.7f)+"","1,5");
                     }

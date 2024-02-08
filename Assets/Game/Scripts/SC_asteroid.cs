@@ -13,17 +13,11 @@ public class SC_asteroid : MonoBehaviour
 	public Transform CommuntronM1;
 	public Transform player;
 	public Renderer asteroidR;
-	public Material[] texture = new Material[16];
-	public Material[] textureStone;
-	public Material[] textureDark;
-	public Material textureERROR;
-	public GameObject[] GenPlaceT = new GameObject[128];
-	public GameObject[] GenPlaceM = new GameObject[18];
 
 	bool mother = true;
 	public int ID=1,X=0,Y=0;
-	int[] objectID = new int[32];
-	string[] objectData = new string[32];
+	int[] objectID = new int[20];
+	string[] objectData = new string[20];
 	public bool UUTCed=false;
 	public string generation_code="";
 	public float upg3down, upg3up, upg3hugity;
@@ -44,6 +38,7 @@ public class SC_asteroid : MonoBehaviour
 	public SC_upgrades SC_upgrades;
 	public SC_data SC_data;
 	public SC_slots SC_slots;
+	public SC_object_holder SC_object_holder;
 
 	void OnDestroy()
 	{
@@ -92,7 +87,7 @@ public class SC_asteroid : MonoBehaviour
 		string[] arg = eData.Split(' ');
 		if(mother) return;
 
-		if(arg[0]=="/RetAsteroidData"&&int.Parse(arg[1])==ID)
+		if(arg[0]=="/RetAsteroidData" && arg[1]==ID+"")
 		{
 			int i;
 			string[] astDats=arg[2].Split(';');
@@ -130,20 +125,20 @@ public class SC_asteroid : MonoBehaviour
 
 			float alpha=180f/size;
 			try{
-				if(type>1) asteroidR.material=texture[type];
+				if(type>1) asteroidR.material=SC_fun.texture[type];
 				else if(type==0)
 				{
-					int rand2=UnityEngine.Random.Range(0,textureStone.Length);
-					asteroidR.material=textureStone[rand2];
+					int rand2=UnityEngine.Random.Range(0,SC_fun.textureStone.Length);
+					asteroidR.material=SC_fun.textureStone[rand2];
 				}
 				else if(type==1)
 				{
-					int rand2=UnityEngine.Random.Range(0,textureDark.Length);
-					asteroidR.material=textureDark[rand2];
+					int rand2=UnityEngine.Random.Range(0,SC_fun.textureDark.Length);
+					asteroidR.material=SC_fun.textureDark[rand2];
 				}
 			}
 			catch(Exception){
-				asteroidR.material=textureERROR;
+				asteroidR.material=SC_fun.textureERROR;
 			}
 			int rand,i;
 			for(i=0;i<2*size;i++)
@@ -157,10 +152,10 @@ public class SC_asteroid : MonoBehaviour
 				GameObject gobT = gameObject;
 				if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50&&tid!=51&&tid!=66)
 				{
-					if(tid==21||tid==2||tid==52) GenPlaceT[tid].name=objectData[i]+";";
-					try{gobT=Instantiate(GenPlaceT[tid],rotation_place,quat_angle);}catch(Exception)
+					if(tid==21||tid==2||tid==52) SC_fun.GenPlaceT[tid].name=objectData[i]+";";
+					try{gobT=Instantiate(SC_fun.GenPlaceT[tid],rotation_place,quat_angle);}catch(Exception)
 					{
-						gobT=Instantiate(GenPlaceT[72],rotation_place,quat_angle);
+						gobT=Instantiate(SC_fun.GenPlaceT[72],rotation_place,quat_angle);
 					}
 				}
 				else
@@ -177,12 +172,20 @@ public class SC_asteroid : MonoBehaviour
 						rand=UnityEngine.Random.Range(0,2);
 					}
 					if(tid==66) tud=8;
-					gobT = Instantiate(GenPlaceM[tud*3+rand],rotation_place,quat_angle);
+					gobT = Instantiate(SC_fun.GenPlaceM[tud*3+rand],rotation_place,quat_angle);
 				}
 				gobT.transform.parent = gameObject.transform;
 				gobT.GetComponent<SC_fobs>().index = i;
+
+				SC_seon_remote ser = transform.parent.GetComponent<SC_seon_remote>();
+				if(ser!=null) //assuming that SC_object_holder has scale 1:1:1
+				{
+					Vector3 catch_up = ser.transform.localPosition - ser.localDefault;
+					gobT.transform.position += catch_up;
+				}
 			}
 		}
+		SC_object_holder.scaling_blocker--;
 	}
 	public int SetLoot(int typp)
 	{

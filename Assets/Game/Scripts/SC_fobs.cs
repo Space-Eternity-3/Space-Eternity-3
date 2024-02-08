@@ -224,18 +224,18 @@ public class SC_fobs : MonoBehaviour
         }
 
         //In game replace
-        GameObject gobT=SC_asteroid.GenPlaceT[0];
+        GameObject gobT=SC_fun.GenPlaceT[0];
         int tid=id; //tid -> Physical ID
 
         if((tid<8||tid>11)&&tid!=16&&tid!=30&&tid!=50&&tid!=51&&tid!=66)
         {
-            if(tid==21||tid==2) SC_asteroid.GenPlaceT[tid].name=potFob21Name;
+            if(tid==21||tid==2) SC_fun.GenPlaceT[tid].name=potFob21Name;
             
 			try{
-				gobT=Instantiate(SC_asteroid.GenPlaceT[tid],transform.position,transform.rotation);
+				gobT=Instantiate(SC_fun.GenPlaceT[tid],transform.position,transform.rotation);
 			}catch(Exception)
 			{
-				gobT=Instantiate(SC_asteroid.GenPlaceT[72],transform.position,transform.rotation);
+				gobT=Instantiate(SC_fun.GenPlaceT[72],transform.position,transform.rotation);
 			}
         }
         else
@@ -253,7 +253,7 @@ public class SC_fobs : MonoBehaviour
 			}
             if(tid==66) tud=8;
 			
-			gobT=Instantiate(SC_asteroid.GenPlaceM[tud*3+rand],transform.position,transform.rotation);
+			gobT=Instantiate(SC_fun.GenPlaceM[tud*3+rand],transform.position,transform.rotation);
         }
         gobT.GetComponent<SC_fobs>().MTPblocker = MTPblocker;
         if(ObjID==25&&id==23) gobT.GetComponent<SC_fobs>().GeyzerTime = GeyzerTime;
