@@ -4405,7 +4405,7 @@ wss.on("connection", function connection(ws,req)
           scrs.push(tpl);
 
           //Bosbul static commands (temporary)
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,36.39999,0,0,171]);
+          /*ScrShapeAdd(["",0,bID,"cylinder",1.5,5,36.39999,0,0,171]);
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,36.39999,90,172]);
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-36.39999,0,180,173]);
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,-36.39999,270,174]);
@@ -4436,7 +4436,7 @@ wss.on("connection", function connection(ws,req)
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-15.10703,-33.64282,247.5,1091]);
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,15.1068,-33.64291,292.5,1092]);
           ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21831,-26.21851,315,1093]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64282,-15.10704,337.5,1094]);
+          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64282,-15.10704,337.5,1094]);*/
       }
     }
   });

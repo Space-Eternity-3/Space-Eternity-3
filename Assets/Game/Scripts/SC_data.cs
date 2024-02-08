@@ -398,6 +398,8 @@ public class SC_data : MonoBehaviour
         if(!menu)
         {
             WorldData.SC_data = this;
+            Universe.SC_fun = SC_control.SC_fun;
+            Universe.Sectors.Clear();
             Generator.SC_data = this;
             Generator.SC_fun = SC_control.SC_fun;
             Generator.WorldMap.Clear();
@@ -1651,11 +1653,16 @@ public class SC_data : MonoBehaviour
     {
         Application.logMessageReceivedThreaded -= HandleLog;
     }
+    void FixedUpdate()
+    {
+        Globals.reference_time++;
+    }
 }
 
 public static class Globals
 {
     public static bool emergency_save_terminate = false;
+    public static int reference_time = 0; //Only updates on FixedUpdate!
 
     public static int intParse(string s)
     {

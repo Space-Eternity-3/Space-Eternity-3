@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class SC_drill : MonoBehaviour
 {
-	//WARNING! PUBLIC VARIABLES REQUIRED TO SET IN SC_structure
-
     public bool Mining=false;
     int counter=-1;
     public int type=-1;

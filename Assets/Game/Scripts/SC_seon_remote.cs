@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class SC_seon_remote : MonoBehaviour
 {
-    public SC_structure SC_structure;
+    public SC_object_holder SC_object_holder;
+    public SC_fun SC_fun;
 
     public List<string> states = new List<string>();
     public List<int> hide_mode = new List<int>();
@@ -78,7 +79,7 @@ public class SC_seon_remote : MonoBehaviour
 
     int GetMode(string variant)
     {
-        if(memState==SC_structure.actual_state) {
+        if(memState==SC_object_holder.actual_state) {
             if(variant=="hidden" && memHide!=-1) return memHide;
             if(variant=="extended" && memExtended!=-1) return memExtended;
         }
@@ -86,7 +87,7 @@ public class SC_seon_remote : MonoBehaviour
         int i,lngt=states.Count;
         for(i=0;i<lngt;i++)
         {
-            if(states[i]==SC_structure.actual_state)
+            if(states[i]==SC_object_holder.actual_state)
             {
                 if(variant=="hidden") return hide_mode[i];
                 if(variant=="extended") return extended_mode[i];
@@ -98,8 +99,6 @@ public class SC_seon_remote : MonoBehaviour
 
     void Start()
     {
-        if(SC_structure==null) return;
-
         localDefault = transform.localPosition;
         
         transform.position += extension;
@@ -121,19 +120,17 @@ public class SC_seon_remote : MonoBehaviour
     void FixedUpdate()
     {
         FixedUpdateM(jump);
-        jump = false;
+        if(SC_object_holder.actual_state!="default") jump = false;
     }
     void FixedUpdateM(bool starting)
     {
-        if(SC_structure==null) return;
-
         int modeH = GetMode("hidden");
         int modeE = GetMode("extended");
 
-        memState = SC_structure.actual_state;
+        memState = SC_object_holder.actual_state;
         memHide = modeH; memExtended = modeE;
 
-        if(SC_structure.scaling_blocker!=0 || starting)
+        if(starting)
         {
             if(modeE==1) modeE=2; if(modeE==3) modeE=0;
             if(modeH==1) modeH=2; if(modeH==3) modeH=0;
@@ -181,9 +178,9 @@ public class SC_seon_remote : MonoBehaviour
         float fraction_hide = current_hide; fraction_hide /= hiding_time;
         float fraction_extension = current_extension; fraction_extension /= extending_time;
 
-        if(fraction_hide!=1f) transform.localPosition += SC_structure.SC_boss.FluentFraction(fraction_hide) * localHide;
+        if(fraction_hide!=1f) transform.localPosition += SC_fun.FluentFraction(fraction_hide) * localHide;
         else transform.localPosition += localHidden;
-        transform.localPosition += SC_structure.SC_boss.FluentFraction(fraction_extension) * localExtended;
-        if(fraction_hide!=1f) transform.localScale = (1f-SC_structure.SC_boss.FluentFraction(fraction_hide)) * normalScale;
+        transform.localPosition += SC_fun.FluentFraction(fraction_extension) * localExtended;
+        if(fraction_hide!=1f) transform.localScale = (1f-SC_fun.FluentFraction(fraction_hide)) * normalScale;
     }
 }

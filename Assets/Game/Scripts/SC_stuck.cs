@@ -19,7 +19,7 @@ public class SC_stuck : MonoBehaviour
     }
     void OnTriggerStay(Collider c)
     {
-        if(c.gameObject.name=="pseudoBody" && SphereCollider.enabled)
+        if(c.gameObject.name=="stuckBody" && SphereCollider.enabled)
             in_collider = true;
     }
     void FixedUpdate()

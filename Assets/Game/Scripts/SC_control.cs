@@ -985,7 +985,7 @@ public class SC_control : MonoBehaviour {
 		if((int)Communtron4.position.y==100)
 		{
 			if(MTPloadedCounter==400) { //every 8 seconds, but disappears after 10 seconds
-				SendMTP("/GrowLoaded "+connectionID+" "+string.Join(";",SC_fun.GenListsB0)+";");
+				//HERE SEND GROWLOADED
 				MTPloadedCounter = 0;
 			}
 			MTPloadedCounter++;
@@ -2094,7 +2094,6 @@ public class SC_control : MonoBehaviour {
 		//IM_barrier -= unit * SC_artefacts.powerRM[2];
 		//IL_barrier -= unit * SC_artefacts.powerRM[3];
 		
-		SC_fun.BTPT();
 		Generator.TagNumbersInitialize();
 
 		int i;

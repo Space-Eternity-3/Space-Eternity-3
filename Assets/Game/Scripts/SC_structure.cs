@@ -5,7 +5,7 @@ using System;
 
 public class SC_structure : MonoBehaviour
 {
-	public SC_fun SC_fun;
+	/*public SC_fun SC_fun;
 	public SC_control SC_control;
 	public SC_boss SC_boss; //global mother boss!
 	public Transform legs;
@@ -22,8 +22,6 @@ public class SC_structure : MonoBehaviour
 	public Transform star2;
 	
     public int X=0,Y=0,ID=1,overrand=0;
-	public string actual_state = "default";
-	public int scaling_blocker = 0;
 	public TextAsset SeonSource;
 	[TextArea(15,20)]
 	public string SeonField = "";
@@ -34,42 +32,26 @@ public class SC_structure : MonoBehaviour
 	
 	string TxtToSeonArray(string str)
 	{
-		//All separators to space
-		int i,lngt=str.Length;
-		string effect = "";
-		for(i=0;i<lngt;i++)
-		{
-			if(str[i]!='\t' && str[i]!='\r' && str[i]!='\n' && str[i]!='[' && str[i]!=']')
-				effect += str[i];
-			else
-				effect += ' ';
-		}
-		
-		//Remove multispace
-		str = effect+"x"; effect="";
-		for(i=0;i<lngt;i++)
-		{
-			if((str[i]==' ' && str[i+1]!=' ') || str[i]!=' ')
-				effect += str[i];
-		}
+		str = str.Replace("\t", " ");
+    	str = str.Replace("\r", " ");
+    	str = str.Replace("\n", " ");
+    	str = str.Replace("[", " ");
+    	str = str.Replace("]", " ");
+		str = str.Trim();
 
-		//All . to ,
-		str = effect; effect="";
-		lngt = str.Length;
-		for(i=0;i<lngt;i++)
-		{
-			if(str[i]!='.') effect+=str[i];
-			else effect+=',';
-		}	
-		return effect;
-	}
-	bool isMulti(string chhh) {
-		return (chhh=="children");
+		while(str.Contains("  "))
+        	str = str.Replace("  ", " ");
+
+    	string[] words = str.Split('.');
+    	return string.Join(',', words);
 	}
 	void Start()
 	{
-		if(transform.position.z<=100f) mother = false; else return;
-		transform.position += SC_fun.GetBiomeMove(ID);
+		if(transform.position.z<=100f) mother = false;
+		else return;
+
+		CBiomeInfo biomeInfo = Generator.GetBiomeData(ID);
+		transform.position += biomeInfo.move;
 
 		//SEON
 		if(SeonSource!=null) SeonField = SeonSource.text;
@@ -163,6 +145,9 @@ public class SC_structure : MonoBehaviour
 		for(i=1;i<lngt;i++)
 			effect+=str[i];
 		return int.Parse(effect);
+	}
+	bool isMulti(string chhh) {
+		return (chhh=="children");
 	}
 	void SeonGenerate(string seon_string)
 	{
@@ -949,5 +934,5 @@ public class SC_structure : MonoBehaviour
 				}
 			}
 		}
-	}
+	}*/
 }

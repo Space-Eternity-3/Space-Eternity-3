@@ -36,7 +36,6 @@ public class SC_fobs : MonoBehaviour
     int GrowTimeLeft=100;
     public int GeyzerTime=0;
     public int inGeyzer=0;
-    public Vector3 transportScale = new Vector3(1f,1f,1f);
 
     public SC_control SC_control;
     public SC_asteroid SC_asteroid;
@@ -273,13 +272,11 @@ public class SC_fobs : MonoBehaviour
             transform.position = new Vector3(0f,0f,10000f);
         }
 		gobT.GetComponent<SC_fobs>().index = index;
-        gobT.transform.localScale *= gobT.transform.parent.localScale.x/(gobT.transform.parent.GetComponent<SC_asteroid>().normalScale.x*gobT.transform.parent.GetComponent<SC_asteroid>().asteroidScale.x);
-        if(gobT.transform.parent.GetComponent<SC_asteroid>().proto) gobT.transform.localScale = new Vector3(
+        gobT.transform.localScale = new Vector3(
             gobT.transform.localScale.x * gobT.transform.parent.parent.localScale.x,
             gobT.transform.localScale.y * gobT.transform.parent.parent.localScale.y,
             gobT.transform.localScale.z * gobT.transform.parent.parent.localScale.z
         );
-        gobT.GetComponent<SC_fobs>().transportScale = transportScale;
         index = -1;
         gobT.GetComponent<SC_fobs>().StartM();
     }
@@ -298,13 +295,6 @@ public class SC_fobs : MonoBehaviour
         asst = transform.parent.GetComponent<SC_asteroid>();
 
         if(transform.position.z<100f) {mother=false; true_mother=false;}
-
-        if(!mother)
-        transform.localScale = new Vector3(
-			transform.localScale.x * transportScale.x, /// transform.parent.localScale.x,
-			transform.localScale.y * transportScale.y, /// transform.parent.localScale.y,
-			transform.localScale.z * transportScale.z /// transform.parent.localScale.z
-		);
 
         if((int)Communtron4.position.y==100)
         {
@@ -503,15 +493,14 @@ public class SC_fobs : MonoBehaviour
         if(id==2||id==21||id==29) return 2f; //BIGGER OBJECT
         return 2f; //DEFAULT
     }
-    public bool isSeonBlocked()
+    public bool IsTransitionBlocked()
     {
-        if(asst.reward_blocker) return (asst.strucutral_parent.GetComponent<SC_structure>().actual_state != "R");
-        else return (asst.temporary_blocker);
+        return (asst.temporary_blocker);
     }
     void OnMouseOver()
     {
         if(mother) return;
-		if(isSeonBlocked()) return;
+		if(IsTransitionBlocked()) return;
 
         int slot;
         float oX=transform.position.x, oY=transform.position.y;

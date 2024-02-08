@@ -35,7 +35,7 @@ public class SC_bg_color : MonoBehaviour
     }
     Color32 FluentLerp(Color32 A, Color32 B, float perc)
     {
-        return Color32.Lerp(A,B,SC_boss.FluentFraction(perc));
+        return Color32.Lerp(A,B,SC_fun.FluentFraction(perc));
     }
     Color32 MultiLerp4(Color32[] colors, float[] weights)
     {
@@ -96,19 +96,22 @@ public class SC_bg_color : MonoBehaviour
         for(i=0;i<9;i++)
         {
             biomeData[i].ulam = SC_fun.MakeUlam((int)udels[i].x,(int)udels[i].y);
-            biomeData[i].type = int.Parse(SC_fun.GetBiomeString(biomeData[i].ulam).Split('b')[1]);
+            CBiomeInfo biomeInfo = Generator.GetBiomeData(biomeData[i].ulam);
+            biomeData[i].type = biomeInfo.biome;
 
             udels[i]*=100;
-            if(biomeData[i].type==0) {
+            if(biomeData[i].type==0)
+            {
                 biomeData[i].distance = 10000f;
                 biomeData[i].priority = -1;
             }
-            else {
-                udels[i] += SC_fun.GetBiomeMove(biomeData[i].ulam);
-                float gradient_size = SC_fun.GetBiomeSize(biomeData[i].ulam);
-                if(SC_fun.bS[biomeData[i].type] < gradient_size) gradient_size = SC_fun.bS[biomeData[i].type];
+            else
+            {
+                udels[i] += biomeInfo.move;
+                float gradient_size = biomeInfo.size;
+                if(Generator.tag_gradient[biomeData[i].type] < gradient_size) gradient_size = Generator.tag_gradient[biomeData[i].type];
                 biomeData[i].distance = Vector3.Distance(pos,udels[i]) - gradient_size;
-                biomeData[i].priority = SC_fun.bP[biomeData[i].type];
+                biomeData[i].priority = Generator.tag_priority[biomeData[i].type];
             }
         }
 

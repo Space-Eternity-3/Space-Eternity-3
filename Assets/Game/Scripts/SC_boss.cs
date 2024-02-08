@@ -147,8 +147,9 @@ public class SC_boss : MonoBehaviour
 
     public SC_data SC_data;
     public SC_control SC_control;
-    public SC_structure SC_structure;
+    public SC_object_holder SC_object_holder;
     public SC_bars SC_bars;
+    public SC_fun SC_fun;
     public SC_behaviour SC_behaviour;
     
     public CInfo world;
@@ -275,16 +276,7 @@ public class SC_boss : MonoBehaviour
     }
     void StateUpdate()
     {
-        if(SC_structure.actual_state=="default")
-        {
-            //If not initialized, jump true by default
-            int i,lngt=SC_structure.st_structs.Length;
-            for(i=0;i<lngt;i++)
-                if(SC_structure.st_structs[i]!=null)
-                    if(SC_structure.st_structs[i].GetComponent<SC_seon_remote>()!=null)
-                        SC_structure.st_structs[i].GetComponent<SC_seon_remote>().jump = true;
-        }
-        SC_structure.actual_state = GetState(dataID[1],dataID[2]);
+        SC_object_holder.actual_state = GetState(dataID[1],dataID[2]);
 
         if(memory2!=dataID[2] && InArena("vision"))
         {
@@ -330,14 +322,6 @@ public class SC_boss : MonoBehaviour
     {
         if(transform.GetComponent<SC_seon_remote>()==null)
             FixedUpdateT();
-
-        if(transform.GetComponent<SC_seon_remote>()!=null)
-            if(transform.GetComponent<SC_seon_remote>().SC_structure==null)
-                FixedUpdateT();
-    }
-    public float FluentFraction(float f)
-    {
-        return f*f*((-2)*f+3);
     }
     public float GetTransitionFraction(float distance)
     {
@@ -349,7 +333,7 @@ public class SC_boss : MonoBehaviour
         if(distance < 40f) distance = 40f;
         if(distance > 80f) distance = 80f;
         float X = 1 - (distance-40f)/40f;
-        return FluentFraction(X*ret);
+        return SC_fun.FluentFraction(X*ret);
     }
 
     void Update()
@@ -411,7 +395,7 @@ public class SC_boss : MonoBehaviour
         if(!disable_force_give_up) {
             if(!multiplayer && !InArena("range") && dataID[2]==2) force_give_up_counter++;
             else force_give_up_counter = 0;
-            if(force_give_up_counter>=50) GiveUpSGP();
+            if(force_give_up_counter>=1000) GiveUpSGP();
         }
 
         //Multiplayer boss refresher
@@ -463,7 +447,7 @@ public class SC_boss : MonoBehaviour
         }
 
         //Time bar controller
-        string ass = SC_structure.actual_state;
+        string ass = SC_object_holder.actual_state;
         if(InArena("vision") && (ass=="B1"||ass=="B2"||ass=="B3")) {
             timer_bar_value = dataID[4];
             timer_bar_max = dataID[5];

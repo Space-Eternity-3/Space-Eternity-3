@@ -190,7 +190,714 @@ public static class WorldData
 
 // GENERATION LAYER 2 (middle) -> Gameplay objects create
 
-// coming soon
+public class CObjectInfo
+{
+    //Indicators
+    public int ulam;
+    public string obj = "unknown";
+    public int animator = -1;
+
+    //Transform
+    public Vector3 default_position;
+    public Vector3 position;
+    public float rotation = 0f;
+    public Vector3[] fob_positions = new Vector3[20];
+    public float[] fob_rotations = new float[20];
+
+    //Properties
+    public int type = -1;
+    public int size = -1;
+    public int biome = -1;
+    public float range = 0f;
+    public bool hidden = false;
+    public string fobcode = "";
+    public string GetGencode()
+    {
+        if(biome==-1) return size + "t" + type + "t" + fobcode;
+        else return size + "b" + biome + "b" + fobcode;
+    }
+
+    //Animations
+    public int animation_type = 0;
+    public Vector3 animation_size = new Vector3(0f,0f,0f);
+    public string animation_when_doing = "";
+    public string animation_when_done = "";
+    public string animation_when_undoing = "";
+
+    //Constructor
+    public CObjectInfo(int p_ulam, Vector3 start_pos)
+    {
+        ulam = p_ulam;
+        position = start_pos;
+        default_position = start_pos;
+    }
+
+    //Summoners
+    public void Asteroid(string p_size, string p_type, string p_fobcode)
+    {
+        int.TryParse(p_size, out size);
+        if(size<4 || size>10) size=4;
+
+        int.TryParse(p_type, out type);
+        if(type<0 || type>63) type=0;
+
+        string[] fob_array = (p_fobcode+",,,,,,,,,,,,,,,,,,,").Split(',');
+
+        int i;
+        for(i=0;i<20;i++)
+        {
+            int t = -1;
+            if(!int.TryParse(fob_array[i], out t)) t = -1;
+            if(t<0 || t>127) t = -1;
+            if(i!=-1) fobcode += t;
+            if(i!=19) fobcode += ";";
+
+            fob_rotations[i] = -(360f/(size*2))*i;
+            fob_positions[i] = position + size/2f * new Vector3(
+                Mathf.Sin(-fob_rotations[i]*Mathf.PI/180f),
+                Mathf.Cos(-fob_rotations[i]*Mathf.PI/180f),
+            0f);
+        }
+        obj = "asteroid";
+    }
+    public void Wall(string p_type)
+    {
+        int.TryParse(p_type, out type);
+        if(type<0 || type>15) type=0;
+
+        obj = "wall";
+    }
+    public void Sphere(string p_size, string p_type)
+    {
+        int.TryParse(p_size, out size);
+        if(size<1 || size>100) size=1;
+
+        int.TryParse(p_type, out type);
+        if(type<0 || type>15) type=0;
+
+        obj = "sphere";
+    }
+    public void Piston(string p_type)
+    {
+        int.TryParse(p_type, out type);
+        if(type<0 || type>15) type=0;
+
+        obj = "piston";
+    }
+    public void Hole(string p_range)
+    {
+        float.TryParse(p_range, out range);
+        if(range<0f) range=0f;
+
+        obj = "hole";
+    }
+    public void Respblock(string p_range)
+    {
+        float.TryParse(p_range, out range);
+        if(range<0f) range=0f;
+
+        obj = "respblock";
+    }
+    public void Boss(string p_type)
+    {
+        int.TryParse(p_type, out type);
+        if(type<0 || type>6) type=0;
+
+        animation_type = 1;
+        animation_when_doing = "b1a1;b2a2;b3a3;";
+        animation_when_done = "default;A1;A2;A3;R;b1a2;b2a3;b3r;";
+        animation_when_undoing = "a1b1;a2b2;a3b3;";
+
+        obj = "boss";
+    }
+
+    //Modifiers
+    public void SetBiomeBase(string p_biome)
+    {
+        if(obj!="asteroid") return;
+
+        int.TryParse(p_biome, out biome);
+        if(biome<0 || biome>31) biome=0;
+        type=-1;
+    }
+    public void Move(string p_x, string p_y)
+    {
+        if(obj=="boss") return;
+
+        float x=0f, y=0f;
+        float.TryParse(p_x, out x);
+        float.TryParse(p_y, out y);
+        float[] get = SC_fun.RotateVector(x,y,rotation);
+        position += new Vector3(get[0],get[1],0f);
+
+        if(obj=="asteroid")
+        {
+            int i;
+            for(i=0;i<20;i++)
+            {
+                fob_positions[i] += new Vector3(get[0],get[1],0f);
+            }
+        }
+    }
+    public void Rotate(string p_rot)
+    {
+        if(obj=="boss") return;
+
+        float rot=0f;
+        float.TryParse(p_rot, out rot);
+        rotation += rot;
+        
+        if(obj=="asteroid")
+        {
+            int i;
+            for(i=0;i<20;i++)
+            {
+                Vector3 raw_delta_pos = fob_positions[i] - position;
+                float[] delta_pos = SC_fun.RotateVector(raw_delta_pos.x,raw_delta_pos.y,-fob_rotations[i]);
+                ResetS(i,"position");
+                RotateS(i,rot+"");
+                MoveS(i,delta_pos[0]+"",delta_pos[1]+"");
+            }
+        }
+    }
+    public void Reset(string p_what)
+    {
+        if(obj=="boss") return;
+
+        if(p_what=="position")
+        {
+            Vector3 delta_pos = position - default_position;
+            position -= delta_pos;
+
+            if(obj=="asteroid")
+            {
+                int i;
+                for(i=0;i<20;i++)
+                    fob_positions[i] -= delta_pos;
+            }
+        }
+        if(p_what=="rotation") Rotate((-rotation)+"");
+    }
+
+    //Child modifiers
+    public void MoveS(int S, string p_x, string p_y)
+    {
+        if(obj!="asteroid") return;
+
+        float x=0f, y=0f;
+        float.TryParse(p_x, out x);
+        float.TryParse(p_y, out y);
+        float[] get = SC_fun.RotateVector(x,y,fob_rotations[S]);
+        fob_positions[S] += new Vector3(get[0],get[1],0f);
+    }
+    public void RotateS(int S, string p_rot)
+    {
+        if(obj!="asteroid") return;
+
+        float rot=0f;
+        float.TryParse(p_rot, out rot);
+        fob_rotations[S] += rot;
+    }
+    public void ResetS(int S, string p_what)
+    {
+        if(obj!="asteroid") return;
+
+        if(p_what=="position") fob_positions[S] = position;
+        if(p_what=="rotation") fob_rotations[S] = rotation;
+    }
+
+    //Animation initializer
+    public void AnimationCreate(string p_type, string p_when, string p_dx, string p_dy)
+    {
+        if(obj!="animator") return;
+
+        animation_when_doing = "";
+        animation_when_done = "";
+        animation_when_undoing = "";
+
+        int i;
+        string[] given_states = p_when.Split(',');
+        string[] st_array = {"R","A1","A2","A3","B1","B2","B3"};
+        bool[] have = new bool[7];
+
+        //Static states
+        for(i=0;i<7;i++)
+        {
+            have[i] = (Array.IndexOf(given_states,st_array[i])>=0);
+            if(have[i]) animation_when_done += st_array[i]+";";
+        }
+
+        //Activating & losing
+        for(i=1;i<=3;i++)
+        {
+            if(have[i] && have[i+3]) {
+                animation_when_done += "a"+i+"b"+i+";";
+                animation_when_done += "b"+i+"a"+i+";";
+            }
+            if(have[i] && !have[i+3]) {
+                animation_when_undoing += "a"+i+"b"+i+";";
+                animation_when_doing += "b"+i+"a"+i+";";
+            }
+            if(!have[i] && have[i+3]) {
+                animation_when_doing += "a"+i+"b"+i+";";
+                animation_when_undoing += "b"+i+"a"+i+";";
+            }
+        }
+
+        //Winning
+        for(i=1;i<=2;i++)
+        {
+            if(have[i+1] && have[i+3]) animation_when_done += "b"+i+"a"+(i+1)+";";
+            if(have[i+1] && !have[i+3]) animation_when_doing += "b"+i+"a"+(i+1)+";";
+            if(!have[i+1] && have[i+3]) animation_when_undoing += "b"+i+"a"+(i+1)+";";
+        }
+
+        //Completing
+        if(have[0] && have[6]) animation_when_done += "b3r;";
+        if(have[0] && !have[6]) animation_when_doing += "b3r;";
+        if(!have[0] && have[6]) animation_when_undoing += "b3r;";
+        
+
+        float dx=0f, dy=0f;
+        if(p_type=="hiding")
+        {
+            animation_type = 1;
+            animation_when_done += "default;";
+        }
+        if(p_type=="extending")
+        {
+            animation_type = 2;
+            float.TryParse(p_dx, out dx);
+            float.TryParse(p_dy, out dy);
+            animation_size = new Vector3(dx,dy,0f);
+        }
+    }
+}
+
+public static class Universe
+{
+    public static SC_fun SC_fun;
+
+    public const int max_dict_size = 64;
+    public static Dictionary<string, CObjectInfo[]> Sectors = new Dictionary<string, CObjectInfo[]>();
+
+    //Public methods
+    public static CObjectInfo GetObject(int ulam)
+    {
+        string sector_name = GetSectorNameByUlam(ulam);
+        CObjectInfo[] sector = GetSector(sector_name);
+        foreach(CObjectInfo obj in sector)
+        {
+            if(obj!=null) if(obj.ulam==ulam)
+                return obj;
+        }
+        return null;
+    }
+    public static CObjectInfo[] GetSector(string sector_name)
+    {
+        if(Sectors.ContainsKey(sector_name)) return Sectors[sector_name];
+
+        string[] spl = sector_name.Split('_');
+        int X = int.Parse(spl[1]);
+        int Y = int.Parse(spl[2]);
+        int sX = X; if(X%2!=0) sX++;
+        int sY = Y; if(Y%2!=0) sY++;
+
+        if(X < -2000 || X >= 2000) return new CObjectInfo[0];
+        if(Y < -2000 || Y >= 2000) return new CObjectInfo[0];
+
+        int i;
+        CObjectInfo[] Build;
+        if(spl[0]=="B")
+        {
+            Build = new CObjectInfo[50];
+            CObjectInfo[] LocalStructure = GetSector("S_"+sX+"_"+sY);
+            List<CObjectInfo> Holes = new List<CObjectInfo>();
+            foreach(CObjectInfo obj in LocalStructure)
+            {
+                if(obj!=null) if(obj.obj=="hole")
+                    Holes.Add(obj);
+            }
+            for(i=0;i<50;i++)
+            {
+                int x = 10*X + i/5;
+                int y = 10*Y + 2*(i%5);
+                if(x%2!=0) y++;
+                int ulam = SC_fun.MakeUlam(x,y);
+                Build[i] = AsteroidBuild(ulam,Holes);
+            }
+        }
+        else Build = StructureBuild(SC_fun.MakeUlam(sX,sY));
+
+        if(Sectors.Count >= max_dict_size) Sectors.Clear();
+        Sectors.Add(sector_name,Build);
+        return Sectors[sector_name];
+    }
+
+    //Conversion methods
+    public static string GetSectorNameByUlam(int ulam)
+    {
+        int[] xy = SC_fun.UlamToXY(ulam);
+        int X,Y;
+
+        if(xy[0]>=0) X = xy[0]/10;
+        else X = -((-xy[0]-1)/10+1);
+
+        if(xy[1]>=0) Y = xy[1]/10;
+        else Y = -((-xy[1]-1)/10+1);
+
+        if(ulam%2==0)
+        {
+            if(X%2!=0) X--;
+            if(Y%2!=0) Y--;
+            return "S_"+X+"_"+Y;
+        }
+        else return "B_"+X+"_"+Y;
+    }
+    public static Vector3 GetAsteroidMove(int ulam, int size, int biome)
+    {
+		if(Generator.tag_grid[biome]) return new Vector3(0f,0f,0f);
+		int r121 = Deterministics.Random10e3(ulam+Generator.seed) % 121;
+		float dE = 5f - (size+2f)*0.35f;
+		float dZ = (r121/11-5) * dE * 0.2f;
+		float dW = (r121%11-5) * dE * 0.2f;
+		return new Vector3(dW-dZ,dW+dZ,0f);
+    }
+    public static int RangedIntParse(string str, int min, int max)
+    {
+        int n = min;
+        int.TryParse(str, out n);
+        if(n < min || n > max) n = min;
+        return n;
+    }
+
+    //Generator methods
+    private static CObjectInfo AsteroidBuild(int ulam, List<CObjectInfo> Holes)
+    {
+        if(ulam==1 || ulam%2==0) return null;
+        int ulam_mixed = Generator.MixID(ulam,Generator.seed);
+        int r100 = (int)Deterministics.long1[(ulam_mixed%65536-1)/2] - 28;
+        int s100 = (int)Deterministics.long3[(ulam_mixed%65536-1)/2] - 48;
+
+        int[] xy = SC_fun.UlamToXY(ulam);
+        Vector3 ast_pos = 10 * new Vector3(xy[0],xy[1],0f);
+        int Ulam = LeadingBiomeUlam(ast_pos);
+        CBiomeInfo Biome = Generator.GetBiomeData(Ulam);
+        int[] XY = SC_fun.UlamToXY(Ulam);
+        Vector3 biome_pos = 100 * new Vector3(XY[0],XY[1],0f) + Biome.move;
+        bool is_in = (SC_fun.SC_control.Pitagoras(ast_pos-biome_pos) < Biome.size);
+
+        int gen_biome = 0, gen_size = s100;
+        if(is_in) gen_biome = Biome.biome;
+        if(r100 >= Generator.tag_density[gen_biome]) return null;
+
+        foreach(CObjectInfo obj in Holes)
+        {
+            if(SC_fun.SC_control.Pitagoras(ast_pos - obj.position) < obj.range)
+                return null;
+        }
+
+        CObjectInfo Asteroid = new CObjectInfo(ulam, ast_pos);
+        Asteroid.Asteroid(gen_size+"","0","");
+        Asteroid.SetBiomeBase(gen_biome+"");
+        Vector3 loc_mov = GetAsteroidMove(ulam,gen_size,gen_biome);
+        Asteroid.Move(loc_mov.x+"",loc_mov.y+"");
+        return Asteroid;
+    }
+    private static int LeadingBiomeUlam(Vector3 ast_pos)
+    {
+        Vector3 cen_pos = new Vector3(Mathf.Round(ast_pos.x/100f),Mathf.Round(ast_pos.y/100f),0f) * 100f;
+        int X = (int)(cen_pos.x/100f);
+		int Y = (int)(cen_pos.y/100f);
+		
+        int i;
+		Vector3[] udels = new Vector3[]
+        {
+            new Vector3(-1f,-1f,0f), new Vector3(0f,-1f,0f), new Vector3(1f,-1f,0f),
+            new Vector3(-1f,0f,0f), new Vector3(0f,0f,0f), new Vector3(1f,0f,0f),
+            new Vector3(-1f,1f,0f), new Vector3(0f,1f,0f), new Vector3(1f,1f,0f)
+        };
+		int[] ulams = new int[9];
+		bool[] insp = new bool[9];
+        CBiomeInfo[] biomes = new CBiomeInfo[9];
+		for(i=0;i<9;i++)
+        {
+            ulams[i] = SC_fun.MakeUlam(X+(int)udels[i].x, Y+(int)udels[i].y);
+            biomes[i] = Generator.GetBiomeData(ulams[i]);
+            insp[i] = (SC_fun.SC_control.Pitagoras(cen_pos + 100*udels[i] + biomes[i].move - ast_pos) < biomes[i].size);
+        }
+	
+		int proper=0, prr=0;
+		for(i=0;i<9;i++)
+		{
+			if(insp[i])
+			{
+				int locP = Generator.tag_priority[biomes[i].biome];
+				if(Generator.IsBiggerPriority(ulams[i],ulams[proper],locP,prr))
+				{
+					proper = i;
+					prr = locP;
+				}
+			}
+		}
+		if(proper==0 && !insp[0]) return 1;
+		return ulams[proper];
+    }
+    private static CObjectInfo[] StructureBuild(int Ulam)
+    {
+        int[] XY = SC_fun.UlamToXY(Ulam);
+        int X = XY[0];
+        int Y = XY[1];
+        string sector_name = "S_"+X+"_"+Y;
+        
+        CObjectInfo[] Build = new CObjectInfo[1000];
+        CBiomeInfo biomeInfo = Generator.GetBiomeData(Ulam);
+        int struct_id = Generator.tag_struct[biomeInfo.biome];
+        if(struct_id==0) return Build;
+
+        string[] SeonArgs = TxtToSeonArray(/*SC_fun.SC_data.CustomStructures[struct_id]*/SC_fun.TestStructure);
+        Vector3 base_position = 100 * new Vector3(X,Y,0f) + biomeInfo.move;
+        int setrand=0, ifrand=-1, setrand_initializer = Ulam + Generator.seed;
+
+        //Random processing
+        List<string> args = new List<string>();
+        int i,lngt = SeonArgs.Length;
+        for(i=0;i<lngt;i++)
+        {
+            if(i<=lngt-2)
+            {
+                if(SeonArgs[i]=="setrand")
+                {
+                    int a=1;
+                    int.TryParse(SeonArgs[i+1],out a);
+                    if(a<1 || a>1000) a=1;
+                    setrand_initializer = Deterministics.Random10e5(setrand_initializer);
+                    setrand = setrand_initializer % a;
+                    i++; continue;
+                }
+                if(SeonArgs[i]=="ifrand")
+                {
+                    int a=1;
+                    int.TryParse(SeonArgs[i+1],out a);
+                    if(a<-1 || a>999) a=-1;
+                    ifrand = a;
+                    i++; continue;
+                }
+            }
+            if(setrand==ifrand || ifrand==-1)
+                args.Add(SeonArgs[i]);
+        }
+
+        lngt = args.Count;
+        bool started = false;
+        string cmd = "";
+        List<string> cmds = new List<string>();
+        string[] key_words = new string[]{
+            "summon",
+            "move","rotate","reset",
+            "setbiome","hide","steal",
+            "setanimator","animate",
+            "move$","rotate$","reset$"
+        };
+        int H1=0, H2=0, S1=0, S2=0;
+        for(i=0;i<lngt;i++)
+        {
+            if(i<=lngt-3)
+            {
+                if(args[i]=="catch")
+                {
+                    if(args[i+1]=="#")
+                    {
+                        string[] m_spl = (args[i+2]+"-").Split('-');
+                        H1 = RangedIntParse(m_spl[0],0,999);
+                        H2 = RangedIntParse(m_spl[1],H1,999);
+                        i+=2; continue;
+                    }
+                    if(args[i+1]=="$")
+                    {
+                        string[] m_spl = (args[i+2]+"-").Split('-');
+                        S1 = RangedIntParse(m_spl[0],0,19);
+                        S2 = RangedIntParse(m_spl[1],S1,19);
+                        i+=2; continue;
+                    }
+                }
+            }
+            if(Array.IndexOf(key_words,args[i])>=0)
+            {
+                if(started) cmds.Add(cmd+"          ");
+                started = true;
+                cmd = H1+" "+H2+" "+S1+" "+S2+" "+args[i];
+            }
+            else cmd += " "+args[i];
+        }
+        if(started) cmds.Add(cmd+"          ");
+
+        foreach(string line in cmds)
+        {
+            string[] arg = line.Split(' ');
+            H1 = int.Parse(arg[0]);
+            H2 = int.Parse(arg[1]);
+            S1 = int.Parse(arg[2]);
+            S2 = int.Parse(arg[3]);
+            int H,S;
+            for(H=H1;H<=H2;H++)
+            {
+                if(arg[4]=="summon")
+                {
+                    Build[H] = new CObjectInfo(BuildUlam(X,Y,H),base_position);
+
+                    if(arg[5]=="wall") Build[H].Wall(arg[6]);
+                    if(arg[5]=="piston") Build[H].Piston(arg[6]);
+                    if(arg[5]=="sphere") Build[H].Sphere(arg[6],arg[7]);
+                    if(arg[5]=="respblock") Build[H].Respblock(arg[6]);
+                    if(arg[5]=="hole") Build[H].Hole(arg[6]);
+                    if(arg[5]=="animator") Build[H].obj = "animator";
+                    if(arg[5]=="star") Build[H].obj = "star";
+                    if(arg[5]=="monster") Build[H].obj = "monster";
+
+                    if(H>199) continue;
+                    if(arg[5]=="asteroid") Build[H].Asteroid(arg[6],arg[7],arg[8]);
+
+                    if(H>0) continue;
+                    if(arg[5]=="boss") Build[H].Boss(arg[6]);
+                }
+                if(Build[H]==null) continue;
+                if(arg[4]=="move")
+                {
+                    float a,b,c=0,d=0;
+                    float.TryParse(arg[5], out a);
+                    float.TryParse(arg[6], out b);
+                    if(arg[7]=="mod") {
+                        float.TryParse(arg[8], out c);
+                        float.TryParse(arg[9], out d);
+                    }
+                    int n = H-H1;
+                    Build[H].Move((a+n*c)+"",(b+n*d)+"");
+                }
+                if(arg[4]=="rotate")
+                {
+                    float a,c=0;
+                    float.TryParse(arg[5], out a);
+                    if(arg[6]=="mod") {
+                        float.TryParse(arg[7], out c);
+                    }
+                    int n = H-H1;
+                    Build[H].Rotate((a+n*c)+"");
+                }
+                if(arg[4]=="reset") Build[H].Reset(arg[5]);
+                if(arg[4]=="setbiome") Build[H].SetBiomeBase(arg[5]);
+                if(arg[4]=="hide")
+                {
+                    if(Build[H].obj!="asteroid") continue;
+                    Build[H].hidden = true;
+                }
+                if(arg[4]=="steal")
+                {
+                    if(Build[H].obj!="wall") continue;
+                    int b = 0;
+                    if(arg[5]=="fromhash") int.TryParse(arg[6], out b);
+                    else if(arg[5]=="fromdelta")
+                    {
+                        int.TryParse(arg[6], out b);
+                        b += H;
+                    }
+                    if(b<0 || b>999) continue;
+                    if(Build[b]==null) continue;
+                    if(Build[b].obj!="asteroid") continue;
+                    
+                    int a = Build[b].size;
+                    Vector3 rel_pos = Build[H].position - Build[b].position;
+                    Build[b].Reset("rotation");
+                    Build[b].Move(rel_pos.x+"",rel_pos.y+"");
+                    Build[b].hidden = true;
+
+                    float start_dx = -1.7f*(a-1)/2f;
+                    for(i=0;i<2*a;i++)
+                    {
+                        Build[b].ResetS(i,"position");
+                        Build[b].ResetS(i,"rotation");
+                    }
+                    for(i=0;i<a;i++)
+                    {
+                        Build[b].RotateS(2*i,(Build[H].rotation+90f)+"");
+                        Build[b].RotateS(2*i+1,(Build[H].rotation-90f)+"");
+                        Build[b].MoveS(2*i,(start_dx + i*1.7f)+"","1,5");
+                        Build[b].MoveS(2*i+1,(start_dx + i*1.7f)+"","1,5");
+                    }
+                }
+                if(arg[4]=="setanimator")
+                {
+                    int a = RangedIntParse(arg[5],0,999);
+                    if(Build[a]==null) continue;
+                    if(Build[a].obj!="animator") continue;
+                    if(Build[H].obj=="animator" || Build[H].obj=="boss") continue;
+                    Build[H].animator = a;
+                }
+                if(arg[4]=="animate")
+                {
+                    if(arg[6]=="when")
+                        Build[H].AnimationCreate(arg[5],arg[7],arg[8],arg[9]);
+                }
+                if(Build[H].obj!="asteroid") continue;
+                for(S=S1;S<=S2;S++)
+                {
+                    if(arg[4]=="move$")
+                    {
+                        float a,b,c=0,d=0;
+                        float.TryParse(arg[5], out a);
+                        float.TryParse(arg[6], out b);
+                        if(arg[7]=="mod") {
+                            float.TryParse(arg[8], out c);
+                            float.TryParse(arg[9], out d);
+                        }
+                        int n = S-S1;
+                        Build[H].MoveS(S,(a+n*c)+"",(b+n*d)+"");
+                    }
+                    if(arg[4]=="rotate$")
+                    {
+                        float a,c=0;
+                        float.TryParse(arg[5], out a);
+                        if(arg[6]=="mod") {
+                            float.TryParse(arg[7], out c);
+                        }
+                        int n = S-S1;
+                        Build[H].RotateS(S,(a+n*c)+"");
+                    }
+                    if(arg[4]=="reset$") Build[H].ResetS(S,arg[5]);
+                }
+            }
+        }
+
+        return Build;
+    }
+    private static string[] TxtToSeonArray(string str)
+	{
+		str = str.Replace("\t", " ");
+    	str = str.Replace("\r", " ");
+    	str = str.Replace("\n", " ");
+    	str = str.Replace("[", " ");
+    	str = str.Replace("]", " ");
+		str = str.Trim();
+
+		while(str.Contains("  "))
+        	str = str.Replace("  ", " ");
+
+    	str = string.Join(',',str.Split('.'));
+        return str.Split(' ');
+	}
+    private static int BuildUlam(int X, int Y, int id) // <0;199>
+	{	
+        if(id>=50 && id<100) { X++; id-=50; }
+        if(id>=100 && id<150) { Y++; id-=100; }
+        if(id>=150 && id<200) { X++; Y++; id-=150; }
+        if(id>=200) return 0;
+
+		int sX = 2*(id%5);
+		int sY = id/5;
+		if(sY%2==0) sX++;
+		return SC_fun.MakeUlam(10*X + sX, 10*Y + sY);
+	}
+}
 
 
 // GENERATION LAYER 1 (outer) -> Biome and structure specify
@@ -406,9 +1113,125 @@ public static class Generator
 
 public class SC_worldgen : MonoBehaviour
 {
+    public int GenerationRange;
+    public int StructRange;
+    public int FrameMaxCreations;
+    public bool AllowDebugInfo;
+
     public Transform player;
+    public Transform respawn;
+    public SC_object_holder SC_object_holder;
+    public SC_control SC_control;
+    public SC_fun SC_fun;
+
+    public Dictionary<string,SC_object_holder> Holders = new Dictionary<string,SC_object_holder>();
+
+    void Start()
+    {
+        BothGenerationsTry();
+    }
     void Update()
     {
+        BothGenerationsTry();
+        if(AllowDebugInfo) DebugInfo();
+    }
+
+    void BothGenerationsTry()
+    {
+        Vector3 host;
+        if(SC_control.living) host = player.position;
+        else host = respawn.position;
+        GenerateTry(host);
+        StructureTry(host);
+    }
+
+    bool high_started = false;
+    bool started = false;
+    int last_x = 0, last_y = 0;
+    void GenerateTry(Vector3 host)
+    {
+        int frame_creations = 0;
+        int cx = (int)Mathf.Round(host.x/10f);
+        int cy = (int)Mathf.Round(host.y/10f);
+        bool just_refresh = (started && last_x==cx && last_y==cy);
+        started = true; last_x = cx; last_y = cy;
+
+        int x,y;
+        for(x=cx-GenerationRange;x<=cx+GenerationRange;x++)
+        for(y=cy-GenerationRange;y<=cy+GenerationRange;y++)
+        if((x+y)%2==0)
+        {
+            string holder_name = "ast_"+x+"_"+y;
+            if(!Holders.ContainsKey(holder_name))
+            {
+                if(frame_creations < FrameMaxCreations || !high_started) frame_creations++;
+                else
+                {
+                    started=false;
+                    continue;
+                }
+
+                SC_object_holder holder = Instantiate(SC_object_holder,10*new Vector3(x,y,0f),Quaternion.identity);
+                CObjectInfo obj = Universe.GetObject(SC_fun.MakeUlam(x,y));
+                holder.Objects = new CObjectInfo[]{obj};
+                holder.name = holder_name;
+                holder.holder_name = holder_name;
+                holder.Unlock();
+                Holders.Add(holder_name,holder);
+            }
+            else Holders[holder_name].terminate_in = 300;
+        }
+        high_started = true;
+    }
+
+    bool started2 = false;
+    int last_x2 = 0, last_y2 = 0;
+    void StructureTry(Vector3 host)
+    {
+        int cx = (int)Mathf.Round(host.x/100f);
+        int cy = (int)Mathf.Round(host.y/100f);
+        bool just_refresh = (started2 && last_x2==cx && last_y2==cy);
+        started2 = true; last_x2 = cx; last_y2 = cy;
+
+        int x,y;
+        for(x=cx-StructRange;x<=cx+StructRange;x++)
+        for(y=cy-StructRange;y<=cy+StructRange;y++)
+        if(x%2==0 && y%2==0)
+        {
+            string holder_name = "S_"+x+"_"+y;
+            if(!Holders.ContainsKey(holder_name))
+            {
+                SC_object_holder holder = Instantiate(SC_object_holder,100*new Vector3(x,y,0f),Quaternion.identity);
+                holder.name = holder_name;
+                holder.holder_name = holder_name;
+                holder.Objects = Universe.GetSector(holder_name);
+                holder.Unlock();
+                Holders.Add(holder_name,holder);
+            }
+            else Holders[holder_name].terminate_in = 300;
+        }
+    }
+    
+    void DebugInfo()
+    {
+        if(Input.GetKeyDown("o"))
+        {
+            int x = (int)Mathf.Round(player.position.x/10f);
+            int y = (int)Mathf.Round(player.position.y/10f);
+            int ulam = Generator.SC_fun.MakeUlam(x,y);
+            CObjectInfo obj = Universe.GetObject(ulam);
+            if(obj!=null) UnityEngine.Debug.Log(
+                "Obj: "+obj.obj+"\n"+
+                "Ulam: "+ulam+" xy: "+x+";"+y+"\n"+
+                "Position: "+obj.position+"\n"+
+                "Size: "+obj.size+"\n"+
+                "Biome: "+obj.biome+"\n"
+            );
+            else UnityEngine.Debug.Log(
+                "Obj: null\n"+
+                "Ulam: "+ulam+" xy: "+x+";"+y+"\n"
+            );
+        }
         if(Input.GetKeyDown("p"))
         {
             int X = (int)Mathf.Round(player.position.x/100f);

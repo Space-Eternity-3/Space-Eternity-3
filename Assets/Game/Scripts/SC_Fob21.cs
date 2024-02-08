@@ -100,17 +100,16 @@ public class SC_Fob21 : MonoBehaviour {
 			}
 			screen_button.colors = cb;
 
-			SC_structure rts = transform.root.GetComponent<SC_structure>();
+			SC_object_holder rts = transform.root.GetComponent<SC_object_holder>();
             if(rts!=null)
-                if(rts.st_structs[0]!=null)
+			{
+				SC_boss bts = rts.SC_boss;
+                if(bts!=null)
                 {
-                    SC_boss bts = rts.st_structs[0].GetComponent<SC_boss>();
-                    if(bts!=null)
-                    {
-						screen_description.text = bts.BossNames[bts.type]+" "+SC_boss.romeNumber(bts.dataID[1]+1);
-						screen_description_image.color = bts.arenaColors[bts.type];
-					}
-                }
+					screen_description.text = bts.BossNames[bts.type]+" "+SC_boss.romeNumber(bts.dataID[1]+1);
+					screen_description_image.color = bts.arenaColors[bts.type];
+				}
+			}
 		}
 	}
 	void Update()
@@ -219,7 +218,7 @@ public class SC_Fob21 : MonoBehaviour {
 		if(SC_control.impulse_enabled) return;
 		if(SC_fobs.mother) return;
 		SC_asteroid asst = transform.parent.GetComponent<SC_asteroid>();
-		if(SC_fobs.isSeonBlocked()) return;
+		if(SC_fobs.IsTransitionBlocked()) return;
 		
 		if(Req(0))
 		{

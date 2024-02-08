@@ -27,6 +27,7 @@ Old feature changes:
 - invisibility pulses removed when modifing the world, trolling with illusion artefact is now easier :)
 - damage invisibility pulse time reduced: 25+3 -> 20+3
 - recreated pause menu to fit difficulty change menu
+- simplified piston collider to be a rectangle
 
 Artistic changes:
 
@@ -38,6 +39,8 @@ Artistic changes:
 - boss damage sound volume reduced: 0,35 -> 0,3 + pitch changed
 - artefact lights changed a bit (not very noticeable)
 - all 0-1 animations (hiding, camera zoom, bgcolor etc.) are less sharp from now
+- added smooth camera zoom when being close to activated arena
+- cementery big asteroid is now as fat as it should have been
 
 UI changes:
 
@@ -92,13 +95,12 @@ Configurables:
 - added upgrade variables in gameplay segment to allow customization of upgrade prices
 - removed all structural tags except for struct=X, moved all built-in structures into custom structures
 - added "star2" to command "summon" in seon, it summons a weird ornament creature
-- seon changes:
-  - removed command "asteroid blocker enable/disable"
-  - added command "asteroid blocker reward" - disabled only in structure state "b3r"
+- completely reworked seon language, see the newest documentation [here]
 - new biome tags:
   - use bgcolor-X-X-X biome tag to customize background color
   - use boss.1.color-X-X-X biome tag to customize boss background color (see default colors [here])
   - use tag gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
+  - removed tag swap and ring.X.change, replaced their functionality with the new hole seon object
 
 Technical changes:
 
@@ -142,6 +144,10 @@ c) Others
 - reworked biome generation API and copied it to the server
 - asteroid type set and fobs generation are now deterministic based on seed
 - biome memories system reworked, splitted one giant file into smaller terrain files
+- force give up counter on singleplayer changed from 1s to 20s, on multiplayer it was always 20s
+- star particles scaling changed to hierarchy
+- reworked the whole world generation system code, but it works still the same
+- there is a limit (5) of asteroids possible to generate in one frame
 
 Bug fixes:
 
@@ -155,7 +161,7 @@ Bug fixes:
 - fixed lightning problem in the main menu
 - bullet projections on multiplayer were breaking one frame too early
 - bullet invisible server projections were spawning one frame ahead of their real position
-- dark asteroid had not a wall variant in seon language
+- dark asteroid had not wall and sphere variant in seon language
 - when player died in multiplayer while fighting boss alone, boss fight was still going
 - some texts could change their appearence when updating
 - impulse was not ending after removing impulse artefact
@@ -169,14 +175,10 @@ Bug fixes:
 - there was a relict-datapack Darks.jse3 in a "Datapacks" folder
 - driller on multiplayer could drill more items than it had capacity
 - using control to pick up all items from a storage could sometimes cause "Inventory full" message to appear
+- rescue-teleport from inside asteroids was too sensitive and could sometimes teleport player even when staying outside
 
 Universe updating warnings
 
 - 8/9 of all stars will move a bit and destroy part of terrain around them, take care of your star-storage rooms
 - old arenas will contain fobs, which should be removed normally (fobs overlapping with walls and pistons)
 - some structures on the world border might be erased as well as some asteroids (200 000 coordinates from spawn)
-
-Delayed changes
-
-- remove ring.X.change tag
-- remove swap tag

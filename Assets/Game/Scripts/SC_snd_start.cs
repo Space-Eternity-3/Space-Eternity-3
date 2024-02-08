@@ -29,7 +29,8 @@ public class SC_snd_start : MonoBehaviour
                 foreach(SC_boss bos in boses)
                 {
                     if(bos.mother) continue;
-                    float got_distance = SC_control.Pitagoras(transform.position-bos.SC_structure.transform.position);
+                    Vector3 bos_pos = bos.transform.position - new Vector3(0f,0f,bos.transform.position.z);
+                    float got_distance = SC_control.Pitagoras(transform.position-bos_pos);
                     if(fav_distance==-1f || got_distance<fav_distance)
                     {
                         fav_bos = bos;
@@ -38,7 +39,8 @@ public class SC_snd_start : MonoBehaviour
                 }
                 if(fav_bos!=null) {
                     SC_sounds.deeprange = deeprange;
-                    SC_sounds.PlaySound(fav_bos.SC_structure.transform.position,type,id);
+                    Vector3 fav_bos_pos = fav_bos.transform.position - new Vector3(0f,0f,fav_bos.transform.position.z);
+                    SC_sounds.PlaySound(fav_bos_pos,type,id);
                 }
             }
         }

@@ -90,29 +90,28 @@ public class SC_instant_button : MonoBehaviour, IPointerDownHandler, IPointerUpH
 			}
             if(ID==11) if(button.interactable && button.enabled)
             {
-                SC_structure rts = transform.root.GetComponent<SC_structure>();
+                SC_object_holder rts = transform.root.GetComponent<SC_object_holder>();
                 if(rts!=null)
-                    if(rts.st_structs[0]!=null)
+                {
+                    SC_boss bts = rts.SC_boss;
+                    if(bts!=null && SC_Fob21.item==5 && SC_Fob21.count>=10 && rts.actual_state[0]=='A')
                     {
-                        SC_boss bts = rts.st_structs[0].GetComponent<SC_boss>();
-                        if(bts!=null && SC_Fob21.item==5 && SC_Fob21.count>=10)
+                        if(!bts.multiplayer)
                         {
-                            if(!bts.multiplayer)
-                            {
-                                SC_Fob21.count -= 10;
-                                if(SC_Fob21.count==0) SC_Fob21.item = 0;
-                                SC_Fob21.SaveSGP();
+                            SC_Fob21.count -= 10;
+                            if(SC_Fob21.count==0) SC_Fob21.item = 0;
+                            SC_Fob21.SaveSGP();
 
-                                bts.dataID[2] = 1;
-                                bts.resetScr();
-                            }
-                            else
-                            {
-                                SC_control.SendMTP("/TryBattleStart "+SC_control.connectionID+" "+bts.bID+" "+SC_Fob21.ID+" "+SC_Fob21.uID);
-                                SC_Fob21.screen_button_cooldown = 125;
-                            }
+                            bts.dataID[2] = 1;
+                            bts.resetScr();
+                        }
+                        else
+                        {
+                            SC_control.SendMTP("/TryBattleStart "+SC_control.connectionID+" "+bts.bID+" "+SC_Fob21.ID+" "+SC_Fob21.uID);
+                            SC_Fob21.screen_button_cooldown = 125;
                         }
                     }
+                }
             }
             if(ID==12) SC_account.RemoveWarning();
         }

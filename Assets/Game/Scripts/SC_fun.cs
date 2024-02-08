@@ -7,14 +7,15 @@ using System.Text;
 
 public class SC_fun : MonoBehaviour
 {
+	[TextArea(15,20)]
+	public string TestStructure;
+
     public Transform Communtron1;
     public Material[] M = new Material[128];
     public Texture[] Item = new Texture[128];
     public Texture Item20u, Item55u, Item57u, Item59u, Item61u, Item63u, Item71u;
 	
     public float volume;
-	public List<int> GenListsB0 = new List<int>();
-	public List<int> GenListsB1 = new List<int>();
 	public float seek_default_angle;
 	public float camera_add;
 	public bool arms_did = false;
@@ -29,88 +30,11 @@ public class SC_fun : MonoBehaviour
 
     public bool[] pushed_markers = new bool[9];
 	
-	public int[] bMI = new int[32];
-	public int[] bMA = new int[32];
-	public int[] bD = new int[32];
-	public int[] bP = new int[32];
-	public int[] bC = new int[32];
-	public int[] bS = new int[32];
-	
-	public bool[,] bbW = new bool[32,81];
-	public bool[,] bbH = new bool[32,81];
-	
     public Transform[] structures;
-    public Transform[] structures2;
 	public Transform biomeCAN;
     public SC_control SC_control;
     public SC_data SC_data;
     public SC_long_strings SC_long_strings;
-
-	public void BTPT()
-	{
-		//BIOME TAG PRE TRANSLATE
-		int i,j;
-		bool truing;
-		
-		for(i=0;i<32;i++)
-		{
-			bMI[i] = 65; //min size
-			bMA[i] = 80; //max size
-			bD[i] = 60; //denity [%]
-			bP[i] = 16; //priority
-			bC[i] = 0; //structure ID
-			bS[i] = 80; //color gradient default center
-			
-			for(j=0;j<=80;j++) bbW[i,j] = false;
-			for(j=0;j<=80;j++) bbH[i,j] = false;
-			
-			string tags = SC_data.BiomeTags[i];
-			
-			for(j=0;j<=80;j++)
-				if(SC_data.TagContains(tags,"ring.outer.change->"+j))
-				{
-					bbW[i,j]=true;
-				}
-			for(j=0;j<=80;j++)
-				if(SC_data.TagContains(tags,"ring.inner.change->"+j))
-				{
-					bbH[i,j]=true;
-				}
-			
-			truing = false;
-			for(j=0;j<=80;j++)
-			{
-				if(bbW[i,j]) truing = !truing;
-				bbW[i,j] = truing;
-			}
-			truing = false;
-			for(j=0;j<=80;j++)
-			{
-				if(bbH[i,j]) truing = !truing;
-				bbH[i,j] = truing;
-			}
-			
-			for(j=0;j<=80;j++)
-				if(SC_data.TagContains(tags,"min="+j)) bMI[i]=j;
-			for(j=0;j<=80;j++)
-				if(SC_data.TagContains(tags,"max="+j)) bMA[i]=j;
-			for(j=0;j<=80;j++)
-				if(SC_data.TagContains(tags,"radius="+j)) {bMI[i]=j; bMA[i]=j;}
-			for(j=0;j<=80;j++)
-				if(SC_data.TagContains(tags,"gradient="+j)) bS[i]=j;
-			
-			for(j=0;j<=100;j++)
-				if(SC_data.TagContains(tags,"density="+j+"%")) bD[i]=j;
-			for(j=1;j<=31;j++)
-				if(SC_data.TagContains(tags,"priority="+j)) bP[i]=j;
-			for(j=1;j<=31;j++)
-				if(SC_data.TagContains(tags,"struct="+j)) bC[i]=-j;
-			
-			if(SC_data.TagContains(tags,"structural")) bP[i]=32;
-		}
-		
-		bP[0] = 0;
-	}
 
 	//Veteran methods
 	public Vector3 Skop(Vector3 V, float F)
@@ -145,6 +69,10 @@ public class SC_fun : MonoBehaviour
         float maxY = Mathf.Max(corners[0].y, corners[1].y, corners[2].y, corners[3].y);
 
         return (x >= minX && x <= maxX && y >= minY && y <= maxY);
+    }
+	public float FluentFraction(float f)
+    {
+        return f*f*((-2)*f+3);
     }
 
 	//Ulam <---> X,Y methods
@@ -286,219 +214,4 @@ public class SC_fun : MonoBehaviour
 		if(num < 65) return num-48;
 		else return num-55;
 	}
-
-	//Layer 2 methods
-	public int GetSize(int ID)
-    {
-		int IDm=MixID(ID,Generator.seed);
-		return (int)SC_long_strings.AsteroidSizeBase[(IDm%65536-1)/2]-48;
-    }
-	public float[] GetBiomeDAU(int ID)
-	{
-		float[] retu = new float[2];
-		
-		//Ulam segment
-		int[] astXY = UlamToXY(ID);
-		Vector3 astPos = new Vector3(astXY[0]*10f,astXY[1]*10f,0f);
-		Vector3 BS = 100f * new Vector3(Mathf.Round(astPos.x/100f),Mathf.Round(astPos.y/100f),0f);
-		int ulam = TrueBiomeUlam(BS,astPos);
-
-		//Distance segment
-		int[] tupXY = UlamToXY(ulam);
-		
-		BS = 100f * new Vector3(tupXY[0],tupXY[1],0f);
-		BS += GetBiomeMove(ulam);
-		
-		float dX = astPos.x - BS.x;
-		float dY = astPos.y - BS.y;
-		float distance = Mathf.Sqrt(dX*dX+dY*dY);
-		
-		retu[0]=distance; retu[1]=ulam;
-		return retu;
-	}
-	int TrueBiomeUlam(Vector3 cenPos, Vector3 astPos)
-	{
-		int ux = (int)(cenPos.x/100f);
-		int uy = (int)(cenPos.y/100f);
-		int i;
-		
-		Vector3[] udels = new Vector3[9];
-		udels[0] = new Vector3(-1f,1f,0f);
-		udels[1] = new Vector3(0f,1f,0f);
-		udels[2] = new Vector3(1f,1f,0f);
-		udels[3] = new Vector3(-1f,0f,0f);
-		udels[4] = new Vector3(0f,0f,0f);
-		udels[5] = new Vector3(1f,0f,0f);
-		udels[6] = new Vector3(-1f,-1f,0f);
-		udels[7] = new Vector3(0f,-1f,0f);
-		udels[8] = new Vector3(1f,-1f,0f);
-		
-		int[] ulams = new int[9];
-		for(i=0;i<9;i++) ulams[i] = MakeUlam(ux+(int)udels[i].x,uy+(int)udels[i].y);
-		
-		bool[] insp = new bool[9];
-		for(i=0;i<9;i++) insp[i] = ((SC_control.Pitagoras(cenPos+GetBiomeMove(ulams[i])+100f*udels[i]-astPos) < GetBiomeSize(ulams[i])));
-	
-		int proper = 0;
-		int prr = 0;
-		
-		for(i=0;i<9;i++)
-		{
-			if(insp[i])
-			{
-				int locP = bP[int.Parse(GetBiomeString(ulams[i]).Split('b')[1])];
-				if(Generator.IsBiggerPriority(ulams[i],ulams[proper],locP,prr))
-				{
-					proper = i;
-					prr = locP;
-				}
-			}
-		}
-		
-		if(proper==0 && !insp[0]) return 1; //guaranted empty sector
-		return ulams[proper];
-	}
-	public bool AsteroidCheck(int ID)
-    {
-        int IDm=MixID(ID,Generator.seed);
-        if(ID==1) return false;
-        if(IDm%2==0) return false;
-		int it = (int)SC_long_strings.AsteroidBase[(IDm%65536-1)/2];
-		int ia = 28; //from 28th ASCII char
-		int inu = it - ia;
-		
-		float[] dau = GetBiomeDAU(ID);
-		float distance = dau[0];
-		int ulam = (int)dau[1];
-		
-		string biost = GetBiomeString(ulam);
-		float size = GetBiomeSize(ulam);
-		string tags = GetBiomeTag(ulam);
-		int bid = int.Parse(biost.Split('b')[1]);
-		int locD = bD[bid];
-		
-		if((distance<size) && biost!="b0")
-		{
-			if(CheckAppearing(bid,distance,size)==SC_data.TagContains(tags,"swap"))
-				return false;
-		}
-		else locD = bD[0];
-		
-		if(inu < locD) return true;
-		return false;
-    }
-	public int StructureCheck(int ulam)
-	{
-		if(GenListContains(ulam,1) || GetBiomeSize(ulam)==-1f) return 0;
-		string tags = GetBiomeTag(ulam);
-		int bint=int.Parse(GetBiomeString(ulam).Split('b')[1]);
-		if(!SC_data.TagContains(tags,"structural")) return 0;
-		return bC[bint];
-	}
-
-	//Generator partly independent methods
-    int MixID(int ID,int sed)
-    {
-        return ID+sed*2;
-    }
-    public string LocalMove(int ID)
-    {
-        int ird=(MixID(ID,Generator.seed)*2)%18;
-        switch(ird)
-        {
-            case 0: return "0;0";
-            case 4: return "0;1";
-            case 16: return "0;2";
-            case 6: return "1;0";
-            case 14: return "1;1";
-            case 2: return "1;2";
-            case 10: return "2;0";
-            case 8: return "2;1";
-            case 12: return "2;2";
-            default: return "0;0"; 
-        }
-    }
-
-	//Sheep in the wolf's coat
-	public Vector3 GetBiomeMove(int ulam)
-	{
-		return Generator.GetBiomeData(ulam).move;
-	}
-	public float GetBiomeSize(int ulam)
-	{
-		return Generator.GetBiomeData(ulam).size;
-	}
-	public string GetBiomeTag(int ulam)
-	{
-		return SC_data.BiomeTags[Generator.GetBiomeData(ulam).biome];
-	}
-	public string GetBiomeString(int ulam)
-	{
-		return "b"+Generator.GetBiomeData(ulam).biome;
-	}
-
-	//Ancient functions
-	bool CheckAppearing(int bid, float distance, float size)
-	{
-		int from;
-		bool bpW, bpH;
-		
-		//Checking outer (W)
-		from = (int)Mathf.Round(size-distance);
-		if(from<0) from=0; if(from>80) from=80;
-		bpW = bbW[bid,from];
-		
-		//Checking inner (H)
-		from = (int)Mathf.Round(distance);
-		if(from<0) from=0; if(from>80) from=80;
-		bpH = bbH[bid,from];
-		
-		return (!bpW && !bpH);
-	}
-	public int LogListSearch(int search,List<int> list)
-	{
-		int i,smin=0,smax=list.Count-1;
-		while(true)
-		{
-			i = smin + (smax-smin)/2;
-			
-			if(search < list[i]) smax = i-1;
-			else if(search > list[i]) smin = i+1;
-			else return i;
-
-			if(smin>smax) return -smin;
-		}
-	}
-    public void GenListAdd(int ID,int legsID)
-    {
-		if(legsID==0) {
-			int searched = LogListSearch(ID,GenListsB0);
-			if(searched>=0) return;
-			GenListsB0.Insert(-searched,ID);
-		}
-		else if(legsID==1) {
-			int searched = LogListSearch(ID,GenListsB1);
-			if(searched>=0) return;
-			GenListsB1.Insert(-searched,ID);
-		}
-    }
-    public void GenListRemove(int ID,int legsID)
-    {
-		if(legsID==0) {
-			int searched = LogListSearch(ID,GenListsB0);
-			if(searched<0) return;
-			GenListsB0.RemoveAt(searched);
-		}
-		else if(legsID==1) {
-			int searched = LogListSearch(ID,GenListsB1);
-			if(searched<0) return;
-			GenListsB1.RemoveAt(searched);
-		}
-    }
-    public bool GenListContains(int ID,int legsID)
-    {
-		if(legsID==0) return (LogListSearch(ID,GenListsB0)>=0);
-		if(legsID==1) return (LogListSearch(ID,GenListsB1)>=0);
-		return false;
-    }
 }
