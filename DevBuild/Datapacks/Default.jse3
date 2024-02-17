@@ -578,7 +578,7 @@ custom_structures <advanced settings>
 	<star> 3: '[
 	
 		catch # 200 summon hole 20
-		catch # 1 summon star
+		catch # 1 summon star 1
 	
 	]';
 	<arena> 4: '[
@@ -605,7 +605,7 @@ custom_structures <advanced settings>
 		catch # 15-16 move 2 -2 rotate 303,75 mod 22,5
 		catch # 9-16 move 35 0
 
-		catch # 59-70 summon wall 12
+		catch # 59-70 summon wall 1 1 12
 		catch # 59-61 move 2 2 rotate 22,5 mod 22,5
 		catch # 62-64 move -2 2 rotate 112,5 mod 22,5
 		catch # 65-67 move -2 -2 rotate 202,5 mod 22,5
@@ -615,7 +615,7 @@ custom_structures <advanced settings>
 		catch # 17-28 summon asteroid 4 12 0,0,0,0,0,0,0,0
 		catch # 59-70 steal fromdelta -42
 
-		catch # 51-58 summon piston 12
+		catch # 51-58 summon piston 1 1 12
 		catch # 51 move 36,4 6,4
 		catch # 52 move -36,4 6,4
 		catch # 53 move 36,4 -6,4 rotate 180
@@ -670,7 +670,7 @@ custom_structures <advanced settings>
 		catch # 15-16 move 2 -2 rotate 303,75 mod 22,5
 		catch # 9-16 move 35 0
 
-		catch # 59-70 summon wall 12
+		catch # 59-70 summon wall 1 1 12
 		catch # 59-61 move 2 2 rotate 22,5 mod 22,5
 		catch # 62-64 move -2 2 rotate 112,5 mod 22,5
 		catch # 65-67 move -2 -2 rotate 202,5 mod 22,5

@@ -209,6 +209,8 @@ public class CObjectInfo
     public int size = -1;
     public int biome = -1;
     public float range = 0f;
+    public float size1 = 0f;
+    public float size2 = 0f;
     public bool hidden = false;
     public string fobcode = "";
     public string GetGencode()
@@ -246,10 +248,8 @@ public class CObjectInfo
         int i;
         for(i=0;i<20;i++)
         {
-            int t = -1;
-            if(!int.TryParse(fob_array[i], out t)) t = -1;
-            if(t<0 || t>127) t = -1;
-            if(i!=-1) fobcode += t;
+            int t = Universe.RangedIntParse(fob_array[i],-1,127);
+            if(t!=-1) fobcode += t;
             if(i!=19) fobcode += ";";
 
             fob_rotations[i] = -(360f/(size*2))*i;
@@ -260,43 +260,55 @@ public class CObjectInfo
         }
         obj = "asteroid";
     }
-    public void Wall(string p_type)
+    public void Wall(string p_size1, string p_size2, string p_type)
     {
+        float.TryParse(p_size1, out size1);
+        if(size1<0f) size1=0f;
+
+        float.TryParse(p_size2, out size2);
+        if(size2<0f) size2=0f;
+        
         int.TryParse(p_type, out type);
         if(type<0 || type>15) type=0;
 
         obj = "wall";
     }
-    public void Sphere(string p_size, string p_type)
+    public void Sphere(string p_size1, string p_type)
     {
-        int.TryParse(p_size, out size);
-        if(size<1 || size>100) size=1;
+        float.TryParse(p_size1, out size1);
+        if(size1<0f) size1=0f;
 
         int.TryParse(p_type, out type);
         if(type<0 || type>15) type=0;
 
         obj = "sphere";
     }
-    public void Piston(string p_type)
+    public void Piston(string p_size1, string p_size2, string p_type)
     {
+        float.TryParse(p_size1, out size1);
+        if(size1<0f) size1=0f;
+
+        float.TryParse(p_size2, out size2);
+        if(size2<0f) size2=0f;
+
         int.TryParse(p_type, out type);
         if(type<0 || type>15) type=0;
 
         obj = "piston";
     }
-    public void Hole(string p_range)
+    public void Ranger(string p_range, string p_obj)
     {
         float.TryParse(p_range, out range);
         if(range<0f) range=0f;
 
-        obj = "hole";
+        obj = p_obj;
     }
-    public void Respblock(string p_range)
+    public void Spherical(string p_size1, string p_obj)
     {
-        float.TryParse(p_range, out range);
-        if(range<0f) range=0f;
+        float.TryParse(p_size1, out size1);
+        if(size1<0f) size1=0f;
 
-        obj = "respblock";
+        obj = p_obj;
     }
     public void Boss(string p_type)
     {
@@ -647,7 +659,6 @@ public static class Universe
         int[] XY = SC_fun.UlamToXY(Ulam);
         int X = XY[0];
         int Y = XY[1];
-        string sector_name = "S_"+X+"_"+Y;
         
         CObjectInfo[] Build = new CObjectInfo[1000];
         CBiomeInfo biomeInfo = Generator.GetBiomeData(Ulam);
@@ -740,14 +751,14 @@ public static class Universe
                 {
                     Build[H] = new CObjectInfo(BuildUlam(X,Y,H),base_position);
 
-                    if(arg[5]=="wall") Build[H].Wall(arg[6]);
-                    if(arg[5]=="piston") Build[H].Piston(arg[6]);
+                    if(arg[5]=="wall") Build[H].Wall(arg[6],arg[7],arg[8]);
+                    if(arg[5]=="piston") Build[H].Piston(arg[6],arg[7],arg[8]);
                     if(arg[5]=="sphere") Build[H].Sphere(arg[6],arg[7]);
-                    if(arg[5]=="respblock") Build[H].Respblock(arg[6]);
-                    if(arg[5]=="hole") Build[H].Hole(arg[6]);
+                    if(arg[5]=="respblock") Build[H].Ranger(arg[6],arg[5]);
+                    if(arg[5]=="hole") Build[H].Ranger(arg[6],arg[5]);
                     if(arg[5]=="animator") Build[H].obj = "animator";
-                    if(arg[5]=="star") Build[H].obj = "star";
-                    if(arg[5]=="monster") Build[H].obj = "monster";
+                    if(arg[5]=="star") Build[H].Spherical(arg[6],arg[5]);
+                    if(arg[5]=="monster") Build[H].Spherical(arg[6],arg[5]);
 
                     if(H>199) continue;
                     if(arg[5]=="asteroid") Build[H].Asteroid(arg[6],arg[7],arg[8]);
@@ -815,8 +826,8 @@ public static class Universe
                     {
                         Build[b].RotateS(2*i,(Build[H].rotation-90f)+"");
                         Build[b].RotateS(2*i+1,(Build[H].rotation+90f)+"");
-                        Build[b].MoveS(2*i,(start_dx + i*1.7f)+"","1,5");
-                        Build[b].MoveS(2*i+1,(start_dx + i*1.7f)+"","1,5");
+                        Build[b].MoveS(2*i,(start_dx + i*1.7f)+"",(1.5f*Build[H].size1)+"");
+                        Build[b].MoveS(2*i+1,(start_dx + i*1.7f)+"",(1.5f*Build[H].size1)+"");
                     }
                 }
                 if(arg[4]=="setanimator")

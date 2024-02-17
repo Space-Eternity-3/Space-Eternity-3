@@ -10,6 +10,7 @@ using System.Threading;
 using System.Globalization;
 using System.Diagnostics;
 using SFB;
+using System.Text;
 
 public class SC_data : MonoBehaviour
 {
@@ -865,15 +866,11 @@ public class SC_data : MonoBehaviour
     }
     string ReduceAst(string str)
     {
-        int i,lngt=str.Length;
-        string eff="";
-        for(i=lngt-1;i>=0;i--)
-        {
-            if(str[i]==';') lngt--;
-            else break;
-        }
-        for(i=0;i<lngt;i++) eff+=str[i];
-        return eff;
+        StringBuilder eff = new StringBuilder();
+        int i = str.Length - 1, j;
+        while(i>=0 && str[i]==';') i--;
+        for(j=0;j<=i;j++) eff.Append(str[j]);
+        return eff.ToString();
     }
     public void SaveAsteroid(int A)
     {
@@ -896,7 +893,9 @@ public class SC_data : MonoBehaviour
         for(i=0;i<100;i++)
         {
             locef=World[i,0,A];
-            for(j=1;j<61;j++) locef=locef+";"+World[i,j,A];
+            StringBuilder sbd = new StringBuilder();
+            for(j=1;j<61;j++) sbd.Append(';').Append(World[i,j,A]);
+            locef += sbd.ToString();
             SaveLineCrLf(ReduceAst(locef));
         }
 

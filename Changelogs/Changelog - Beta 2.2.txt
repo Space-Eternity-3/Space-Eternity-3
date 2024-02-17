@@ -42,6 +42,7 @@ Artistic changes:
 - all 0-1 animations (hiding, camera zoom, bgcolor etc.) are less sharp from now
 - added smooth camera zoom when being close to activated arena
 - cementery big asteroid is now as fat as it should have been
+- adecodron glass is now a bit more flat
 
 UI changes:
 
@@ -148,8 +149,11 @@ c) Others
 - force give up counter on singleplayer changed from 1s to 20s, on multiplayer it was always 20s
 - star particles scaling changed to hierarchy
 - reworked the whole world generation system code, but it works still the same
-- there is a limit (5) of asteroids possible to generate in one frame
-- the dead geyzer sound object no longer lags the game
+- there was introduced asteroid generation per frame limit to reduce lags
+- the old, silent geyzer sound object was removed and no longer lags the game
+- fob and resp blocker lists removed, replaced them with better, more optimal systems
+- optimized asteroid string connecting, so the data saving lag was reduced
+- reworked object generation system, copied it to server and patched midas cheats
 
 Bug fixes:
 
@@ -178,6 +182,7 @@ Bug fixes:
 - driller on multiplayer could drill more items than it had capacity
 - using control to pick up all items from a storage could sometimes cause "Inventory full" message to appear
 - rescue-teleport from inside asteroids was too sensitive and could sometimes teleport player even when staying outside
+- ulam-XY conversion functions were inaccurate, when computing big numbers
 
 Universe updating warnings
 

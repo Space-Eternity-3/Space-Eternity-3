@@ -78,7 +78,8 @@ public class SC_asteroid : MonoBehaviour
 			}
 			else //If multiplayer
 			{
-				SC_control.SendMTP("/AsteroidData "+ID+" "+generation_code+" "+SC_control.connectionID);
+				//SC_control.SendMTP("/AsteroidData "+ID+" "+generation_code+" "+SC_control.connectionID);
+				SC_control.SendMTP("/WorldData "+SC_control.connectionID+" "+ID);
 			}
 		}
 	}

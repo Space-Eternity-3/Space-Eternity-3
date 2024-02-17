@@ -60,6 +60,7 @@ const default_config = {
 	"show_positions": true,
 	"require_se3_account": false,
   "authorization_waiting_time": 15,
+  "max_dict_size": 128,
 	"whitelist_enabled": false,
 	"whitelist": [],
 	"banned_players": [],
@@ -289,6 +290,33 @@ function getAllSe3Files(folderPath) {
   }catch{ return []; }
 }
 
+class Vector3
+{
+    constructor(x, y, z)
+    {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+    Length()
+    {
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
+
+    static Add(v1, v2) {
+      return new Vector3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+    }
+    static Subtract(v1, v2) {
+      return new Vector3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+    }
+    static Multiply(v, scalar) {
+      return new Vector3(v.x * scalar, v.y * scalar, v.z * scalar);
+    }
+    static Divide(v, scalar) {
+      return new Vector3(v.x / scalar, v.y / scalar, v.z / scalar);
+    }
+}
+
 // ------------------------------------- \\
 // ------------- GENERATOR ------------- \\
 // ------------------------------------- \\
@@ -374,7 +402,7 @@ class Generator
     static tag_centred = new Array(32).fill();
     static tag_structural = new Array(32).fill();
 
-    static max_dict_size = 64;
+    static max_dict_size = config.max_dict_size;
     static WorldMap = new Map();
 
     //Initializes seed in generator, returns the actual seed string
@@ -559,7 +587,701 @@ class Generator
 
 // GENERATION LAYER 2 (middle) -> Gameplay objects create
 
-// coming soon
+class CObjectInfo
+{
+    constructor(p_ulam,start_pos)
+    {
+        //Indicators
+        this.ulam = p_ulam;
+        this.obj = "unknown";
+        this.animator = -1;
+
+        //Transform
+        this.default_position = start_pos;
+        this.position = start_pos;
+        this.rotation = 0;
+        this.fob_positions = new Array(20).fill(null);
+        this.fob_rotations = new Array(20).fill(0);
+
+        //Properties
+        this.type = -1;
+        this.size = -1;
+        this.biome = -1;
+        this.range = 0;
+        this.size1 = 0;
+        this.size2 = 0;
+        this.hidden = false;
+        this.fobcode = "";
+
+        //Animations
+        this.animation_type = 0;
+        this.animation_size = new Vector3(0,0,0);
+        this.animation_when_doing = "";
+        this.animation_when_done = "";
+        this.animation_when_undoing = "";
+    }
+    GetGencode()
+    {
+        if(this.biome==-1) return this.size + "t" + this.type + "t" + this.fobcode;
+        else return this.size + "b" + this.biome + "b" + this.fobcode;
+    }
+
+    //Summoners
+    Asteroid(p_size, p_type, p_fobcode)
+    {
+        this.size = Universe.RangedIntParse(p_size,4,10);
+        this.type = Universe.RangedIntParse(p_type,0,63);
+        let fob_array = (p_fobcode+",,,,,,,,,,,,,,,,,,,").split(',');
+
+        let i;
+        for(i=0;i<20;i++)
+        {
+            let t = Universe.RangedIntParse(fob_array[i],-1,127);
+            if(t!=-1) this.fobcode += t;
+            if(i!=19) this.fobcode += ";";
+
+            this.fob_rotations[i] = -(360/(this.size*2))*i;
+            this.fob_positions[i] = Vector3.Add(this.position,Vector3.Multiply(new Vector3(
+                Math.sin(-this.fob_rotations[i]*Math.PI/180),
+                Math.cos(-this.fob_rotations[i]*Math.PI/180),
+            0),this.size/2));
+        }
+        this.obj = "asteroid";
+    }
+    Wall(p_size1, p_size2, p_type)
+    {
+        this.size1 = Universe.PositiveFloatParse(p_size1,false);
+        this.size2 = Universe.PositiveFloatParse(p_size2,false);
+        this.type = Universe.RangedIntParse(p_type,0,15);
+
+        this.obj = "wall";
+    }
+    Sphere(p_size1, p_type)
+    {
+        this.size1 = Universe.PositiveFloatParse(p_size1,false);
+        this.type = Universe.RangedIntParse(p_type,0,15);
+
+        this.obj = "sphere";
+    }
+    Piston(p_size1, p_size2, p_type)
+    {
+        this.size1 = Universe.PositiveFloatParse(p_size1,false);
+        this.size2 = Universe.PositiveFloatParse(p_size2,false);
+        this.type = Universe.RangedIntParse(p_type,0,15);
+
+        this.obj = "piston";
+    }
+    Ranger(p_range, p_obj)
+    {
+        this.range = Universe.PositiveFloatParse(p_range,false);
+
+        this.obj = p_obj;
+    }
+    Spherical(p_size1, p_obj)
+    {
+        this.size1 = Universe.PositiveFloatParse(p_size1,false);
+
+        this.obj = p_obj;
+    }
+    Boss(p_type)
+    {
+        this.type = Universe.RangedIntParse(p_type,0,6);
+
+        this.animation_type = 1;
+        this.animation_when_doing = "b1a1;b2a2;b3a3;";
+        this.animation_when_done = "default;A1;A2;A3;R;b1a2;b2a3;b3r;";
+        this.animation_when_undoing = "a1b1;a2b2;a3b3;";
+
+        this.obj = "boss";
+    }
+
+    //Modifiers
+    SetBiomeBase(p_biome)
+    {
+        if(this.obj!="asteroid") return;
+
+        this.biome = Universe.RangedIntParse(p_biome,0,31);
+        this.type=-1;
+    }
+    Move(p_x, p_y)
+    {
+        if(this.obj=="boss") return;
+
+        let x = Universe.PositiveFloatParse(p_x,true);
+        let y = Universe.PositiveFloatParse(p_y,true);
+        let get = func.RotatePoint([x,y],this.rotation);
+        this.position = Vector3.Add(this.position, new Vector3(get[0],get[1],0));
+
+        if(this.obj=="asteroid")
+        {
+            let i;
+            for(i=0;i<20;i++)
+            {
+                this.fob_positions[i] = Vector3.Add(this.fob_positions[i], new Vector3(get[0],get[1],0));
+            }
+        }
+    }
+    Rotate(p_rot)
+    {
+        if(this.obj=="boss") return;
+
+        let rot = Universe.PositiveFloatParse(p_rot,true);
+        this.rotation += rot;
+        
+        if(this.obj=="asteroid")
+        {
+            let i;
+            for(i=0;i<20;i++)
+            {
+                let raw_delta_pos = Vector3.Subtract(this.fob_positions[i], this.position);
+                let delta_pos = func.RotatePoint([raw_delta_pos.x,raw_delta_pos.y],-this.fob_rotations[i]);
+                this.ResetS(i,"position");
+                this.RotateS(i,rot+"");
+                this.MoveS(i,delta_pos[0]+"",delta_pos[1]+"");
+            }
+        }
+    }
+    Reset(p_what)
+    {
+        if(this.obj=="boss") return;
+
+        if(p_what=="position")
+        {
+            let delta_pos = Vector3.Subtract(this.position, this.default_position);
+            this.position = Vector3.Subtract(this.position, delta_pos);
+
+            if(this.obj=="asteroid")
+            {
+                let i;
+                for(i=0;i<20;i++)
+                    this.fob_positions[i] = Vector3.Subtract(this.fob_positions[i], delta_pos);
+            }
+        }
+        if(p_what=="rotation") this.Rotate((-this.rotation)+"");
+    }
+
+    //Child modifiers
+    MoveS(S, p_x, p_y)
+    {
+        if(this.obj!="asteroid") return;
+
+        let x = Universe.PositiveFloatParse(p_x,true);
+        let y = Universe.PositiveFloatParse(p_y,true);
+        let get = func.RotatePoint([x,y],this.fob_rotations[S]);
+        this.fob_positions[S] = Vector3.Add(this.fob_positions[S], new Vector3(get[0],get[1],0));
+    }
+    RotateS(S, p_rot)
+    {
+        if(this.obj!="asteroid") return;
+
+        let rot = Universe.PositiveFloatParse(p_rot,true);
+        this.fob_rotations[S] = this.fob_rotations[S] + rot;
+    }
+    ResetS(S, p_what)
+    {
+        if(this.obj!="asteroid") return;
+
+        if(p_what=="position") this.fob_positions[S] = this.position;
+        if(p_what=="rotation") this.fob_rotations[S] = this.rotation;
+    }
+
+    //Animation initializer
+    AnimationCreate(p_type, p_when, p_dx, p_dy)
+    {
+        if(this.obj!="animator") return;
+
+        this.animation_when_doing = "";
+        this.animation_when_done = "";
+        this.animation_when_undoing = "";
+
+        let i;
+        let given_states = p_when.split(',');
+        let st_array = ["R","A1","A2","A3","B1","B2","B3","default"];
+        let have = new Array(8);
+
+        //Static states
+        for(i=0;i<8;i++)
+        {
+            have[i] = given_states.includes(st_array[i]);
+            if(have[i]) this.animation_when_done += st_array[i]+";";
+        }
+
+        //Activating & losing
+        for(i=1;i<=3;i++)
+        {
+            if(have[i] && have[i+3]) {
+                this.animation_when_done += "a"+i+"b"+i+";";
+                this.animation_when_done += "b"+i+"a"+i+";";
+            }
+            if(have[i] && !have[i+3]) {
+                this.animation_when_undoing += "a"+i+"b"+i+";";
+                this.animation_when_doing += "b"+i+"a"+i+";";
+            }
+            if(!have[i] && have[i+3]) {
+                this.animation_when_doing += "a"+i+"b"+i+";";
+                this.animation_when_undoing += "b"+i+"a"+i+";";
+            }
+        }
+
+        //Winning
+        for(i=1;i<=2;i++)
+        {
+            if(have[i+1] && have[i+3]) this.animation_when_done += "b"+i+"a"+(i+1)+";";
+            if(have[i+1] && !have[i+3]) this.animation_when_doing += "b"+i+"a"+(i+1)+";";
+            if(!have[i+1] && have[i+3]) this.animation_when_undoing += "b"+i+"a"+(i+1)+";";
+        }
+
+        //Completing
+        if(have[0] && have[6]) this.animation_when_done += "b3r;";
+        if(have[0] && !have[6]) this.animation_when_doing += "b3r;";
+        if(!have[0] && have[6]) this.animation_when_undoing += "b3r;";
+        
+        //Animation
+        if(p_type=="hiding")
+        {
+            this.animation_type = 1;
+        }
+        if(p_type=="extending")
+        {
+            this.animation_type = 2;
+            let dx = Universe.PositiveFloatParse(p_dx,true);
+            let dy = Universe.PositiveFloatParse(p_dy,true);
+            this.animation_size = new Vector3(dx,dy,0);
+        }
+    }
+}
+
+class Universe
+{
+    static max_dict_size = config.max_dict_size;
+    static Sectors = new Map();
+
+    //Public methods
+    static GetObject(ulam)
+    {
+        let sector_name = this.GetSectorNameByUlam(ulam);
+        let sector = this.GetSector(sector_name);
+        for(let i = 0 ; i < sector.length ; i++)
+        {
+            let obj = sector[i];
+            if(obj!=null) if(obj.ulam==ulam)
+                return obj;
+        }
+        return null;
+    }
+    static GetSector(sector_name)
+    {
+        if(this.Sectors.has(sector_name)) return this.Sectors.get(sector_name);
+
+        let spl = sector_name.split('_');
+        let X = parseInt(spl[1]);
+        let Y = parseInt(spl[2]);
+        let sX = X; if(X%2!=0) sX++;
+        let sY = Y; if(Y%2!=0) sY++;
+
+        if(X < -2000 || X >= 2000) return [];
+        if(Y < -2000 || Y >= 2000) return [];
+
+        let i;
+        let Build;
+        if(spl[0]=="B")
+        {
+            Build = new Array(50).fill(null);
+            let LocalStructure = this.GetSector("S_"+sX+"_"+sY);
+            let Holes = [];
+            for(i = 0 ; i < LocalStructure.length ; i++)
+            {
+                let obj = LocalStructure[i];
+                if(obj!=null) if(obj.obj=="hole")
+                    Holes.push(obj);
+            }
+            for(i=0;i<50;i++)
+            {
+                let x = 10*X + Math.floor(i/5);
+                let y = 10*Y + 2*(i%5);
+                if(x%2!=0) y++;
+                let ulam = makeUlam(x,y);
+                Build[i] = this.AsteroidBuild(ulam,Holes);
+            }
+        }
+        else Build = this.StructureBuild(makeUlam(sX,sY));
+
+        if(this.Sectors.size >= this.max_dict_size) this.Sectors.clear();
+        this.Sectors.set(sector_name,Build);
+        return this.Sectors.get(sector_name);
+    }
+
+    //Conversion methods
+    static GetSectorNameByUlam(ulam)
+    {
+        let xy = ulamToXY(ulam);
+        let X,Y;
+
+        if(xy[0]>=0) X = Math.floor(xy[0]/10);
+        else X = -(Math.floor((-xy[0]-1)/10)+1);
+
+        if(xy[1]>=0) Y = Math.floor(xy[1]/10);
+        else Y = -(Math.floor((-xy[1]-1)/10)+1);
+
+        if(ulam%2==0)
+        {
+            if(X%2!=0) X--;
+            if(Y%2!=0) Y--;
+            return "S_"+X+"_"+Y;
+        }
+        else return "B_"+X+"_"+Y;
+    }
+    static GetAsteroidMove(ulam, size, biome)
+    {
+		    if(Generator.tag_grid[biome]) return new Vector3(0,0,0);
+		    let r121 = Deterministics.Random10e3(ulam+Generator.seed) % 121;
+		    let dE = 5 - (size+2)*0.35;
+		    let dZ = (Math.floor(r121/11)-5) * dE * 0.2;
+		    let dW = (r121%11-5) * dE * 0.2;
+		    return new Vector3(dW-dZ,dW+dZ,0);
+    }
+
+    static RangedIntParse(str, min, max)
+    {
+        let n = func.parseIntP(str);
+        if(isNaN(n)) return min;
+        if(n < min || n > max) return min;
+        return n;
+    }
+    static PositiveFloatParse(str,allow_negative)
+    {
+        let n = func.parseFloatP(str);
+        if(isNaN(n)) return 0;
+        if(!allow_negative && n < 0) return 0;
+        return n;
+    }
+
+    //Generator methods
+    static AsteroidBuild(ulam, Holes)
+    {
+        if(ulam==1 || ulam%2==0) return null;
+        let ulam_mixed = Generator.MixID(ulam,Generator.seed);
+        let r100 = long1.charCodeAt((ulam_mixed%65536-1)/2) - 28;
+        let s100 = long3.charCodeAt((ulam_mixed%65536-1)/2) - 48;
+
+        let xy = ulamToXY(ulam);
+        let ast_pos = Vector3.Multiply(new Vector3(xy[0],xy[1],0),10);
+        let Ulam = this.LeadingBiomeUlam(ast_pos);
+        let Biome = Generator.GetBiomeData(Ulam);
+        let XY = ulamToXY(Ulam);
+        let biome_pos = Vector3.Add(Vector3.Multiply(new Vector3(XY[0],XY[1],0),100), new Vector3(Biome.move[0],Biome.move[1],0));
+        let is_in = (Vector3.Subtract(ast_pos,biome_pos).Length() < Biome.size);
+
+        let gen_biome = 0, gen_size = s100;
+        if(is_in) gen_biome = Biome.biome;
+        if(r100 >= Generator.tag_density[gen_biome]) return null;
+
+        for(let i = 0 ; i < Holes.length ; i++)
+        {
+            let obj = Holes[i];
+            if(Vector3.Subtract(ast_pos,obj.position).Length() < obj.range)
+                return null;
+        }
+
+        let Asteroid = new CObjectInfo(ulam, ast_pos);
+        Asteroid.Asteroid(gen_size+"","0","");
+        Asteroid.SetBiomeBase(gen_biome+"");
+        let loc_mov = this.GetAsteroidMove(ulam,gen_size,gen_biome);
+        Asteroid.Move(loc_mov.x+"",loc_mov.y+"");
+        return Asteroid;
+    }
+    static LeadingBiomeUlam(ast_pos)
+    {
+        let cen_pos = Vector3.Multiply(new Vector3(Math.round(ast_pos.x/100),Math.round(ast_pos.y/100),0),100);
+        let X = Math.floor(cen_pos.x/100);
+		    let Y = Math.floor(cen_pos.y/100);
+		
+        let i;
+		    let udels = [
+            new Vector3(-1,-1,0), new Vector3(0,-1,0), new Vector3(1,-1,0),
+            new Vector3(-1,0,0), new Vector3(0,0,0), new Vector3(1,0,0),
+            new Vector3(-1,1,0), new Vector3(0,1,0), new Vector3(1,1,0)
+        ];
+		    let ulams = new Array(9);
+		    let insp = new Array(9);
+        let biomes = new Array(9);
+		    for(i=0;i<9;i++)
+        {
+            ulams[i] = makeUlam(X+udels[i].x, Y+udels[i].y);
+            biomes[i] = Generator.GetBiomeData(ulams[i]);
+            insp[i] = (Vector3.Subtract(
+                Vector3.Add(Vector3.Add(cen_pos, Vector3.Multiply(udels[i],100)), new Vector3(biomes[i].move[0],biomes[i].move[1],0)),
+                ast_pos
+            ).Length() < biomes[i].size);
+        }
+	
+		    let proper=0, prr=0;
+		    for(i=0;i<9;i++)
+		    {
+			      if(insp[i])
+			      {
+				        let locP = Generator.tag_priority[biomes[i].biome];
+				        if(Generator.IsBiggerPriority(ulams[i],ulams[proper],locP,prr))
+				        {
+					          proper = i;
+					          prr = locP;
+				        }
+			      }
+		    }
+		    if(proper==0 && !insp[0]) return 1;
+		    return ulams[proper];
+    }
+    static StructureBuild(Ulam)
+    {
+        let XY = ulamToXY(Ulam);
+        let X = XY[0];
+        let Y = XY[1];
+        
+        let Build = new Array(1000).fill(null);
+        let biomeInfo = Generator.GetBiomeData(Ulam);
+        let struct_id = Generator.tag_struct[biomeInfo.biome];
+        if(struct_id==0) return Build;
+
+        let SeonArgs = this.TxtToSeonArray(customStructures[struct_id]);
+        let base_position = Vector3.Add(Vector3.Multiply(new Vector3(X,Y,0),100), new Vector3(biomeInfo.move[0],biomeInfo.move[1],0));
+        let setrand=0, ifrand=-1, setrand_initializer = Ulam + Generator.seed;
+
+        //Random processing
+        let args = [];
+        let i,lngt = SeonArgs.length;
+        for(i=0;i<lngt;i++)
+        {
+            if(i<=lngt-2)
+            {
+                if(SeonArgs[i]=="setrand")
+                {
+                    let a = this.RangedIntParse(SeonArgs[i+1],1,1000);
+                    setrand_initializer = Deterministics.Random10e5(setrand_initializer);
+                    setrand = setrand_initializer % a;
+                    i++; continue;
+                }
+                if(SeonArgs[i]=="ifrand")
+                {
+                    ifrand = this.RangedIntParse(SeonArgs[i+1],-1,999);
+                    i++; continue;
+                }
+            }
+            if(setrand==ifrand || ifrand==-1)
+                args.push(SeonArgs[i]);
+        }
+
+        lngt = args.length;
+        let started = false;
+        let cmd = "";
+        let cmds = [];
+        let key_words = [
+            "summon",
+            "move","rotate","reset",
+            "setbiome","hide","steal",
+            "setanimator","animate",
+            "move$","rotate$","reset$"
+        ];
+        let H1=0, H2=0, S1=0, S2=0;
+        for(i=0;i<lngt;i++)
+        {
+            if(i<=lngt-3)
+            {
+                if(args[i]=="catch")
+                {
+                    if(args[i+1]=="#")
+                    {
+                        let m_spl = (args[i+2]+"-").split('-');
+                        H1 = this.RangedIntParse(m_spl[0],0,999);
+                        H2 = this.RangedIntParse(m_spl[1],H1,999);
+                        i+=2; continue;
+                    }
+                    if(args[i+1]=="$")
+                    {
+                        let m_spl = (args[i+2]+"-").split('-');
+                        S1 = this.RangedIntParse(m_spl[0],0,19);
+                        S2 = this.RangedIntParse(m_spl[1],S1,19);
+                        i+=2; continue;
+                    }
+                }
+            }
+            if(key_words.includes(args[i]))
+            {
+                if(started) cmds.push(cmd+"          ");
+                started = true;
+                cmd = H1+" "+H2+" "+S1+" "+S2+" "+args[i];
+            }
+            else cmd += " "+args[i];
+        }
+        if(started) cmds.push(cmd+"          ");
+
+        lngt = cmds.length;
+        for(i=0;i<lngt;i++)
+        {
+            let line = cmds[i];
+            let arg = line.split(' ');
+            H1 = parseInt(arg[0]);
+            H2 = parseInt(arg[1]);
+            S1 = parseInt(arg[2]);
+            S2 = parseInt(arg[3]);
+            let H,S;
+            for(H=H1;H<=H2;H++)
+            {
+                if(arg[4]=="summon")
+                {
+                    Build[H] = new CObjectInfo(this.BuildUlam(X,Y,H),base_position);
+
+                    if(arg[5]=="wall") Build[H].Wall(arg[6],arg[7],arg[8]);
+                    if(arg[5]=="piston") Build[H].Piston(arg[6],arg[7],arg[8]);
+                    if(arg[5]=="sphere") Build[H].Sphere(arg[6],arg[7]);
+                    if(arg[5]=="respblock") Build[H].Ranger(arg[6],arg[5]);
+                    if(arg[5]=="hole") Build[H].Ranger(arg[6],arg[5]);
+                    if(arg[5]=="animator") Build[H].obj = "animator";
+                    if(arg[5]=="star") Build[H].Spherical(arg[6],arg[5]);
+                    if(arg[5]=="monster") Build[H].Spherical(arg[6],arg[5]);
+
+                    if(H>199) continue;
+                    if(arg[5]=="asteroid") Build[H].Asteroid(arg[6],arg[7],arg[8]);
+
+                    if(H>0) continue;
+                    if(arg[5]=="boss") Build[H].Boss(arg[6]);
+                }
+                if(Build[H]==null) continue;
+                if(arg[4]=="move")
+                {
+                    let a,b,c=0,d=0;
+                    a = this.PositiveFloatParse(arg[5],true);
+                    b = this.PositiveFloatParse(arg[6],true);
+                    if(arg[7]=="mod") {
+                      c = this.PositiveFloatParse(arg[8],true);
+                      d = this.PositiveFloatParse(arg[9],true);
+                    }
+                    let n = H-H1;
+                    Build[H].Move((a+n*c)+"",(b+n*d)+"");
+                }
+                if(arg[4]=="rotate")
+                {
+                    let a,c=0;
+                    a = this.PositiveFloatParse(arg[5],true);
+                    if(arg[6]=="mod") {
+                      c = this.PositiveFloatParse(arg[7],true);
+                    }
+                    let n = H-H1;
+                    Build[H].Rotate((a+n*c)+"");
+                }
+                if(arg[4]=="reset") Build[H].Reset(arg[5]);
+                if(arg[4]=="setbiome") Build[H].SetBiomeBase(arg[5]);
+                if(arg[4]=="hide")
+                {
+                    if(Build[H].obj!="asteroid") continue;
+                    Build[H].hidden = true;
+                }
+                if(arg[4]=="steal")
+                {
+                    if(Build[H].obj!="wall") continue;
+                    let b = 0;
+                    if(arg[5]=="fromhash") b = this.RangedIntParse(arg[6],0,999);
+                    else if(arg[5]=="fromdelta")
+                    {
+                        b = func.parseIntU(arg[6]);
+                        b += H; b = b+"";
+                        b = this.RangedIntParse(b,0,999);
+                    }
+                    if(Build[b]==null) continue;
+                    if(Build[b].obj!="asteroid") continue;
+                    
+                    let a = Build[b].size;
+                    let rel_pos = Vector3.Subtract(Build[H].position, Build[b].position);
+                    Build[b].Reset("rotation");
+                    Build[b].Move(rel_pos.x+"",rel_pos.y+"");
+                    Build[b].hidden = true;
+
+                    let j,start_dx = -1.7*(a-1)/2;
+                    for(j=0;j<2*a;j++)
+                    {
+                        Build[b].ResetS(j,"position");
+                        Build[b].ResetS(j,"rotation");
+                    }
+                    for(j=0;j<a;j++)
+                    {
+                        Build[b].RotateS(2*j,(Build[H].rotation-90)+"");
+                        Build[b].RotateS(2*j+1,(Build[H].rotation+90)+"");
+                        Build[b].MoveS(2*j,(start_dx + j*1.7)+"",(1.5*Build[H].size1)+"");
+                        Build[b].MoveS(2*j+1,(start_dx + j*1.7)+"",(1.5*Build[H].size1)+"");
+                    }
+                }
+                if(arg[4]=="setanimator")
+                {
+                    let a = this.RangedIntParse(arg[5],0,999);
+                    if(Build[a]==null) continue;
+                    if(Build[a].obj!="animator") continue;
+                    if(Build[H].obj=="animator" || Build[H].obj=="boss") continue;
+                    Build[H].animator = a;
+                }
+                if(arg[4]=="animate")
+                {
+                    if(arg[6]=="when")
+                        Build[H].AnimationCreate(arg[5],arg[7],arg[8],arg[9]);
+                }
+                if(Build[H].obj!="asteroid") continue;
+                for(S=S1;S<=S2;S++)
+                {
+                    if(arg[4]=="move$")
+                    {
+                        let a,b,c=0,d=0;
+                        a = this.PositiveFloatParse(arg[5],true);
+                        b = this.PositiveFloatParse(arg[6],true);
+                        if(arg[7]=="mod") {
+                          c = this.PositiveFloatParse(arg[8],true);
+                          d = this.PositiveFloatParse(arg[9],true);
+                        }
+                        let n = S-S1;
+                        Build[H].MoveS(S,(a+n*c)+"",(b+n*d)+"");
+                    }
+                    if(arg[4]=="rotate$")
+                    {
+                        let a,c=0;
+                        a = this.PositiveFloatParse(arg[5],true);
+                        if(arg[6]=="mod") {
+                          c = this.PositiveFloatParse(arg[7],true);
+                        }
+                        let n = S-S1;
+                        Build[H].RotateS(S,(a+n*c)+"");
+                    }
+                    if(arg[4]=="reset$") Build[H].ResetS(S,arg[5]);
+                }
+            }
+        }
+
+        return Build;
+    }
+    static TxtToSeonArray(str)
+	  {
+		    str = str.replaceAll("\t", " ");
+    	  str = str.replaceAll("\r", " ");
+    	  str = str.replaceAll("\n", " ");
+    	  str = str.replaceAll("[", " ");
+    	  str = str.replaceAll("]", " ");
+		    str = str.trim();
+
+		    while(str.includes("  "))
+        	  str = str.replaceAll("  ", " ");
+
+    	  str = str.replaceAll(".",",");
+        return str.split(' ');
+	  }
+    static BuildUlam(X, Y, id) // <0;199>
+	  {
+        if(id>=50 && id<100) { X++; id-=50; }
+        if(id>=100 && id<150) { Y++; id-=100; }
+        if(id>=150 && id<200) { X++; Y++; id-=150; }
+        if(id>=200) return 0;
+
+		    let sX = 2*(id%5);
+		    let sY = Math.floor(id/5);
+		    if(sY%2==0) sX++;
+		    return makeUlam(10*X + sX, 10*Y + sY);
+	  }
+}
 
 
 // GENERATION LAYER 3 (inner) -> Fobs and files communication
@@ -1447,27 +2169,92 @@ function readPlayer(n) {
 }
 
 //File asteroid data function
-function ulamToXY(ulam) {
-  var sqrt = Math.floor(Math.sqrt(ulam));
-  if (sqrt % 2 == 0) sqrt--;
-  var x = sqrt / 2 + 0.5;
-  var y = -sqrt / 2 - 0.5;
-  var pot = sqrt ** 2;
-  var delta = ulam - pot;
-  var cwr = Math.floor(delta / (sqrt + 1));
-  var dlt = delta % (sqrt + 1);
-  if (cwr == 0 && dlt == 0) return [x - 1, y + 1];
+/*function ulamToXY(ulam)
+{
+    var sqrt = Math.floor(Math.sqrt(ulam));
+    if (sqrt % 2 == 0) sqrt--;
 
-  if (cwr > 0) y += sqrt + 1;
-  if (cwr > 1) x -= sqrt + 1;
-  if (cwr > 2) y -= sqrt + 1;
+    var x = sqrt/2 + 0.5;
+    var y = -sqrt/2 - 0.5;
+    var pot = sqrt ** 2;
+    var delta = ulam - pot;
+    var cwr = Math.floor(delta / (sqrt + 1));
+    var dlt = delta % (sqrt + 1);
 
-  if (cwr == 0) y += dlt;
-  if (cwr == 1) x -= dlt;
-  if (cwr == 2) y -= dlt;
-  if (cwr == 3) x += dlt;
+    if (cwr == 0 && dlt == 0) return [x - 1, y + 1];
+    if (cwr > 0) y += sqrt + 1;
+    if (cwr > 1) x -= sqrt + 1;
+    if (cwr > 2) y -= sqrt + 1;
+
+    if (cwr == 0) y += dlt;
+    if (cwr == 1) x -= dlt;
+    if (cwr == 2) y -= dlt;
+    if (cwr == 3) x += dlt;
+
+    return [x, y];
+}*/
+function makeUlam(X,Y)
+{
+    let ID=0,P;
+    if(Math.abs(X)>Math.abs(Y)) P=Math.abs(X);
+		else P=Math.abs(Y);
+
+		ID=4*(P*P-P)+1;
+
+		X=X+P+1;
+		Y=Y+P+1;
+
+		if(X==(2*P+1)&&Y!=1) //first
+			  ID=ID+Y-1;
+		else if(Y==(2*P+1)) //second
+			  ID=ID+4*P+1-X;
+		else if(X==1) //third
+			  ID=ID+6*P+1-Y;
+		else if(Y==1) //fourth
+			  ID=ID+6*P+X-1;
+    
+    return ID;
+}
+function ulamToXY(ulam)
+{
+  let sqrt = intSqrt(ulam);
+  if (sqrt % 2 === 0) sqrt--;
+
+  let x = Math.floor(sqrt / 2) + 1;
+  let y = -Math.floor(sqrt / 2) - 1;
+  let pot = sqrt * sqrt;
+  let delta = ulam - pot;
+  let cwr = Math.floor(delta / (sqrt + 1));
+  let dlt = delta % (sqrt + 1);
+
+  if (cwr === 0 && dlt === 0) return [x - 1, y + 1];
+  if (cwr > 0) y += (sqrt + 1);
+  if (cwr > 1) x -= (sqrt + 1);
+  if (cwr > 2) y -= (sqrt + 1);
+
+  if (cwr === 0) y += dlt;
+  if (cwr === 1) x -= dlt;
+  if (cwr === 2) y -= dlt;
+  if (cwr === 3) x += dlt;
 
   return [x, y];
+}
+function intSqrt(n)
+{
+  let a = 0, b = n;
+  if (b > 46340) b = 46340; // overflow protection
+  while (a <= b) {
+      let piv = Math.floor((a + b) / 2);
+      let sqpiv = piv * piv;
+      if (sqpiv > n) {
+          b = piv - 1;
+          continue;
+      } else if (sqpiv < n) {
+          a = piv + 1;
+          continue;
+      } else return piv;
+  }
+  return b;
 }
 function chunkRead(ind) {
   var i, j, eff = seed + "\r\n";
@@ -1495,14 +2282,13 @@ function chunkRead(ind) {
   for (i = 0; i < 100; i++) eff += ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;" + "\r\n";
   return eff;
 }
-function removeEnds(str) {
-  var i,
-    lngt = str.length,
-    eff = "";
-  for (i = lngt; i > 0; i--) if (str[i - 1] != ";") break;
-  lngt = i;
-  for (i = 0; i < lngt; i++) eff += str[i];
-  return eff;
+function removeEnds(str)
+{
+    var i, lngt = str.length, eff = "";
+    for (i = lngt; i > 0; i--) if (str[i - 1] != ";") break;
+    lngt = i;
+    for (i = 0; i < lngt; i++) eff += str[i];
+    return eff;
 }
 function chunkSave(n) {
   var i,
@@ -4317,127 +5103,88 @@ wss.on("connection", function connection(ws,req)
         );
       }
     }
+    if (arg[0] == "/WorldData") // 1[PlayerID] 2[Ulam]
+    {
+      if(!VerifyCommand(arg,["PlaID","ulam"])) return;
+      if(!checkPlayerG(arg[1],ws)) return;
+      
+      var ulamID = arg[2];
+      var obj = Universe.GetObject(ulamID);
+
+      if(obj==null) return;
+      if(obj.obj=="asteroid")
+      {
+          var generation_code = obj.GetGencode();
+          WorldData.Load(ulamID);
+          var type = WorldData.GetType();
+          if(!(type>=0 && type<=63)) //NOT EXISTS
+          {
+              WorldData.DataGenerate(generation_code);
+              type = WorldData.GetType();
+          }
+          var lc3 = type;
+          for(i=1;i<=20;i++) {
+              lc3 += ";"+WorldData.GetFob(i);
+          }
+          growActive(ulamID);
+          sendTo(ws,
+            "/RetAsteroidData " +
+            ulamID + " " +
+            lc3 + " " +
+            nbts(ulamID) +
+            " X X"
+          );
+      }
+      if(obj.obj=="boss")
+      {
+          var bID = ulamID;
+          var bossType = obj.type;
+          var bossPosX = obj.position.x;
+          var bossPosY = obj.position.y;
+  
+          var lc3, inds=-1, lngts=scrs.length;
+  
+          for(i=0;i<lngts;i++)
+          {
+              if(scrs[i].bID==bID) {
+                  inds = i;
+                  break;
+              }
+          }
+  
+          if(inds==-1)
+          {
+              WorldData.Load(bID);
+              if(WorldData.GetType()!=1024) {
+                  WorldData.DataGenerate("BOSS");
+              }
+              else for(i=2;i<=60;i++) WorldData.UpdateData(i,0);
+              var trX1 = WorldData.GetData(1);
+  
+              //Boss initialization
+              var tpl = Object.assign({},scrTemplate);
+              tpl.bID = bID;
+              tpl.type = bossType;
+              tpl.posCX = func.parseFloatU(bossPosX);
+              tpl.posCY = func.parseFloatU(bossPosY);
+              tpl.dataX = [];
+              tpl.dataY = [];
+              tpl.bulCols = [];
+              tpl.givenUpPlayers = [];
+              tpl.dataX = [1024,trX1];
+              for(i=2;i<=60;i++) tpl.dataY[i-2] = 0;
+              var tpl2 = {x:0,y:0}; tpl2.x = tpl.posCX; tpl2.y = tpl.posCY;
+              tpl.behaviour = new CBoss(bossType,tpl2,tpl.dataX,tpl.dataY,visionInfo);
+              scrs.push(tpl);
+          }
+      }
+    }
     if (arg[0] == "/RequestMemories") // 1[PlayerID] 2[MemoryID]
     {
       if(!VerifyCommand(arg,["PlaID","0-16k"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
       
       sendTo(ws,"/RetMemoryData "+arg[2]+"$"+biome_memories[func.parseIntU(arg[2])]+" X X");
-    }
-
-
-    //---------------//
-    // WILD COMMANDS //
-    //---------------//
-
-
-    if (arg[0] == "/AsteroidData") {
-      //AsteroidData 1[UlamID] 2[generation_code] 3[PlayerID]
-      if (!checkPlayerG(arg[3],ws)) return;
-
-      var ulamID = arg[1];
-      var generation_code = arg[2];
-
-      WorldData.Load(ulamID);
-			var type = WorldData.GetType();
-			if(!(type>=0 && type<=63)) //NOT EXISTS
-			{
-				WorldData.DataGenerate(generation_code);
-				type = WorldData.GetType();
-			}
-      var lc3 = type;
-			for(i=1;i<=20;i++) {
-				lc3 += ";"+WorldData.GetFob(i);
-			}
-
-      growActive(ulamID);
-
-      sendTo(ws,
-        "/RetAsteroidData " +
-          ulamID + " " +
-          lc3 + " " +
-          nbts(ulamID) +
-          " X X"
-      );
-    }
-    if (arg[0] == "/ScrData") {
-      //ScrData 1[PlayerID] 2[bID] 3[1024] 4[bossType] 5[bossPosX] 6[bossPosY]
-      if (!checkPlayerG(arg[1],ws)) return;
-
-      var bID = arg[2];
-      var bossType = arg[4];
-      var bossPosX = arg[5];
-      var bossPosY = arg[6];
-
-      var lc3, inds=-1, lngts=scrs.length;
-
-      for(i=0;i<lngts;i++)
-      {
-        if(scrs[i].bID==bID) {
-          inds = i;
-          break;
-        }
-      }
-
-      if(inds==-1)
-      {
-          WorldData.Load(bID);
-          if(WorldData.GetType()!=1024) {
-              WorldData.DataGenerate("BOSS");
-          }
-          else for(i=2;i<=60;i++) WorldData.UpdateData(i,0);
-          var trX1 = WorldData.GetData(1);
-
-          //Boss initialization
-          var tpl = Object.assign({},scrTemplate);
-          tpl.bID = bID;
-          tpl.type = bossType;
-          tpl.posCX = func.parseFloatU(bossPosX);
-          tpl.posCY = func.parseFloatU(bossPosY);
-          tpl.dataX = [];
-          tpl.dataY = [];
-          tpl.bulCols = [];
-          tpl.givenUpPlayers = [];
-          tpl.dataX = [1024,trX1];
-          for(i=2;i<=60;i++) tpl.dataY[i-2] = 0;
-          var tpl2 = {x:0,y:0}; tpl2.x = tpl.posCX; tpl2.y = tpl.posCY;
-          tpl.behaviour = new CBoss(bossType,tpl2,tpl.dataX,tpl.dataY,visionInfo);
-          scrs.push(tpl);
-
-          //Bosbul static commands (temporary)
-          /*ScrShapeAdd(["",0,bID,"cylinder",1.5,5,36.39999,0,0,171]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,36.39999,90,172]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-36.39999,0,180,173]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,0,-36.39999,270,174]);
-          ScrShapeAdd(["",0,bID,"sphere",4,0,36.42503,8.337769,11.25,1025]);
-          ScrShapeAdd(["",0,bID,"sphere",4,0,-8.337723,36.42503,101.25,1026]);
-          ScrShapeAdd(["",0,bID,"sphere",4,0,-36.42505,-8.337677,191.25,1027]);
-          ScrShapeAdd(["",0,bID,"sphere",4,0,8.337646,-36.42505,281.25,1028]);
-          ScrShapeAdd(["",0,bID,"sphere",4,0,36.425,-8.337936,348.75,1029]);
-          ScrShapeAdd(["",0,bID,"sphere",4,0,-8.337891,-36.425,258.75,1030]);
-          ScrShapeAdd(["",0,bID,"sphere",4,0,-36.42502,8.337845,168.75,1031]);
-          ScrShapeAdd(["",0,bID,"sphere",4,0,8.337799,36.42502,78.75,1032]);
-          ScrShapeAdd(["",0,bID,"sphere",3.5,0,31.10144,21.44495,33.75,1033]);
-          ScrShapeAdd(["",0,bID,"sphere",3.5,0,21.44498,31.10143,56.25,1034]);
-          ScrShapeAdd(["",0,bID,"sphere",3.5,0,-21.4449,31.10147,123.75,1035]);
-          ScrShapeAdd(["",0,bID,"sphere",3.5,0,-31.10139,21.44501,146.25,1036]);
-          ScrShapeAdd(["",0,bID,"sphere",3.5,0,-31.10149,-21.44489,213.75,1037]);
-          ScrShapeAdd(["",0,bID,"sphere",3.5,0,-21.44505,-31.10138,236.25,1038]);
-          ScrShapeAdd(["",0,bID,"sphere",3.5,0,21.44484,-31.10152,303.75,1039]);
-          ScrShapeAdd(["",0,bID,"sphere",3.5,0,31.10135,-21.44508,326.25,1040]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64288,15.1069,22.5,1083]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21841,26.2184,45,1084]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,15.10693,33.64287,67.5,1085]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-15.10686,33.6429,112.5,1086]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-26.21837,26.21844,135,1087]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-33.64285,15.10696,157.5,1088]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-33.64291,-15.10683,202.5,1089]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-26.21849,-26.21832,225,1090]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,-15.10703,-33.64282,247.5,1091]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,15.1068,-33.64291,292.5,1092]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,26.21831,-26.21851,315,1093]);
-          ScrShapeAdd(["",0,bID,"cylinder",1.5,5,33.64282,-15.10704,337.5,1094]);*/
-      }
     }
   });
 });
@@ -4518,7 +5265,10 @@ function VerifyCommand(args,formats)
       else if(sw=="ulam") {
         var p = func.parseIntP(test);
         if(isNaN(p)) return false;
-        if(p <= 1 || p > 1700000000) return false;
+        var xy = ulamToXY(p);
+        if(xy[0] < -200000 || xy[0] >= 200000) return false;
+        if(xy[1] < -200000 || xy[1] >= 200000) return false;
+        return true;
       }
       else if(sw=="place") {
         var p = func.parseIntP(test);
@@ -5828,5 +6578,6 @@ setTerminalTitle("SE3 server | "+serverVersion+" | "+getRandomFunnyText());
 
 })
 .catch((error) => {
-  console.log("\nClosing the server: "+error);
+  console.log("\nClosing the server:");
+  console.log(error);
 });

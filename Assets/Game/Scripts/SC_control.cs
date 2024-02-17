@@ -1979,28 +1979,24 @@ public class SC_control : MonoBehaviour {
 				}
 			}
 		}
-		if(arg[0]=="/RetFobsTurn"||
-		arg[0]=="/RetFobsPing"||
-		arg[0]=="/RetGeyzerTurn"||
-		arg[0]=="/RetGrowNow")
-		{
-			//Traditional fobs directing
-			List<SC_fobs> SCT_fobs = SC_lists.SC_fobs;
-			foreach(SC_fobs ful in SCT_fobs)
-			{
-				if(ful.onMSG(cmdThis)) break;
-			}
-		}
 		if(arg[0]=="/RetFobsChange"||
 		arg[0]=="/RetFobsDataChange"||
-		arg[0]=="/RetFobsDataCorrection")
+		arg[0]=="/RetFobsDataCorrection"||
+		arg[0]=="/RetGeyzerTurn"||
+		arg[0]=="/RetGrowNow"||
+		arg[0]=="/RetFobsTurn"||
+		arg[0]=="/RetFobsPing")
 		{
-			//Fast fobs directing
+			string ID_direct = arg[1];
+			if(arg[0]=="/RetFobsTurn") ID_direct = arg[2];
+			if(arg[0]=="/RetFobsPing") ID_direct = arg[1].Split(';')[1];
+
+			//Fob message directing
 			List<SC_asteroid> SCT_asteroid = SC_lists.SC_asteroid;
 			foreach(SC_asteroid aul in SCT_asteroid)
 			{
 				bool break_now = false;
-				if(aul.ID+""==arg[1])
+				if(aul.ID+""==ID_direct)
 				foreach(Transform trn in aul.GetComponent<Transform>())
 				{
 					SC_fobs ful = trn.GetComponent<SC_fobs>();

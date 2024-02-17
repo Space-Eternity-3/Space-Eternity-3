@@ -16,17 +16,9 @@ public class SC_lists : MonoBehaviour
     public void AddTo_SC_pulse_bar(SC_pulse_bar pba) { SC_pulse_bar.Add(pba); }
     public void RemoveFrom_SC_pulse_bar(SC_pulse_bar pba) { SC_pulse_bar.Remove(pba); }
 
-    public List<SC_resp_blocker> SC_resp_blocker = new List<SC_resp_blocker>();
-    public void AddTo_SC_resp_blocker(SC_resp_blocker rpb) { SC_resp_blocker.Add(rpb); }
-    public void RemoveFrom_SC_resp_blocker(SC_resp_blocker rpb) { SC_resp_blocker.Remove(rpb); }
-
     public List<SC_asteroid> SC_asteroid = new List<SC_asteroid>();
     public void AddTo_SC_asteroid(SC_asteroid ast) { SC_asteroid.Add(ast); }
     public void RemoveFrom_SC_asteroid(SC_asteroid ast) { SC_asteroid.Remove(ast); }
-
-    public List<SC_fobs> SC_fobs = new List<SC_fobs>();
-    public void AddTo_SC_fobs(SC_fobs fob) { SC_fobs.Add(fob); }
-    public void RemoveFrom_SC_fobs(SC_fobs fob) { SC_fobs.Remove(fob); }
 
     public List<SC_boss> SC_boss = new List<SC_boss>();
     public void AddTo_SC_boss(SC_boss bos) { SC_boss.Add(bos); }

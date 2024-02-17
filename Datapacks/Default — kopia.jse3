@@ -7,7 +7,7 @@ Edit file and select it in your SE3 browser.
 >
 
 version: 'Beta 2.2'; <Don't change>
-name: 'Catst'; <Rename it>
+name: 'DEFAULT'; <Rename it>
 craftings
 {
 	<Category>1
@@ -357,7 +357,6 @@ generator_settings
 		settings: [
 			bgcolor-212-218-224,
 			structural, struct=4,
-			ring.inner.change -> 0, ring.inner.change -> 50,
 			radius = 80,
 			density = 100%,
 		];
@@ -369,8 +368,7 @@ generator_settings
 		chance: 0,4%;
 		settings: [
 			bgcolor-212-218-224,
-			structural, struct=5, spawn,
-			ring.inner.change -> 0, ring.inner.change -> 50,
+			structural, struct=5,
 			radius = 80,
 			density = 100%,
 		];
@@ -383,7 +381,6 @@ generator_settings
 		settings: [
 			bgcolor-255-252-220,
 			structural, struct=1,
-			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 50,
 			density = 100%,
 		];
@@ -399,7 +396,6 @@ generator_settings
 		settings: [
 			bgcolor-255-174-181,
 			structural, struct=2,
-			ring.inner.change -> 0, ring.inner.change -> 20,
 			radius = 50,
 			density = 100%,
 		];
@@ -414,8 +410,7 @@ generator_settings
 		chance: 2%;
 		settings: [
 			bgcolor-255-245-140,
-			structural, struct=3,
-			ring.inner.change -> 0, ring.inner.change -> 20,
+			structural, struct=3, spawn,
 			radius = 40,
 			density = 100%,
 		];
@@ -563,24 +558,29 @@ game_translate <low-level settings>
 custom_structures <advanced settings>
 {
 	<normal cementery> 1: '[
-	
-		summon #1 asteroid 10 32 x scale 2 2 1,2
-		summon #2 asteroid 10 32 x scale 2 2 1,2 asteroid hide
-		catch children 0 19 from #1 to #2 scale children 0.5 0.5 0.8333
-		catch #2 rotate 9
+
+		catch # 200 summon hole 20
+		catch # 1-2 summon asteroid 10 32 x hide
+		catch $ 0-19 move$ 0 5
+		catch # 2 rotate 9
+		catch # 3 summon sphere 20 0
 	
 	]';
 	<dark cementery> 2: '[
 	
-		summon #1 asteroid 10 1 x scale 2 2 1,2
-		summon #2 asteroid 10 1 x scale 2 2 1,2 asteroid hide
-		catch children 0 19 from #1 to #2 scale children 0.5 0.5 0.8333
-		catch #2 rotate 9
+		catch # 200 summon hole 20
+		catch # 1-2 summon asteroid 10 1 x hide
+		catch $ 0-19 move$ 0 5
+		catch # 2 rotate 9
+		catch # 3 summon sphere 20 1
 	
 	]';
 	<star> 3: '[
 	
-		catch # 1 summon star
+		catch # 200 summon hole 20
+		catch # 1 summon star 1
+		catch # 2 summon star 1.5 move 30 0
+		catch # 3 summon monster 2 move -30 0
 	
 	]';
 	<arena> 4: '[
@@ -607,7 +607,7 @@ custom_structures <advanced settings>
 		catch # 15-16 move 2 -2 rotate 303,75 mod 22,5
 		catch # 9-16 move 35 0
 
-		catch # 59-70 summon wall 12
+		catch # 59-70 summon wall 1 1 12
 		catch # 59-61 move 2 2 rotate 22,5 mod 22,5
 		catch # 62-64 move -2 2 rotate 112,5 mod 22,5
 		catch # 65-67 move -2 -2 rotate 202,5 mod 22,5
@@ -617,7 +617,7 @@ custom_structures <advanced settings>
 		catch # 17-28 summon asteroid 4 12 0,0,0,0,0,0,0,0
 		catch # 59-70 steal fromdelta -42
 
-		catch # 51-58 summon piston 12
+		catch # 51-58 summon piston 1 1 12
 		catch # 51 move 36,4 6,4
 		catch # 52 move -36,4 6,4
 		catch # 53 move 36,4 -6,4 rotate 180
@@ -672,7 +672,7 @@ custom_structures <advanced settings>
 		catch # 15-16 move 2 -2 rotate 303,75 mod 22,5
 		catch # 9-16 move 35 0
 
-		catch # 59-70 summon wall 12
+		catch # 59-70 summon wall 1 1 12
 		catch # 59-61 move 2 2 rotate 22,5 mod 22,5
 		catch # 62-64 move -2 2 rotate 112,5 mod 22,5
 		catch # 65-67 move -2 -2 rotate 202,5 mod 22,5

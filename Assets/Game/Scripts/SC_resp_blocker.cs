@@ -6,25 +6,28 @@ public class SC_resp_blocker : MonoBehaviour
 {
 	public Transform player;
 	public float radius;
-	public bool blocking;
 	public SC_control SC_control;
 	
-	void Start()
+	void FixedUpdate()
 	{
-		SC_control.SC_lists.AddTo_SC_resp_blocker(this);
-	}
-	void OnDestroy()
-	{
-		SC_control.SC_lists.RemoveFrom_SC_resp_blocker(this);
-	}
-	public bool IsAllowing()
-	{
-		Vector3 plapos = player.position;
-		foreach(SC_resp_blocker rpb in SC_control.SC_lists.SC_resp_blocker)
+		//Set respawn breaking sequence
+		if(SC_control.SC_fun.respawn_allow_reinit)
 		{
-			if(SC_control.Pitagoras(plapos - rpb.transform.position) < rpb.radius)
-				return false;
+			SC_control.SC_fun.respawn_allow_reinit = false;
+			SC_control.SC_fun.respawn_allow = SC_control.SC_slots.InvHaving(20);
 		}
-		return true;
+
+		//Try to break respawn allow
+		if(SC_control.SC_fun.respawn_allow)
+		{
+			Vector3 plapos = player.position;
+			if(SC_control.Pitagoras(plapos - transform.position) < radius)
+				SC_control.SC_fun.respawn_allow = false;
+		}
+	}
+	void LateUpdate()
+	{
+		//Signalize to start calculation
+		SC_control.SC_fun.respawn_allow_reinit = true;
 	}
 }

@@ -135,7 +135,7 @@ public class SC_object_holder : MonoBehaviour
                 trn.SetParent(transform,true);
                 trn.GetComponent<SC_drill>().type = Objects[j].type;
                 trn.GetComponent<SC_material>().SetMaterial(Objects[j].type,true);
-                trn.localScale = new Vector3(1f,1f,0.75f) * Objects[j].size;
+                trn.localScale = new Vector3(1f,1f,0.75f) * Objects[j].size1;
             }
             if(Objects[j].obj=="wall")
             {
@@ -143,6 +143,7 @@ public class SC_object_holder : MonoBehaviour
                 trn.SetParent(transform,true);
                 trn.GetComponent<SC_drill>().type = Objects[j].type;
                 trn.GetComponent<SC_material>().SetMaterial(Objects[j].type,false);
+                trn.localScale = new Vector3(Objects[j].size1,Objects[j].size2,Objects[j].size1);
             }
             if(Objects[j].obj=="piston")
             {
@@ -150,16 +151,19 @@ public class SC_object_holder : MonoBehaviour
                 trn.SetParent(transform,true);
                 trn.GetComponent<SC_drill>().type = Objects[j].type;
                 trn.GetComponent<SC_adv_colors>().ApplyMaterials(Objects[j].type);
+                trn.localScale = new Vector3(Objects[j].size1,Objects[j].size2,1f);
             }
             if(Objects[j].obj=="star")
             {
                 trn = Instantiate(Star, Objects[j].position, Quaternion.Euler(0f,0f,Objects[j].rotation));
                 trn.SetParent(transform,true);
+                trn.localScale = new Vector3(1f,1f,1f) * Objects[j].size1;
             }
             if(Objects[j].obj=="monster")
             {
                 trn = Instantiate(Monster, Objects[j].position, Quaternion.Euler(0f,0f,Objects[j].rotation));
                 trn.SetParent(transform,true);
+                trn.localScale = new Vector3(1f,1f,1f) * Objects[j].size1;
             }
             if(Objects[j].obj=="respblock")
             {

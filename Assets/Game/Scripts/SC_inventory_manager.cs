@@ -74,7 +74,7 @@ public class SC_inventory_manager : MonoBehaviour {
 			if(Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&Communtron1.position.y==sNum)
 			{
 				if(pvNum==20f)
-				if(SC_resp_blocker.IsAllowing() && !SC_fun.SC_control.SC_invisibler.invisible && !SC_fun.SC_control.impulse_enabled)
+				if(SC_fun.respawn_allow && !SC_fun.SC_control.SC_invisibler.invisible && !SC_fun.SC_control.impulse_enabled)
 					sImg.texture=SC_fun.Item20u;
 
 				if(pvNum==55f) if(SC_fun.SC_control.AllowingPotion("healing"))

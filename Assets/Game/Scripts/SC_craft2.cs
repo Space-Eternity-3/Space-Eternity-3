@@ -70,7 +70,7 @@ public class SC_craft2 : MonoBehaviour {
 		{
 			//RESPAWN SET (strange place)
 			if(Input.GetMouseButtonDown(1)&&Communtron3.position.y==0f&&Communtron3.position.z==0f&&Communtron2.position.x==0f&&SC_slots.InvHaving(20))
-			if(!SC_control.impulse_enabled && !SC_control.SC_invisibler.invisible && SC_resp_blocker.IsAllowing())
+			if(!SC_control.impulse_enabled && !SC_control.SC_invisibler.invisible && SC_fun.respawn_allow)
 			{
 				int slot = SC_slots.InvChange(20,-1,true,false,true);
 				if((int)Communtron4.position.y==100)

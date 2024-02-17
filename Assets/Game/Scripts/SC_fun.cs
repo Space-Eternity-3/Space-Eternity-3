@@ -23,6 +23,8 @@ public class SC_fun : MonoBehaviour
 	public float camera_add;
 	public bool arms_did = false;
 	public float difficulty = 1f;
+	public bool respawn_allow = true; //Only for Update() use!
+	public bool respawn_allow_reinit = true;
 
 	public float[] boss_damages = new float[16];
 	public float[] boss_damages_cyclic = new float[16];
@@ -86,45 +88,29 @@ public class SC_fun : MonoBehaviour
 		else P=Mathf.Abs(Y);
 
 		ID=4*(P*P-P)+1;
-
 		X=X+P+1;
 		Y=Y+P+1;
 
-		if(X==(2*P+1)&&Y!=1) //first
-		{
-			ID=ID+Y-1;
-		} else
-		if(Y==(2*P+1)) //second
-		{
-			ID=ID+4*P+1-X;
-		} else
-		if(X==1) //third
-		{
-			ID=ID+6*P+1-Y;
-		} else
-		if(Y==1) //fourth
-		{
-			ID=ID+6*P+X-1;
-		}
+		if(X==(2*P+1)&&Y!=1) ID=ID+Y-1;
+		else if(Y==(2*P+1)) ID=ID+4*P+1-X;
+		else if(X==1) ID=ID+6*P+1-Y;
+		else if(Y==1) ID=ID+6*P+X-1;
+
         return ID;
     }
 	public int[] UlamToXY(int ulam)
 	{
-		int[] retu = new int[2];
-		
-		int sqrt=(int)Mathf.Sqrt(ulam);
+		int sqrt = IntSqrt(ulam);
 		if(sqrt%2==0) sqrt--;
-		int x=sqrt/2+1,y=-sqrt/2-1;
-		int pot=sqrt*sqrt;
-		int delta=ulam-pot;
-		int cwr=delta/(sqrt+1);
-		int dlt=delta%(sqrt+1);
-		if(cwr==0&&dlt==0)
-		{
-			retu[0]=x-1; retu[1]=y+1;
-			return retu;
-		}
-  
+
+		int x = sqrt/2 + 1;
+		int y = -sqrt/2 - 1;
+		int pot = sqrt * sqrt;
+		int delta = ulam - pot;
+		int cwr = delta / (sqrt+1);
+		int dlt = delta % (sqrt+1);
+		
+		if(cwr==0 && dlt==0) return new int[]{x-1,y+1};
 		if(cwr>0) y+=(sqrt+1);
 		if(cwr>1) x-=(sqrt+1);
 		if(cwr>2) y-=(sqrt+1);
@@ -134,8 +120,29 @@ public class SC_fun : MonoBehaviour
 		if(cwr==2) y-=dlt;
 		if(cwr==3) x+=dlt;
 
-		retu[0]=x; retu[1]=y;
-		return retu;
+		return new int[]{x,y};
+	}
+	public int IntSqrt(int n)
+	{
+		int a=0, b=n;
+		if(b>46340) b=46340; //overflow protection
+		while(a<=b)
+		{
+			int piv = (a+b)/2;
+			int sqpiv = piv*piv;
+			if(sqpiv > n)
+			{
+				b = piv - 1;
+				continue;
+			}
+			else if(sqpiv < n)
+			{
+				a = piv + 1;
+				continue;
+			}
+			else return piv;
+		}
+		return b;
 	}
 
 	//BiomeMemories methods

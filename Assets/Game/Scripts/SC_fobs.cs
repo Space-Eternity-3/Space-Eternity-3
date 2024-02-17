@@ -289,8 +289,6 @@ public class SC_fobs : MonoBehaviour
         if(started) return;
         else started = true;
 
-        SC_control.SC_lists.AddTo_SC_fobs(this);
-
         localRenderer = gameObject.GetComponent<Renderer>();
         asst = transform.parent.GetComponent<SC_asteroid>();
 
@@ -421,8 +419,6 @@ public class SC_fobs : MonoBehaviour
     }
     void OnDestroy()
     {
-        SC_control.SC_lists.RemoveFrom_SC_fobs(this);
-
         if(lsb && !true_mother)
         {
             try{
