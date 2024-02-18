@@ -27,7 +27,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 122;
+	int gpl_number = 124;
     
 	bool lockData = false;
 	bool remember = false;
@@ -140,12 +140,12 @@ public class SC_data : MonoBehaviour
             "bullet_owner_push:*", //30
             "healing_potion_hp:+", //31
             "boss_damage_multiplier:+", //32
-            "coal_bullet_damage:+", //33
+            "wind_bullet_damage:+", //33
             "fire_bullet_damage:+", //34
             "killing_potion_hp:+", //35
             "cyclic_damage_multiplier:+", //36
-            "boss_unstable_effectivity:+", //37
-            "boss_fire_effectivity:+", //38
+            "boss_fire_cycles:+", //37
+            "boss_fire_damage:+", //38
             "blank_potion_hp:+", //39
             "stone_geyzer_force_multiplier:*", //40
             "magnetic_geyzer_force_multiplier:*", //41
@@ -156,7 +156,7 @@ public class SC_data : MonoBehaviour
             "red_bullet_speed:*", //46
             "unstable_bullet_speed:*", //47
             "fire_bullet_speed:*", //48
-            "coal_bullet_speed:*", //49
+            "wind_bullet_speed:*", //49
             "boss_bullet_speed:+", //50
             "boss_seeker_speed:+", //51
             "cyclic_fire_damage:+", //52
@@ -201,12 +201,12 @@ public class SC_data : MonoBehaviour
             "cyclic_starandus_geyzer_time:+", //91
             "copper_bullet_defrange:+", //92
             "red_bullet_defrange:+", //93
-            "coal_bullet_defrange:+", //94
+            "wind_bullet_defrange:+", //94
             "fire_bullet_defrange:+", //95
             "unstable_bullet_defrange:+", //96
             "copper_bullet_cooldown:+", //97
             "red_bullet_cooldown:+", //98
-            "coal_bullet_cooldown:+", //99
+            "wind_bullet_cooldown:+", //99
             "fire_bullet_cooldown:+", //100
             "unstable_bullet_cooldown:+", //101
             "impulse_cooldown:+", //102
@@ -229,6 +229,8 @@ public class SC_data : MonoBehaviour
             "upg_4_cost:+", //119
             "upg_5_item:+", //120
             "upg_5_cost:+", //121
+            "wind_owner_push:*", //122
+	        "wind_victim_push:*", //123
         };
         public int VarNumber(string str,int gnome)
         {

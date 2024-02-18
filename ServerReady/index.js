@@ -212,7 +212,7 @@ var seed;
 var biome_memories = new Array(16000).fill("");
 var biome_memories_state = new Array(16000).fill(0);
 var hourHeader = "";
-var gpl_number = 122;
+var gpl_number = 124;
 var max_players = 10;
 var verF;
 var connectionAddress = "IP or DNS + port";
@@ -221,8 +221,8 @@ if(config.require_se3_account) connectionAddress = "se3://" + authConfig.server_
 var IPv4s = [];
 
 var boss_damages = [0,0,0,0,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,0,0 ,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var other_bullets_colliders = [0,0.14,0.14,0.12,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.14,0.08 ,1.68,0.25,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
-var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,1 ,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var other_bullets_colliders = [0,0.14,0.14,0.12,1,0.25,0.25,1.2,1.68,0.92,0.92,0.25,0.25,0.25,0.08,0.08 ,1.68,0.25,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0.08];
+var bullet_air_consistence = [0,0,0,1,0,1,0,1,0,0,0,0,0,1,1,1 ,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 if(Number.isInteger(config.max_players))
   max_players = config.max_players;
@@ -2536,8 +2536,6 @@ function getBulletDamage(pid,bll)
     }
     else {
       var damage_modifier = 1;
-      if(bll.type==3) damage_modifier = func.parseFloatU(gameplay[37]);
-      if(bll.type==15) damage_modifier = func.parseFloatU(gameplay[38]);
       if(bll.type==15 && pid==-3) damage_modifier = 0;
       return bll.normal_damage * damage_modifier;
     }
@@ -2553,6 +2551,13 @@ setInterval(function () { // <interval #2>
   while(Date.now() > date_before)
   {
     date_before+=20;
+    if((date_before-date_start) % 6000 == 0) //precisely 1 time per 6 seconds (never affected)
+    {
+      GrowActiveDelay.forEach(element => {
+        growActive(element);
+      });
+      GrowActiveDelay.clear();
+    }
     if((date_before-date_start) % 1000 == 0) //precisely 1 times per second (never affected)
     {
       updateHourHeader();
@@ -2679,6 +2684,7 @@ setInterval(function () { // <interval #2>
         var yb = ya + bulletsT[i].vector.y;
         func.CollisionLinearBulletSet(xa,ya,xb,yb,other_bullets_colliders[bulletsT[i].type]);
 
+        var bul_vp = (bulletsT[i].vector.x+" "+bulletsT[i].vector.y).replaceAll(".",",");
         if(pvp || bulletsT[i].owner<0)
         for(j=0;j<max_players;j++)
         {
@@ -2692,13 +2698,13 @@ setInterval(function () { // <interval #2>
             {
               if(bullet_air_consistence[bulletsT[i].type]==0) {
                 if( DamageFLOAT(j, getBulletDamage(j, bulletsT[i]) ) != "K")
-                  sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" X "+plr.livID[j]);
+                  sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" "+bul_vp+" X "+plr.livID[j]);
                 destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], false);
                 break;
               }
               else if(!bulletsT[i].damaged.includes(j)) {
                 if( DamageFLOAT(j, getBulletDamage(j, bulletsT[i]) ) != "K")
-                  sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" X "+plr.livID[j]);
+                  sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" "+bul_vp+" X "+plr.livID[j]);
                 bulletsT[i].damaged.push(j);
               }
             }
@@ -2720,6 +2726,31 @@ setInterval(function () { // <interval #2>
               if(scrs[j].type==6) DamageBoss(j, getBulletDamage(-2, bulletsT[i]) );
               else if(scrs[j].type==4) DamageBoss(j, getBulletDamage(-3, bulletsT[i]) );
               else DamageBoss(j, getBulletDamage(-1, bulletsT[i]) );
+              if(bulletsT[i].type==14)
+              {
+                  //Calculate boss force
+                  var wind_force = func.parseFloatU(gameplay[123]) / 50;
+                  var force_vector = Vector3.Subtract(
+                    new Vector3(scrs[j].posCX + func.ScrdToFloat(scrs[j].dataY[8-2]), scrs[j].posCY + func.ScrdToFloat(scrs[j].dataY[9-2]),0),
+                    new Vector3(bulletsT[i].pos.x,bulletsT[i].pos.y,0)
+                  );
+                  var dist = Math.sqrt(force_vector.x**2 + force_vector.y**2);
+                  var wx = wind_force * force_vector.x / dist;
+                  var wy = wind_force * force_vector.y / dist;
+
+                  //Add force to boss
+                  var d = func.ScrdToFloat(scrs[j].dataY[13-2]);
+                  var ang = func.ScrdToFloat(scrs[j].dataY[14-2]);
+                  wx += Math.cos(ang) * d;
+                  wy += Math.sin(ang) * d;
+                  scrs[j].dataY[13-2] = func.FloatToScrd(Math.sqrt(wx*wx + wy*wy));
+                  scrs[j].dataY[14-2] = func.FloatToScrd(Math.atan2(wy,wx));
+              }
+              if(bulletsT[i].type==15 && scrs[j].type!=4)
+              {
+                  //Give fire effect
+                  scrs[j].dataY[24-2] = Math.floor(func.parseFloatU(gameplay[37])+1) * 50;
+              }
               destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
               break;
             }
@@ -2801,6 +2832,10 @@ setInterval(function () { // <interval #2>
           deltapos.x = scrs[i].posCX;
           deltapos.y = scrs[i].posCY;
           visionInfo.UpdatePlayers(deltapos);
+          if(scrs[i].dataY[24-2]>0) scrs[i].dataY[24-2]--;
+          if(scrs[i].dataY[24-2]%50==0 && scrs[i].dataY[24-2]!=0) {
+            DamageBoss(i,func.parseFloatU(gameplay[38]));
+          }
           scrs[i].behaviour.FixedUpdate();
         }
         if((sta=="1" || sta=="3" || sta=="4") && scrs[i].dataY[3-2]>=50)
@@ -3645,6 +3680,7 @@ function handDrillTimeGet(pid)
 	up = Math.round(upg3up/matpow);
 	return func.randomInteger(down,up);
 }
+let GrowActiveDelay = new Set();
 function growActive(ulam)
 {
     var i, block, tim;
@@ -4656,12 +4692,12 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/GrowLoaded") // 1[PlayerID] 2[UlamList]
     {
-      if(!VerifyCommand(arg,["PlaID","ulamList"])) return;
+      if(!VerifyCommand(arg,["PlaID","UlamList"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
 
       var tab = arg[2].split(";");
-      var lngt = tab.length - 1;
-      for(i=1;i<lngt;i++) growActive(tab[i]);
+      var lngt = tab.length;
+      for(i=0;i<lngt;i++) GrowActiveDelay.add(tab[i]);
     }
     if (arg[0] == "/Crafting") // 1[PlaID] 2[CraftID] 3[Slot1] 4[Slot2] 5[SlotE]
     {
@@ -5341,16 +5377,10 @@ function VerifyCommand(args,formats)
       else if(sw=="StorageID") {
         if(!["2","52","21"].includes(test)) return false;
       }
-      else if(sw=="ulamList") {
-        var splitTab = test.split(";");
-        var j,jngt = splitTab.length - 1;
-        if(jngt >= 1024) return false;
-        for(j=1;j<jngt;j++)
-        {
-          var p = func.parseIntP(splitTab[j]);
-          if(isNaN(p)) return false;
-          if(p <= 1 || p > 1700000000) return false;
-        }
+      else if(sw=="UlamList") {
+        var jngt = test.split(";").length;
+        if(jngt > 1024) return false;
+        if(!VerifyCommand((";"+test+";0").split(";"),new Array(jngt).fill("ulam"))) return false;
       }
       else if(sw=="CraftID") {
         var p = func.parseIntP(test);
@@ -5378,7 +5408,7 @@ function VerifyCommand(args,formats)
           (p>=40 && p<=48) ||
           (p==51) ||
           (p>=54 && p<=62 && p%2==0) ||
-          (p>=65 && p<=70)
+          (p>=64 && p<=70)
         )) return false;
       }
       else if(sw=="BulletType") {

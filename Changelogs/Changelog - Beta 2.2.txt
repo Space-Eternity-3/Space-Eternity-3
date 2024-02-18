@@ -5,6 +5,7 @@ New features (gameplay):
 - added background colors dependent of biome and active boss
 - added various difficulties: EASY, NORMAL, HARD, DIABOLIC + hidden: NONE, IMPOSSIBLE
   - difficulties affect damage received by everything except for other players, potions and remote damage
+- added wind bullets, obtainable on geyzer biomes (removed coal bullets, all will turn into wind bullets)
 
 New features (technical):
 
@@ -43,6 +44,7 @@ Artistic changes:
 - added smooth camera zoom when being close to activated arena
 - cementery big asteroid is now as fat as it should have been
 - adecodron glass is now a bit more flat
+- boss damage particles modified to be more noticeable
 
 UI changes:
 
@@ -88,6 +90,7 @@ Default datapack changes:
 - treasures updated: shrinked junk loot, a bit rarer treasures
 - changed biome tags to fit new background changes
 - copper bullet boss damage (Protector) buff: 4 -> 5
+- rebalanced bullet rarity
 
 Configurables:
 
@@ -96,13 +99,14 @@ Configurables:
 - removed biome tag "full"
 - added upgrade variables in gameplay segment to allow customization of upgrade prices
 - removed all structural tags except for struct=X, moved all built-in structures into custom structures
-- added "star2" to command "summon" in seon, it summons a weird ornament creature
+- added "monster" to command "summon" in seon, it summons a weird ornament creature
 - completely reworked seon language, see the newest documentation [here]
 - new biome tags:
   - use bgcolor-X-X-X biome tag to customize background color
   - use boss.1.color-X-X-X biome tag to customize boss background color (see default colors [here])
   - use tag gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
   - removed tag swap and ring.X.change, replaced their functionality with the new hole seon object
+- removed fire and unstable bullet effectivity gameplay variable
 
 Technical changes:
 
@@ -125,6 +129,7 @@ b) Server run
 - config.json and authConfig.json files will now generate automatically
 - impulse and invisibility power anti-cheat implemented
 - from the server point of view unstable matter is an empty space too (replacable with other fobs)
+- GrowActive system optimized when more players on the server
 
 c) Others
 - settings format changed to fit official account text field data (username and password)

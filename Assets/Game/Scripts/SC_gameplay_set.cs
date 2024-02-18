@@ -48,7 +48,7 @@ public class SC_gameplay_set : MonoBehaviour
         SC_bullet.BulletSpeeds[1] = SC_data.GplGet("copper_bullet_speed");
         SC_bullet.BulletSpeeds[2] = SC_data.GplGet("red_bullet_speed");
         SC_bullet.BulletSpeeds[3] = SC_data.GplGet("unstable_bullet_speed");
-        SC_bullet.BulletSpeeds[14] = SC_data.GplGet("coal_bullet_speed");
+        SC_bullet.BulletSpeeds[14] = SC_data.GplGet("wind_bullet_speed");
         SC_bullet.BulletSpeeds[15] = SC_data.GplGet("fire_bullet_speed");
 
         stone_geyzer.force = 50f * SC_data.GplGet("stone_geyzer_force_multiplier");

@@ -188,7 +188,7 @@ public class SC_fobs : MonoBehaviour
     }
     bool CanBePlaced(int b)
     {
-        if(b==48 || b==65) return Input.GetKey(KeyCode.LeftControl);
+        if(b==48 || b==64 || b==65) return Input.GetKey(KeyCode.LeftControl);
         else return FobInteractable(b);
     }
     bool FobInteractable(int b)
@@ -200,8 +200,7 @@ public class SC_fobs : MonoBehaviour
 		if(b==48) return true;
 		if(b==51) return true;
         if(b>=54 && b<=62 && b%2==0) return true;
-        if(b==65) return true;
-        if(b>=66 && b<=70) return true;
+        if(b>=64 && b<=70) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)

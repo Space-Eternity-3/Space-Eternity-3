@@ -315,6 +315,15 @@ public class SC_boss : MonoBehaviour
         if(transform.GetComponent<SC_seon_remote>()==null)
             FixedUpdateT();
     }
+    public void AddForceToBoss(float x, float y)
+    {
+        float d = ScrdToFloat(dataID[13]);
+        float ang = ScrdToFloat(dataID[14]);
+        x += Mathf.Cos(ang) * d;
+        y += Mathf.Sin(ang) * d;
+        dataID[13] = FloatToScrd(Mathf.Sqrt(x*x + y*y));
+        dataID[14] = FloatToScrd(Mathf.Atan2(y,x));
+    }
     public float GetTransitionFraction(float distance)
     {
         float ret = 0f;
@@ -463,6 +472,10 @@ public class SC_boss : MonoBehaviour
         {
             dataID[4]--;
             world.UpdatePlayers(deltapos);
+            if(dataID[24]>0) dataID[24]--;
+            if(dataID[24]%50==0 && dataID[24]!=0) {
+                if(!((type-1)==0 && dataID[18]==2)) DamageSGP(float.Parse(SC_data.Gameplay[38]));
+            }
             SC_behaviour._FixedUpdate();
         }
         if((sta==1 || sta==3 || sta==4) && dataID[3]>=50)

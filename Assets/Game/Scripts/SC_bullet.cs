@@ -145,7 +145,7 @@ public class SC_bullet : MonoBehaviour
         if(n==1) ret = SC_fun.SC_data.GplGet("copper_bullet_speed");
         if(n==2) ret = SC_fun.SC_data.GplGet("red_bullet_speed");
         if(n==3) ret = SC_fun.SC_data.GplGet("unstable_bullet_speed");
-        if(n==14) ret = SC_fun.SC_data.GplGet("coal_bullet_speed");
+        if(n==14) ret = SC_fun.SC_data.GplGet("wind_bullet_speed");
         if(n==15) ret = SC_fun.SC_data.GplGet("fire_bullet_speed");
         if(ret==0f) ret = 0.001f;
         
@@ -153,7 +153,7 @@ public class SC_bullet : MonoBehaviour
         if(n==1) ret2 = (int)(35f*SC_fun.SC_data.GplGet("copper_bullet_defrange")/ret) + 1;
         if(n==2) ret2 = (int)(35f*SC_fun.SC_data.GplGet("red_bullet_defrange")/ret) + 1;
         if(n==3) ret2 = (int)(35f*SC_fun.SC_data.GplGet("unstable_bullet_defrange")/ret) + 1;
-        if(n==14) ret2 = (int)(35f*SC_fun.SC_data.GplGet("coal_bullet_defrange")/ret) + 1;
+        if(n==14) ret2 = (int)(35f*SC_fun.SC_data.GplGet("wind_bullet_defrange")/ret) + 1;
         if(n==15) ret2 = (int)(35f*SC_fun.SC_data.GplGet("fire_bullet_defrange")/ret) + 1;
 
         if(ret2>=10000) return 10000;

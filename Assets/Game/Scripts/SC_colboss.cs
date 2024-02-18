@@ -37,9 +37,21 @@ public class SC_colboss : MonoBehaviour
                 if(!(bul.is_unstable && SC_boss.type==6) && !(bul.type==15 && SC_boss.type==4) && !((SC_boss.type-1)==0 && SC_boss.dataID[18]==2))
                 {
                     float damage_modifier = 1;
-                    if(bul.type==3) damage_modifier = float.Parse(SC_control.SC_data.Gameplay[37]);
-                    if(bul.type==15) damage_modifier = float.Parse(SC_control.SC_data.Gameplay[38]);
                     SC_boss.DamageSGP(bul.normal_damage*damage_modifier);
+                }
+                if(bul.type==14)
+                {
+                    float wind_force = float.Parse(SC_control.SC_data.Gameplay[123]) / 50f;
+                    Vector3 force_vector = SC_boss.bossModels.position - bul.transform.position;
+                    force_vector = new Vector3(force_vector.x,force_vector.y,0f);
+                    float dist = Mathf.Sqrt(force_vector.x*force_vector.x + force_vector.y*force_vector.y);
+                    float wx = wind_force * force_vector.x / dist;
+                    float wy = wind_force * force_vector.y / dist;
+                    SC_boss.AddForceToBoss(wx,wy);
+                }
+                if(bul.type==15 && SC_boss.type!=4)
+                {
+                    SC_boss.dataID[24] = (int)(float.Parse(SC_control.SC_data.Gameplay[37])+1) * 50;
                 }
             }
         }

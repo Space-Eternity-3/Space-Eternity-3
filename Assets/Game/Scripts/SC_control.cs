@@ -305,7 +305,7 @@ public class SC_control : MonoBehaviour {
 		bool wr_tick = (int)Communtron4.position.y!=100 || current_tick!=-1;
 		bool wr_comms = Communtron3.position.y==0f && Communtron2.position.x==0f && Communtron3.position.z==0f;
 		bool wr_have = SC_slots.InvHaving(24) || SC_slots.InvHaving(39) || SC_slots.InvHaving(48) || SC_slots.InvHaving(64) || SC_slots.InvHaving(65);
-		bool wr_cotr = !(Input.GetKey(KeyCode.LeftControl) && (SC_slots.InvHaving(48) || SC_slots.InvHaving(65)));
+		bool wr_cotr = !(Input.GetKey(KeyCode.LeftControl) && (SC_slots.InvHaving(48) || SC_slots.InvHaving(64) || SC_slots.InvHaving(65)));
 		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && wr_cotr;
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
 		bool wr_noblocker = (!SC_artefacts.unstabling) && SC_effect.effect!=8;
@@ -342,7 +342,11 @@ public class SC_control : MonoBehaviour {
 			cooldown = (int)float.Parse(SC_data.Gameplay[97+coltyp]);
 
 			float xpo = Input.mousePosition.x-Screen.width/2, ypo=Input.mousePosition.y-Screen.height/2;
-			if(typ!=3) playerR.velocity += Skop(float.Parse(SC_data.Gameplay[30]),new Vector3(-xpo,-ypo,0f));
+			float push_size = float.Parse(SC_data.Gameplay[30]);
+			float push_size_wind = float.Parse(SC_data.Gameplay[122]);
+			if(typ==3) { /* no bullet push */ }
+			else if(typ==14) playerR.velocity += Skop(push_size_wind,new Vector3(-xpo,-ypo,0f));
+			else playerR.velocity += Skop(push_size,new Vector3(-xpo,-ypo,0f));
 
 			//Inventory shoot
 			SC_bullet.Shot(
@@ -984,8 +988,21 @@ public class SC_control : MonoBehaviour {
 		//Grow Loaded
 		if((int)Communtron4.position.y==100)
 		{
-			if(MTPloadedCounter==400) { //every 8 seconds, but disappears after 10 seconds
-				//HERE SEND GROWLOADED
+			if(MTPloadedCounter==150) //every 3 seconds, refreshes every 6 seconds, disappears after 10 seconds
+			{
+				int lengt = 0;
+				List<string> loaded_IDs = new List<string>();
+				foreach(SC_asteroid ast in SC_lists.SC_asteroid)
+				{
+					if(lengt>=1024)
+					{
+						UnityEngine.Debug.LogWarning("Over 1024 asteroids loaded, can't send everything to server.");
+						break;
+					}
+					loaded_IDs.Add(ast.ID.ToString());
+					lengt++;
+				}
+				SendMTP("/GrowLoaded "+connectionID+" "+string.Join(";",loaded_IDs.ToArray()));
 				MTPloadedCounter = 0;
 			}
 			MTPloadedCounter++;
@@ -1698,6 +1715,9 @@ public class SC_control : MonoBehaviour {
 			int effectID = int.Parse(arg[1]);
 			SC_effect.SetEffect(effectID,SC_fun.bullet_effector[effectID]);
 			if(effectID==16) GravitonCatch();
+			if(effectID==14) {
+				playerR.velocity += Skop(float.Parse(SC_data.Gameplay[123]),new Vector3(float.Parse(arg[2]),float.Parse(arg[3]),0f));
+			}
 		}
 		if(arg[0]=="/RetServerDamage")
 		{
