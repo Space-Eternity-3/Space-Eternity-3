@@ -111,13 +111,13 @@ drill_loot
 	copper: copper(92%) + turbo_element(8%);
 	gold: gold(30%);
 	grass: bush(70%) + stone(22%) + magic_element(8%);
-	amethyst: small_amethyst(30%) + power_element(2%);
+	amethyst: small_amethyst(30%) + power_element(2,6%);
 	coal: coal(100%);
 	magnetic: magnetic_stone(100%);
-	red: red_stone(100%);
+	red: red_stone(96%) + unstable_matter(4%);
 	diamond: small_diamond(2%);
 	metalic: stone(50%);
-	bone: bone(94%) + blank_element(6%);
+	bone: bone(92%) + blank_element(8%);
 }
 modified_drops
 {
@@ -254,7 +254,7 @@ gameplay
 	boss_bullet_brainwave_damage: 6;
 	boss_bullet_rocket_damage: 12;
 	boss_bullet_spikeball_damage: 7;
-	boss_bullet_copper_damage: 5;
+	boss_bullet_copper_damage: 4;
 	boss_bullet_red_damage: 5;
 	boss_bullet_unstable_damage: 6;
 	boss_bullet_graviton_damage: 3;
@@ -324,7 +324,7 @@ generator_settings
 	
 		<Size>4: coal(100%);
 		<Size>5: coal(100%);
-		<Size>6: coal(98,5%) + diamond(1,5%);
+		<Size>6: coal(98%) + diamond(2%);
 		<Size>7: coal(65%) + red(35%);
 		<Size>8: coal(65%) + red(35%);
 		<Size>9: coal(45%) + red(55%);
@@ -449,8 +449,8 @@ objects_generate
 	gold: gold(25%);
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%);
 	amethyst: small_amethyst(20%) + medium_amethyst(20%) + large_amethyst(20%);
-	coal: coal(45%);
-	coalA: coal(45%) + fire_bullet(20%);
+	coal: coal(35%);
+	coalA: coal(35%) + fire_bullet(20%);
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%) + wind_bullet(4%);
 	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
@@ -580,7 +580,7 @@ custom_structures <advanced settings>
 	<star> 3: '[
 	
 		catch # 200 summon hole 20
-		catch # 1 summon star 1
+		catch # 1 summon star
 	
 	]';
 	<arena> 4: '[

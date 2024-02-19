@@ -677,9 +677,9 @@ class CObjectInfo
 
         this.obj = p_obj;
     }
-    Spherical(p_size1, p_obj)
+    Spherical(p_obj)
     {
-        this.size1 = Universe.PositiveFloatParse(p_size1,false);
+        this.size1 = 1;
 
         this.obj = p_obj;
     }
@@ -1136,8 +1136,8 @@ class Universe
                     if(arg[5]=="respblock") Build[H].Ranger(arg[6],arg[5]);
                     if(arg[5]=="hole") Build[H].Ranger(arg[6],arg[5]);
                     if(arg[5]=="animator") Build[H].obj = "animator";
-                    if(arg[5]=="star") Build[H].Spherical(arg[6],arg[5]);
-                    if(arg[5]=="monster") Build[H].Spherical(arg[6],arg[5]);
+                    if(arg[5]=="star") Build[H].Spherical(arg[5]);
+                    if(arg[5]=="monster") Build[H].Spherical(arg[5]);
 
                     if(H>199) continue;
                     if(arg[5]=="asteroid") Build[H].Asteroid(arg[6],arg[7],arg[8]);
@@ -2735,18 +2735,21 @@ setInterval(function () { // <interval #2>
                     new Vector3(bulletsT[i].pos.x,bulletsT[i].pos.y,0)
                   );
                   var dist = Math.sqrt(force_vector.x**2 + force_vector.y**2);
-                  var wx = wind_force * force_vector.x / dist;
-                  var wy = wind_force * force_vector.y / dist;
-
-                  //Add force to boss
-                  var d = func.ScrdToFloat(scrs[j].dataY[13-2]);
-                  var ang = func.ScrdToFloat(scrs[j].dataY[14-2]);
-                  wx += Math.cos(ang) * d;
-                  wy += Math.sin(ang) * d;
-                  scrs[j].dataY[13-2] = func.FloatToScrd(Math.sqrt(wx*wx + wy*wy));
-                  scrs[j].dataY[14-2] = func.FloatToScrd(Math.atan2(wy,wx));
+                  if(dist!=0)
+                  {
+                      var wx = wind_force * force_vector.x / dist;
+                      var wy = wind_force * force_vector.y / dist;
+  
+                      //Add force to boss
+                      var d = func.ScrdToFloat(scrs[j].dataY[13-2]);
+                      var ang = func.ScrdToFloat(scrs[j].dataY[14-2]);
+                      wx += Math.cos(ang) * d;
+                      wy += Math.sin(ang) * d;
+                      scrs[j].dataY[13-2] = func.FloatToScrd(Math.sqrt(wx*wx + wy*wy));
+                      scrs[j].dataY[14-2] = func.FloatToScrd(Math.atan2(wy,wx));
+                  }
               }
-              if(bulletsT[i].type==15 && scrs[j].type!=4)
+              if(bulletsT[i].type==15 && scrs[j].type!=4 && !(scrs[j].behaviour.type==1 && scrs[j].dataY[18-2]==2))
               {
                   //Give fire effect
                   scrs[j].dataY[24-2] = Math.floor(func.parseFloatU(gameplay[37])+1) * 50;
@@ -2832,6 +2835,7 @@ setInterval(function () { // <interval #2>
           deltapos.x = scrs[i].posCX;
           deltapos.y = scrs[i].posCY;
           visionInfo.UpdatePlayers(deltapos);
+          if(scrs[i].behaviour.type==1 && scrs[i].dataY[18-2]==2) scrs[i].dataY[24-2] = 0;
           if(scrs[i].dataY[24-2]>0) scrs[i].dataY[24-2]--;
           if(scrs[i].dataY[24-2]%50==0 && scrs[i].dataY[24-2]!=0) {
             DamageBoss(i,func.parseFloatU(gameplay[38]));
@@ -3080,7 +3084,7 @@ function resetScr(i)
 }
 function DamageBoss(i,dmg)
 {
-  if(scrs[i].dataY[2-2]!=2 || ((scrs[i].behaviour.type-1)==0 && scrs[i].dataY[18-2]==2)) return;
+  if(scrs[i].dataY[2-2]!=2 || (scrs[i].behaviour.type==1 && scrs[i].dataY[18-2]==2)) return;
   var actualHealth = scrs[i].dataY[6-2]/100;
   actualHealth -= dmg;
   scrs[i].dataY[6-2] = Math.floor(actualHealth*100);

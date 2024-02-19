@@ -303,10 +303,9 @@ public class CObjectInfo
 
         obj = p_obj;
     }
-    public void Spherical(string p_size1, string p_obj)
+    public void Spherical(string p_obj)
     {
-        float.TryParse(p_size1, out size1);
-        if(size1<0f) size1=0f;
+        size1 = 1f;
 
         obj = p_obj;
     }
@@ -757,8 +756,8 @@ public static class Universe
                     if(arg[5]=="respblock") Build[H].Ranger(arg[6],arg[5]);
                     if(arg[5]=="hole") Build[H].Ranger(arg[6],arg[5]);
                     if(arg[5]=="animator") Build[H].obj = "animator";
-                    if(arg[5]=="star") Build[H].Spherical(arg[6],arg[5]);
-                    if(arg[5]=="monster") Build[H].Spherical(arg[6],arg[5]);
+                    if(arg[5]=="star") Build[H].Spherical(arg[5]);
+                    if(arg[5]=="monster") Build[H].Spherical(arg[5]);
 
                     if(H>199) continue;
                     if(arg[5]=="asteroid") Build[H].Asteroid(arg[6],arg[7],arg[8]);

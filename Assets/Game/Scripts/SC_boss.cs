@@ -287,7 +287,7 @@ public class SC_boss : MonoBehaviour
     }
     public void DamageSGP(float dmg)
     {
-        if(dataID[2]!=2) return;
+        if(dataID[2]!=2 || (type==1 && dataID[18]==2)) return;
         float actualHealth = dataID[6]/100f;
         actualHealth -= dmg;
         dataID[6] = (int)(actualHealth*100);
@@ -472,9 +472,10 @@ public class SC_boss : MonoBehaviour
         {
             dataID[4]--;
             world.UpdatePlayers(deltapos);
+            if(type==1 && dataID[18]==2) dataID[24] = 0;
             if(dataID[24]>0) dataID[24]--;
             if(dataID[24]%50==0 && dataID[24]!=0) {
-                if(!((type-1)==0 && dataID[18]==2)) DamageSGP(float.Parse(SC_data.Gameplay[38]));
+                DamageSGP(float.Parse(SC_data.Gameplay[38]));
             }
             SC_behaviour._FixedUpdate();
         }
