@@ -27,7 +27,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 124;
+	int gpl_number = 125;
     
 	bool lockData = false;
 	bool remember = false;
@@ -230,7 +230,8 @@ public class SC_data : MonoBehaviour
             "upg_5_item:+", //120
             "upg_5_cost:+", //121
             "wind_owner_push:*", //122
-	        "wind_victim_push:*", //123
+	        "wind_boss_push:*", //123
+            "wind_victim_push:*", //124
         };
         public int VarNumber(string str,int gnome)
         {

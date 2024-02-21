@@ -1716,7 +1716,7 @@ public class SC_control : MonoBehaviour {
 			SC_effect.SetEffect(effectID,SC_fun.bullet_effector[effectID]);
 			if(effectID==16) GravitonCatch();
 			if(effectID==14) {
-				playerR.velocity += Skop(float.Parse(SC_data.Gameplay[123]),new Vector3(float.Parse(arg[2]),float.Parse(arg[3]),0f));
+				playerR.velocity += Skop(float.Parse(SC_data.Gameplay[124]),new Vector3(float.Parse(arg[2]),float.Parse(arg[3]),0f));
 			}
 		}
 		if(arg[0]=="/RetServerDamage")

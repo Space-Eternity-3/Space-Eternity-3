@@ -40,6 +40,7 @@ public class SC_bullet : MonoBehaviour
     public int float_age = 0;
     public int start_tick = -1000;
     public int seekPointer = -1;
+    public int upgrade_boost = 0;
     public bool turn_used = false;
     public bool controller = false;
     public string destroy_mode = "";
@@ -87,7 +88,8 @@ public class SC_bullet : MonoBehaviour
             if(typ==3) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[28]);
             if(typ==14) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[33]);
             if(typ==15) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[34]);
-            /*if(!gob.is_unstable)*/ gob.normal_damage *= Mathf.Pow(1.08f,SC_control.SC_upgrades.MTP_levels[3]);
+            gob.upgrade_boost = SC_control.SC_upgrades.MTP_levels[3];
+            gob.normal_damage *= Mathf.Pow(1.08f,gob.upgrade_boost);
         }
         else
         {

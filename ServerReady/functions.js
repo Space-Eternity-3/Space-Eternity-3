@@ -136,7 +136,8 @@ class cfun
             "upg_5_item:+", //120
             "upg_5_cost:+", //121
             "wind_owner_push:*", //122
-	        "wind_victim_push:*", //123
+	        "wind_boss_push:*", //123
+            "wind_victim_push:*", //124
         ];
     }
 

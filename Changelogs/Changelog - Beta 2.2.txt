@@ -45,6 +45,7 @@ Artistic changes:
 - cementery big asteroid is now as fat as it should have been
 - adecodron glass is now a bit more flat
 - boss damage particles modified to be more noticeable
+- reworked the starandus neutronium animation
 
 UI changes:
 

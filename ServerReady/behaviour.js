@@ -47,6 +47,7 @@ class CBoss
     dataY[22-2] - octogone_telep_counter
     dataY[23-2] - octogone_telep_effect_controller
     dataY[24-2] - fire_time_left
+    dataY[25-2] - active_fire_upgrade
     
     <...>
     dataY[60-2] - {Other variables are empty at this time. Use them as a data storage between frames or ask Kamiloso to do some special tasks using them.}

@@ -212,7 +212,7 @@ var seed;
 var biome_memories = new Array(16000).fill("");
 var biome_memories_state = new Array(16000).fill(0);
 var hourHeader = "";
-var gpl_number = 124;
+var gpl_number = 125;
 var max_players = 10;
 var verF;
 var connectionAddress = "IP or DNS + port";
@@ -1559,6 +1559,7 @@ const bulletTemplate = {
   type: 0,
   age: 0,
   max_age: 100,
+  upgrade_boost: 0,
 
   steerPtr: -1,
   boss_owner: 0,
@@ -2752,6 +2753,8 @@ setInterval(function () { // <interval #2>
               if(bulletsT[i].type==15 && scrs[j].type!=4 && !(scrs[j].behaviour.type==1 && scrs[j].dataY[18-2]==2))
               {
                   //Give fire effect
+                  if(bulletsT[i].upgrade_boost > scrs[j].dataY[25-2] || scrs[j].dataY[24-2]==0)
+                      scrs[j].dataY[25-2] = bulletsT[i].upgrade_boost;
                   scrs[j].dataY[24-2] = Math.floor(func.parseFloatU(gameplay[37])+1) * 50;
               }
               destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
@@ -2838,7 +2841,7 @@ setInterval(function () { // <interval #2>
           if(scrs[i].behaviour.type==1 && scrs[i].dataY[18-2]==2) scrs[i].dataY[24-2] = 0;
           if(scrs[i].dataY[24-2]>0) scrs[i].dataY[24-2]--;
           if(scrs[i].dataY[24-2]%50==0 && scrs[i].dataY[24-2]!=0) {
-            DamageBoss(i,func.parseFloatU(gameplay[38]));
+            DamageBoss(i,func.parseFloatU(gameplay[38]) * Math.pow(1.08,scrs[i].dataY[25-2]));
           }
           scrs[i].behaviour.FixedUpdate();
         }
@@ -5083,6 +5086,9 @@ wss.on("connection", function connection(ws,req)
       tpl.damaged = [];
       tpl.immune = [];
 
+      var spl = plr.upgrades[bPlaID].split(";");
+      var bulUpg = func.parseFloatU(spl[3]);
+
       tpl.ID = func.parseIntU(bRandID);
       tpl.owner = func.parseIntU(bPlaID);
       tpl.type = func.parseIntU(bType);
@@ -5092,6 +5098,7 @@ wss.on("connection", function connection(ws,req)
       tpl.vector.y = func.parseFloatU(bVectY);
       tpl.pos.x = tpl.start.x;
       tpl.pos.y = tpl.start.y;
+      tpl.upgrade_boost = bulUpg;
 
       tpl.normal_damage = func.parseFloatU(bDmg);
       tpl.is_unstable = (bType=="3");

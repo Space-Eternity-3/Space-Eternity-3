@@ -7,7 +7,7 @@ public class SC_clothes : MonoBehaviour
     public SC_boss SC_boss;
     public int animation_frames;
     public Transform[] clothes = new Transform[35];
-    public ParticleSystem fire_clothe;
+    public GameObject fire_clothe;
     public int[] actual_sizes = new int[35];
     bool[] at_least_once = new bool[35];
     public int get_actual_clothe = -1;
@@ -52,8 +52,7 @@ public class SC_clothes : MonoBehaviour
             if(SC_boss.type*5+SC_boss.dataID[18]==3*5+3 && SC_boss.dataID[23]==0) clothes[i].gameObject.SetActive(false);
         }
 
-        var ps = fire_clothe.emission;
-        ps.enabled = (SC_boss.dataID[24]>0);
+        fire_clothe.SetActive(SC_boss.dataID[24]>0);
 
         ParticleSystem pss = star_normal_particles.GetComponent<ParticleSystem>();
         var emissionModule = pss.emission;

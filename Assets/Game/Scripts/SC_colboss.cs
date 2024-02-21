@@ -54,6 +54,8 @@ public class SC_colboss : MonoBehaviour
                 }
                 if(bul.type==15 && SC_boss.type!=4 && !(SC_boss.type==1 && SC_boss.dataID[18]==2))
                 {
+                    if(bul.upgrade_boost > SC_boss.dataID[25] || SC_boss.dataID[24]==0)
+                        SC_boss.dataID[25] = bul.upgrade_boost;
                     SC_boss.dataID[24] = (int)(float.Parse(SC_control.SC_data.Gameplay[37])+1) * 50;
                 }
             }
