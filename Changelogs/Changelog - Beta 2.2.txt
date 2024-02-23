@@ -6,6 +6,8 @@ New features (gameplay):
 - added various difficulties: EASY, NORMAL, HARD, DIABOLIC + hidden: NONE, IMPOSSIBLE
   - difficulties affect damage received by everything except for other players, potions and remote damage
 - added wind bullets, obtainable on geyzer biomes (removed coal bullets, all will turn into wind bullets)
+  - wind bullets push the enemy away
+  - wind bullets are faster and have a bigger range than copper bullets, but also smaller damage
 
 New features (technical):
 
@@ -13,9 +15,8 @@ New features (technical):
 - added SE3 accounts, you can register or login in main menu
 - added nickname-protection system on servers based on SE3 accounts, enable 'require_se3_account' in config.json
 - added command system to server console, type 'help' for more info
-- added whitelist and banlist on servers
+- added whitelist and banlist to servers
 - added fob72 (total vacuum) which is a removed fob place, used in arenas from now
-  - might result in strange structure of old arenas
 - universes without UniverseInfo.se3 file are marked as "Time: 00:00, Version: Unknown" and are always possible to update
 - you can drill from pistons now
 
@@ -30,6 +31,9 @@ Old feature changes:
 - damage invisibility pulse time reduced: 25+3 -> 20+3
 - recreated pause menu to fit difficulty change menu
 - simplified piston collider to be a rectangle
+- fire bullets can now set bosses on fire, but have a lower base damage
+  - bosses are much more vulnerable to fire effect than players
+  - fire effect on bosses is affected by the bullet upgrade of the attacker
 
 Artistic changes:
 
@@ -39,7 +43,7 @@ Artistic changes:
 - coal asteroid and coal bullets are darker now
 - asteroid and wall textures reworked, pixels are less noticable
 - boss damage sound volume reduced: 0,35 -> 0,3 + pitch changed
-- artefact lights changed a bit (not very noticeable)
+- artefact lights changed a bit
 - all 0-1 animations (hiding, camera zoom, bgcolor etc.) are less sharp from now
 - added smooth camera zoom when being close to activated arena
 - cementery big asteroid is now as fat as it should have been
@@ -49,7 +53,7 @@ Artistic changes:
 
 UI changes:
 
-- junkyard info now bold and changed color to more gray
+- junkyard info is now bold and changed color to more gray
 - disabled main menu button color is now lighter gray
 - new junkyard messages added
 - multiplayer connection panel reworked, added "stop" button to stop connecting to the server
@@ -65,6 +69,28 @@ UI changes:
 - 'adress' changed to 'address' in main menu placeholder field
 - F1 is now independent of pause menu
 
+Configurables:
+
+- a lot of new server config variables
+- removed biome tag "full"
+- added upgrade variables in gameplay segment to allow customization of upgrade prices
+- removed fire and unstable bullet effectivity gameplay variable
+- added gameplay variables:
+  - boss_fire_cycles: 4;
+  - boss_fire_damage: 4,5;
+  - wind_boss_push: 25;
+  - wind_victim_push: 20;
+  - wind_owner_push: 1,8;
+- coal bullet gameplay variables reworked to be wind bullet variables
+- removed all structural tags except for struct=X, moved all built-in structures into custom structures
+- added "monster" to command "summon" in seon, it summons a weird ornament creature
+- completely reworked seon language, see the newest documentation [here]
+- new biome tags:
+  - use bgcolor-X-X-X biome tag to customize background color
+  - use boss.1.color-X-X-X biome tag to customize boss background color (see default colors [here])
+  - use tag gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
+  - removed tag swap and ring.X.change, replaced their functionality with the new hole seon object
+
 Default datapack changes:
 
 - cementery chance increased: 2% -> 2,7%
@@ -75,9 +101,9 @@ Default datapack changes:
 - coal stone chance on asteroids: 45% -> 35% (like other stones now)
 - impulse damage: 8 -> 10
 - power element drill chance: 5,5% -> 2,6%
-- fire bullet player cooldown: 11 -> 10, that means:
-  - fire bullet DPS (to players): 18,18 -> 20,00
-  - fire bullet DPS (to bosses): 23,86 -> 26,25
+- fire bullet player cooldown: 11 -> 10
+- changed fire bullet damage: 4 -> 3
+- that means fire bullet DPS changed to 15 + delayed: 18 in 4s (bosses) or 4 in 2s (players)
 - added modified drop: magnetic_alien_activated: magnetic_alien;
 - upgrade prices changed:
   - level 1: gold 3 -> 5
@@ -88,28 +114,11 @@ Default datapack changes:
 - redA (id=25) object generation replaced with other (id=2) object generation
 - blank element is now drillable from bone asteroid instead of metalic and drill chance changed: 5,5% -> 8%
 - unstable matter is now possible to drill from red asteroid: 4%
-- both types of cementeries contain bone asteroids
 - changed seon codes in datapack
-- added bone asteroids to both types cementeries
-- treasures updated: shrinked junk loot, a bit rarer treasures
+- added bone asteroids to both types of cementeries
+- treasures updated: shrinked junk loot, rarer treasures, useful items have overall a similar rarity
 - changed biome tags to fit new background changes
 - rebalanced bullet rarity
-
-Configurables:
-
-- a lot of new server config variables
-- all bosbul related commands removed from seon, they are now part of the boss object and are no longer configurable (will be changed)
-- removed biome tag "full"
-- added upgrade variables in gameplay segment to allow customization of upgrade prices
-- removed all structural tags except for struct=X, moved all built-in structures into custom structures
-- added "monster" to command "summon" in seon, it summons a weird ornament creature
-- completely reworked seon language, see the newest documentation [here]
-- new biome tags:
-  - use bgcolor-X-X-X biome tag to customize background color
-  - use boss.1.color-X-X-X biome tag to customize boss background color (see default colors [here])
-  - use tag gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
-  - removed tag swap and ring.X.change, replaced their functionality with the new hole seon object
-- removed fire and unstable bullet effectivity gameplay variable
 
 Technical changes:
 
@@ -157,6 +166,7 @@ c) Others
 - force give up counter on singleplayer changed from 1s to 20s, on multiplayer it was always 20s
 - star particles scaling changed to hierarchy
 - reworked the whole world generation system code, but it works still the same
+- reshaped the world border a bit
 - there was introduced asteroid generation per frame limit to reduce lags
 - the old, silent geyzer sound object was removed and no longer lags the game
 - fob and resp blocker lists removed, replaced them with better, more optimal systems
@@ -182,7 +192,7 @@ Bug fixes:
 - biome offset was too big in some cases, which could result in weird generation like completely overwritten or enclave biomes
 - it was possible to create biomes with sizes 81-100 using datapacks (only using radius=X tag)
 - singleplayer storages could break on servers
-- object growth could corrupt the world on singleplayer by removing 19th asteroid object on the asteroid
+- object growth was corrupting the world on singleplayer by replacing 19th asteroid object with the "-1" fob
 - seon's sphere drill script wasn't working
 - geyzer wind wasn't dynamically updating its position to be on geyzer after introducing moving objects in Beta 1.14
 - only .jse3 files (and not .txt) could be imported as a datapack in the game menu
@@ -190,11 +200,13 @@ Bug fixes:
 - driller on multiplayer could drill more items than it had capacity
 - using control to pick up all items from a storage could sometimes cause "Inventory full" message to appear
 - rescue-teleport from inside asteroids was too sensitive and could sometimes teleport player even when staying outside
-- ulam-XY conversion functions were inaccurate, when computing big numbers
+- ulam-XY conversion functions were inaccurate when computing big numbers
 - client bullets could fly through walls and spheres, when there were no fobs on the way
+- client bullets on singleplayer flying through the boss directly after the boss appearing state were igored by the boss
 
 Universe updating warnings
 
-- 8/9 of all stars will move a bit and destroy part of terrain around them, take care of your star-storage rooms
-- old arenas will contain fobs, which should be removed normally (fobs overlapping with walls and pistons)
-- some structures on the world border might be erased as well as some asteroids (200 000 coordinates from spawn)
+- it is better rather to create a new universe in Beta 2.2 than to update the old one because of the following problems:
+  - some structures will move a bit and destroy part of terrain around them
+  - old arenas will contain fobs, which should be removed normally (fobs overlapping with walls and pistons)
+  - some structures on the world border will be erased as well as some asteroids (200 000 coordinates from spawn)

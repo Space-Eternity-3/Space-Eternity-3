@@ -25,13 +25,18 @@ public class SC_colboss : MonoBehaviour
             impulse_used = true;
             SC_boss.DamageSGP(float.Parse(SC_control.SC_data.Gameplay[29]));
         }
+        TriggerEnterOrStay(collision);
     }
     void OnTriggerEnter(Collider collision)
+    {
+        TriggerEnterOrStay(collision);
+    }
+    void TriggerEnterOrStay(Collider collision)
     {
         if(collision.gameObject.name=="Bullet(Clone)" && !SC_boss.multiplayer)
         {
             SC_bullet bul = collision.gameObject.GetComponent<SC_bullet>();
-            if(bul.controller && !bul.boss_damaged && bul.gun_owner==0)
+            if(bul.controller && !bul.boss_damaged && bul.gun_owner==0 && SC_boss.dataID[2]==2)
             {
                 bul.boss_damaged = true;
                 if(!(bul.is_unstable && SC_boss.type==6) && !(bul.type==15 && SC_boss.type==4))

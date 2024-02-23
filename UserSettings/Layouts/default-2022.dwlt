@@ -339,7 +339,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 987b43ffd45049ff925349ffca5a49ffd85a49ffde5a49ff1a6549ffb4715dffc6477dff104791ff604791fff25491ffe45591ff8e29acff0641ffff2cfbffff9c4e000006530000bc5b0000ce5b00001e5c00002c620000d4660000ca67000060700000b474000062780000e27900007a7d00008a830000ac212a0038292a004e2b2a00523f2a009a432a00a2442a0066512a00ce4c4c00
+      m_ExpandedIDs: 3e4232ff085d7fffba1c97fff22397ff002497ff062497ffd42d97ff968aa2ffa48aa2ffaa8aa2ff0295a2ff726fb6ff806fb6ff866fb6ffb279b6ffd098d0ffce70e3ff2cfbffffd44f0000ca5b00003a620000ec630000c2740000707800007a68120052521d00d456230068122700
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -644,9 +644,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 1.0077747, y: 3.069182, z: 24274.1}
+    m_Target: {x: 0, y: 0, z: 260}
     speed: 2
-    m_Value: {x: 1.0077747, y: 3.069182, z: 24274.1}
+    m_Value: {x: 0, y: 0, z: 260}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -692,13 +692,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.024305956, y: -0.0007109643, z: -0.010662893, w: -1.0007029}
+    m_Target: {x: -0.16678217, y: 0.022440827, z: -0.014495517, w: -0.9867037}
     speed: 2
-    m_Value: {x: 0.024280341, y: -0.000710215, z: -0.0106516555, w: -0.9996482}
+    m_Value: {x: -0.16660614, y: 0.022417141, z: -0.014480218, w: -0.9856623}
   m_Size:
-    m_Target: 15.887291
+    m_Target: 10
     speed: 2
-    m_Value: 15.887291
+    m_Value: 10
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -867,22 +867,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Game/Other
+    - Assets/Game/Scripts
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Game/Other
+  - Assets/Game/Scripts
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\lenovo\Documents\GitHub\Space-Eternity-3
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 108}
-    m_SelectedIDs: 246e1000
-    m_LastClickedID: 1076772
-    m_ExpandedIDs: 000000000c8c0000f86d10001e6e1000246e10002c6e100000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 95}
+    m_SelectedIDs: 5c8c0000
+    m_LastClickedID: 35932
+    m_ExpandedIDs: 00000000268c0000368c000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -910,7 +910,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000000c8c0000
+    m_ExpandedIDs: 00000000268c0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -935,8 +935,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: c0282a00
-    m_LastClickedInstanceID: 2762944
+    m_SelectedInstanceIDs: 
+    m_LastClickedInstanceID: 0
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000f281000000000000
     m_RenameOverlay:
@@ -962,7 +962,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 0}
+    m_ScrollPosition: {x: 0, y: 439}
     m_GridSize: 64
   m_SkipHiddenPackages: 0
   m_DirectoriesAreaWidth: 207
@@ -1002,7 +1002,7 @@ MonoBehaviour:
     m_ControlHash: -371814159
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 598
+  m_LastVerticalScrollValue: 0
   m_GlobalObjectId: 
   m_InspectorMode: 0
   m_LockTracker:
