@@ -439,7 +439,11 @@ public class SC_control : MonoBehaviour {
 				}
 				power_V = 1f;
 			}
-			else InfoUp("Potion blocked",380);
+			else
+			{
+				if(AllowingPotion("power-unlocked")) InfoUp("Potion blocked",380);
+				else InfoUp("No power bar",380);
+			}
 
 			//Blank potion
 			if(SC_slots.InvHaving(61)) if((AllowingPotion("blank")))

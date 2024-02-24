@@ -7,7 +7,7 @@ xcopy /y/v .\SourcePack.jse3 .\LinuxBuild\Datapacks\Default.jse3
 xcopy /y/v .\SourcePack.jse3 .\MacBuild\Datapacks\Default.jse3
 xcopy /y/v .\SourcePack.jse3 .\DevBuild\Datapacks\Default.jse3
 xcopy /y/v .\SourcePack.jse3 .\Datapacks\Default.jse3
-xcopy /y/v .\SourcePack.jse3 .\ServerReady\Default.jse3
+xcopy /y/v .\SourcePack.jse3 .\ServerReady\Datapacks\Default.jse3
 xcopy /y/v .\SourcePack.jse3 .\ServerReady\technical_data\DefaultDatapack.jse3
 
 pause

@@ -168,7 +168,7 @@ gameplay
 	
 	<OTHER BOSS SETTINGS>
 	boss_fire_cycles: 4;
-	boss_fire_damage: 4,5;
+	boss_fire_damage: 4;
 	wind_boss_push: 25;
 	
 	<HEALING>
@@ -360,7 +360,7 @@ generator_settings
 		settings: [
 			bgcolor-212-218-224,
 			structural, struct=4,
-			radius = 80,
+			radius = 80, even,
 			density = 100%,
 		];
 		
@@ -372,7 +372,7 @@ generator_settings
 		settings: [
 			bgcolor-212-218-224,
 			structural, struct=5,
-			radius = 80,
+			radius = 80, even,
 			density = 100%,
 		];
 		
@@ -384,7 +384,7 @@ generator_settings
 		settings: [
 			bgcolor-255-252-220,
 			structural, struct=1,
-			radius = 50,
+			radius = 50, even,
 			density = 100%,
 		];
 		
@@ -399,7 +399,7 @@ generator_settings
 		settings: [
 			bgcolor-255-174-181,
 			structural, struct=2,
-			radius = 50,
+			radius = 50, even,
 			density = 100%,
 		];
 		
@@ -410,11 +410,11 @@ generator_settings
 	}
 	<Star> 8
 	{
-		chance: 2%;
+		chance: 1,5%;
 		settings: [
 			bgcolor-255-245-140,
 			structural, struct=3,
-			radius = 40,
+			radius = 40, even,
 			density = 100%,
 		];
 		

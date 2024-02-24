@@ -936,6 +936,8 @@ public static class Generator
     public static bool[] tag_grid = new bool[32];
     public static bool[] tag_spawn = new bool[32];
     public static bool[] tag_centred = new bool[32];
+    public static bool[] tag_odd = new bool[32];
+    public static bool[] tag_even = new bool[32];
     public static bool[] tag_structural = new bool[32];
 
     public const int max_dict_size = 64;
@@ -966,6 +968,8 @@ public static class Generator
             tag_grid[i] = false;
             tag_spawn[i] = false;
             tag_centred[i] = false;
+            tag_odd[i] = false;
+            tag_even[i] = false;
             tag_structural[i] = false;
 
             string tags = SC_data.BiomeTags[i];
@@ -990,6 +994,8 @@ public static class Generator
             if(SC_data.TagContains(tags,"grid")) tag_grid[i] = true;
             if(SC_data.TagContains(tags,"spawn")) tag_spawn[i] = true;
             if(SC_data.TagContains(tags,"centred")) tag_centred[i] = true;
+            if(SC_data.TagContains(tags,"odd")) tag_odd[i] = true;
+            if(SC_data.TagContains(tags,"even")) tag_even[i] = true;
             if(SC_data.TagContains(tags,"structural")) tag_structural[i] = true;
 
             if(tag_min[i] > tag_max[i])
@@ -1013,28 +1019,13 @@ public static class Generator
     {
         return ID+sed*2;
     }
-    public static int[] BaseMove(int ID)
-    {
-        int ird = MixID(ID,seed) % 9;
-        switch(ird)
-        {
-            case 0: return new int[]{0,0};
-            case 2: return new int[]{0,1};
-            case 8: return new int[]{0,2};
-            case 3: return new int[]{1,0};
-            case 7: return new int[]{1,1};
-            case 1: return new int[]{1,2};
-            case 5: return new int[]{2,0};
-            case 4: return new int[]{2,1};
-            case 6: return new int[]{2,2};
-            default: return new int[]{0,0};
-        }
-    }
-	public static int DeltaOfSize(int size)
+	public static int MoveVariant(int size)
 	{
-		if(size<=80 && size>=61) return 10;
-		if(size<=60 && size>=40) return 30;
-		if(size<=39 && size>=20) return 10;
+		if(size<=80 && size>=71) return 1;
+        if(size<=70 && size>=61) return 2;
+		if(size<=60 && size>=40) return 3;
+        if(size<=39 && size>=30) return 2;
+		if(size<=29 && size>=20) return 1;
 		return 0;
 	}
 	public static bool IsBiggerPriority(int ulam1, int ulam2, int prio1, int prio2)
@@ -1108,10 +1099,23 @@ public static class Generator
     }
     public static Vector3 GetBiomeMove(int ulam, int biome, int size)
     {
-        if(tag_centred[biome]) return new Vector3(0f,0f,0f);
-        int move_multiplier = DeltaOfSize(size);
-        int[] move_raw = BaseMove(ulam);
-        return move_multiplier * new Vector3(move_raw[0]-1,move_raw[1]-1,0f);
+        int move_variant = MoveVariant(size);
+        int table_size = move_variant*2 + 1;
+        int table_square = table_size * table_size;
+        if(tag_centred[biome] || move_variant==0) return new Vector3(0f,0f,0f);
+
+        int field_num = Deterministics.Random10e3(ulam+seed) % table_square + 1;
+        if(tag_even[biome] && field_num % 2 != 0)
+        {
+            if(field_num != table_square) field_num++;
+            else field_num--;
+        }
+        if(tag_odd[biome] && field_num % 2 == 0)
+        {
+            field_num++;
+        }
+        int[] xy = SC_fun.UlamToXY(field_num);
+        return new Vector3(xy[0]*10f,xy[1]*10f,0f);
     }
 }
 

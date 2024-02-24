@@ -6,6 +6,7 @@ const { parse } = require("path");
 const { func } = require("./functions");
 const { CBoss } = require("./behaviour");
 const readline = require('readline');
+const readline_sync = require('readline-sync');
 
 //Variable functions
 String.prototype.replaceAll = function replaceAll(search, replace) {
@@ -23,6 +24,10 @@ Array.prototype.remove = function (ind) {
 };
 
 //File functions
+function crash(str) {
+  console.error(str);
+  process.exit(-1);
+}
 function readF(nate) {
   if (existsF(nate)) return fs.readFileSync(nate, { flag: "r" }).toString();
   else crash("Can't read file " + nate);
@@ -278,13 +283,13 @@ function TreasureDrop(str)
     return "8;1";
 }
 
-function getAllSe3Files(folderPath) {
+function getAllSuchFiles(folderPath,ext) {
   try{
       const files = fs.readdirSync(folderPath);
       const textFiles = files.filter(file => {
           const filePath = path.join(folderPath, file);
           const fileStats = fs.statSync(filePath);
-          return fileStats.isFile() && file.endsWith('.se3');
+          return fileStats.isFile() && file.endsWith(ext);
       });
       return textFiles;
   }catch{ return []; }
@@ -400,6 +405,8 @@ class Generator
     static tag_grid = new Array(32).fill();
     static tag_spawn = new Array(32).fill();
     static tag_centred = new Array(32).fill();
+    static tag_odd = new Array(32).fill();
+    static tag_even = new Array(32).fill();
     static tag_structural = new Array(32).fill();
 
     static max_dict_size = config.max_dict_size;
@@ -435,6 +442,8 @@ class Generator
             Generator.tag_grid[i] = false;
             Generator.tag_spawn[i] = false;
             Generator.tag_centred[i] = false;
+            Generator.tag_odd[i] = false;
+            Generator.tag_even[i] = false;
             Generator.tag_structural[i] = false;
 
             let tags = biomeTags[i];
@@ -459,6 +468,8 @@ class Generator
             if(tagContains(tags,"grid")) Generator.tag_grid[i] = true;
             if(tagContains(tags,"spawn")) Generator.tag_spawn[i] = true;
             if(tagContains(tags,"centred")) Generator.tag_centred[i] = true;
+            if(tagContains(tags,"odd")) Generator.tag_odd[i] = true;
+            if(tagContains(tags,"even")) Generator.tag_even[i] = true;
             if(tagContains(tags,"structural")) Generator.tag_structural[i] = true;
 
             if(Generator.tag_min[i] > Generator.tag_max[i])
@@ -482,29 +493,14 @@ class Generator
     {
         return ID+sed*2;
     }
-    static BaseMove(ID)
-    {
-        let ird = Generator.MixID(ID,seed) % 9;
-        switch(ird)
-        {
-            case 0: return [0,0];
-            case 2: return [0,1];
-            case 8: return [0,2];
-            case 3: return [1,0];
-            case 7: return [1,1];
-            case 1: return [1,2];
-            case 5: return [2,0];
-            case 4: return [2,1];
-            case 6: return [2,2];
-            default: return [0,0];
-        }
-    }
-	  static DeltaOfSize(size)
+	  static MoveVariant(size)
 	  {
-		    if(size<=80 && size>=61) return 10;
-		    if(size<=60 && size>=40) return 30;
-		    if(size<=39 && size>=20) return 10;
-		    return 0;
+      if(size<=80 && size>=71) return 1;
+      if(size<=70 && size>=61) return 2;
+      if(size<=60 && size>=40) return 3;
+      if(size<=39 && size>=30) return 2;
+      if(size<=29 && size>=20) return 1;
+      return 0;
 	  }
 	  static IsBiggerPriority(ulam1, ulam2, prio1, prio2)
 	  {
@@ -572,15 +568,33 @@ class Generator
     static GetBiomeSize(ulam,biome)
     {
         if(biome==0) return -1;
-		    let ps_rand = Deterministics.Random10e4(ulam+seed) % ((Generator.tag_max[biome]-Generator.tag_min[biome])+1);
+		    let ps_rand = Deterministics.Random10e4(ulam+Generator.seed) % ((Generator.tag_max[biome]-Generator.tag_min[biome])+1);
 		    return Generator.tag_min[biome] + ps_rand;
     }
     static GetBiomeMove(ulam,biome,size)
     {
-        if(Generator.tag_centred[biome]) return [0,0];
+        /*if(Generator.tag_centred[biome]) return [0,0];
         let move_multiplier = Generator.DeltaOfSize(size);
         let move_raw = Generator.BaseMove(ulam);
-        return [move_multiplier*(move_raw[0]-1),move_multiplier*(move_raw[1]-1)];
+        return [move_multiplier*(move_raw[0]-1),move_multiplier*(move_raw[1]-1)];*/
+
+        let move_variant = Generator.MoveVariant(size);
+        let table_size = move_variant*2 + 1;
+        let table_square = table_size * table_size;
+        if(Generator.tag_centred[biome] || move_variant==0) return [0,0];
+
+        let field_num = Deterministics.Random10e3(ulam+Generator.seed) % table_square + 1;
+        if(Generator.tag_even[biome] && field_num % 2 != 0)
+        {
+            if(field_num != table_square) field_num++;
+            else field_num--;
+        }
+        if(Generator.tag_odd[biome] && field_num % 2 == 0)
+        {
+            field_num++;
+        }
+        let xy = ulamToXY(field_num);
+        return [xy[0]*10,xy[1]*10];
     }
 }
 
@@ -5448,10 +5462,6 @@ function VerifyCommand(args,formats)
 }
 
 //Jse3 datapack converter
-function crash(str) {
-  console.error(str);
-  process.exit(-1);
-}
 function constructPsPath(tab, val, n) {
   var effect = "";
   var i;
@@ -6044,9 +6054,22 @@ console.log("-------------------------------");
 if (!existsF(universe_name + "/UniverseInfo.se3"))
 {
   var datapackjse3, defaultjse3 = readF("technical_data/DefaultDatapack.jse3");
-  if(existsF("Datapack.jse3"))
+  var cand_datapacks = getAllSuchFiles("Datapacks",'.jse3');
+  var rem_indet = cand_datapacks.indexOf("Default.jse3");
+  if(rem_indet!=-1) cand_datapacks.splice(rem_indet,1);
+  if(cand_datapacks.length > 0)
   {
-    datapackjse3 = readF("Datapack.jse3");
+    console.log("Custom datapacks were found. Which one do you want to import?");
+    console.log("0 - Use DEFAULT anyway");
+    for(var cand_ind=1;cand_ind<=cand_datapacks.length;cand_ind++)
+      console.log(cand_ind+" - "+cand_datapacks[cand_ind-1]);
+    var cand_answ = readline_sync.question("> ");
+    if(cand_answ<0 || cand_answ>cand_datapacks.length) cand_answ=0;
+    console.log("-------------------------------");
+    
+    if(cand_answ==0) datapackjse3 = defaultjse3;
+    else datapackjse3 = readF("Datapacks/"+cand_datapacks[cand_answ-1]);
+
     datapackTranslate("NoName~" + datapackjse3);
     if(datapackjse3==defaultjse3) verF = "DEFAULT";
     else verF = "Custom Data";
@@ -6097,7 +6120,10 @@ else
     [uniTime, uniMiddle, uniVersion, ""].join("\r\n")
   );
 
-  console.log("Datapack loaded (1/2)");
+  var wh_to_call_me;
+  if(dataGet[0]=="DEFAULT") wh_to_call_me = "Default Data";
+  else wh_to_call_me = "Custom Data";
+  console.log("Datapack loaded: "+wh_to_call_me+" (1/2)");
 }
 
 //Biome memories functions
@@ -6198,7 +6224,7 @@ if(existsF(universe_name + "/Biomes.se3"))
 }
 else
 {
-    var mem_files = getAllSe3Files(universe_name + "/Biomes/");
+    var mem_files = getAllSuchFiles(universe_name + "/Biomes/",'.se3');
     for(dii=0;dii<mem_files.length;dii++)
     {
         const mem_file = mem_files[dii];

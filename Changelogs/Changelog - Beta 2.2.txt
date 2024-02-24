@@ -19,6 +19,7 @@ New features (technical):
 - added fob72 (total vacuum) which is a removed fob place, used in arenas from now
 - universes without UniverseInfo.se3 file are marked as "Time: 00:00, Version: Unknown" and are always possible to update
 - you can drill from pistons now
+- datapack importing on servers improved, just add your datapack into Datapacks folder and start an empty server
 
 Old feature changes:
 
@@ -64,7 +65,7 @@ UI changes:
 - reworked SE3 logo and added version subtitle to it
 - font changed in the main menu
 - locked backpack slots are now marked with text "Upgrade 1/2/3/4/5"
-- there will appear text "Power bar required" when trying to use power potion and not wearing a proper artefact
+- there will appear text "No power bar" when trying to use power potion and not wearing a proper artefact
 - battle can be activated only using LMB from now
 - 'adress' changed to 'address' in main menu placeholder field
 - F1 is now independent of pause menu
@@ -77,7 +78,7 @@ Configurables:
 - removed fire and unstable bullet effectivity gameplay variable
 - added gameplay variables:
   - boss_fire_cycles: 4;
-  - boss_fire_damage: 4,5;
+  - boss_fire_damage: 4;
   - wind_boss_push: 25;
   - wind_victim_push: 20;
   - wind_owner_push: 1,8;
@@ -89,6 +90,7 @@ Configurables:
   - use bgcolor-X-X-X biome tag to customize background color
   - use boss.1.color-X-X-X biome tag to customize boss background color (see default colors [here])
   - use tag gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
+  - use tags "odd" and "even" to customize whether center of the biome will be at the asteroid (even) or empty (odd) grid square
   - removed tag swap and ring.X.change, replaced their functionality with the new hole seon object
 
 Default datapack changes:
@@ -98,12 +100,13 @@ Default datapack changes:
 - that means all cementery chance increased: 3% -> 4%
 - unstable bullet speed: 0,35 -> 0,4
 - diamond asteroid chance changed: 1,5% -> 2%
+- star structure chance changed: 2% -> 1,5%
 - coal stone chance on asteroids: 45% -> 35% (like other stones now)
 - impulse damage: 8 -> 10
 - power element drill chance: 5,5% -> 2,6%
 - fire bullet player cooldown: 11 -> 10
 - changed fire bullet damage: 4 -> 3
-- that means fire bullet DPS changed to 15 + delayed: 18 in 4s (bosses) or 4 in 2s (players)
+- that means fire bullet DPS changed to 15 + delayed: 16 in 4s (bosses) or 4 in 2s (players)
 - added modified drop: magnetic_alien_activated: magnetic_alien;
 - upgrade prices changed:
   - level 1: gold 3 -> 5
@@ -111,7 +114,7 @@ Default datapack changes:
   - level 3: gold 10 -> 15
   - level 4: amethyst 12 -> 20
   - level 5: amethyst 20 -> 30
-- redA (id=25) object generation replaced with other (id=2) object generation
+- redA (id=25) object generation replaced with other (id=2) object generation in catastrophic arenas
 - blank element is now drillable from bone asteroid instead of metalic and drill chance changed: 5,5% -> 8%
 - unstable matter is now possible to drill from red asteroid: 4%
 - changed seon codes in datapack
@@ -119,6 +122,7 @@ Default datapack changes:
 - treasures updated: shrinked junk loot, rarer treasures, useful items have overall a similar rarity
 - changed biome tags to fit new background changes
 - rebalanced bullet rarity
+- every structure has "even" tag now, which means, it generates at the asteroid and not empty grid square
 
 Technical changes:
 
@@ -204,7 +208,7 @@ Bug fixes:
 - client bullets could fly through walls and spheres, when there were no fobs on the way
 - client bullets on singleplayer flying through the boss directly after the boss appearing state were igored by the boss
 
-Universe updating warnings
+Universe updating warnings:
 
 - it is better rather to create a new universe in Beta 2.2 than to update the old one because of the following problems:
   - some structures will move a bit and destroy part of terrain around them

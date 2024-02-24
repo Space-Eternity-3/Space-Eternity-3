@@ -348,7 +348,15 @@ public class SC_bullet : MonoBehaviour
             }
         }
     }
+    void OnTriggerStay(Collider collision)
+    {
+        TriggerEnterOrStay(collision);
+    }
     void OnTriggerEnter(Collider collision)
+    {
+        TriggerEnterOrStay(collision);
+    }
+    void TriggerEnterOrStay(Collider collision)
     {
         string neme = collision.gameObject.name;
         string nume = collision.gameObject.transform.root.gameObject.name;
