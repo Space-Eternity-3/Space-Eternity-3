@@ -92,6 +92,7 @@ Configurables:
   - use tag gradient=X to customize radius at which background color gradient occurs, will be reduced to biome range if greater
   - use tags "odd" and "even" to customize whether center of the biome will be at the asteroid (even) or empty (odd) grid square
   - removed tag swap and ring.X.change, replaced their functionality with the new hole seon object
+- removed bosbul objects, they were replaced with the new bullet collision system
 
 Default datapack changes:
 
@@ -176,6 +177,9 @@ c) Others
 - fob and resp blocker lists removed, replaced them with better, more optimal systems
 - optimized asteroid string connecting, so the data saving lag was reduced
 - reworked object generation system, copied it to server and patched midas cheats
+- reworked boss bullet collision with the environment to include fobs, it no longer needs bosbul objects
+- reshaped ustable turn collider a bit
+- reshaped the following client bullet colliders: geyzer, lava geyzer, all elements, red spikes
 
 Bug fixes:
 
@@ -207,6 +211,8 @@ Bug fixes:
 - ulam-XY conversion functions were inaccurate when computing big numbers
 - client bullets could fly through walls and spheres, when there were no fobs on the way
 - client bullets on singleplayer flying through the boss directly after the boss appearing state were igored by the boss
+- unstable turn collider was destroying bullets even if they were not unstable
+- bullets weren't flying through unstable matter
 
 Universe updating warnings:
 

@@ -119,6 +119,8 @@ public static class WorldData
                 if(gen==-1) gen = Deterministics.CalculateFromString(SC_data.FobGenerate[type], 20*((ulam_hold + Generator.seed) % 1000000)+i);
                 UpdateFob(i,gen);
             }
+
+            Bosbul.UpdateFobColliders(ulam_hold);
         }
     }
     
@@ -172,6 +174,8 @@ public static class WorldData
         ResetNbt(place);
         if(data>=0 && data<=127) SC_data.World[a,place,c] = data+"";
         else SC_data.World[a,place,c] = "0";
+        
+        Bosbul.UpdateFobColliders(ulam_hold);
     }
     public static void UpdateType(int data) //Updates data type (0-63 or 1024)
     {
@@ -196,6 +200,7 @@ public class CObjectInfo
     public int ulam;
     public string obj = "unknown";
     public int animator = -1;
+    public CObjectInfo animator_reference = null;
 
     //Transform
     public Vector3 default_position;
@@ -836,6 +841,7 @@ public static class Universe
                     if(Build[a].obj!="animator") continue;
                     if(Build[H].obj=="animator" || Build[H].obj=="boss") continue;
                     Build[H].animator = a;
+                    Build[H].animator_reference = Build[a];
                 }
                 if(arg[4]=="animate")
                 {

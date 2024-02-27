@@ -25,6 +25,7 @@ public class SC_fun : MonoBehaviour
 	public float difficulty = 1f;
 	public bool respawn_allow = true; //Only for Update() use!
 	public bool respawn_allow_reinit = true;
+	public bool dev_bosbul = false;
 
 	public float[] boss_damages = new float[16];
 	public float[] boss_damages_cyclic = new float[16];

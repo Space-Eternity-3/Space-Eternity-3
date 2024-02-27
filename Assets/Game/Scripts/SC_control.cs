@@ -902,17 +902,6 @@ public class SC_control : MonoBehaviour {
 	{
 		repetedAF=true;
 
-		//Remove all bullets
-		/*List<SC_bullet> buls = SC_lists.SC_bullet;
-		foreach(SC_bullet bul in buls)
-		{
-			if(bul.mode!="mother")
-			{
-				bul.block_graphics = true;
-				bul.MakeDestroy(false);
-			}
-		}*/
-
 		//Save temp
 		if(!dont)
 		{

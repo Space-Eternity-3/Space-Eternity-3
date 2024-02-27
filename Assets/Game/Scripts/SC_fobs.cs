@@ -401,9 +401,9 @@ public class SC_fobs : MonoBehaviour
             bul.mode=="present" &&
             ShotTurn
         ){
-			bul.turn_used = true; bul.MakeDestroy(false);
             if((bul.type==BulletID || BulletID==0) && (ShotID!=48 || !bul.virtuall))
             {
+                bul.turn_used = true; bul.MakeDestroy(false);
                 if(multiplayer)
                     SC_control.SendMTP("/ShotTurn "+SC_control.connectionID+" "+ID+" "+index+" "+ObjID+" "+bul.ID);
                 else

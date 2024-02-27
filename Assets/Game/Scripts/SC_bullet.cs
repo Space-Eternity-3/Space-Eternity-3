@@ -347,6 +347,25 @@ public class SC_bullet : MonoBehaviour
                 InstantMove(1);
             }
         }
+
+        if((gun_owner!=0 || SC_fun.dev_bosbul) && controller)
+        {
+            //Check nearest arena state
+            int X = (int)Mathf.Round(transform.position.x/200f) * 2;
+            int Y = (int)Mathf.Round(transform.position.y/200f) * 2;
+            int Ulam = SC_fun.MakeUlam(X,Y);
+            string reduced_state = "default";
+            foreach(SC_boss bos in SC_control.SC_lists.SC_boss)
+                if(Ulam==bos.sID) {
+                    reduced_state = bos.GetReducedState();
+                    break;
+                }
+
+            //Check collision
+            CExactCollider bulcol = new CExactCollider();
+            bulcol.Circle(transform.position.x,transform.position.y,SC_fun.other_bullets_colliders[type]);
+            if(Bosbul.CollidesWithBosbul(bulcol,reduced_state)) MakeDestroy(false);
+        }
     }
     void OnTriggerStay(Collider collision)
     {
@@ -361,28 +380,20 @@ public class SC_bullet : MonoBehaviour
         string neme = collision.gameObject.name;
         string nume = collision.gameObject.transform.root.gameObject.name;
 
-        bool aBossScaled0 = false; //Boss collider blocker
+        bool ignoreBossCollider = false;
         if(neme=="aBossScaled0") {
             SC_boss bos = collision.gameObject.GetComponent<SC_colboss>().SC_boss;
-            aBossScaled0 = (multiplayer || bos.dataID[2]!=2);
+            ignoreBossCollider = (multiplayer || bos.dataID[2]!=2);
         }
         
-        if(gun_owner==0)
+        if(!SC_fun.dev_bosbul)
+        if(gun_owner==0 && controller)
         {
             if(
                 neme[0] != 'S' &&
                 nume[0] != 'P' &&
-                !aBossScaled0 &&
                 Array.IndexOf(SafeNames, neme) == -1 &&
-                controller
-            )
-            MakeDestroy(false);
-        }
-        else
-        {
-            if(
-                neme=="Seon_special_collider" &&
-                controller
+                !ignoreBossCollider
             )
             MakeDestroy(false);
         }

@@ -609,6 +609,7 @@ class CObjectInfo
         this.ulam = p_ulam;
         this.obj = "unknown";
         this.animator = -1;
+        this.animator_reference = null;
 
         //Transform
         this.default_position = start_pos;
@@ -1230,6 +1231,7 @@ class Universe
                     if(Build[a].obj!="animator") continue;
                     if(Build[H].obj=="animator" || Build[H].obj=="boss") continue;
                     Build[H].animator = a;
+                    Build[H].animator_reference = Build[a];
                 }
                 if(arg[4]=="animate")
                 {
@@ -1603,7 +1605,6 @@ const bulletTemplate = {
 const scrTemplate = {
   dataX: [],
   dataY: [],
-  bulCols: [],
   givenUpPlayers: [],
   bID: -1,
   type: 0,
@@ -2612,28 +2613,16 @@ setInterval(function () { // <interval #2>
     var v1_date_now = Date.now();
 
     //FRAME UPDATE (50TPS by default):
-
-    //lagger
     //while(Date.now()<v1_date_now+40) { console.log("lagger enabled"); }
 
-      //Bullet movement && check collision
-      var i, j, lngt=bulletsT.length, slngt=scrs.length;
-      for(j=0;j<slngt;j++)
-      {
-        var q,qlngt=scrs[j].bulCols.length;
-        for(q=0;q<qlngt;q++)
-        {
-          scrs[j].bulCols[q].SetShapeCollider(0,0,0);
-          for(i=0;i<lngt;i++)
-          {
-            if(bulletsT[i].age != bulletsT[i].max_age && bulletsT[i].owner<0)
-              if(scrs[j].bulCols[q].IsSphereColliding(bulletsT[i].pos.x + bulletsT[i].vector.x, bulletsT[i].pos.y + bulletsT[i].vector.y, other_bullets_colliders[bulletsT[i].type]))
-                  destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
-          }
-        }
-      }
-      for(i=0;i<lngt;i++)
-      {
+    // BULLET UPDATE CODE (move & collision)
+    var i, j;
+    var lngt=bulletsT.length
+    var slngt=scrs.length;
+
+    //Iteration through all bullets
+    for(i=0;i<lngt;i++)
+    {
         if(bulletsT[i].steerPtr!=-1)
         {
           //Seek decisions
@@ -2665,7 +2654,6 @@ setInterval(function () { // <interval #2>
                 }
               }
 
-              //Choosing
               var dif_x = nbx - player_candidates[cnajm].x;
               var dif_y = nby - player_candidates[cnajm].y;
               var angle = func.AngleBetweenVectorAndOX(bulletsT[i].vector.x,bulletsT[i].vector.y) - func.AngleBetweenVectorAndOX(dif_x,dif_y);
@@ -2690,20 +2678,23 @@ setInterval(function () { // <interval #2>
           }
         }
 
+        //Check discrete bosbul collisions
+        // not yet ready...
+
+        //Initialize non-discrete bullet colliders
         var xv = bulletsT[i].vector.x;
         var yv = bulletsT[i].vector.y;
-
         var xa = bulletsT[i].pos.x;
         var ya = bulletsT[i].pos.y;
         var xb = xa + bulletsT[i].vector.x;
         var yb = ya + bulletsT[i].vector.y;
         func.CollisionLinearBulletSet(xa,ya,xb,yb,other_bullets_colliders[bulletsT[i].type]);
 
+        // Collision check: player/boss -> player
         var bul_vp = (bulletsT[i].vector.x+" "+bulletsT[i].vector.y).replaceAll(".",",");
         if(pvp || bulletsT[i].owner<0)
         for(j=0;j<max_players;j++)
         {
-          // player/boss -> player
           if(plr.players[j]!="0" && plr.players[j]!="1" && bulletsT[i].owner!=j)
           {
             var plas = plr.players[j].split(";");
@@ -2726,12 +2717,11 @@ setInterval(function () { // <interval #2>
           }
         }
 
+        // Collision check: player -> boss
         var lngts = scrs.length;
         if(bulletsT[i].owner>=0)
         for(j=0;j<lngts;j++)
         {
-          // player -> boss
-          var l = scrs[j].bID;
           if(scrs[j].dataY[2-2]==2)
           {
             var xc = scrs[j].posCX + func.ScrdToFloat(scrs[j].dataY[8-2]);
@@ -2787,11 +2777,11 @@ setInterval(function () { // <interval #2>
 
         bulletsT[i].pos.x += xv;
         bulletsT[i].pos.y += yv;
-      }
+    }
 
-      //CPlayer all frame updates
-      for(i=0;i<max_players;i++)
-      {
+    //CPlayer all frame updates
+    for(i=0;i<max_players;i++)
+    {
         if(plr.pclass[i].drill_counter!=0) {
           plr.pclass[i].drill_counter--;
           if(plr.pclass[i].drill_counter==0)
@@ -2806,11 +2796,11 @@ setInterval(function () { // <interval #2>
             sendTo(se3_ws[i],"/RetUnstablePulse X X");
           }
         }
-      }
+    }
 
-      //Health regeneration & Power speculation
-      for(i=0;i<max_players;i++)
-      {
+    //Health regeneration & Power speculation
+    for(i=0;i<max_players;i++)
+    {
         if(plr.data[i]!="0" && plr.data[i]!="1" && se3_wsS[i]=="game")
         {
           var artid = plr.backpack[i].split(";")[30] - 41;
@@ -2837,12 +2827,12 @@ setInterval(function () { // <interval #2>
             if(plr.pclass[i].ctrlPower > 1) plr.pclass[i].ctrlPower = 1;
           }
         }
-      }
+    }
 
-      //[Scrs: Multiplayer boss mechanics update]
-      lngt = scrs.length;
-      for(i=0;i<lngt;i++)
-      {
+    //[Scrs: Multiplayer boss mechanics update]
+    lngt = scrs.length;
+    for(i=0;i<lngt;i++)
+    {
         var sta = scrs[i].dataY[2-2]+"";
         scrs[i].dataY[3-2]++;
         if(sta=="2")
@@ -2875,14 +2865,14 @@ setInterval(function () { // <interval #2>
           scrs[i].dataY[2-2] = 4;
           resetScr(i);
         }
-      }
+    }
 
-      //Connection time
-      for(i=0;i<max_players;i++)
-      {
+    //Connection time
+    for(i=0;i<max_players;i++)
+    {
         if(plr.connectionTime[i]>=0)
           plr.connectionTime[i]++;
-      }
+    }
 
     if((date_before-date_start) % 100 == 0) //precisely 10 times per second
     {
@@ -3879,40 +3869,6 @@ function getBlockAt(ulam, place)
 {
   WorldData.Load(ulam);
   return WorldData.GetFob(func.parseIntU(place) + 1);
-}
-
-//ScrShapeAdd
-function ScrShapeAdd(arg)
-{
-  var bID = arg[2];
-  var lngts = scrs.length;
-  for(i=0;i<lngts;i++)
-  {
-    if(scrs[i].bID==bID)
-    {
-      var q,qlngt=scrs[i].bulCols.length;
-      for(q=0;q<qlngt;q++)
-        if(scrs[i].bulCols[q].col_identifier==arg[9]) return;
-
-      shape_description = {sx:0,sy:0};
-      default_offset = {cx:0,cy:0,lx:0,ly:0,lrot:0};
-          
-      shape_description.sx = func.parseFloatU(arg[4]);
-      shape_description.sy = func.parseFloatU(arg[5]);
-      default_offset.cx = scrs[i].posCX;
-      default_offset.cy = scrs[i].posCY;
-      default_offset.lx = func.parseFloatU(arg[6]);
-      default_offset.ly = func.parseFloatU(arg[7]);
-      default_offset.lrot = func.parseFloatU(arg[8]);
-
-      scrs[i].bulCols.push(new CShape(
-        arg[3],
-        shape_description,
-        default_offset,
-        arg[9]
-      ));
-    }
-  }
 }
 
 //Death functions
@@ -5230,7 +5186,6 @@ wss.on("connection", function connection(ws,req)
               tpl.posCY = func.parseFloatU(bossPosY);
               tpl.dataX = [];
               tpl.dataY = [];
-              tpl.bulCols = [];
               tpl.givenUpPlayers = [];
               tpl.dataX = [1024,trX1];
               for(i=2;i<=60;i++) tpl.dataY[i-2] = 0;

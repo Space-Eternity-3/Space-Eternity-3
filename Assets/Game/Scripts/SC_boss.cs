@@ -336,6 +336,23 @@ public class SC_boss : MonoBehaviour
         float X = 1 - (distance-40f)/40f;
         return SC_fun.FluentFraction(X*ret);
     }
+    public string TransitionToEffect(string s)
+    {
+        string result = "";
+        for (int i = 2; i < s.Length; i++)
+        {
+            if(char.IsLower(s[i])) result += char.ToUpper(s[i]);
+            else result += s[i];
+        }
+        return result;
+    }
+    public string GetReducedState()
+    {
+        string normal_state = SC_object_holder.actual_state;
+        if(normal_state=="default") return "default";
+        if(normal_state.Length<=2) return normal_state;
+        else return TransitionToEffect(normal_state);
+    }
 
     void Update()
     {

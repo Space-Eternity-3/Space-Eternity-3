@@ -410,6 +410,8 @@ public class SC_data : MonoBehaviour
             Deterministics.long1 = SC_control.SC_fun.SC_long_strings.AsteroidBase;
             Deterministics.long2 = SC_control.SC_fun.SC_long_strings.BiomeNewBase;
             Deterministics.long3 = SC_control.SC_fun.SC_long_strings.AsteroidSizeBase;
+            Bosbul.SC_fun = SC_control.SC_fun;
+            Bosbul.BosbulSectors.Clear();
         }
 		
         //Reset data
