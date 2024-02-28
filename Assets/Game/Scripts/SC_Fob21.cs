@@ -45,7 +45,6 @@ public class SC_Fob21 : MonoBehaviour {
 	public int pub_item=0;
 	public int pub_count=0;
 	string neme;
-	bool naceled=false;
 
 	bool pressed_0 = false;
 	bool pressed_1 = false;
@@ -53,7 +52,6 @@ public class SC_Fob21 : MonoBehaviour {
 	int using_0 = 0;
 	int using_1 = 0;
 
-	string worldDIR="";
 	int worldID=1;
 
 	void CountTranslate()
@@ -62,7 +60,7 @@ public class SC_Fob21 : MonoBehaviour {
 			Ention.material=SC_fun.M[item];
 		}catch{Ention.material=SC_fun.M[23];}
 		if(item==0 && isDriller) Ention.material = Material5E;
-		int i,lngt;
+		int i;
 
 		for(i=0;i<max_count;i++){
 			if(count>i) oSim[i].material=On;
@@ -119,7 +117,6 @@ public class SC_Fob21 : MonoBehaviour {
 	void FixedUpdate()
 	{
 		if(transform.position.z>100f) return;
-		int i;
 		if(screen_button_cooldown>0) screen_button_cooldown--;
 		if(count<=0) item=0;
 		pub_item=item;

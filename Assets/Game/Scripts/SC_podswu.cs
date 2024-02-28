@@ -62,7 +62,6 @@ public class SC_podswu : MonoBehaviour
 	}
     void OnMouseOver()
     {
-        int i;
         if(!active)
         {
             if(InDistance(15f))
@@ -84,7 +83,6 @@ public class SC_podswu : MonoBehaviour
     }
     void OnMouseExit()
     {
-        int i,lngt=parts.Length,lngt2=parts2.Length;
         if(active)
         {
             Highlight(false);
@@ -94,6 +92,6 @@ public class SC_podswu : MonoBehaviour
     }
     void OnDestroy()
     {
-        if(active && Cmt3z_plus) try{Communtron3.position-=new Vector3(0f,0f,1f);}catch(Exception e){}
+        if(active && Cmt3z_plus) try{Communtron3.position-=new Vector3(0f,0f,1f);}catch(Exception){}
     }
 }

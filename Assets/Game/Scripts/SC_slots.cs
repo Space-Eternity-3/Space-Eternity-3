@@ -239,13 +239,9 @@ public class SC_slots : MonoBehaviour
     public int InvHaveM(int item, int count, bool aI, bool aB, bool physical, int commID)
     {
 		if(SC_control.pause) return 0;
-		
-        int i, count_all = 0;
-        bool first = true;
-        bool emted = false;
 
         int slot = GetSlot(item,count,aI,aB,physical);
-        int YA,YB,ret=1;
+        int YA,YB;
 
         if(slot!=-1)
         if(slot<9)

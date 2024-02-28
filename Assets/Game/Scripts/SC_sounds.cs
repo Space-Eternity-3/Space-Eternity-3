@@ -6,7 +6,7 @@ using System;
 public class SC_sounds : MonoBehaviour
 {
     public AudioSource[] FobBreak, FobPlace, Other;
-    public Transform camera;
+    public Transform Camera;
     public SC_control SC_control;
     public SC_data SC_data;
     public float MHD; //max hearing distance
@@ -15,13 +15,13 @@ public class SC_sounds : MonoBehaviour
     {
         float dN = nvl;
 		float dG = SC_data.global_volume;
-        float dS = float.Parse(SC_data.volume);
+        float dS = float.Parse(SC_data.volume); 
         return GetVolumeDeep(pos,deeprng) * dS * dN * dG;
     }
     public float GetVolumeDeep(Vector3 pos, float deeprng)
     {
         //Linear system
-        float dD = SC_control.Pitagoras((camera.position - new Vector3(0f,0f,camera.position.z)) - pos) - deeprng;
+        float dD = SC_control.Pitagoras((Camera.position - new Vector3(0f,0f,Camera.position.z)) - pos) - deeprng;
         if(dD<0f) dD=0f;
         dD=(MHD-dD)/MHD;
         if(dD<0f) dD=0f;

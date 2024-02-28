@@ -87,7 +87,7 @@ public class SC_bg_color : MonoBehaviour
 		udels[7] = new Vector3(0f,-1f,0f);
 		udels[8] = new Vector3(1f,-1f,0f);
 
-        int i,j;
+        int i;
         for(i=0;i<9;i++)
             udels[i] = pos_big + udels[i];
         

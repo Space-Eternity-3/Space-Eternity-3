@@ -68,7 +68,6 @@ public class SC_object_holder : MonoBehaviour
             CObjectInfo obj = Objects[j];
             if(obj.animation_type==1 || obj.animation_type==2)
             {
-                int lngt;
                 SC_seon_remote ser = trn.gameObject.AddComponent<SC_seon_remote>();
                 ser.SC_fun = SC_fun;
                 ser.SC_object_holder = this;

@@ -573,11 +573,6 @@ class Generator
     }
     static GetBiomeMove(ulam,biome,size)
     {
-        /*if(Generator.tag_centred[biome]) return [0,0];
-        let move_multiplier = Generator.DeltaOfSize(size);
-        let move_raw = Generator.BaseMove(ulam);
-        return [move_multiplier*(move_raw[0]-1),move_multiplier*(move_raw[1]-1)];*/
-
         let move_variant = Generator.MoveVariant(size);
         let table_size = move_variant*2 + 1;
         let table_square = table_size * table_size;
@@ -1302,7 +1297,7 @@ class Universe
 
 // GENERATION LAYER 3 (inner) -> Fobs and files communication
 
-let d0,d1,d_ulam;
+let d0,d1,d_ulam,d_dont_update_bosbul=false;
 class WorldData
 {
     //Technical methods
@@ -1355,6 +1350,7 @@ class WorldData
             {
                 let gen = gens[i-1];
                 if(gen==-1) gen = Deterministics.CalculateFromString(fobGenerate[type], 20*((d_ulam + Generator.seed) % 1000000)+i);
+                d_dont_update_bosbul = true;
                 WorldData.UpdateFob(i,gen);
             }
         }
@@ -1408,6 +1404,9 @@ class WorldData
         WorldData.ResetNbt(place);
         if(data>=0 && data<=127) chunk_data[d0][d1][place] = data+"";
         else chunk_data[d0][d1][place] = "0";
+
+        if(!d_dont_update_bosbul) Bosbul.UpdateFobColliders(d_ulam);
+        d_dont_update_bosbul = false;
     }
     static UpdateType(data) //Updates data type (0-63 or 1024)
     {
@@ -1423,7 +1422,319 @@ class WorldData
     }
 }
 // ----------------------------------------- \\
-// ------------- GENERATOR END ------------- \\
+// ------------- BOSBUL SYSTEM ------------- \\
+// ----------------------------------------- \\
+
+class CExactCollider
+{
+  constructor()
+  {
+      //This class was translated from C# by ChatGPT
+
+      this.type = '';
+      this.x = 0;
+      this.y = 0;
+      this.r = 0;
+      this.rx = 0;
+      this.ry = 0;
+      this.angle = 0;
+  }
+
+  // Initializers
+  Circle(_x, _y, _r)
+  {
+      this.type = "circle";
+      this.x = _x;
+      this.y = _y;
+      this.r = _r;
+  }
+
+  Rectangle(_x, _y, _rx, _ry, _angle)
+  {
+      this.type = "rectangle";
+      this.x = _x;
+      this.y = _y;
+      this.rx = _rx;
+      this.ry = _ry;
+      this.angle = _angle;
+  }
+
+  // Checkers
+  static CheckCollision(C1, C2)
+  {
+      if (C1 === null || C2 === null) return false;
+      if (C1.type === "circle" && C2.type === "circle") return this.CollideCC(C1, C2);
+      if (C1.type === "rectangle" && C2.type === "rectangle") return false; // such collisions are not needed nor implemented
+      if (C1.type === "circle" && C2.type === "rectangle") return this.CollideCR(C1, C2);
+      if (C1.type === "rectangle" && C2.type === "circle") return this.CollideCR(C2, C1);
+      return false;
+  }
+
+  static CollideCC(C1, C2)
+  {
+      // Primitive circle collision
+      const dx = C2.x - C1.x;
+      const dy = C2.y - C1.y;
+      const rs = C1.r + C2.r;
+      return (rs * rs > dx * dx + dy * dy);
+  }
+
+  static CollideCR(C1, C2)
+  {
+      // Performance boost
+      const mcd = C1.r + C2.rx + C2.ry;
+      const dx = C2.x - C1.x;
+      const dy = C2.y - C1.y;
+      if (mcd * mcd < dx * dx + dy * dy) return false;
+
+      // Exclude null rectangles
+      if (C2.rx === 0 && C2.ry === 0) return false;
+
+      // Initialize temporary objects
+      const B1 = new CExactCollider();
+      const B2 = new CExactCollider();
+
+      // Move to center
+      B1.Circle(C1.x - C2.x, C1.y - C2.y, C1.r);
+      B2.Rectangle(0, 0, C2.rx, C2.ry, C2.angle);
+
+      // Rotate objects
+      const sph_rot = func.RotatePoint([B1.x, B1.y], -B2.angle);
+      B1.Circle(sph_rot[0], sph_rot[1], B1.r);
+      B2.Rectangle(0, 0, B2.rx, B2.ry, 0);
+
+      // Detect sector
+      let sec_x = 0, sec_y = 0;
+      if (B1.x > B2.rx) sec_x = 1; if (B1.x < -B2.rx) sec_x = -1;
+      if (B1.y > B2.ry) sec_y = 1; if (B1.y < -B2.ry) sec_y = -1;
+
+      // Check collision in trivial sectors
+      if (sec_x === 0) return (Math.abs(B1.y) < B1.r + B2.ry);
+      if (sec_y === 0) return (Math.abs(B1.x) < B1.r + B2.rx);
+
+      // Check collision in corner sectors
+      const W1 = new CExactCollider(); W1.Circle(sec_x * B2.rx, sec_y * B2.ry, 0);
+      return this.CollideCC(B2, W1);
+  }
+
+  // Clone
+  Clone()
+  {
+      return { ...this };
+  }
+}
+
+class CBosbulCollider
+{
+  constructor(obj, fob)
+  {
+      //This class was translated from C# by ChatGPT
+
+      this.WhenAnimated = [];
+      this.ColliderDefault = null;
+      this.ColliderAnimated = null;
+      this.x = 0;
+      this.y = 0;
+      this.ax = 0;
+      this.ay = 0;
+
+      if (fob === -1) {
+          this.x = obj.position.x;
+          this.y = obj.position.y;
+      } else
+      {
+          this.x = obj.fob_positions[fob].x;
+          this.y = obj.fob_positions[fob].y;
+      }
+      this.ax = this.x;
+      this.ay = this.y;
+
+      // Create base colliders
+      this.ColliderDefault = new CExactCollider();
+      if (obj.obj === "asteroid")
+      {
+          if (fob === -1) this.ColliderDefault.Circle(this.x, this.y, obj.size / 2);
+          else this.ColliderDefault.Rectangle(this.x, this.y, 0, 0, obj.fob_rotations[fob]);
+      }
+      else if (obj.obj === "sphere") this.ColliderDefault.Circle(this.x, this.y, obj.size1 / 2);
+      else if (obj.obj === "star") this.ColliderDefault.Circle(this.x, this.y, 9.6 * obj.size1);
+      else if (obj.obj === "monster") this.ColliderDefault.Circle(this.x, this.y, 9.6 * obj.size1);
+      else if (obj.obj === "wall") this.ColliderDefault.Rectangle(this.x, this.y, 1.5 * obj.size1, 5 * obj.size2, obj.rotation);
+      else if (obj.obj === "piston") this.ColliderDefault.Rectangle(this.x, this.y, 1.5 * obj.size1, 3 * obj.size2, obj.rotation);
+      else this.ColliderDefault = null;
+
+      // Update to state colliders
+      if (obj.animator_reference === null)
+      {
+          this.WhenAnimated = [];
+          this.ColliderAnimated = null;
+      }
+      else if (obj.animator_reference.animation_type !== 0)
+      {
+          this.WhenAnimated = obj.animator_reference.animation_when_done.split(";");
+          if (obj.animator_reference.animation_type === 2)
+          {
+              this.ColliderAnimated = this.ColliderDefault.Clone();
+              this.ColliderAnimated.x += obj.animator_reference.animation_size.x;
+              this.ColliderAnimated.y += obj.animator_reference.animation_size.y;
+              this.ax = this.ColliderAnimated.x;
+              this.ay = this.ColliderAnimated.y;
+          }
+          else this.ColliderAnimated = null;
+      }
+  }
+
+  CheckCollision(C1, reduced_state)
+  {
+      if (!this.WhenAnimated.includes(reduced_state)) return CExactCollider.CheckCollision(this.ColliderDefault, C1);
+      else return CExactCollider.CheckCollision(this.ColliderAnimated, C1);
+  }
+
+  UpdateFobCollider(num)
+  {
+      let RX = 0;
+      let RY = 0;
+      let OF = 0;
+
+      // More general
+      if ([8, 9, 10, 11, 16, 30, 50, 56, 58, 60, 62, 66].includes(num))  { // stones & elements
+          RX = 0.9;
+          RY = 1;
+          OF = 0;
+      }
+      if ([17, 18, 19, 22, 26, 31, 49, 67, 32].includes(num)) { // packeds & big diamond
+          RX = 1.4;
+          RY = 1.6;
+          OF = 0.5;
+      }
+      if ([41, 42, 43, 44, 45, 46, 47].includes(num)) { // artefacts
+          RX = 1.15;
+          RY = 1.2;
+          OF = 0;
+      }
+      if ([13, 25, 27, 40].includes(num)) { // smaller aliens
+          RX = 1.4;
+          RY = 2.6;
+          OF = 0.5;
+      }
+
+      // More individual
+      if ([23, 53].includes(num)) { RX = 1.4; RY = 3; OF = 0.5; } // bigger aliens
+      if ([1].includes(num)) { RX = 1.15; RY = 1.5; OF = 0; } // stone with crystals
+      if ([37, 68].includes(num)) { RX = 1.4; RY = 2.2; OF = 0.5; } // treasures
+      if ([34, 36].includes(num)) { RX = 0.4; RY = 2.3; OF = 0.5; } // drills
+      if ([35].includes(num)) { RX = 0.4; RY = 3; OF = 0.5; } // magnetic lamp
+      if ([54].includes(num)) { RX = 1; RY = 2.2; OF = 0.5; } // bone
+      if ([51].includes(num)) { RX = 1.4; RY = 2; OF = 0.5; } // metal piece
+      if ([29, 69].includes(num)) { RX = 1.4; RY = 3.6; OF = 1; } // tombs
+      if ([28].includes(num)) { RX = 1.4; RY = 1.2; OF = 0; } // red spikes
+      if ([33].includes(num)) { RX = 0.9; RY = 1.1; OF = 0; } // small diamond
+      if ([38, 70].includes(num)) { RX = 1.5; RY = 1.6; OF = 0; } // normal and lava geyzer
+      if ([3, 4].includes(num)) { RX = 1.4; RY = 2.2; OF = 0; } // pumpkin & mega geyzer
+      if ([5].includes(num)) { RX = 0.6; RY = 1; OF = 0; } // small amethyst
+      if ([6].includes(num)) { RX = 1; RY = 1.6; OF = 0; } // medium amethyst
+      if ([7].includes(num)) { RX = 1.4; RY = 2.2; OF = 0; } // big amethyst
+      if ([2].includes(num)) { RX = 1.4; RY = 3.2; OF = 1; } // driller
+      if ([21, 52].includes(num)) { RX = 1.4; RY = 2.4; OF = 1; } // storages
+      if ([15].includes(num)) { RX = 1.8; RY = 8; OF = 3.7; } // copper chimney
+
+      const dXY = func.RotatePoint([0, OF], this.ColliderDefault.angle);
+
+      this.ColliderDefault.x = this.x + dXY[0];
+      this.ColliderDefault.y = this.y + dXY[1];
+      this.ColliderDefault.rx = RX / 2;
+      this.ColliderDefault.ry = RY / 2;
+
+      if (this.ColliderAnimated !== null)
+      {
+          this.ColliderAnimated.x = this.ax + dXY[0];
+          this.ColliderAnimated.y = this.ay + dXY[1];
+          this.ColliderAnimated.rx = RX / 2;
+          this.ColliderAnimated.ry = RY / 2;
+      }
+  }
+}
+
+class Bosbul
+{
+  //This class was translated from C# with assistance of ChatGPT
+
+  static BosbulSectors = {};
+  static max_dict_size = config.max_dict_size;
+
+  static GetBosbuls(X, Y)
+  {
+      const key = makeUlam(X, Y);
+      if (this.BosbulSectors.hasOwnProperty(key)) return this.BosbulSectors[key];
+      else
+      {
+          const Surroundings = [];
+          Universe.GetSector("S_" + X + "_" + Y).forEach(elm => Surroundings.push(elm));
+          Universe.GetSector("B_" + X + "_" + Y).forEach(elm => Surroundings.push(elm));
+          Universe.GetSector("B_" + (X - 1) + "_" + Y).forEach(elm => Surroundings.push(elm));
+          Universe.GetSector("B_" + X + "_" + (Y - 1)).forEach(elm => Surroundings.push(elm));
+          Universe.GetSector("B_" + (X - 1) + "_" + (Y - 1)).forEach(elm => Surroundings.push(elm));
+
+          const Build = {};
+          for(const obj of Surroundings)
+              if(obj !== null)
+              {
+                  if(obj.obj === "asteroid")
+                  {
+                      if (!obj.hidden) Build["ast_" + obj.ulam] = new CBosbulCollider(obj, -1);
+                      for (let i = 0; i < obj.size * 2; i++)
+                          Build["fob_" + obj.ulam + "_" + i] = new CBosbulCollider(obj, i);
+                      this.UpdateFobCollidersInDictionary(Build, obj.ulam);
+                  }
+                  else if (["sphere", "star", "monster", "wall", "piston"].includes(obj.obj))
+                  {
+                      const random_key = Math.floor(Math.random() * 1000000000);
+                      Build[random_key] = new CBosbulCollider(obj, -1);
+                  }
+              }
+
+          if (Object.keys(this.BosbulSectors).length >= this.max_dict_size) this.BosbulSectors = {};
+          this.BosbulSectors[key] = Build;
+          return this.BosbulSectors[key];
+      }
+  }
+
+  static CollidesWithBosbul(C1, reduced_state)
+  {
+      const X = Math.round(C1.x / 200) * 2;
+      const Y = Math.round(C1.y / 200) * 2;
+      const LocalBosbuls = Object.values(this.GetBosbuls(X, Y));
+      for(const bbc of LocalBosbuls) {
+          if (bbc.CheckCollision(C1, reduced_state)) {
+              return true;
+          }
+      }
+      return false;
+  }
+
+  static UpdateFobColliders(ulam)
+  {
+      const nums = Universe.GetSectorNameByUlam(ulam).split('_');
+      let X = parseInt(nums[1]); if (X % 2 !== 0) X++;
+      let Y = parseInt(nums[2]); if (Y % 2 !== 0) Y++;
+      const LocalDictionary = this.GetBosbuls(X, Y);
+      this.UpdateFobCollidersInDictionary(LocalDictionary, ulam);
+  }
+
+  static UpdateFobCollidersInDictionary(LocalDictionary, ulam)
+  {
+      WorldData.Load(ulam);
+      for (let i = 0; i < 20; i++)
+      {
+          const key = "fob_" + ulam + "_" + i;
+          if (LocalDictionary.hasOwnProperty(key))
+              LocalDictionary[key].UpdateFobCollider(WorldData.GetFob(i + 1));
+      }
+  }
+}
+
+// ----------------------------------------- \\
+// -------------- CLASSES END -------------- \\
 // ----------------------------------------- \\
 
 class CPlayer {
@@ -1607,6 +1918,7 @@ const scrTemplate = {
   dataY: [],
   givenUpPlayers: [],
   bID: -1,
+  sID: -1,
   type: 0,
   posCX: 0,
   posCY: 0,
@@ -2559,6 +2871,58 @@ function getBulletDamage(pid,bll)
   else return 0;
 }
 
+function GetState(general,additional)
+{
+    let combo = general+"_"+additional;
+        
+    if(combo=="0_0") return "A1";
+    if(combo=="0_1") return "a1b1";
+    if(combo=="0_2") return "B1";
+    if(combo=="0_3") return "b1a1";
+    if(combo=="1_4") return "b1a2";
+
+    if(combo=="1_0") return "A2";
+    if(combo=="1_1") return "a2b2";
+    if(combo=="1_2") return "B2";
+    if(combo=="1_3") return "b2a2";
+    if(combo=="2_4") return "b2a3";
+
+    if(combo=="2_0") return "A3";
+    if(combo=="2_1") return "a3b3";
+    if(combo=="2_2") return "B3";
+    if(combo=="2_3") return "b3a3";
+    if(combo=="3_4") return "b3r";
+
+    if(combo=="3_0") return "R";
+
+    if(general==0) return "A1";
+    if(general==1) return "A2";
+    if(general==2) return "A3";
+    if(general==3) return "R";
+
+    return "default";
+}
+
+function TransitionToEffect(s)
+{
+  let result = "";
+  for (let i = 2; i < s.length; i++) {
+      if (s[i].toLowerCase() === s[i]) 
+          result += s[i].toUpperCase();
+      else 
+          result += s[i];
+  }
+  return result;
+}
+
+function GetReducedState(scr)
+{
+    let normal_state = GetState(scr.dataX[1],scr.dataY[2-2]);
+    if(normal_state=="default") return "default";
+    if(normal_state.length<=2) return normal_state;
+    else return TransitionToEffect(normal_state);
+}
+
 //HUB INTERVAL <interval #0>
 var date_before = Date.now();
 var date_start = Date.now();
@@ -2678,8 +3042,28 @@ setInterval(function () { // <interval #2>
           }
         }
 
-        //Check discrete bosbul collisions
-        // not yet ready...
+        //Check discrete bosbul collisions with the environment
+        if(bulletsT[i].owner < 0)
+        {
+            //Check nearest arena state
+            let X = Math.round(bulletsT[i].pos.x/200) * 2;
+            let Y = Math.round(bulletsT[i].pos.y/200) * 2;
+            let Ulam = makeUlam(X,Y);
+            let reduced_state = "default";
+            for(j=0;j<slngt;j++) {
+                if(Ulam==scrs[j].sID) {
+                    reduced_state = GetReducedState(scrs[j]);
+                    break;
+                }
+            }
+
+            //Check collision
+            let bulcol = new CExactCollider();
+            bulcol.Circle(bulletsT[i].pos.x,bulletsT[i].pos.y,other_bullets_colliders[bulletsT[i].type]);
+            if(Bosbul.CollidesWithBosbul(bulcol,reduced_state)) {
+                destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
+            }
+        }
 
         //Initialize non-discrete bullet colliders
         var xv = bulletsT[i].vector.x;
@@ -5184,6 +5568,7 @@ wss.on("connection", function connection(ws,req)
               tpl.type = bossType;
               tpl.posCX = func.parseFloatU(bossPosX);
               tpl.posCY = func.parseFloatU(bossPosY);
+              tpl.sID = makeUlam(Math.round(tpl.posCX/200)*2,Math.round(tpl.posCY/200)*2); //all bosses are inside structural squares
               tpl.dataX = [];
               tpl.dataY = [];
               tpl.givenUpPlayers = [];

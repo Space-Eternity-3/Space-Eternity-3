@@ -82,11 +82,11 @@ public class SC_upgrades : MonoBehaviour
             max_frame.localPosition=startMaxFrame;
             max_about.localPosition=startMaxAbout;
             if(true) about.text=abouts[I];
-            else
+            /*else
             {
                 if(UPG_levels[I]<4) about.text=abouts[I];
                 else about.text="Artefact Slot";
-            }
+            }*/
         }
         else
         {
@@ -169,11 +169,11 @@ public class SC_upgrades : MonoBehaviour
 			at_disabled.localPosition = at_v3_hidden;
 			at_enabled.localPosition = at_v3_visible;
 		}
-		else
+		/*else
 		{
 			at_disabled.localPosition = at_v3_visible;
 			at_enabled.localPosition = at_v3_hidden;
-		}
+		}*/
     }
     public void Upgraded()
     {

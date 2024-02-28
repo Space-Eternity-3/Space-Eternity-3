@@ -20,6 +20,7 @@ New features (technical):
 - universes without UniverseInfo.se3 file are marked as "Time: 00:00, Version: Unknown" and are always possible to update
 - you can drill from pistons now
 - datapack importing on servers improved, just add your datapack into Datapacks folder and start an empty server
+- magnetic alien activated is now a proper item and fob, it uses the magnetic alien texture
 
 Old feature changes:
 
@@ -183,8 +184,8 @@ c) Others
 
 Bug fixes:
 
-- It was possible to activate pause menu without closing inventory when escape button was released while in inventory
-- It was possible to activate inventory while both in pause menu and on multiplayer
+- it was possible to activate pause menu without closing inventory when escape button was released while in inventory
+- it was possible to activate inventory while both in pause menu and on multiplayer
 - junkyard & chat font wasn't supporting characters like ą, ę, ó, ł
 - driller could transform items when more than one item type could be drilled from one asteroid (only multiplayer)
 - drill upgrade was not affecting loot until asteroid reloading
@@ -199,7 +200,7 @@ Bug fixes:
 - impulse was not ending after removing impulse artefact
 - biome offset was too big in some cases, which could result in weird generation like completely overwritten or enclave biomes
 - it was possible to create biomes with sizes 81-100 using datapacks (only using radius=X tag)
-- singleplayer storages could break on servers
+- singleplayer storages could stop working on servers
 - object growth was corrupting the world on singleplayer by replacing 19th asteroid object with the "-1" fob
 - seon's sphere drill script wasn't working
 - geyzer wind wasn't dynamically updating its position to be on geyzer after introducing moving objects in Beta 1.14

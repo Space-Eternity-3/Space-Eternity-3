@@ -5,7 +5,7 @@ using UnityEngine;
 public class SC_lune_auto_move : MonoBehaviour
 {
     public Transform holder;
-    public Transform camera;
+    public Transform Camera;
     public Transform lune;
 
     public Transform[] ManualTransparencyFix;
@@ -31,9 +31,9 @@ public class SC_lune_auto_move : MonoBehaviour
     }
     void Update()
     {
-        float x = camera.position.x - holder.position.x;
-        float y = camera.position.y - holder.position.y;
-        float z = camera.position.z - holder.position.z;
+        float x = Camera.position.x - holder.position.x;
+        float y = Camera.position.y - holder.position.y;
+        float z = Camera.position.z - holder.position.z;
         lune.position = holder.position + deltaZ * new Vector3(x/z,y/z,1f);
         
         for(int i=0;i<ManualTransparencyFix.Length;i++)

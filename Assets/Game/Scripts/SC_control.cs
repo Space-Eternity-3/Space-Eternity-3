@@ -55,7 +55,6 @@ public class SC_control : MonoBehaviour {
 	public Material E4;
 
 	bool engineON=false;
-	bool engineOFF=false;
 	public bool turbo=false;
 	bool brake=false;
 	public bool drill3B=false;
@@ -76,7 +75,6 @@ public class SC_control : MonoBehaviour {
 	int reg_wait=0;
 	int cooldown=0;
 	public int imp_cooldown=0;
-	int presed=-25;
 	int dmLicz=0;
 	int saveCo=0;
 	public int max_players = 10;
@@ -122,7 +120,6 @@ public class SC_control : MonoBehaviour {
 	public float healBalance = 0f;
 	public float damageBalance = 0f;
 	Vector3 solidPos;
-	bool connectWorks=true;
 	public string nick;
 	string getData="";
 	string getInventory="";
@@ -605,13 +602,11 @@ public class SC_control : MonoBehaviour {
 			{
 				if(Communtron2.position.x==0)
 				{
-					engineOFF=false;
 					F=V_to_F(float.Parse(SC_data.Gameplay[9]),false);
 					enMode=1;
 				}
 				else
 				{
-					engineOFF=true;
 					F=V_to_F(float.Parse(SC_data.Gameplay[12]),false);
 					enMode=1;
 				}
@@ -620,7 +615,6 @@ public class SC_control : MonoBehaviour {
 		}
 		else
 		{
-			engineOFF=false;
 			engineON=false;
 			//engine.material=E1;
 		}
@@ -640,30 +634,25 @@ public class SC_control : MonoBehaviour {
 		}
 
 		//CHECK MATERIAL
-		int M;
 		if(turbo||impulse_enabled)
 		{
 			//turbo
 			engine.material=E3;
-			M=2;
 		}
 		else if(engineON)
 		{
 			//normal
 			engine.material=E2;
-			M=1;
 		}
 		else if(brake)
 		{
 			//brake
 			engine.material=E4;
-			M=3;
 		}
 		else 
 		{
 			//off
 			engine.material=E1;
-			M=0;
 		}
 		
 		//DRILL
@@ -914,7 +903,7 @@ public class SC_control : MonoBehaviour {
 		if((int)Communtron4.position.y==100) {
 			try{
 				ws.Close();
-			}catch(Exception e){}
+			}catch(Exception){}
 		}
 		else if((int)Communtron4.position.y!=0) MainSaveData();
 
@@ -1179,7 +1168,6 @@ public class SC_control : MonoBehaviour {
 		}
 
 		//RPU converter
-		int h;
 		if(Communtron4.position.y==100f && RPU!="XXX")
 			TranslateRPU();
 
@@ -1206,7 +1194,7 @@ public class SC_control : MonoBehaviour {
 		//Websocket sends
 		if((int)Communtron4.position.y==100)
 		{
-			float trX,trY,rpX,rpY,heB,fuB,poB,mPPx,mPPy;
+			float trX,trY,rpX,rpY,heB,fuB,poB;
 			string isImpulse = "F"; if(impulse_enabled) isImpulse = "T";
 			string isImpulseStart = "F"; if(flag_impulse_start) { isImpulseStart = "T"; flag_impulse_start = false; }
 			string isInviPulse = "F"; if(flag_invisibility_pulse) { isInviPulse = "T"; flag_invisibility_pulse = false; }
@@ -1892,7 +1880,6 @@ public class SC_control : MonoBehaviour {
 						break;
 					}
 					else throw(new Exception());
-					break;
 			}
 
 			}catch(Exception) {
@@ -2115,7 +2102,7 @@ public class SC_control : MonoBehaviour {
 			try{
 				ws = new WebSocket(CommuntronM1.name);
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
 				Debug.LogWarning("Can't join to server (Can't set Websocket)");
 				MenuReturn();

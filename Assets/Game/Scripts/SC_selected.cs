@@ -21,7 +21,6 @@ public class SC_selected : MonoBehaviour {
 
 	void Update()
 	{
-		int i;
 		if(!living)
 		{
 			if(Communtron1.position.z==0) living=true;

@@ -62,12 +62,9 @@ public class SC_fobs : MonoBehaviour
     Transform mainWind;
     int destroyTime = -1;
     int loopSndID = -1;
-    int loopSndID2 = -1;
     public int lsid;
     public bool lsb;
     bool started = false;
-	bool colied = false;
-    bool resisting = false;
 
     bool localRendererMem = true; //Local temp variable
     bool localRendererMem2 = true; //Memory of renderer state
@@ -422,7 +419,7 @@ public class SC_fobs : MonoBehaviour
         {
             try{
                 SC_snd_loop.RemoveFromLoop(loopSndID);
-            }catch(Exception e) {}
+            }catch(Exception) {}
         }
 
         try{
@@ -431,7 +428,7 @@ public class SC_fobs : MonoBehaviour
 				if(IsEmpty) Communtron1.position+=new Vector3(1f,0f,0f);
 				else Communtron1.position-=new Vector3(1f,0f,0f);
 			}
-        }catch(Exception e) {}
+        }catch(Exception) {}
     }
     void FixedUpdate()
     {
@@ -648,6 +645,5 @@ public class SC_fobs : MonoBehaviour
 			com1act=false;
             Communtron1.position+=new Vector3(1f,0f,0f);
 		}
-        resisting = false;
     }
 }

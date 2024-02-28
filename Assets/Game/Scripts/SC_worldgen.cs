@@ -64,6 +64,7 @@ public static class WorldData
     private static int a=0; // line
     private static int c=0; // sector id
     private static int ulam_hold=0;
+    private static bool dont_update_bosbul=false;
 
     //Technical methods
     public static void Load(int bX, int bY) //Loads X;Y data to memory
@@ -117,6 +118,7 @@ public static class WorldData
             {
                 int gen = gens[i-1];
                 if(gen==-1) gen = Deterministics.CalculateFromString(SC_data.FobGenerate[type], 20*((ulam_hold + Generator.seed) % 1000000)+i);
+                dont_update_bosbul = true;
                 UpdateFob(i,gen);
             }
 
@@ -175,7 +177,8 @@ public static class WorldData
         if(data>=0 && data<=127) SC_data.World[a,place,c] = data+"";
         else SC_data.World[a,place,c] = "0";
         
-        Bosbul.UpdateFobColliders(ulam_hold);
+        if(!dont_update_bosbul) Bosbul.UpdateFobColliders(ulam_hold);
+        else dont_update_bosbul = false;
     }
     public static void UpdateType(int data) //Updates data type (0-63 or 1024)
     {

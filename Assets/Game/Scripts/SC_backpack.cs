@@ -131,7 +131,6 @@ public class SC_backpack : MonoBehaviour
         int xx = SC_slots.BackpackX[16];
 		int yy = -SC_slots.BackpackY[16];
         if(yy==0) return;
-        int sl = 16+9;
 
         SC_slots.BackpackX[16] = 0;
         SC_slots.BackpackY[16] += yy;

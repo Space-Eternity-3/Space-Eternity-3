@@ -67,7 +67,7 @@ public class SC_inventory_manager : MonoBehaviour {
 			else NumParent.localPosition=NumParDef;
 		}
 
-		try{sImg.texture=SC_fun.Item[(int)pvNum];}catch(Exception e){sImg.texture=SC_fun.Item[0];}
+		try{sImg.texture=SC_fun.Item[(int)pvNum];}catch(Exception){sImg.texture=SC_fun.Item[0];}
 
 		if(gameObject.name!="ItemImageO"&&gameObject.name!="ItemImageB"&&gameObject.name!="ItemImageOU")
 		{

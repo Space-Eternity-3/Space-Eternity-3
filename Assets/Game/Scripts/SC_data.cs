@@ -627,7 +627,6 @@ public class SC_data : MonoBehaviour
     public void CollectUpdateDatapack()
     {
         string file="";
-        int i;
         DirQ(datapacksDIR);
 
         PreData = dataSource;
@@ -1443,7 +1442,7 @@ public class SC_data : MonoBehaviour
 		
 		try{
 			checkDatapackGoodE();
-		}catch(Exception exc){DatapackError("Unknown error detected"); return;}
+		}catch(Exception){DatapackError("Unknown error detected"); return;}
 		
 		//Last
 		if(remember)

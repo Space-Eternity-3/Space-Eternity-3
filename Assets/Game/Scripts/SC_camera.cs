@@ -26,9 +26,6 @@ public class SC_camera : MonoBehaviour {
 
 	int worldID=0;
 
-	int is_rolling = 0;
-	public int roll_step;
-
 	void save_zoom(float localZ)
 	{
 		SC_data.camera_zoom=localZ+"";

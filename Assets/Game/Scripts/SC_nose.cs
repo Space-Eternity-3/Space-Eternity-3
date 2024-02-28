@@ -14,7 +14,7 @@ public class SC_nose : MonoBehaviour {
 	public Material D4;
 	public Renderer Drill;
 	public Renderer Drill3;
-	public Light light;
+	//public Light light;
 	//public Transform rFuelParticles;
 	int lR=255,lG=255,lB=255;
 

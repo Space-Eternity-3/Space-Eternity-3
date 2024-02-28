@@ -29,7 +29,6 @@ public class SC_push : MonoBehaviour
         if(mouse_over<1||mouse_over>9) return;
 
         if(clicked_on==0) return;
-        int i;
         while(mouse_over!=clicked_on)
         {
             if(mouse_over>clicked_on) //push right

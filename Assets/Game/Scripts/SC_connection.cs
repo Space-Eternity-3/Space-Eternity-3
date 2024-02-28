@@ -38,9 +38,7 @@ public class SC_connection : MonoBehaviour
 
     WebSocket ws;
     bool justLPH;
-    int freety=0;
     int waiter=0;
-    int counter=0;
     string conID="0";
 
     //int memcon=0;
@@ -137,7 +135,7 @@ public class SC_connection : MonoBehaviour
         {
             ws.Send(msg);
         }
-        catch(Exception e2)
+        catch(Exception)
         {
             Debug.LogWarning("Failied sending message: "+msg);
             V_Stop();
@@ -194,7 +192,7 @@ public class SC_connection : MonoBehaviour
         else BT_disconnect.GetComponent<Transform>().localPosition=POS_disconnect;
 
         if(BTj==0) BT_join.interactable=true;
-        else {BT_join.interactable=false; freety=0;}
+        else {BT_join.interactable=false;}
         if(BTj==2) BT_join.GetComponent<Transform>().localPosition=POS_hidden;
         else BT_join.GetComponent<Transform>().localPosition=POS_join;
 
@@ -342,7 +340,7 @@ public class SC_connection : MonoBehaviour
         try {
             ws = new WebSocket(ConnectionUrl);
         }
-        catch(Exception e) {
+        catch(Exception) {
             SC_account.SetWarningRaw("Aborted: Wrong server address typed or received from authorization server.");
             connectionState=0;
             return;

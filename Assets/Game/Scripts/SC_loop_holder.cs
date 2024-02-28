@@ -41,6 +41,6 @@ public class SC_loop_holder : MonoBehaviour
         
         try{
             SC_snd_loop.RemoveFromLoop(loopSndID);
-        }catch(Exception e) {}
+        }catch(Exception) {}
     }
 }

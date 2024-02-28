@@ -234,7 +234,7 @@ public static class Bosbul
                 {
                     if(obj.obj=="asteroid")
                     {
-                        Build.Add(("ast_"+obj.ulam),new CBosbulCollider(obj,-1));
+                        if(!obj.hidden) Build.Add(("ast_"+obj.ulam),new CBosbulCollider(obj,-1));
                         for(i=0;i<obj.size*2;i++)
                             Build.Add(("fob_"+obj.ulam+"_"+i),new CBosbulCollider(obj,i));
                         UpdateFobCollidersInDictionary(Build,obj.ulam);

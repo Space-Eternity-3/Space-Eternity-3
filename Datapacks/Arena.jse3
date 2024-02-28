@@ -648,9 +648,7 @@ custom_structures <advanced settings>
 		catch # 29 setanimator 71 catch # 71 animate hiding when default,A1,A2,A3,B1,B2,B3
 		catch # 30 setanimator 72 catch # 72 animate hiding when default,B1,B2,B3,R
 		
-		catch # 401 summon star move 20 0
-		catch # 402 summon monster move -20 0
-		catch # 403 summon sphere 12 3 move 0 -20
+		catch # 59-70 move 0 500
 		
 	]';
 	<catastrophic arena> 5: '[

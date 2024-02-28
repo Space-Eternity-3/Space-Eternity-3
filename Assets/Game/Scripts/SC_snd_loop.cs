@@ -48,7 +48,7 @@ public class SC_snd_loop : MonoBehaviour
         }
 
         int i,j;
-        float max,pom,V;
+        float pom,V;
 
         for(i=0;i<SoundAmount;i++)
         {

@@ -59,13 +59,11 @@ public class SC_bars : MonoBehaviour
 	}
 	public void LateUpdate()
 	{
-		bool middle_remove = false;
 		double_left = false;
 
 		if(bos!=null)
 		{
 			//Boss time clock
-			middle_remove = true;
 			left_value = bos.timer_bar_value;
 			left_max = bos.timer_bar_max;
 			left_text.text = ConvertToTime((left_value+49)/50);
