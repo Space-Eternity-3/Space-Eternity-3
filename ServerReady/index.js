@@ -4,6 +4,7 @@ const path = require("path");
 const { runInNewContext } = require("vm");
 const { parse } = require("path");
 const { func } = require("./functions");
+const { Parsing } = require("./functions");
 const { CBoss } = require("./behaviour");
 const readline = require('readline');
 const readline_sync = require('readline-sync');
@@ -235,12 +236,6 @@ if(Number.isInteger(config.max_players))
 var tab_difficulty = [0,0.7,1,1.43,2,10000];
 var difficulty = tab_difficulty[config.difficulty];
 var difficulty_name_tab = ["NONE","EASY","NORMAL","HARD","DIABOLIC","IMPOSSIBLE"];
-
-var pvp = true;
-if(config.pvp==false) pvp = false;
-
-var show_positions = true;
-if(config.show_positions==false) show_positions = false;
 
 var universe_name = "ServerUniverse";
 if(config.universe_name) universe_name = config.universe_name;
@@ -1054,7 +1049,7 @@ class Universe
 
         let SeonArgs = this.TxtToSeonArray(customStructures[struct_id]);
         let base_position = Vector3.Add(Vector3.Multiply(new Vector3(X,Y,0),100), new Vector3(biomeInfo.move[0],biomeInfo.move[1],0));
-        let setrand=0, ifrand=-1, setrand_initializer = Ulam + Generator.seed;
+        let setrand=0, ifrand1=-1, ifrand2=-1, setrand_initializer = Ulam + Generator.seed;
 
         //Random processing
         let args = [];
@@ -1072,11 +1067,13 @@ class Universe
                 }
                 if(SeonArgs[i]=="ifrand")
                 {
-                    ifrand = this.RangedIntParse(SeonArgs[i+1],-1,999);
+                    let ifrand_str = (SeonArgs[i+1]+"-").split("-");
+                    ifrand1 = this.RangedIntParse(ifrand_str[0],-1,999);
+                    ifrand2 = this.RangedIntParse(ifrand_str[1],ifrand1,999);
                     i++; continue;
                 }
             }
-            if(setrand==ifrand || ifrand==-1)
+            if((ifrand1<=setrand && setrand<=ifrand2) || (ifrand1<=-1 && -1<=ifrand2))
                 args.push(SeonArgs[i]);
         }
 
@@ -1164,6 +1161,12 @@ class Universe
                     if(arg[7]=="mod") {
                       c = this.PositiveFloatParse(arg[8],true);
                       d = this.PositiveFloatParse(arg[9],true);
+                    }
+                    if(arg[7]=="offset") {
+                      setrand_initializer = Deterministics.Random10e5(setrand_initializer);
+                      let vrn = setrand_initializer % 9;
+                      let x_vrn = Math.floor(vrn/3)-1, y_vrn = vrn%3-1;
+                      a*= x_vrn; b*= y_vrn;
                     }
                     let n = H-H1;
                     Build[H].Move((a+n*c)+"",(b+n*d)+"");
@@ -3076,7 +3079,7 @@ setInterval(function () { // <interval #2>
 
         // Collision check: player/boss -> player
         var bul_vp = (bulletsT[i].vector.x+" "+bulletsT[i].vector.y).replaceAll(".",",");
-        if(pvp || bulletsT[i].owner<0)
+        if(config.pvp || bulletsT[i].owner<0)
         for(j=0;j<max_players;j++)
         {
           if(plr.players[j]!="0" && plr.players[j]!="1" && bulletsT[i].owner!=j)
@@ -3502,7 +3505,7 @@ setInterval(function () {  // <interval #2>
   }
 
   //RPU - Dynamic data
-  if(show_positions) eff = "/RPU " + max_players + " ";
+  if(config.show_positions) eff = "/RPU " + max_players + " ";
   else eff = ".RPU " + max_players + " ";
   eff += GetRPU(plr.players,lngt) + " ";
   eff += current_tick;
@@ -4682,7 +4685,7 @@ wss.on("connection", function connection(ws,req)
         var yb = func.parseFloatU(memY);
         func.CollisionLinearBulletSet(xa,ya,xb,yb,1.2);
 
-        if(pvp)
+        if(config.pvp)
         for(j=0;j<max_players;j++)
         {
           if(plr.players[j]!="0" && plr.players[j]!="1" && arg[1]!=j && !plr.impulsed[arg[1]].includes(j))

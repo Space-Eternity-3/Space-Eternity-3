@@ -1,4 +1,5 @@
 const { func } = require("./functions");
+const { Parsing } = require("./functions");
 
 function randomInteger(min, max) {
     return Math.round(Math.random() * (max - min)) + func.parseIntU(min);

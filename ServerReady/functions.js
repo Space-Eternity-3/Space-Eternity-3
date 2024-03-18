@@ -1,7 +1,120 @@
 //String functions
 String.prototype.replaceAll = function replaceAll(search, replace) {
     return this.split(search).join(replace);
-  };
+};
+
+class CParsing
+{
+    /*
+        C - checker
+        U - 0 maker
+        E - thrower
+    */
+
+    //Validation methods
+    IntC(s)
+    {
+        try{ this.IntE(s); }
+        catch { return false; }
+        return true;
+    }
+    FloatC(s)
+    {
+        try{ this.FloatE(s); }
+        catch { return false; }
+        return true;
+    }
+
+    //Safe 0 methods
+    IntU(s)
+    {
+        let ret = 0;
+        try{ ret = this.IntE(s); } catch {}
+        return ret;
+    }
+    FloatU(s)
+    {
+        let ret = 0;
+        try{ ret = this.FloatE(s); } catch {}
+        return ret;
+    }
+
+    //Core error methods
+    IntE(s)
+    {
+        try{
+            let i=0, lngt = s.length, dl = ('0').charCodeAt(0), cn;
+            let sum = 0;
+            let minus = s[0]=='-';
+            if(minus) i++;
+            for(;i<lngt;i++)
+            {
+                cn = s[i].charCodeAt(0) - dl;
+                if(cn<0 || cn>9) throw "error";
+                sum *= 10; sum -= cn;
+            }
+            if(!minus) sum *= -1;
+            if(sum+"" != s) throw "error";
+            if(sum<-2147483648 || sum>2147483647) throw "error";
+            return sum;
+        }
+        catch {
+            throw "Could not parse string to int: "+s;
+        }
+    }
+    FloatE(s)
+    {
+        try{
+            let i=0, lngt = s.length, dl = ('0').charCodeAt(0), cn;
+            let sum = 0, mn = 1;
+            let minus = s[0]=='-';
+            if(minus) i++;
+
+            let mode = 0; // 0 - before sep, 1 - after sep, 2 - exponent
+            let exp_str = "";
+            for(;i<lngt;i++)
+            {
+                if(mode<=1)
+                {
+                    if(mode==0 && (s[i]=='.' || s[i]==','))
+                    {
+                        mode = 1;
+                        continue;
+                    }
+                    if(s[i]=='e' || s[i]=='E')
+                    {
+                        mode = 2;
+                        continue;
+                    }
+
+                    cn = (s[i]).charCodeAt(0) - dl;
+                    if(cn<0 || cn>9) throw "error";
+                    if(mode==0) sum *= 10; else mn /= 10;
+                    sum += mn*cn;
+                }
+                else exp_str += s[i];
+            }
+
+            if(mode==2)
+            {
+                let exp = this.IntE(exp_str.substring(1));
+                if(exp_str[0]=='-') exp *= -1;
+                else if(exp_str[0]!='+') throw "error";
+                sum *= Math.pow(10,exp);
+            }
+
+            if(sum > Math.pow(10,32)) sum = Math.pow(10,32);
+            if(sum < Math.pow(10,-32)) return 0;
+
+            if(minus) sum *= -1;
+            return sum;
+        }
+        catch {
+            throw "Could not parse string to float: "+s;
+        }
+    }
+}
+let Parsing = new CParsing();
 
 //Classes
 class cfun
@@ -334,5 +447,5 @@ class CLinearPreset
 let func = new cfun();
 
 module.exports = {
-    func
+    func, Parsing
 };

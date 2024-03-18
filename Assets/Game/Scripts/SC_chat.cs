@@ -18,6 +18,9 @@ public class SC_chat : MonoBehaviour
     public bool hide_when_inventory_open;
     public int msg_visibility_time;
 
+    public List<string> SendHistory = new List<string>();
+    public int history_pointer = 0;
+
     public RectTransform ChatOver; Vector3 FieldOverDefPos = new Vector3(0f,0f,0f);
     public RectTransform ChatOutput;
     public RectTransform ChatInput; Vector3 FieldInputDefPos = new Vector3(0f,0f,0f);
@@ -103,6 +106,7 @@ public class SC_chat : MonoBehaviour
     {
         string msg = ProceedMessage(ChatInputer.text);
         if(msg=="") return;
+        if(SendHistory.Count==0 || SendHistory[SendHistory.Count-1]!=msg) SendHistory.Add(msg);
         if((int)SC_control.Communtron4.position.y==100)
         {
             SC_control.SendMTP("/ChatMessage "+SC_control.connectionID+" "+(new StringBuilder(msg)).Replace(" ","\t").ToString());
@@ -111,6 +115,11 @@ public class SC_chat : MonoBehaviour
         {
             AddMessage("Player",msg);
         }
+    }
+    void TextUpdateFromHistory(int his)
+    {
+        if(his==SendHistory.Count) ChatInputer.text = "";
+        else ChatInputer.text = SendHistory[his];
     }
     void Update()
     {
@@ -124,7 +133,8 @@ public class SC_chat : MonoBehaviour
 		{
 			if(!typing && (Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown("/")) && !SC_control.SC_inv_mover.active && SC_control.Communtron1.position.z==0f)
             {
-                ChatInputer.text = "";
+                history_pointer = SendHistory.Count;
+                TextUpdateFromHistory(history_pointer);
                 ChatInputer.Select();
 				typing=true;
             }
@@ -135,6 +145,18 @@ public class SC_chat : MonoBehaviour
 				typing = false;
 				SC_control.blockEscapeThisFrame = true;
 			}
+
+            if(typing)
+            {
+                int old_history_pointer = history_pointer;
+                bool arrowed = false;
+                if(Input.GetKeyDown(KeyCode.UpArrow)) { history_pointer--; arrowed = true; }
+                if(Input.GetKeyDown(KeyCode.DownArrow)) { history_pointer++; arrowed = true; }
+                if(history_pointer < 0) history_pointer = 0;
+                if(history_pointer > SendHistory.Count) history_pointer = SendHistory.Count;
+                if(old_history_pointer != history_pointer) TextUpdateFromHistory(history_pointer);
+                if(arrowed) ChatInputer.MoveTextEnd(false);
+            }
 		}
 
         if(hide_when_inventory_open)

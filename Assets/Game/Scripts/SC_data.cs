@@ -1666,13 +1666,118 @@ public static class Globals
 {
     public static bool emergency_save_terminate = false;
     public static int reference_time = 0; //Only updates on FixedUpdate!
+}
 
-    public static int intParse(string s)
+public static class Parsing
+{
+    /*
+        C - checker
+        U - 0 maker
+        E - thrower
+    */
+
+    //Validation methods
+    public static bool IntC(string s)
     {
-        return 0;
+        try{ IntE(s); }
+        catch(Exception) { return false; }
+        return true;
     }
-    public static float floatParse(string s)
+    public static bool FloatC(string s)
     {
-        return 0f;
+        try{ FloatE(s); }
+        catch(Exception) { return false; }
+        return true;
+    }
+
+    //Safe 0 methods
+    public static int IntU(string s)
+    {
+        int ret = 0;
+        try{ ret = IntE(s); } catch(Exception) {}
+        return ret;
+    }
+    public static float FloatU(string s)
+    {
+        float ret = 0f;
+        try{ ret = FloatE(s); } catch(Exception) {}
+        return ret;
+    }
+
+    //Core error methods
+    public static int IntE(string s)
+    {
+        try{
+            checked
+            {
+                int i=0, lngt = s.Length, dl = (int)'0', cn;
+                int sum = 0;
+                bool minus = s[0]=='-';
+                if(minus) i++;
+                for(;i<lngt;i++)
+                {
+                    cn = (int)s[i] - dl;
+                    if(cn<0 || cn>9) throw(new Exception());
+                    sum *= 10; sum -= cn;
+                }
+                if(!minus) sum *= -1;
+                if(sum+"" != s) throw(new Exception());
+                return sum;
+            }
+        }
+        catch(Exception) {
+            throw(new Exception("Could not parse string to int: "+s));
+        }
+    }
+    public static float FloatE(string s)
+    {
+        try{
+            int i=0, lngt = s.Length, dl = (int)'0', cn;
+            float sum = 0f, mn = 1f;
+            bool minus = s[0]=='-';
+            if(minus) i++;
+
+            int mode = 0; // 0 - before sep, 1 - after sep, 2 - exponent
+            string exp_str = "";
+            for(;i<lngt;i++)
+            {
+                if(mode<=1)
+                {
+                    if(mode==0 && (s[i]=='.' || s[i]==','))
+                    {
+                        mode = 1;
+                        continue;
+                    }
+                    if(s[i]=='e' || s[i]=='E')
+                    {
+                        mode = 2;
+                        continue;
+                    }
+
+                    cn = (int)s[i] - dl;
+                    if(cn<0 || cn>9) throw(new Exception());
+                    if(mode==0) sum *= 10; else mn /= 10f;
+                    sum += mn*cn;
+                }
+                else exp_str += s[i];
+            }
+
+            if(mode==2)
+            {
+                int exp = IntE(exp_str.Substring(1));
+                if(exp_str[0]=='-') exp *= -1;
+                else if(exp_str[0]!='+') throw(new Exception());
+                sum *= Mathf.Pow(10f,exp);
+            }
+
+            if(sum > Mathf.Pow(10f,32f)) sum = Mathf.Pow(10f,32f);
+            if(sum < Mathf.Pow(10f,-32f)) return 0f;
+
+            if(minus) sum *= -1;
+            return sum;
+        }
+        catch(Exception) {
+            throw(new Exception("Could not parse string to float: "+s));
+        }
     }
 }

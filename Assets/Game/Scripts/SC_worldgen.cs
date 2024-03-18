@@ -674,7 +674,7 @@ public static class Universe
 
         string[] SeonArgs = TxtToSeonArray(SC_fun.SC_data.CustomStructures[struct_id]);
         Vector3 base_position = 100 * new Vector3(X,Y,0f) + biomeInfo.move;
-        int setrand=0, ifrand=-1, setrand_initializer = Ulam + Generator.seed;
+        int setrand=0, ifrand1=-1, ifrand2=-1, setrand_initializer = Ulam + Generator.seed;
 
         //Random processing
         List<string> args = new List<string>();
@@ -692,11 +692,13 @@ public static class Universe
                 }
                 if(SeonArgs[i]=="ifrand")
                 {
-                    ifrand = RangedIntParse(SeonArgs[i+1],-1,999);
+                    string[] ifrand_str = (SeonArgs[i+1]+"-").Split('-');
+                    ifrand1 = RangedIntParse(ifrand_str[0],-1,999);
+                    ifrand2 = RangedIntParse(ifrand_str[1],ifrand1,999);
                     i++; continue;
                 }
             }
-            if(setrand==ifrand || ifrand==-1)
+            if((ifrand1<=setrand && setrand<=ifrand2) || (ifrand1<=-1 && -1<=ifrand2))
                 args.Add(SeonArgs[i]);
         }
 
@@ -782,6 +784,12 @@ public static class Universe
                     if(arg[7]=="mod") {
                         float.TryParse(arg[8], out c);
                         float.TryParse(arg[9], out d);
+                    }
+                    if(arg[7]=="offset") {
+                        setrand_initializer = Deterministics.Random10e5(setrand_initializer);
+                        int vrn = setrand_initializer % 9;
+                        int x_vrn = vrn/3-1, y_vrn = vrn%3-1;
+                        a*= x_vrn; b*= y_vrn;
                     }
                     int n = H-H1;
                     Build[H].Move((a+n*c)+"",(b+n*d)+"");
