@@ -31,8 +31,8 @@ public class SC_inv_number : MonoBehaviour {
 
 			if((int)Communtron4.position.y!=100)
 			{
-				SC_slots.SlotX[SlotID-1] = int.Parse(SC_data.inventory[SlotID-1,0]);
-				SC_slots.SlotY[SlotID-1] = int.Parse(SC_data.inventory[SlotID-1,1]);
+				SC_slots.SlotX[SlotID-1] = Parsing.IntE(SC_data.inventory[SlotID-1,0]);
+				SC_slots.SlotY[SlotID-1] = Parsing.IntE(SC_data.inventory[SlotID-1,1]);
 				SC_slots.SlotYA[SlotID-1] = SC_slots.SlotY[SlotID-1];
 				SC_slots.SlotYB[SlotID-1] = SC_slots.SlotY[SlotID-1];
 			}

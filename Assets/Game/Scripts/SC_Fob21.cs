@@ -271,8 +271,8 @@ public class SC_Fob21 : MonoBehaviour {
 		else
 		{
 			//multiplayer load ( #2021_code )
-			item=int.Parse(gameObject.name.Split(';')[0]);
-			count=int.Parse(gameObject.name.Split(';')[1]);
+			item=Parsing.IntE(gameObject.name.Split(';')[0]);
+			count=Parsing.IntE(gameObject.name.Split(';')[1]);
 		}
 		CountTranslate();
 		pub_item=item;

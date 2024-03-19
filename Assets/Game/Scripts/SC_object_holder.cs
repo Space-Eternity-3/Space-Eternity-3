@@ -57,7 +57,7 @@ public class SC_object_holder : MonoBehaviour
                 bos.bY = xy[1];
                 bos.bID = Objects[j].ulam;
                 string[] f_nam = holder_name.Split('_');
-                bos.sID = SC_fun.MakeUlam(int.Parse(f_nam[1]),int.Parse(f_nam[2]));
+                bos.sID = SC_fun.MakeUlam(Parsing.IntE(f_nam[1]),Parsing.IntE(f_nam[2]));
                 bos.type = Objects[j].type;
                 bos.SC_object_holder = this;
                 SC_boss = bos;

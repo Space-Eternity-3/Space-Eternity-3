@@ -42,7 +42,9 @@ class CParsing
     //Core error methods
     IntE(s)
     {
+        s=s+"";
         try{
+            if(s=="") throw "error";
             let i=0, lngt = s.length, dl = ('0').charCodeAt(0), cn;
             let sum = 0;
             let minus = s[0]=='-';
@@ -54,7 +56,6 @@ class CParsing
                 sum *= 10; sum -= cn;
             }
             if(!minus) sum *= -1;
-            if(sum+"" != s) throw "error";
             if(sum<-2147483648 || sum>2147483647) throw "error";
             return sum;
         }
@@ -64,7 +65,9 @@ class CParsing
     }
     FloatE(s)
     {
+        s=s+"";
         try{
+            if(s=="") throw "error";
             let i=0, lngt = s.length, dl = ('0').charCodeAt(0), cn;
             let sum = 0, mn = 1;
             let minus = s[0]=='-';

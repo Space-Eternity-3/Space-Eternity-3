@@ -248,7 +248,7 @@ public class SC_connection : MonoBehaviour
             if(e.Data.Split(' ')[1][0]!='-')
             {
                 connectionState=3;
-                connectionID=int.Parse(e.Data.Split(' ')[1]);
+                connectionID=Parsing.IntE(e.Data.Split(' ')[1]);
                 getData=e.Data.Split(' ')[2];
                 getInventory=e.Data.Split(' ')[3];
                 maxPlayers=e.Data.Split(' ')[4];

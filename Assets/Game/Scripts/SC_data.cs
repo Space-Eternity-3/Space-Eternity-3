@@ -244,7 +244,7 @@ public class SC_data : MonoBehaviour
         {
             string[] spl = gpl_info[n].Split(':');
             if(spl[1]!="s") {
-                float parsed = float.Parse(value);
+                float parsed = Parsing.FloatE(value);
                 if(parsed<0 && spl[1]=="+") parsed*=-1;
                 return parsed+"";
             }
@@ -258,7 +258,7 @@ public class SC_data : MonoBehaviour
         }
         public float GplGet(string str)
         {
-            return float.Parse(Gameplay[VarNumber(str,gpl_number)]);
+            return Parsing.FloatE(Gameplay[VarNumber(str,gpl_number)]);
         }
 
     public void ArchiveAdd(int from)
@@ -489,8 +489,8 @@ public class SC_data : MonoBehaviour
         {
             OpenRead(file);
 
-            volume=float.Parse(sr.ReadLine())+"";
-            camera_zoom=float.Parse(sr.ReadLine())+"";
+            volume=Parsing.FloatE(sr.ReadLine())+"";
+            camera_zoom=Parsing.FloatE(sr.ReadLine())+"";
             for(i=0;i<4;i++) MultiplayerInput[i]=sr.ReadLine();
             if(menu)
             {
@@ -498,9 +498,9 @@ public class SC_data : MonoBehaviour
                 dataSource=sr.ReadLine();
             }
             else dataSourceStorage=sr.ReadLine();
-			music=float.Parse(sr.ReadLine())+"";
-			compass_mode=int.Parse(sr.ReadLine())+"";
-            has_played=int.Parse(sr.ReadLine())+"";
+			music=Parsing.FloatE(sr.ReadLine())+"";
+			compass_mode=Parsing.IntE(sr.ReadLine())+"";
+            has_played=Parsing.IntE(sr.ReadLine())+"";
 
             CloseRead();
             if(menu) DatapackTranslate(); //Remember translate SETTINGS
@@ -517,7 +517,7 @@ public class SC_data : MonoBehaviour
                 {
                     OpenRead(file);
                     
-                    UniverseX[i-1,0]=int.Parse(sr.ReadLine())+"";
+                    UniverseX[i-1,0]=Parsing.IntE(sr.ReadLine())+"";
                     UniverseX[i-1,1]=sr.ReadLine();
                     UniverseX[i-1,2]=sr.ReadLine();
 
@@ -557,7 +557,7 @@ public class SC_data : MonoBehaviour
         {
             OpenRead(file);
             
-            seed=int.Parse(sr.ReadLine())+"";
+            seed=Parsing.IntE(sr.ReadLine())+"";
             
             CloseRead();
         }
@@ -576,10 +576,10 @@ public class SC_data : MonoBehaviour
             string[] ST_B = sourceTab[2].Split(';');
             string[] ST_U = sourceTab[3].Split(';');
 
-            for(i=0;i<6;i++) data[i]=float.Parse(ST_D[i])+""; data[6]=int.Parse(ST_D[6])+""; data[7]=float.Parse(ST_D[7])+"";
-            for(i=0;i<9;i++) for(j=0;j<2;j++) inventory[i,j]=int.Parse(ST_I[i*2+j])+"";
-            for(i=0;i<21;i++) for(j=0;j<2;j++) backpack[i,j]=int.Parse(ST_B[i*2+j])+"";
-            for(i=0;i<5;i++) upgrades[i]=int.Parse(ST_U[i])+"";
+            for(i=0;i<6;i++) data[i]=Parsing.FloatE(ST_D[i])+""; data[6]=Parsing.IntE(ST_D[6])+""; data[7]=Parsing.FloatE(ST_D[7])+"";
+            for(i=0;i<9;i++) for(j=0;j<2;j++) inventory[i,j]=Parsing.IntE(ST_I[i*2+j])+"";
+            for(i=0;i<21;i++) for(j=0;j<2;j++) backpack[i,j]=Parsing.IntE(ST_B[i*2+j])+"";
+            for(i=0;i<5;i++) upgrades[i]=Parsing.IntE(ST_U[i])+"";
 
             CloseRead();
         }
@@ -834,7 +834,7 @@ public class SC_data : MonoBehaviour
                 {
                     string[] line = lines[i+1].Split(';');
                     int lngt=line.Length; if(lngt>61) lngt=61;
-                    for(j=0;j<lngt;j++) if(line[j]!="") World[i,j,asteroidCounter]=int.Parse(line[j])+"";
+                    for(j=0;j<lngt;j++) if(line[j]!="") World[i,j,asteroidCounter]=Parsing.IntE(line[j])+"";
                 }
                 else
                 {
@@ -887,7 +887,7 @@ public class SC_data : MonoBehaviour
 
         filePre=GetFile("generated");
         string[] gPos = WorldSector[A].Split(';');
-        int gX=int.Parse(gPos[0]),gY=int.Parse(gPos[1]);
+        int gX=Parsing.IntE(gPos[0]),gY=Parsing.IntE(gPos[1]);
         file=filePre+"_"+gX+"_"+gY+".se3";
 
         OpenWrite(file);
@@ -993,7 +993,7 @@ public class SC_data : MonoBehaviour
         //If just translated
         try{
 
-            string ipr=int.Parse(str)+"";
+            string ipr=Parsing.IntE(str)+"";
             return ipr;
 
         }catch(Exception){return "ERROR";}
@@ -1068,7 +1068,7 @@ public class SC_data : MonoBehaviour
                 lng--;
                 pom=PercentRemove(pom);
                 pre=totalChance;
-                totalChance+=int.Parse((float.Parse(pom)*10f)+"");
+                totalChance+=Parsing.IntE((Parsing.FloatE(pom)*10f)+"");
                 tab[i]=pre+";"+(totalChance-1);
             }
         }
@@ -1247,7 +1247,7 @@ public class SC_data : MonoBehaviour
                 {
                     try{
 
-                    mID=int.Parse(psPath[1]);
+                    mID=Parsing.IntE(psPath[1]);
                     CustomStructures[mID]=value[i].Replace('^',' ');
 
                     }catch(Exception){DatapackError("Error in variable: "+variable[i]); return;}
@@ -1261,7 +1261,7 @@ public class SC_data : MonoBehaviour
                     {
                         try{
 
-                            mID=int.Parse(psPath[2]);
+                            mID=Parsing.IntE(psPath[2]);
                             translateAsteroid[mID]=value[i];
 
                         }catch(Exception){DatapackError("Error in variable: "+variable[i]); return;}
@@ -1270,7 +1270,7 @@ public class SC_data : MonoBehaviour
                     {
                         try{
 
-                            mID=int.Parse(psPath[2]);
+                            mID=Parsing.IntE(psPath[2]);
                             translateFob[mID]=value[i];
 
                         }catch(Exception){DatapackError("Error in variable: "+variable[i]); return;}
@@ -1297,8 +1297,8 @@ public class SC_data : MonoBehaviour
                 {
                     try{
 
-                        if(psPath[0]=="modified_drops") mID=int.Parse(Translate(psPath[1],2));  //Items and objects
-                        else mID=int.Parse(Translate(psPath[1],1));                             //Asteroids
+                        if(psPath[0]=="modified_drops") mID=Parsing.IntE(Translate(psPath[1],2));  //Items and objects
+                        else mID=Parsing.IntE(Translate(psPath[1],1));                             //Asteroids
                         variable[i]=psPath[0]+";"+mID;
 
                         value[i]=TranslateAll(value[i],2);
@@ -1321,7 +1321,7 @@ public class SC_data : MonoBehaviour
                 {
                     try{
 
-                        mID=int.Parse(psPath[1]);
+                        mID=Parsing.IntE(psPath[1]);
 				        if(psPath[2]=="title_image")
 				        {
 					        mID2=7;
@@ -1330,7 +1330,7 @@ public class SC_data : MonoBehaviour
 				        }
 				        else
 				        {
-					        mID2=int.Parse(psPath[2]);
+					        mID2=Parsing.IntE(psPath[2]);
 					        mID=7*(mID-1)+mID2-1;
 					        value[i]=TranslateAll(value[i],2);
 				        }
@@ -1348,7 +1348,7 @@ public class SC_data : MonoBehaviour
                 else if(psPath[0]=="generator_settings")
                 {
                     try{
-                        mID=int.Parse(psPath[1]);
+                        mID=Parsing.IntE(psPath[1]);
 						if(mID<0||mID>31) throw new Exception("error");
 						
 						if(psPath[2]=="settings")
@@ -1358,7 +1358,7 @@ public class SC_data : MonoBehaviour
 						else if(psPath[2]!="chance")
 						{
 							if(psPath[2]=="all_sizes") mID2=-4;
-							else mID2=int.Parse(psPath[2])-4;
+							else mID2=Parsing.IntE(psPath[2])-4;
 						
 							if((mID2<0||mID2>6)&&mID2!=-4) throw new Exception("error");
 							if(mID2!=-4) mID=7*mID+mID2;
@@ -1395,7 +1395,7 @@ public class SC_data : MonoBehaviour
 				if(psPath[0]=="generator_settings")
                 {
 					try{
-                        mID=int.Parse(psPath[1]);
+                        mID=Parsing.IntE(psPath[1]);
 						if(mID<0||mID>31) throw new Exception("error");
 						
 						if(psPath[2]=="chance")
@@ -1410,7 +1410,7 @@ public class SC_data : MonoBehaviour
 							int mno; if(TagContains(BiomeTags[mID],"structural")) mno = 2;
 							else mno = 1;
 							
-							cur1000biome += mno * int.Parse((float.Parse(value[i])*10f)+"");
+							cur1000biome += mno * Parsing.IntE((Parsing.FloatE(value[i])*10f)+"");
 							efe += (cur1000biome-1)+";";
 							biomeChances += efe;
 						}
@@ -1474,7 +1474,7 @@ public class SC_data : MonoBehaviour
             if(str!="")
             for(i=0;i<lngt;i++) 
             {
-                pom = int.Parse(strs[i]);
+                pom = Parsing.IntE(strs[i]);
             }
 
         }catch(Exception){return false;}
@@ -1494,13 +1494,13 @@ public class SC_data : MonoBehaviour
 		{
 			if(ended)
 			{
-				if(actual+1 != int.Parse(strT[i])) return false;
+				if(actual+1 != Parsing.IntE(strT[i])) return false;
 				actual++; ended = false;
 			}
 			else
 			{
-				if(actual > int.Parse(strT[i]) + 1) return false;
-				actual = int.Parse(strT[i]); ended = true; i++;
+				if(actual > Parsing.IntE(strT[i]) + 1) return false;
+				actual = Parsing.IntE(strT[i]); ended = true; i++;
 			}
 		}
 		if(!must_be_1000 && actual<=999) return true;
@@ -1515,7 +1515,7 @@ public class SC_data : MonoBehaviour
 		
 		for(i=0;i<lngt;i+=2)
 		{
-			if(int.Parse(strT[i+1]) < 0) return false;
+			if(Parsing.IntE(strT[i+1]) < 0) return false;
 			if(strT[i]=="0" && strT[i+1]!="0") return false;
 			if(strT[i+1]=="0" && strT[i]!="0") return false;
 		}
@@ -1579,7 +1579,7 @@ public class SC_data : MonoBehaviour
 			//Load data
             craftings = raws[0];
 			biomeChances = raws[8];
-            craftMaxPage = int.Parse(raws[1])+"";
+            craftMaxPage = Parsing.IntE(raws[1])+"";
 
             for(i=0;i<16;i++) DrillLoot[i] = raws[2].Split('\'')[i];
             for(i=0;i<64;i++) FobGenerate[i] = raws[3].Split('\'')[i];
@@ -1587,7 +1587,7 @@ public class SC_data : MonoBehaviour
             for(i=0;i<gpl_number;i++)
             {
                 if(i==105||i==106) Gameplay[i] = raws[5].Split('\'')[i];
-                else Gameplay[i] = float.Parse(raws[5].Split('\'')[i])+"";
+                else Gameplay[i] = Parsing.FloatE(raws[5].Split('\'')[i])+"";
             }
             for(i=0;i<128;i++) ModifiedDrops[i] = raws[6].Split('\'')[i];
 			for(i=0;i<32;i++) BiomeTags[i] = raws[7].Replace(' ','_').Split('\'')[i];
@@ -1708,6 +1708,7 @@ public static class Parsing
     public static int IntE(string s)
     {
         try{
+            if(s=="") throw(new Exception());
             checked
             {
                 int i=0, lngt = s.Length, dl = (int)'0', cn;
@@ -1721,7 +1722,6 @@ public static class Parsing
                     sum *= 10; sum -= cn;
                 }
                 if(!minus) sum *= -1;
-                if(sum+"" != s) throw(new Exception());
                 return sum;
             }
         }
@@ -1732,6 +1732,7 @@ public static class Parsing
     public static float FloatE(string s)
     {
         try{
+            if(s=="") throw(new Exception());
             int i=0, lngt = s.Length, dl = (int)'0', cn;
             float sum = 0f, mn = 1f;
             bool minus = s[0]=='-';

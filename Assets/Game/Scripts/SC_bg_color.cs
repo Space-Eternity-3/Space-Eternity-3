@@ -58,9 +58,9 @@ public class SC_bg_color : MonoBehaviour
             if(tags.Length < 4) continue;
             byte R=0,G=0,B=0;
             try {
-                R = (byte)int.Parse(tags[1]);
-                G = (byte)int.Parse(tags[2]);
-                B = (byte)int.Parse(tags[3]);
+                R = (byte)Parsing.IntE(tags[1]);
+                G = (byte)Parsing.IntE(tags[2]);
+                B = (byte)Parsing.IntE(tags[3]);
             }catch(Exception) {
                 continue;
             }

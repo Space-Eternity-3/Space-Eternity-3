@@ -92,13 +92,13 @@ public class SC_asteroid : MonoBehaviour
 		{
 			int i;
 			string[] astDats=arg[2].Split(';');
-			type=int.Parse(astDats[0]);
+			type=Parsing.IntE(astDats[0]);
 			if(type<0) type=0;
 			else type = type % 16;
 			for(i=0;i<2*size;i++)
 			{
 				try{
-					objectID[i]=int.Parse(astDats[i+1]);
+					objectID[i]=Parsing.IntE(astDats[i+1]);
 				}catch(Exception) {
 					objectID[i] = 72;
 				}
@@ -202,9 +202,9 @@ public class SC_asteroid : MonoBehaviour
 
 		for(i=0;i<lngt&&i<2048;i++)
 		{
-			idn[i]=int.Parse(dGet[i*3]);
-			min[i]=int.Parse(dGet[i*3+1]);
-			max[i]=int.Parse(dGet[i*3+2]);
+			idn[i]=Parsing.IntE(dGet[i*3]);
+			min[i]=Parsing.IntE(dGet[i*3+1]);
+			max[i]=Parsing.IntE(dGet[i*3+2]);
 		}
 		
 		rand=UnityEngine.Random.Range(0,1000);

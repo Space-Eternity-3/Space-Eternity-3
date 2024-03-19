@@ -42,7 +42,7 @@ public class SC_drill : MonoBehaviour
 	}
 	int GetTimeDrill()
 	{
-		float matpow = Mathf.Pow(SC_asteroid.upg3hugity,SC_upgrades.MTP_levels[2]+float.Parse(SC_data.Gameplay[2]));
+		float matpow = Mathf.Pow(SC_asteroid.upg3hugity,SC_upgrades.MTP_levels[2]+Parsing.FloatE(SC_data.Gameplay[2]));
 		down = (int)(SC_asteroid.upg3down/matpow);
 		up = (int)(SC_asteroid.upg3up/matpow);
 		return UnityEngine.Random.Range(down,up+1);

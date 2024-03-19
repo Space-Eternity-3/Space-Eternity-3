@@ -184,7 +184,7 @@ public class SC_account : MonoBehaviour
     void doMsg(string eData)
     {
         string[] arg = eData.Split(" ");
-        int msg_code = int.Parse(arg[1]);
+        int msg_code = Parsing.IntE(arg[1]);
         if(arg[0]=="/RetLogin")
         {
             tried_login = true;

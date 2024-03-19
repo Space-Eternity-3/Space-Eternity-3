@@ -26,9 +26,9 @@ public class SC_settings : MonoBehaviour
     public void valueRead()
     {
         float reat=0f;
-        if(namte=="volume") reat=float.Parse(SC_data.volume);
-        if(namte=="camera_zoom") reat=float.Parse(SC_data.camera_zoom);
-		if(namte=="music") reat=float.Parse(SC_data.music);
+        if(namte=="volume") reat=Parsing.FloatE(SC_data.volume);
+        if(namte=="camera_zoom") reat=Parsing.FloatE(SC_data.camera_zoom);
+		if(namte=="music") reat=Parsing.FloatE(SC_data.music);
         slider.value=(reat-b)/a;
         title.text=visibleNamte+": "+(slider.value*10)+"%";
     }

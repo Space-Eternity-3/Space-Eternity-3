@@ -37,7 +37,7 @@ public class SC_crafting1 : MonoBehaviour {
 	}
 	void Start()
 	{
-		MaxPageB=int.Parse(SC_data.craftMaxPage);
-		MaxPage=(int)Mathf.Ceil(float.Parse(SC_data.craftMaxPage)/6);
+		MaxPageB=Parsing.IntE(SC_data.craftMaxPage);
+		MaxPage=(int)Mathf.Ceil(Parsing.FloatE(SC_data.craftMaxPage)/6);
 	}
 }

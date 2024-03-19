@@ -15,25 +15,25 @@ public static class Deterministics
     {
 		sour = sour % 15000;
 		string psInt = (long2[2*sour+0]+"") + (long2[2*sour+1]+"");
-		return int.Parse(psInt);
+		return Parsing.IntE(psInt);
 	}
 	public static int Random10e3(int sour) //long2 works best for 10e3
     {
 		sour = sour % 10000;
 		string psInt = (long2[3*sour+0]+"") + (long2[3*sour+1]+"") + (long2[3*sour+2]+"");
-		return int.Parse(psInt);
+		return Parsing.IntE(psInt);
 	}
 	public static int Random10e4(int sour)
     {
 		sour = sour % 7500;
 		string psInt = (long2[4*sour+0]+"") + (long2[4*sour+1]+"") + (long2[4*sour+2]+"") + (long2[4*sour+3]+"");
-		return int.Parse(psInt);
+		return Parsing.IntE(psInt);
 	}
 	public static int Random10e5(int sour)
     {
 		sour = sour % 6000;
 		string psInt = (long2[5*sour+0]+"") + (long2[5*sour+1]+"") + (long2[5*sour+2]+"") + (long2[5*sour+3]+"") + (long2[5*sour+4]+"");
-		return int.Parse(psInt);
+		return Parsing.IntE(psInt);
 	}
     public static int AnyRandom(int div, int sour)
     {
@@ -46,9 +46,9 @@ public static class Deterministics
         int i,lngt = s_nums.Length/3, V,A,B;
         for(i=0;i<lngt;i++)
         {
-            V = int.Parse(s_nums[3*i + 0]);
-            A = int.Parse(s_nums[3*i + 1]);
-            B = int.Parse(s_nums[3*i + 2]);
+            V = Parsing.IntE(s_nums[3*i + 0]);
+            A = Parsing.IntE(s_nums[3*i + 1]);
+            B = Parsing.IntE(s_nums[3*i + 2]);
             if(decider>=A && decider<=B) return V;
         }
         return 0;
@@ -70,8 +70,8 @@ public static class WorldData
     public static void Load(int bX, int bY) //Loads X;Y data to memory
     {
         string[] uAst = SC_data.GetAsteroid(bX,bY).Split(';');
-        c=int.Parse(uAst[0]);
-        a=int.Parse(uAst[1]);
+        c=Parsing.IntE(uAst[0]);
+        a=Parsing.IntE(uAst[1]);
         ulam_hold = SC_data.SC_control.SC_fun.MakeUlam(bX,bY);
     }
     public static void DataGenerate(string gencode) //Generates data from gencode
@@ -96,20 +96,19 @@ public static class WorldData
             string[] elements = gencode.Split(sep);
 
             //Size parse
-            int size = int.Parse(elements[0]);
+            int size = Parsing.IntE(elements[0]);
 
             //Type parse
             int type;
-            if(sep=='t') type = int.Parse(elements[1]);
-            else type = Deterministics.CalculateFromString(SC_data.TypeSet[int.Parse(elements[1])*7 + size-4], ulam_hold + Generator.seed);
+            if(sep=='t') type = Parsing.IntE(elements[1]);
+            else type = Deterministics.CalculateFromString(SC_data.TypeSet[Parsing.IntE(elements[1])*7 + size-4], ulam_hold + Generator.seed);
 
             //Gens parse
             int[] gens = new int[]{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}; //20 generation places
             if(elements.Length>2) {
                 string[] s_gens = elements[2].Split(';');
                 for(i=0;(i<s_gens.Length && i<20);i++)
-                    if(!int.TryParse(s_gens[i], out gens[i]))
-                        gens[i] = -1;
+                    if(Parsing.IntC(s_gens[i])) gens[i] = Parsing.IntU(s_gens[i]);
             }
             
             //Generate type and fobs
@@ -130,9 +129,7 @@ public static class WorldData
     public static int GetData(int place) //Returns the place data ("" -> 0)
     {
         string got = SC_data.World[a,place,c];
-        int num = 0;
-        if(int.TryParse(got, out num)) return num;
-        else return 0;
+        return Parsing.IntU(got);
     }
     public static int GetNbt(int place, int index) //Returns the fob nbt data ("" -> 0)
     {
@@ -141,9 +138,9 @@ public static class WorldData
     public static int GetFob(int place) //Returns the fob (0-127)
     {
         string got = SC_data.World[a,place,c];
-        int num = -1;
-        if(int.TryParse(got, out num))
+        if(Parsing.IntC(got))
         {
+            int num = Parsing.IntU(got);
             if(num>=0 && num<=127) return num;
             else return -1;
         }
@@ -152,9 +149,9 @@ public static class WorldData
     public static int GetType() //Returns data type (0-63 or 1024)
     {
         string got = SC_data.World[a,0,c];
-        int num = -1;
-        if(int.TryParse(got, out num))
+        if(Parsing.IntC(got))
         {
+            int num = Parsing.IntU(got);
             if((num>=0 && num<=63) || num==1024) return num;
             else return -1;
         }
@@ -245,10 +242,10 @@ public class CObjectInfo
     //Summoners
     public void Asteroid(string p_size, string p_type, string p_fobcode)
     {
-        int.TryParse(p_size, out size);
+        size = Parsing.IntU(p_size);
         if(size<4 || size>10) size=4;
 
-        int.TryParse(p_type, out type);
+        type = Parsing.IntU(p_type);
         if(type<0 || type>63) type=0;
 
         string[] fob_array = (p_fobcode+",,,,,,,,,,,,,,,,,,,").Split(',');
@@ -270,43 +267,43 @@ public class CObjectInfo
     }
     public void Wall(string p_size1, string p_size2, string p_type)
     {
-        float.TryParse(p_size1, out size1);
+        size1 = Parsing.FloatU(p_size1);
         if(size1<0f) size1=0f;
 
-        float.TryParse(p_size2, out size2);
+        size2 = Parsing.FloatU(p_size2);
         if(size2<0f) size2=0f;
         
-        int.TryParse(p_type, out type);
+        type = Parsing.IntU(p_type);
         if(type<0 || type>15) type=0;
 
         obj = "wall";
     }
     public void Sphere(string p_size1, string p_type)
     {
-        float.TryParse(p_size1, out size1);
+        size1 = Parsing.FloatU(p_size1);
         if(size1<0f) size1=0f;
 
-        int.TryParse(p_type, out type);
+        type = Parsing.IntU(p_type);
         if(type<0 || type>15) type=0;
 
         obj = "sphere";
     }
     public void Piston(string p_size1, string p_size2, string p_type)
     {
-        float.TryParse(p_size1, out size1);
+        size1 = Parsing.FloatU(p_size1);
         if(size1<0f) size1=0f;
 
-        float.TryParse(p_size2, out size2);
+        size2 = Parsing.FloatU(p_size2);
         if(size2<0f) size2=0f;
 
-        int.TryParse(p_type, out type);
+        type = Parsing.IntU(p_type);
         if(type<0 || type>15) type=0;
 
         obj = "piston";
     }
     public void Ranger(string p_range, string p_obj)
     {
-        float.TryParse(p_range, out range);
+        range = Parsing.FloatU(p_range);
         if(range<0f) range=0f;
 
         obj = p_obj;
@@ -319,7 +316,7 @@ public class CObjectInfo
     }
     public void Boss(string p_type)
     {
-        int.TryParse(p_type, out type);
+        type = Parsing.IntU(p_type);
         if(type<0 || type>6) type=0;
 
         animation_type = 1;
@@ -335,7 +332,7 @@ public class CObjectInfo
     {
         if(obj!="asteroid") return;
 
-        int.TryParse(p_biome, out biome);
+        biome = Parsing.IntU(p_biome);
         if(biome<0 || biome>31) biome=0;
         type=-1;
     }
@@ -344,8 +341,8 @@ public class CObjectInfo
         if(obj=="boss") return;
 
         float x=0f, y=0f;
-        float.TryParse(p_x, out x);
-        float.TryParse(p_y, out y);
+        x = Parsing.FloatU(p_x);
+        y = Parsing.FloatU(p_y);
         float[] get = SC_fun.RotateVector(x,y,rotation);
         position += new Vector3(get[0],get[1],0f);
 
@@ -363,7 +360,7 @@ public class CObjectInfo
         if(obj=="boss") return;
 
         float rot=0f;
-        float.TryParse(p_rot, out rot);
+        rot = Parsing.FloatU(p_rot);
         rotation += rot;
         
         if(obj=="asteroid")
@@ -404,8 +401,8 @@ public class CObjectInfo
         if(obj!="asteroid") return;
 
         float x=0f, y=0f;
-        float.TryParse(p_x, out x);
-        float.TryParse(p_y, out y);
+        x = Parsing.FloatU(p_x);
+        y = Parsing.FloatU(p_y);
         float[] get = SC_fun.RotateVector(x,y,fob_rotations[S]);
         fob_positions[S] += new Vector3(get[0],get[1],0f);
     }
@@ -414,7 +411,7 @@ public class CObjectInfo
         if(obj!="asteroid") return;
 
         float rot=0f;
-        float.TryParse(p_rot, out rot);
+        rot = Parsing.FloatU(p_rot);
         fob_rotations[S] += rot;
     }
     public void ResetS(int S, string p_what)
@@ -485,8 +482,8 @@ public class CObjectInfo
         if(p_type=="extending")
         {
             animation_type = 2;
-            float.TryParse(p_dx, out dx);
-            float.TryParse(p_dy, out dy);
+            dx = Parsing.FloatU(p_dx);
+            dy = Parsing.FloatU(p_dy);
             animation_size = new Vector3(dx,dy,0f);
         }
     }
@@ -516,8 +513,8 @@ public static class Universe
         if(Sectors.ContainsKey(sector_name)) return Sectors[sector_name];
 
         string[] spl = sector_name.Split('_');
-        int X = int.Parse(spl[1]);
-        int Y = int.Parse(spl[2]);
+        int X = Parsing.IntE(spl[1]);
+        int Y = Parsing.IntE(spl[2]);
         int sX = X; if(X%2!=0) sX++;
         int sY = Y; if(Y%2!=0) sY++;
 
@@ -584,7 +581,8 @@ public static class Universe
     public static int RangedIntParse(string str, int min, int max)
     {
         int n = min;
-        if(!int.TryParse(str, out n)) return min;
+        if(Parsing.IntC(str)) n = Parsing.IntU(str);
+        else return min;
         if(n < min || n > max) n = min;
         return n;
     }
@@ -749,10 +747,10 @@ public static class Universe
         foreach(string line in cmds)
         {
             string[] arg = line.Split(' ');
-            H1 = int.Parse(arg[0]);
-            H2 = int.Parse(arg[1]);
-            S1 = int.Parse(arg[2]);
-            S2 = int.Parse(arg[3]);
+            H1 = Parsing.IntE(arg[0]);
+            H2 = Parsing.IntE(arg[1]);
+            S1 = Parsing.IntE(arg[2]);
+            S2 = Parsing.IntE(arg[3]);
             int H,S;
             for(H=H1;H<=H2;H++)
             {
@@ -779,11 +777,11 @@ public static class Universe
                 if(arg[4]=="move")
                 {
                     float a,b,c=0,d=0;
-                    float.TryParse(arg[5], out a);
-                    float.TryParse(arg[6], out b);
+                    a = Parsing.FloatU(arg[5]);
+                    b = Parsing.FloatU(arg[6]);
                     if(arg[7]=="mod") {
-                        float.TryParse(arg[8], out c);
-                        float.TryParse(arg[9], out d);
+                        c = Parsing.FloatU(arg[8]);
+                        d = Parsing.FloatU(arg[9]);
                     }
                     if(arg[7]=="offset") {
                         setrand_initializer = Deterministics.Random10e5(setrand_initializer);
@@ -797,9 +795,9 @@ public static class Universe
                 if(arg[4]=="rotate")
                 {
                     float a,c=0;
-                    float.TryParse(arg[5], out a);
+                    a = Parsing.FloatU(arg[5]);
                     if(arg[6]=="mod") {
-                        float.TryParse(arg[7], out c);
+                        c = Parsing.FloatU(arg[7]);
                     }
                     int n = H-H1;
                     Build[H].Rotate((a+n*c)+"");
@@ -815,10 +813,10 @@ public static class Universe
                 {
                     if(Build[H].obj!="wall") continue;
                     int b = 0;
-                    if(arg[5]=="fromhash") int.TryParse(arg[6], out b);
+                    if(arg[5]=="fromhash") b = Parsing.IntU(arg[6]);
                     else if(arg[5]=="fromdelta")
                     {
-                        int.TryParse(arg[6], out b);
+                        b = Parsing.IntU(arg[6]);
                         b += H;
                     }
                     if(b<0 || b>999) continue;
@@ -865,11 +863,11 @@ public static class Universe
                     if(arg[4]=="move$")
                     {
                         float a,b,c=0,d=0;
-                        float.TryParse(arg[5], out a);
-                        float.TryParse(arg[6], out b);
+                        a = Parsing.FloatU(arg[5]);
+                        b = Parsing.FloatU(arg[6]);
                         if(arg[7]=="mod") {
-                            float.TryParse(arg[8], out c);
-                            float.TryParse(arg[9], out d);
+                            c = Parsing.FloatU(arg[8]);
+                            d = Parsing.FloatU(arg[9]);
                         }
                         int n = S-S1;
                         Build[H].MoveS(S,(a+n*c)+"",(b+n*d)+"");
@@ -877,9 +875,9 @@ public static class Universe
                     if(arg[4]=="rotate$")
                     {
                         float a,c=0;
-                        float.TryParse(arg[5], out a);
+                        a = Parsing.FloatU(arg[5]);
                         if(arg[6]=="mod") {
-                            float.TryParse(arg[7], out c);
+                            c = Parsing.FloatU(arg[7]);
                         }
                         int n = S-S1;
                         Build[H].RotateS(S,(a+n*c)+"");
@@ -963,7 +961,10 @@ public static class Generator
     //Initializes seed in generator, returns the actual seed string
     public static string SetSeed(string s_seed)
     {
-        if(int.TryParse(s_seed, out seed)) return s_seed;
+        if(Parsing.IntC(s_seed)) {
+            seed = Parsing.IntU(s_seed);
+            return s_seed;
+        }
         else {
             seed = UnityEngine.Random.Range(0,10000000);
             return seed+"";

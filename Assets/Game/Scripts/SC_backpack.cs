@@ -163,8 +163,8 @@ public class SC_backpack : MonoBehaviour
         int i;
         for(i=0;i<21;i++)
         {
-            SC_slots.BackpackX[i]=int.Parse(ss[2*i]);
-            SC_slots.BackpackY[i]=int.Parse(ss[2*i+1]);
+            SC_slots.BackpackX[i]=Parsing.IntE(ss[2*i]);
+            SC_slots.BackpackY[i]=Parsing.IntE(ss[2*i+1]);
         }
     }
     void Update()

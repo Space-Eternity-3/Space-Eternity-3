@@ -271,7 +271,7 @@ function TreasureDrop(str)
       var lngt=Math.floor(arra.length/5);
       for(i=0;i<lngt;i++)
       {
-        for(j=0;j<5;j++) marray[j]=func.parseIntE(arra[5*i+j]);
+        for(j=0;j<5;j++) marray[j]=Parsing.IntE(arra[5*i+j]);
         if(rander>=marray[3]&&rander<=marray[4]) return marray[0]+";"+func.randomInteger(marray[1],marray[2]);
       }
     } catch { return "8;1"; }
@@ -334,25 +334,25 @@ class Deterministics
     {
 		    sour = sour % 15000;
 		    let psInt = (long2[2*sour+0]+"") + (long2[2*sour+1]+"");
-		    return parseInt(psInt);
+		    return Parsing.IntU(psInt);
 	  }
 	  static Random10e3(sour) //long2 works best for 10e3
     {
 		    sour = sour % 10000;
 		    let psInt = (long2[3*sour+0]+"") + (long2[3*sour+1]+"") + (long2[3*sour+2]+"");
-		    return parseInt(psInt);
+		    return Parsing.IntU(psInt);
 	  }
 	  static Random10e4(sour)
     {
 		    sour = sour % 7500;
 		    let psInt = (long2[4*sour+0]+"") + (long2[4*sour+1]+"") + (long2[4*sour+2]+"") + (long2[4*sour+3]+"");
-		    return parseInt(psInt);
+		    return Parsing.IntU(psInt);
 	  }
 	  static Random10e5(sour)
     {
 		    sour = sour % 6000;
 		    let psInt = (long2[5*sour+0]+"") + (long2[5*sour+1]+"") + (long2[5*sour+2]+"") + (long2[5*sour+3]+"") + (long2[5*sour+4]+"");
-		    return parseInt(psInt);
+		    return Parsing.IntU(psInt);
 	  }
     static AnyRandom(div,sour)
     {
@@ -365,9 +365,9 @@ class Deterministics
         let i,lngt = Math.floor(s_nums.length/3), V,A,B;
         for(i=0;i<lngt;i++)
         {
-            V = parseInt(s_nums[3*i + 0]);
-            A = parseInt(s_nums[3*i + 1]);
-            B = parseInt(s_nums[3*i + 2]);
+            V = Parsing.IntU(s_nums[3*i + 0]);
+            A = Parsing.IntU(s_nums[3*i + 1]);
+            B = Parsing.IntU(s_nums[3*i + 2]);
             if(decider>=A && decider<=B) return V;
         }
         return 0;
@@ -410,9 +410,9 @@ class Generator
     //Initializes seed in generator, returns the actual seed string
     static SetSeed(s_seed)
     {
-        if(!isNaN(parseInt(s_seed)))
+        if(Parsing.IntC(s_seed))
         {
-            Generator.seed = parseInt(s_seed);
+            Generator.seed = Parsing.IntU(s_seed);
             return s_seed;
         }
         else
@@ -879,8 +879,8 @@ class Universe
         if(this.Sectors.has(sector_name)) return this.Sectors.get(sector_name);
 
         let spl = sector_name.split('_');
-        let X = parseInt(spl[1]);
-        let Y = parseInt(spl[2]);
+        let X = Parsing.IntU(spl[1]);
+        let Y = Parsing.IntU(spl[2]);
         let sX = X; if(X%2!=0) sX++;
         let sY = Y; if(Y%2!=0) sY++;
 
@@ -948,15 +948,15 @@ class Universe
 
     static RangedIntParse(str, min, max)
     {
-        let n = func.parseIntP(str);
-        if(isNaN(n)) return min;
+        let n = Parsing.IntU(str);
+        if(!Parsing.IntC(str)) return min;
         if(n < min || n > max) return min;
         return n;
     }
     static PositiveFloatParse(str,allow_negative)
     {
-        let n = func.parseFloatP(str);
-        if(isNaN(n)) return 0;
+        let n = Parsing.FloatU(str);
+        if(!Parsing.FloatC(str)) return 0;
         if(!allow_negative && n < 0) return 0;
         return n;
     }
@@ -1126,10 +1126,10 @@ class Universe
         {
             let line = cmds[i];
             let arg = line.split(' ');
-            H1 = parseInt(arg[0]);
-            H2 = parseInt(arg[1]);
-            S1 = parseInt(arg[2]);
-            S2 = parseInt(arg[3]);
+            H1 = Parsing.IntU(arg[0]);
+            H2 = Parsing.IntU(arg[1]);
+            S1 = Parsing.IntU(arg[2]);
+            S2 = Parsing.IntU(arg[3]);
             let H,S;
             for(H=H1;H<=H2;H++)
             {
@@ -1195,7 +1195,7 @@ class Universe
                     if(arg[5]=="fromhash") b = this.RangedIntParse(arg[6],0,999);
                     else if(arg[5]=="fromdelta")
                     {
-                        b = func.parseIntU(arg[6]);
+                        b = Parsing.IntU(arg[6]);
                         b += H; b = b+"";
                         b = this.RangedIntParse(b,0,999);
                     }
@@ -1309,7 +1309,7 @@ class WorldData
         const det = asteroidIndex(ulam);
         d0 = det[0];
         d1 = det[1];
-        d_ulam = func.parseIntU(ulam);
+        d_ulam = Parsing.IntU(ulam);
     }
     static DataGenerate(gencode) //Generates data from gencode
     {
@@ -1333,17 +1333,17 @@ class WorldData
             const elements = gencode.split(sep);
 
             //Size parse
-            const size = parseInt(elements[0]);
+            const size = Parsing.IntU(elements[0]);
 
             //Type parse
-            const type = (sep=='t') ? parseInt(elements[1]) : Deterministics.CalculateFromString(typeSet[parseInt(elements[1])*7 + size-4], d_ulam + Generator.seed);
+            const type = (sep=='t') ? Parsing.IntU(elements[1]) : Deterministics.CalculateFromString(typeSet[Parsing.IntU(elements[1])*7 + size-4], d_ulam + Generator.seed);
 
             //Gens parse
             const gens = Array(20).fill(-1);
             if(elements.length>2) {
                 const s_gens = elements[2].split(';');
                 for(i=0;(i<s_gens.length && i<20);i++) {
-                    if(!isNaN(parseInt(s_gens[i]))) gens[i] = parseInt(s_gens[i]);
+                    if(Parsing.IntC(s_gens[i])) gens[i] = Parsing.IntU(s_gens[i]);
                 }
             }
             
@@ -1363,7 +1363,7 @@ class WorldData
     static GetData(place) //Returns the place data ("" -> 0)
     {
         let got = chunk_data[d0][d1][place];
-        return (!isNaN(parseInt(got))) ? parseInt(got) : 0;
+        return Parsing.IntU(got);
     }
     static GetNbt(place,index) //Returns the fob nbt data ("" -> 0)
     {
@@ -1372,9 +1372,9 @@ class WorldData
     static GetFob(place) //Returns the fob (0-127)
     {
         let got = chunk_data[d0][d1][place];
-        if(!isNaN(parseInt(got)))
+        if(Parsing.IntC(got))
         {
-            let num = parseInt(got);
+            let num = Parsing.IntU(got);
             if(num>=0 && num<=127) return num;
             else return -1;
         }
@@ -1383,9 +1383,9 @@ class WorldData
     static GetType() //Returns data type (0-63 or 1024)
     {
         let got = chunk_data[d0][d1][0];
-        if(!isNaN(parseInt(got)))
+        if(Parsing.IntC(got))
         {
-            let num = parseInt(got);
+            let num = Parsing.IntU(got);
             if((num>=0 && num<=63) || num==1024) return num;
             else return -1;
         }
@@ -1718,8 +1718,8 @@ class Bosbul
   static UpdateFobColliders(ulam)
   {
       const nums = Universe.GetSectorNameByUlam(ulam).split('_');
-      let X = parseInt(nums[1]); if (X % 2 !== 0) X++;
-      let Y = parseInt(nums[2]); if (Y % 2 !== 0) Y++;
+      let X = Parsing.IntU(nums[1]); if (X % 2 !== 0) X++;
+      let Y = Parsing.IntU(nums[2]); if (Y % 2 !== 0) Y++;
       const LocalDictionary = this.GetBosbuls(X, Y);
       this.UpdateFobCollidersInDictionary(LocalDictionary, ulam);
   }
@@ -1771,8 +1771,8 @@ class CPlayer {
     this.ctrlPower = ctrl_power;
   }
   ModifyRespawn(rsp_x,rsp_y) {
-    this.respawn_x = func.parseFloatU(rsp_x);
-    this.respawn_y = func.parseFloatU(rsp_y);
+    this.respawn_x = Parsing.FloatU(rsp_x);
+    this.respawn_y = Parsing.FloatU(rsp_y);
   }
   DrillAsk(drillID,pid,drillGroup) {
     this.drill_asteroid = drillID;
@@ -2083,11 +2083,11 @@ class CInfo
         var splitted = plr.players[i].split(";");
         var tpl = {id:0,x:0,y:0};
         tpl.id = i;
-        tpl.x = func.parseFloatU(splitted[0]) - deltapos.x;
-        tpl.y = func.parseFloatU(splitted[1]) - deltapos.y;
+        tpl.x = Parsing.FloatU(splitted[0]) - deltapos.x;
+        tpl.y = Parsing.FloatU(splitted[1]) - deltapos.y;
         var px = tpl.x;
         var py = tpl.y;
-        if(func.parseIntU(splitted[5].split("&")[1]) % 100 != 1) //not invisible (must be %100)
+        if(Parsing.IntU(splitted[5].split("&")[1]) % 100 != 1) //not invisible (must be %100)
         if(px**2 + py**2 <= in_arena_range**2) //in arena range
           this.players.push(tpl);
       }
@@ -2179,7 +2179,7 @@ class CInfo
       tpl.pos.x = tpl.start.x;
       tpl.pos.y = tpl.start.y;
 
-      tpl.normal_damage = boss_damages[type] * func.parseFloatU(gameplay[32]);
+      tpl.normal_damage = boss_damages[type] * Parsing.FloatU(gameplay[32]);
       if(type==3||type==13) tpl.is_unstable = true;
       else tpl.is_unstable = false;
 
@@ -2413,12 +2413,12 @@ function fileReadablePlayer(elemT) {
   if (elem3.length < 5) return false;
 
   var i;
-  for (i = 0; i < 6; i++) if (isNaN(func.parseFloatP(elem0[i]))) return false;
-  if (isNaN(func.parseIntP(elem0[6]))) return false;
-  if (isNaN(func.parseFloatP(elem0[7]))) return false;
-  for (i = 0; i < 18; i++) if (isNaN(func.parseIntP(elem1[i]))) return false;
-  for (i = 0; i < 42; i++) if (isNaN(func.parseIntP(elem2[i]))) return false;
-  for (i = 0; i < 5; i++) if (isNaN(func.parseIntP(elem3[i]))) return false;
+  for (i = 0; i < 6; i++) if (!Parsing.FloatC(elem0[i])) return false;
+  if (!Parsing.IntC(elem0[6])) return false;
+  if (!Parsing.FloatC(elem0[7])) return false;
+  for (i = 0; i < 18; i++) if (!Parsing.IntC(elem1[i])) return false;
+  for (i = 0; i < 42; i++) if (!Parsing.IntC(elem2[i])) return false;
+  for (i = 0; i < 5; i++) if (!Parsing.IntC(elem3[i])) return false;
 
   return true;
 }
@@ -2500,30 +2500,6 @@ function readPlayer(n) {
 }
 
 //File asteroid data function
-/*function ulamToXY(ulam)
-{
-    var sqrt = Math.floor(Math.sqrt(ulam));
-    if (sqrt % 2 == 0) sqrt--;
-
-    var x = sqrt/2 + 0.5;
-    var y = -sqrt/2 - 0.5;
-    var pot = sqrt ** 2;
-    var delta = ulam - pot;
-    var cwr = Math.floor(delta / (sqrt + 1));
-    var dlt = delta % (sqrt + 1);
-
-    if (cwr == 0 && dlt == 0) return [x - 1, y + 1];
-    if (cwr > 0) y += sqrt + 1;
-    if (cwr > 1) x -= sqrt + 1;
-    if (cwr > 2) y -= sqrt + 1;
-
-    if (cwr == 0) y += dlt;
-    if (cwr == 1) x -= dlt;
-    if (cwr == 2) y -= dlt;
-    if (cwr == 3) x += dlt;
-
-    return [x, y];
-}*/
 function makeUlam(X,Y)
 {
     let ID=0,P;
@@ -2600,7 +2576,7 @@ function chunkRead(ind) {
           var datM = datT[i].split(";");
           var lnt = datM.length;
           if (lnt > 61) lnt = 61;
-          for (j = 0; j < lnt; j++) if (datM[j] != "") pom = func.parseIntE(datM[j]);
+          for (j = 0; j < lnt; j++) if (datM[j] != "") pom = Parsing.IntE(datM[j]);
           for (j = lnt; j < 61; j++) datT[i] += ";";
           eff += datT[i] + "\r\n";
         }
@@ -2761,12 +2737,12 @@ setInterval(function () { // <interval #1>
 function getProtLevelAdd(art)
 {
 	if(art!=1) return 0;
-	else return func.parseFloatU(gameplay[16]);
+	else return Parsing.FloatU(gameplay[16]);
 }
 function getProtRegenMultiplier(art)
 {
 	if(art!=1) return 1;
-	else return func.parseFloatU(gameplay[17]);
+	else return Parsing.FloatU(gameplay[17]);
 }
 
 function HealFLOAT(pid,hp)
@@ -2777,9 +2753,9 @@ function HealFLOAT(pid,hp)
   var sth1 = plr.sHealth[pid];
 
   var heal_size = hp+"";
-  var potHHH = func.parseFloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + func.parseFloatU(gameplay[26]);
+  var potHHH = Parsing.FloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + Parsing.FloatU(gameplay[26]);
 	if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
-	var heal=0.02*func.parseFloatU(heal_size)/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
+	var heal=0.02*Parsing.FloatU(heal_size)/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
   if(heal<0) heal=0;
         
   plr.sHealth[pid] += heal;
@@ -2793,13 +2769,13 @@ function HealFLOAT(pid,hp)
 }
 function DamageFLOAT(pid,dmg)
 {
-  dmg = func.parseFloatU(dmg);
+  dmg = Parsing.FloatU(dmg);
   if(dmg>0 && plr.players[pid].split(";").length!=1 && plr.connectionTime[pid]>=50)
   {
     var artid = plr.backpack[pid].split(";")[30] - 41;
     if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
-    if(func.parseFloatU(plr.players[pid].split(";")[5].split("&")[1])%25==2) return;
-    var potHHH = func.parseFloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + func.parseFloatU(gameplay[26]);
+    if(Parsing.FloatU(plr.players[pid].split(";")[5].split("&")[1])%25==2) return;
+    var potHHH = Parsing.FloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + Parsing.FloatU(gameplay[26]);
 		if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
 		dmg=0.02*dmg/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
 		CookedDamage(pid,dmg,false);
@@ -2829,10 +2805,10 @@ function DamageFLOAT(pid,dmg)
 }
 function CookedDamage(pid,dmg,if_ringed)
 {
-  dmg = func.parseFloatU(dmg);
+  dmg = Parsing.FloatU(dmg);
   plr.sHealth[pid] -= dmg;
   if(Math.round(plr.sHealth[pid]*10000) == 0) plr.sHealth[pid] = 0;
-  plr.sRegTimer[pid] = Math.floor(50*func.parseFloatU(gameplay[4]));
+  plr.sRegTimer[pid] = Math.floor(50*Parsing.FloatU(gameplay[4]));
 
   if(plr.players[pid]=="0" || plr.players[pid]=="1") return;
 
@@ -3085,8 +3061,8 @@ setInterval(function () { // <interval #2>
           if(plr.players[j]!="0" && plr.players[j]!="1" && bulletsT[i].owner!=j)
           {
             var plas = plr.players[j].split(";");
-            var xc = func.parseFloatU(plas[0]);
-            var yc = func.parseFloatU(plas[1]);
+            var xc = Parsing.FloatU(plas[0]);
+            var yc = Parsing.FloatU(plas[1]);
             if(func.CollisionLinearCheck(xc,yc,0.92))
             {
               if(bullet_air_consistence[bulletsT[i].type]==0) {
@@ -3121,7 +3097,7 @@ setInterval(function () { // <interval #2>
               if(bulletsT[i].type==14)
               {
                   //Calculate boss force
-                  var wind_force = func.parseFloatU(gameplay[123]) / 50;
+                  var wind_force = Parsing.FloatU(gameplay[123]) / 50;
                   var force_vector = Vector3.Subtract(
                     new Vector3(scrs[j].posCX + func.ScrdToFloat(scrs[j].dataY[8-2]), scrs[j].posCY + func.ScrdToFloat(scrs[j].dataY[9-2]),0),
                     new Vector3(bulletsT[i].pos.x,bulletsT[i].pos.y,0)
@@ -3146,7 +3122,7 @@ setInterval(function () { // <interval #2>
                   //Give fire effect
                   if(bulletsT[i].upgrade_boost > scrs[j].dataY[25-2] || scrs[j].dataY[24-2]==0)
                       scrs[j].dataY[25-2] = bulletsT[i].upgrade_boost;
-                  scrs[j].dataY[24-2] = Math.floor(func.parseFloatU(gameplay[37])+1) * 50;
+                  scrs[j].dataY[24-2] = Math.floor(Parsing.FloatU(gameplay[37])+1) * 50;
               }
               destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], true);
               break;
@@ -3175,8 +3151,8 @@ setInterval(function () { // <interval #2>
             plr.pclass[i].DrillReady(i);
         }
         var bpckArray = plr.backpack[i].split(";");
-        var loc_artid = func.parseIntU(bpckArray[30]) - 41;
-        if(func.parseIntU(bpckArray[31]) < 1) loc_artid = -42;
+        var loc_artid = Parsing.IntU(bpckArray[30]) - 41;
+        if(Parsing.IntU(bpckArray[31]) < 1) loc_artid = -42;
         if(plr.connectionTime[i] > 50 && plr.pclass[i].unstable_pulses_available < 5 && loc_artid==6) {
           if(func.randomInteger(0,unstable_sprobability-1)==0) {
             plr.pclass[i].unstable_pulses_available++;
@@ -3195,7 +3171,7 @@ setInterval(function () { // <interval #2>
 
           //Health regeneration
           if(plr.sRegTimer[i]==0 && plr.sHealth[i]<1)
-            HealFLOAT(i,50 * unit * getProtRegenMultiplier(artid) * func.parseFloatU(gameplay[5]));
+            HealFLOAT(i,50 * unit * getProtRegenMultiplier(artid) * Parsing.FloatU(gameplay[5]));
           
           if(plr.sRegTimer[i]>0)
 	        {
@@ -3209,8 +3185,8 @@ setInterval(function () { // <interval #2>
             kick(i); continue;
           }
           if(plr.pclass[i].ctrlPower < 1 && !plr.pclass[i].powerRegenBlocked) {
-            if(artid==2) plr.pclass[i].ctrlPower += unit * func.parseFloatU(gameplay[18]); //IMPULSE
-            if(artid==3) plr.pclass[i].ctrlPower += unit * func.parseFloatU(gameplay[21]); //ILLUSION
+            if(artid==2) plr.pclass[i].ctrlPower += unit * Parsing.FloatU(gameplay[18]); //IMPULSE
+            if(artid==3) plr.pclass[i].ctrlPower += unit * Parsing.FloatU(gameplay[21]); //ILLUSION
             if(plr.pclass[i].ctrlPower > 1) plr.pclass[i].ctrlPower = 1;
           }
         }
@@ -3232,7 +3208,7 @@ setInterval(function () { // <interval #2>
           if(scrs[i].behaviour.type==1 && scrs[i].dataY[18-2]==2) scrs[i].dataY[24-2] = 0;
           if(scrs[i].dataY[24-2]>0) scrs[i].dataY[24-2]--;
           if(scrs[i].dataY[24-2]%50==0 && scrs[i].dataY[24-2]!=0) {
-            DamageBoss(i,func.parseFloatU(gameplay[38]) * Math.pow(1.08,scrs[i].dataY[25-2]));
+            DamageBoss(i,Parsing.FloatU(gameplay[38]) * Math.pow(1.08,scrs[i].dataY[25-2]));
           }
           scrs[i].behaviour.FixedUpdate();
         }
@@ -3273,10 +3249,10 @@ setInterval(function () { // <interval #2>
                 var ulam = growT[i].split("g")[0];
                 var place = growT[i].split("g")[1];
                 WorldData.Load(ulam);
-                var tume = WorldData.GetNbt(func.parseIntU(place)+1,0);
+                var tume = WorldData.GetNbt(Parsing.IntU(place)+1,0);
                 
                 tume -= 5;
-                if(tume > 0) WorldData.UpdateNbt(func.parseIntU(place)+1,0,tume)
+                if(tume > 0) WorldData.UpdateNbt(Parsing.IntU(place)+1,0,tume)
                 else
                 {
                     serverGrow(ulam, place);
@@ -3609,19 +3585,19 @@ function kick(i)
 function MaxAgeOfPlayerBullet(n)
 {
   var ret = 0;
-  if(n==1) ret = func.parseFloatU(gameplay[45]);
-  if(n==2) ret = func.parseFloatU(gameplay[46]);
-  if(n==3) ret = func.parseFloatU(gameplay[47]);
-  if(n==14) ret = func.parseFloatU(gameplay[49]);
-  if(n==15) ret = func.parseFloatU(gameplay[48]);
+  if(n==1) ret = Parsing.FloatU(gameplay[45]);
+  if(n==2) ret = Parsing.FloatU(gameplay[46]);
+  if(n==3) ret = Parsing.FloatU(gameplay[47]);
+  if(n==14) ret = Parsing.FloatU(gameplay[49]);
+  if(n==15) ret = Parsing.FloatU(gameplay[48]);
   if(ret==0) ret = 0.001;
         
   var ret2 = 100;
-  if(n==1) ret2 = Math.floor(35*func.parseFloatU(gameplay[92])/ret) + 1;
-  if(n==2) ret2 = Math.floor(35*func.parseFloatU(gameplay[93])/ret) + 1;
-  if(n==3) ret2 = Math.floor(35*func.parseFloatU(gameplay[96])/ret) + 1;
-  if(n==14) ret2 = Math.floor(35*func.parseFloatU(gameplay[94])/ret) + 1;
-  if(n==15) ret2 = Math.floor(35*func.parseFloatU(gameplay[95])/ret) + 1;
+  if(n==1) ret2 = Math.floor(35*Parsing.FloatU(gameplay[92])/ret) + 1;
+  if(n==2) ret2 = Math.floor(35*Parsing.FloatU(gameplay[93])/ret) + 1;
+  if(n==3) ret2 = Math.floor(35*Parsing.FloatU(gameplay[96])/ret) + 1;
+  if(n==14) ret2 = Math.floor(35*Parsing.FloatU(gameplay[94])/ret) + 1;
+  if(n==15) ret2 = Math.floor(35*Parsing.FloatU(gameplay[95])/ret) + 1;
 
   if(ret2>=10000) return 10000;
   else if(ret2<=1) return 1;
@@ -3658,7 +3634,7 @@ function spawnBullet(tpl,arg,bow)
 }
 function destroyBullet(n,arg,noise)
 {
-  if(func.parseIntU(arg[3]) <= bulletsT[n].max_age) bulletsT[n].max_age = func.parseIntU(arg[3]);
+  if(Parsing.IntU(arg[3]) <= bulletsT[n].max_age) bulletsT[n].max_age = Parsing.IntU(arg[3]);
   sendToAllPlayers(
     "/RetNewBulletDestroy "+
     arg[1]+" "+
@@ -3833,9 +3809,9 @@ function GetRPU(players,lngt)
     {
       splitted = players[i].split(";");
       eff+="XXXXXXXXX";
-      eff = insertFloatToChar4(eff,-9,func.parseFloatU(splitted[0]));
-      eff = insertFloatToChar4(eff,-5,func.parseFloatU(splitted[1]));
-      eff = insertRotToChar1(eff,-1,func.parseFloatU(splitted[4]));
+      eff = insertFloatToChar4(eff,-9,Parsing.FloatU(splitted[0]));
+      eff = insertFloatToChar4(eff,-5,Parsing.FloatU(splitted[1]));
+      eff = insertRotToChar1(eff,-1,Parsing.FloatU(splitted[4]));
     }
   }
 
@@ -3956,14 +3932,14 @@ function GetRPC(players,lngt,sendAll)
       if(rbt[1][1]==1) //health
       {
         eff += "X";
-        eff = insertHealthToChar1(eff,-1,func.parseFloatU(splitted[8]));
+        eff = insertHealthToChar1(eff,-1,Parsing.FloatU(splitted[8]));
         if(!sendAll) plr.mems[i].health = splitted[8];
       }
       if(rbt[1][2]==1) //resp pos
       {
         eff += "XXXXXXXX";
-        eff = insertFloatToChar4(eff,-8,func.parseFloatU(splitted[6]));
-        eff = insertFloatToChar4(eff,-4,func.parseFloatU(splitted[7]));
+        eff = insertFloatToChar4(eff,-8,Parsing.FloatU(splitted[6]));
+        eff = insertFloatToChar4(eff,-4,Parsing.FloatU(splitted[7]));
         if(!sendAll) plr.mems[i].rposX = splitted[6];
         if(!sendAll) plr.mems[i].rposY = splitted[7];
       }
@@ -4022,7 +3998,7 @@ function GetRSD(str)
   for(i=0;i<=60;i++)
   {
     eff+="XXX";
-    eff = insertIntToChar3(eff,-3,func.parseFloatU(str[i]));
+    eff = insertIntToChar3(eff,-3,Parsing.FloatU(str[i]));
   }
   return eff;
 }
@@ -4030,27 +4006,27 @@ function GetRSD(str)
 function serverGrow(ulam, place)
 {
     WorldData.Load(ulam);
-    var fob_here = WorldData.GetFob(func.parseIntU(place)+1);
+    var fob_here = WorldData.GetFob(Parsing.IntU(place)+1);
     if([5,6,25].includes(fob_here))
     {
-        WorldData.UpdateFob(func.parseIntU(place)+1,func.parseIntU(growSolid[fob_here].split(";")[2])); //Mtp counters handling around this function
+        WorldData.UpdateFob(Parsing.IntU(place)+1,Parsing.IntU(growSolid[fob_here].split(";")[2])); //Mtp counters handling around this function
         sendToAllPlayers("/RetGrowNow " + ulam + " " + place + " X X");
     }
 }
 function serverDrill(ulam, place)
 {
     WorldData.Load(ulam);
-    if([2].includes(WorldData.GetFob(func.parseIntU(place)+1)))
+    if([2].includes(WorldData.GetFob(Parsing.IntU(place)+1)))
     {
-        var stackedItem = WorldData.GetNbt(func.parseIntU(place)+1,0);
+        var stackedItem = WorldData.GetNbt(Parsing.IntU(place)+1,0);
         var type = WorldData.GetType() % 16;
-        var gItem = func.parseIntU(drillItemGet(type,stackedItem));
+        var gItem = Parsing.IntU(drillItemGet(type,stackedItem));
 
         if(gItem==0) return;
-        var gCountEnd = WorldData.GetNbt(func.parseIntU(place)+1,1) + 1;
+        var gCountEnd = WorldData.GetNbt(Parsing.IntU(place)+1,1) + 1;
 
-        WorldData.UpdateNbt(func.parseIntU(place)+1,0,gItem);
-        WorldData.UpdateNbt(func.parseIntU(place)+1,1,gCountEnd);
+        WorldData.UpdateNbt(Parsing.IntU(place)+1,0,gItem);
+        WorldData.UpdateNbt(Parsing.IntU(place)+1,1,gCountEnd);
 
         sendToAllPlayers("/RetFobsDataChange "+ulam+" "+place+" "+gItem+" 1 -1 "+gCountEnd+" 2 X X");
     }
@@ -4073,7 +4049,7 @@ function handDrillTimeGet(pid)
 {
   var upg3hugity = 1.12;
   var upg3down = 90, upg3up = 210;
-  var matpow = upg3hugity ** (func.parseFloatU(plr.upgrades[pid].split(";")[2])+func.parseFloatU(gameplay[2]));
+  var matpow = upg3hugity ** (Parsing.FloatU(plr.upgrades[pid].split(";")[2])+Parsing.FloatU(gameplay[2]));
 	down = Math.round(upg3down/matpow);
 	up = Math.round(upg3up/matpow);
 	return func.randomInteger(down,up);
@@ -4143,7 +4119,7 @@ function invChangeTry(invID, item, count, slot) {
   var itemS, countS, effTab, mode;
 
   if(slot>=9) {
-    var bpkUpgrade = func.parseFloatU(plr.upgrades[invID].split(";")[4]);
+    var bpkUpgrade = Parsing.FloatU(plr.upgrades[invID].split(";")[4]);
     if(Math.floor((slot-9)/3)+1 > bpkUpgrade && !(slot-9>=15 && slot-9<=16)) return false;
   }
 
@@ -4165,12 +4141,12 @@ function invChangeTry(invID, item, count, slot) {
     if (!(itemS == item || countS == 0)) return false;
   } else if (count < 0) {
     //Remove
-    if (!(itemS == item && func.parseIntU(countS) + func.parseIntU(count) >= 0))
+    if (!(itemS == item && Parsing.IntU(countS) + Parsing.IntU(count) >= 0))
       return false;
   } else return true;
 
   effTab[slot * 2] = item;
-  effTab[slot * 2 + 1] = func.parseIntU(effTab[slot * 2 + 1]) + func.parseIntU(count);
+  effTab[slot * 2 + 1] = Parsing.IntU(effTab[slot * 2 + 1]) + Parsing.IntU(count);
 
   if (mode == "INV") plr.inventory[invID] = effTab.join(";");
   else plr.backpack[invID] = effTab.join(";");
@@ -4185,16 +4161,16 @@ function checkFobChange(ulam, place, start1, start2)
   type_here = WorldData.GetType();
 
   if(!(type_here>=0 && type_here<=63)) return false; //must be asteroid
-  if((start1==21 || start2==21) && WorldData.GetNbt(func.parseIntU(place)+1,1)!=0) return false; //driller can be broken always
+  if((start1==21 || start2==21) && WorldData.GetNbt(Parsing.IntU(place)+1,1)!=0) return false; //driller can be broken always
 
-  var fob_here = WorldData.GetFob(func.parseIntU(place)+1);
+  var fob_here = WorldData.GetFob(Parsing.IntU(place)+1);
   return (fob_here==start1 || fob_here==start2);
 }
 
 function fobChange(ulam, place, end)
 {
   WorldData.Load(ulam);
-  WorldData.UpdateFob(func.parseIntU(place) + 1, end);
+  WorldData.UpdateFob(Parsing.IntU(place) + 1, end);
   mtpCountersReset(ulam,place);
   growActive(ulam);
 }
@@ -4212,13 +4188,13 @@ function checkFobDataChange(ulam, place, item, deltaCount, id21)
   type_here = WorldData.GetType();
 
   if(!(type_here>=0 && type_here<=63)) return false; //must be asteroid
-  if(WorldData.GetFob(func.parseIntU(place)+1) != id21) return false; //must be good storage
+  if(WorldData.GetFob(Parsing.IntU(place)+1) != id21) return false; //must be good storage
 
-  var item_here = WorldData.GetNbt(func.parseIntU(place)+1,0);
-  var count_here = WorldData.GetNbt(func.parseIntU(place)+1,1);
+  var item_here = WorldData.GetNbt(Parsing.IntU(place)+1,0);
+  var count_here = WorldData.GetNbt(Parsing.IntU(place)+1,1);
   if(item_here==item || count_here==0)
   {
-      var countEnd = count_here + func.parseIntU(deltaCount);
+      var countEnd = count_here + Parsing.IntU(deltaCount);
       return (countEnd>=0 && countEnd<=max_count);
   }
   else return false;
@@ -4226,13 +4202,13 @@ function checkFobDataChange(ulam, place, item, deltaCount, id21)
 function fobDataChange(ulam, place, item, deltaCount)
 {
   WorldData.Load(ulam);
-  var countEnd = WorldData.GetNbt(func.parseIntU(place)+1,1) + func.parseIntU(deltaCount);
+  var countEnd = WorldData.GetNbt(Parsing.IntU(place)+1,1) + Parsing.IntU(deltaCount);
   if(countEnd != 0) {
-    WorldData.UpdateNbt(func.parseIntU(place)+1,0,func.parseIntU(item));
-    WorldData.UpdateNbt(func.parseIntU(place)+1,1,func.parseIntU(countEnd));
+    WorldData.UpdateNbt(Parsing.IntU(place)+1,0,Parsing.IntU(item));
+    WorldData.UpdateNbt(Parsing.IntU(place)+1,1,Parsing.IntU(countEnd));
   } else {
-    WorldData.UpdateNbt(func.parseIntU(place)+1,0,0);
-    WorldData.UpdateNbt(func.parseIntU(place)+1,1,0);
+    WorldData.UpdateNbt(Parsing.IntU(place)+1,0,0);
+    WorldData.UpdateNbt(Parsing.IntU(place)+1,1,0);
   }
   return countEnd;
 }
@@ -4250,12 +4226,12 @@ function nbts(ulam)
 function nbt(ulam, place)
 {
   WorldData.Load(ulam);
-  return WorldData.GetNbt(func.parseIntU(place)+1,0) + ";" + WorldData.GetNbt(func.parseIntU(place)+1,1);
+  return WorldData.GetNbt(Parsing.IntU(place)+1,0) + ";" + WorldData.GetNbt(Parsing.IntU(place)+1,1);
 }
 function getBlockAt(ulam, place)
 {
   WorldData.Load(ulam);
-  return WorldData.GetFob(func.parseIntU(place) + 1);
+  return WorldData.GetFob(Parsing.IntU(place) + 1);
 }
 
 //Death functions
@@ -4317,23 +4293,23 @@ function getPlayerPosition(pid)
 function getPlayerBulletDamage(pid,type)
 {
   var spl = plr.upgrades[pid].split(";");
-  var bulUpg = func.parseFloatU(spl[3]);
+  var bulUpg = Parsing.FloatU(spl[3]);
   var mult = 1.08 ** bulUpg;
   switch(type)
   {
-    case "1": return mult * func.parseFloatU(gameplay[3]);
-    case "2": return mult * func.parseFloatU(gameplay[27]);
-    case "3": return mult * func.parseFloatU(gameplay[28]);
-    case "14": return mult * func.parseFloatU(gameplay[33]);
-    case "15": return mult * func.parseFloatU(gameplay[34]);
+    case "1": return mult * Parsing.FloatU(gameplay[3]);
+    case "2": return mult * Parsing.FloatU(gameplay[27]);
+    case "3": return mult * Parsing.FloatU(gameplay[28]);
+    case "14": return mult * Parsing.FloatU(gameplay[33]);
+    case "15": return mult * Parsing.FloatU(gameplay[34]);
     default: return 0;
   }
 }
 function getPlayerArtefact(pid)
 {
   var splitted = plr.backpack[pid].split(";");
-  var item = func.parseIntU(splitted[30]);
-  var count = func.parseIntU(splitted[31]);
+  var item = Parsing.IntU(splitted[30]);
+  var count = Parsing.IntU(splitted[31]);
   item -= 41;
   if(item < 1 || item > 6) item=0;
   if(count > 0) return item;
@@ -4358,7 +4334,7 @@ function Censure(pldata,pid,livID)
   var artid = plr.backpack[pid].split(";")[30] - 41;
   if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
   if(artid<1 || artid>6) artid=0;
-  var cl_martid = func.parseIntU(pldata[5].split("&")[1]) % 100;
+  var cl_martid = Parsing.IntU(pldata[5].split("&")[1]) % 100;
   artid = (100*artid + cl_martid);
   pldata[5] = pldata[5].split("&")[0] + "&" + artid;
 
@@ -4372,11 +4348,11 @@ function updateHasSense(before,after,pid,flags)
   {
     //check if at spawn/respawn
     var tab_aft = after.split(";");
-    var pos_aft_x = func.parseFloatU(tab_aft[0]);
-    var pos_aft_y = func.parseFloatU(tab_aft[1]);
+    var pos_aft_x = Parsing.FloatU(tab_aft[0]);
+    var pos_aft_y = Parsing.FloatU(tab_aft[1]);
     var tab_dat = plr.data[pid].split(";");
-    var pos_dat_x = func.parseFloatU(tab_dat[0]);
-    var pos_dat_y = func.parseFloatU(tab_dat[1]);
+    var pos_dat_x = Parsing.FloatU(tab_dat[0]);
+    var pos_dat_y = Parsing.FloatU(tab_dat[1]);
     var spawn_deviation = Math.sqrt((pos_aft_x-pos_dat_x)**2 + (pos_aft_y-pos_dat_y)**2);
     if(spawn_deviation > 1) return false;
   }
@@ -4385,11 +4361,11 @@ function updateHasSense(before,after,pid,flags)
   {
     //check if good movement
     var tab_bef = before.split(";");
-    var pos_bef_x = func.parseFloatU(tab_bef[0]);
-    var pos_bef_y = func.parseFloatU(tab_bef[1]);
+    var pos_bef_x = Parsing.FloatU(tab_bef[0]);
+    var pos_bef_y = Parsing.FloatU(tab_bef[1]);
     var tab_aft = after.split(";");
-    var pos_aft_x = func.parseFloatU(tab_aft[0]);
-    var pos_aft_y = func.parseFloatU(tab_aft[1]);
+    var pos_aft_x = Parsing.FloatU(tab_aft[0]);
+    var pos_aft_y = Parsing.FloatU(tab_aft[1]);
     var position_change = Math.sqrt((pos_aft_x-pos_bef_x)**2 + (pos_aft_y-pos_bef_y)**2);
     
     if(flags[3]!="T") {
@@ -4533,9 +4509,9 @@ wss.on("connection", function connection(ws,req)
           if (plr.inventory[i] == "0") plr.inventory[i] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
           if (plr.backpack[i] == "0") plr.backpack[i] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
           if (plr.upgrades[i] == "0") plr.upgrades[i] = "0;0;0;0;0";
-          plr.sHealth[i] = func.parseFloatU(plr.data[i].split(";")[8]);
-          plr.sRegTimer[i] = func.parseFloatU(plr.data[i].split(";")[10]);
-          plr.pclass[i].DataImport(plr.data[i].split(";")[6],plr.data[i].split(";")[7],func.parseFloatU(plr.data[i].split(";")[11]));
+          plr.sHealth[i] = Parsing.FloatU(plr.data[i].split(";")[8]);
+          plr.sRegTimer[i] = Parsing.FloatU(plr.data[i].split(";")[10]);
+          plr.pclass[i].DataImport(plr.data[i].split(";")[6],plr.data[i].split(";")[7],Parsing.FloatU(plr.data[i].split(";")[11]));
           SaveAllNow();
 
           plr.conID[i] = arg[3];
@@ -4634,14 +4610,14 @@ wss.on("connection", function connection(ws,req)
 
       if(censured=="1") arg[4]="FFF"+arg[4][3];
 
-      var memX = func.parseFloatU(plr.data[arg[1]].split(";")[0]);
-      var memY = func.parseFloatU(plr.data[arg[1]].split(";")[1]);
+      var memX = Parsing.FloatU(plr.data[arg[1]].split(";")[0]);
+      var memY = Parsing.FloatU(plr.data[arg[1]].split(";")[1]);
 
       var hiddenFlags = "";
       plr.players[arg[1]] = censured;
       if(censured!="1")
       {
-        if(func.parseIntU(censured.split(";")[5].split("&")[1])%25==1) hiddenFlags += "T";
+        if(Parsing.IntU(censured.split(";")[5].split("&")[1])%25==1) hiddenFlags += "T";
         else hiddenFlags += "F";
         plr.data[arg[1]] = censured;
       }
@@ -4671,7 +4647,7 @@ wss.on("connection", function connection(ws,req)
         plr.impulsed[arg[1]] = [];
       }
       if(hiddenFlags[0]=="T") {
-        plr.pclass[arg[1]].ctrlPower -= unit * func.parseFloatU(gameplay[22]);
+        plr.pclass[arg[1]].ctrlPower -= unit * Parsing.FloatU(gameplay[22]);
       }
       plr.pclass[arg[1]].powerRegenBlocked = (hiddenFlags[0]=="T") || (arg[4][0]=="T");
 
@@ -4679,10 +4655,10 @@ wss.on("connection", function connection(ws,req)
       var j, caray = censured.split(";");
       if(caray.length>1 && arg[4][0]=="T")
       {
-        var xa = func.parseFloatU(caray[0]);
-        var ya = func.parseFloatU(caray[1]);
-        var xb = func.parseFloatU(memX);
-        var yb = func.parseFloatU(memY);
+        var xa = Parsing.FloatU(caray[0]);
+        var ya = Parsing.FloatU(caray[1]);
+        var xb = Parsing.FloatU(memX);
+        var yb = Parsing.FloatU(memY);
         func.CollisionLinearBulletSet(xa,ya,xb,yb,1.2);
 
         if(config.pvp)
@@ -4691,11 +4667,11 @@ wss.on("connection", function connection(ws,req)
           if(plr.players[j]!="0" && plr.players[j]!="1" && arg[1]!=j && !plr.impulsed[arg[1]].includes(j))
           {
             var plas = plr.players[j].split(";");
-            var xc = func.parseFloatU(plas[0]);
-            var yc = func.parseFloatU(plas[1]);
+            var xc = Parsing.FloatU(plas[0]);
+            var yc = Parsing.FloatU(plas[1]);
             if(func.CollisionLinearCheck(xc,yc,0.92))
             {
-              DamageFLOAT(j,func.parseFloatU(gameplay[29]))
+              DamageFLOAT(j,Parsing.FloatU(gameplay[29]))
               plr.impulsed[arg[1]].push(j);
             }
           }
@@ -4711,7 +4687,7 @@ wss.on("connection", function connection(ws,req)
             var yc = scrs[j].posCY + func.ScrdToFloat(scrs[j].dataY[9-2]);
             if(func.CollisionLinearCheck(xc,yc,7.5))
             {
-              DamageBoss(j,func.parseFloatU(gameplay[29]))
+              DamageBoss(j,Parsing.FloatU(gameplay[29]))
               plr.impulsed[arg[1]].push(-l);
             }
           }
@@ -4724,8 +4700,8 @@ wss.on("connection", function connection(ws,req)
       if(!VerifyCommand(arg,["PlaID","Msg256"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
 
-      console.log(hourHeader + "<" + plr.nicks[func.parseFloatU(arg[1])] + "> " + arg[2].replaceAll("\t"," "));
-      sendToAllPlayers("/RetChatMessage " + plr.nicks[func.parseFloatU(arg[1])] + " " + arg[2] + " X X");
+      console.log(hourHeader + "<" + plr.nicks[Parsing.FloatU(arg[1])] + "> " + arg[2].replaceAll("\t"," "));
+      sendToAllPlayers("/RetChatMessage " + plr.nicks[Parsing.FloatU(arg[1])] + " " + arg[2] + " X X");
     }
     if (arg[0] == "/InventoryPush") // 1[PlayerID] 2[PushID]
     {
@@ -4828,8 +4804,8 @@ wss.on("connection", function connection(ws,req)
             if(plr.players[j]!="0" && plr.players[j]!="1")
             {
               var plas = plr.players[j].split(";");
-              var dx = func.parseFloatU(plas[0]) - scrs[i].posCX;
-              var dy = func.parseFloatU(plas[1]) - scrs[i].posCY;
+              var dx = Parsing.FloatU(plas[0]) - scrs[i].posCX;
+              var dy = Parsing.FloatU(plas[1]) - scrs[i].posCY;
               if(dx**2 + dy**2 <= (in_arena_range)**2) {
                 players_inside++;
                 if(arg[1]==j+"") found_me = true;
@@ -4903,14 +4879,14 @@ wss.on("connection", function connection(ws,req)
       var ljSlot = arg[3];
 
       var ljTab = plr.upgrades[ljPlaID].split(";");
-      var current_level = func.parseIntU(ljTab[ljUpgID]);
+      var current_level = Parsing.IntU(ljTab[ljUpgID]);
 
       var upg_costs = [
-        [func.parseIntU(gameplay[112]),func.parseIntU(gameplay[113])],
-        [func.parseIntU(gameplay[114]),func.parseIntU(gameplay[115])],
-        [func.parseIntU(gameplay[116]),func.parseIntU(gameplay[117])],
-        [func.parseIntU(gameplay[118]),func.parseIntU(gameplay[119])],
-        [func.parseIntU(gameplay[120]),func.parseIntU(gameplay[121])]
+        [Parsing.IntU(gameplay[112]),Parsing.IntU(gameplay[113])],
+        [Parsing.IntU(gameplay[114]),Parsing.IntU(gameplay[115])],
+        [Parsing.IntU(gameplay[116]),Parsing.IntU(gameplay[117])],
+        [Parsing.IntU(gameplay[118]),Parsing.IntU(gameplay[119])],
+        [Parsing.IntU(gameplay[120]),Parsing.IntU(gameplay[121])]
       ];
       var ljItem = upg_costs[current_level][0];
       var ljCount = upg_costs[current_level][1];
@@ -5073,19 +5049,19 @@ wss.on("connection", function connection(ws,req)
       var tab = craftings.split(";");
 
       //first ingredient
-      var cId1 = tab[func.parseIntU(arg[2])*6 + 0];
-      var cCo1 = tab[func.parseIntU(arg[2])*6 + 1];
+      var cId1 = tab[Parsing.IntU(arg[2])*6 + 0];
+      var cCo1 = tab[Parsing.IntU(arg[2])*6 + 1];
       var cSl1 = arg[3];
 
       //second ingredient
-      var cId2 = tab[func.parseIntU(arg[2])*6 + 2];
-      var cCo2 = tab[func.parseIntU(arg[2])*6 + 3];
+      var cId2 = tab[Parsing.IntU(arg[2])*6 + 2];
+      var cCo2 = tab[Parsing.IntU(arg[2])*6 + 3];
       var cSl2 = arg[4];
       if(cSl2=="-1" && cCo2!="0") return;
 
       //crafted item
-      var cIdE = tab[func.parseIntU(arg[2])*6 + 4];
-      var cCoE = tab[func.parseIntU(arg[2])*6 + 5];
+      var cIdE = tab[Parsing.IntU(arg[2])*6 + 4];
+      var cCoE = tab[Parsing.IntU(arg[2])*6 + 5];
       var cSlE = arg[5];
 
       var safeCopyI = plr.inventory[cPlaID];
@@ -5206,8 +5182,8 @@ wss.on("connection", function connection(ws,req)
       if(indof!=-1) {
         give_array[indof] = "USED";
         var bef = plr.players[arg[1]].split(";");
-        bef[0] = func.parseFloatU(arg[2]);
-        bef[1] = func.parseFloatU(arg[3]);
+        bef[0] = Parsing.FloatU(arg[2]);
+        bef[1] = Parsing.FloatU(arg[3]);
         plr.players[arg[1]] = bef.join(";");
         console.log("Teleported player "+plr.nicks[arg[1]]+" to coordinates: "+bef[0]+" "+bef[1]);
       }
@@ -5426,12 +5402,12 @@ wss.on("connection", function connection(ws,req)
       else return;
 
       //Speed anti-cheat
-      if((func.parseFloatU(bVectX)**2 + func.parseFloatU(bVectY)**2) ** 0.5 > 1.2) { sendTo(ws,revert_string); return; } //bullet too fast
+      if((Parsing.FloatU(bVectX)**2 + Parsing.FloatU(bVectY)**2) ** 0.5 > 1.2) { sendTo(ws,revert_string); return; } //bullet too fast
 
       //Start position anti-cheat
       var ppos = getPlayerPosition(arg[1]);
-      var ddx = func.parseFloatU(ppos[0]) - func.parseFloatU(bPosX);
-      var ddy = func.parseFloatU(ppos[1]) - func.parseFloatU(bPosY);
+      var ddx = Parsing.FloatU(ppos[0]) - Parsing.FloatU(bPosX);
+      var ddy = Parsing.FloatU(ppos[1]) - Parsing.FloatU(bPosY);
       var distance_to_center = Math.sqrt(ddx**2 + ddy**2);
       if(distance_to_center > config.anti_cheat.bullet_spawn_allow_radius) { sendTo(ws,revert_string); return; } //bullet wrong spawn position
 
@@ -5444,20 +5420,20 @@ wss.on("connection", function connection(ws,req)
       tpl.immune = [];
 
       var spl = plr.upgrades[bPlaID].split(";");
-      var bulUpg = func.parseFloatU(spl[3]);
+      var bulUpg = Parsing.FloatU(spl[3]);
 
-      tpl.ID = func.parseIntU(bRandID);
-      tpl.owner = func.parseIntU(bPlaID);
-      tpl.type = func.parseIntU(bType);
-      tpl.start.x = func.parseFloatU(bPosX);
-      tpl.start.y = func.parseFloatU(bPosY);
-      tpl.vector.x = func.parseFloatU(bVectX);
-      tpl.vector.y = func.parseFloatU(bVectY);
+      tpl.ID = Parsing.IntU(bRandID);
+      tpl.owner = Parsing.IntU(bPlaID);
+      tpl.type = Parsing.IntU(bType);
+      tpl.start.x = Parsing.FloatU(bPosX);
+      tpl.start.y = Parsing.FloatU(bPosY);
+      tpl.vector.x = Parsing.FloatU(bVectX);
+      tpl.vector.y = Parsing.FloatU(bVectY);
       tpl.pos.x = tpl.start.x;
       tpl.pos.y = tpl.start.y;
       tpl.upgrade_boost = bulUpg;
 
-      tpl.normal_damage = func.parseFloatU(bDmg);
+      tpl.normal_damage = Parsing.FloatU(bDmg);
       tpl.is_unstable = (bType=="3");
       if(bBulSrc=="A") tpl.unstable_virtual = true;
 
@@ -5569,8 +5545,8 @@ wss.on("connection", function connection(ws,req)
               var tpl = Object.assign({},scrTemplate);
               tpl.bID = bID;
               tpl.type = bossType;
-              tpl.posCX = func.parseFloatU(bossPosX);
-              tpl.posCY = func.parseFloatU(bossPosY);
+              tpl.posCX = Parsing.FloatU(bossPosX);
+              tpl.posCY = Parsing.FloatU(bossPosY);
               tpl.sID = makeUlam(Math.round(tpl.posCX/200)*2,Math.round(tpl.posCY/200)*2); //all bosses are inside structural squares
               tpl.dataX = [];
               tpl.dataY = [];
@@ -5588,7 +5564,7 @@ wss.on("connection", function connection(ws,req)
       if(!VerifyCommand(arg,["PlaID","0-16k"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
       
-      sendTo(ws,"/RetMemoryData "+arg[2]+"$"+biome_memories[func.parseIntU(arg[2])]+" X X");
+      sendTo(ws,"/RetMemoryData "+arg[2]+"$"+biome_memories[Parsing.IntU(arg[2])]+" X X");
     }
   });
 });
@@ -5833,7 +5809,7 @@ function translate(str, mod) {
 
   //If just translated
   try {
-    var ipr = func.parseIntE(str) + "";
+    var ipr = Parsing.IntE(str) + "";
     return ipr;
   } catch {
     return "ERROR";
@@ -5904,7 +5880,7 @@ function allPercentRemove(str, must_be_1000) {
       lng--;
       pom = percentRemove(pom);
       pre = totalChance;
-      totalChance += func.parseIntE(func.parseFloatE(pom) * 10 + "");
+      totalChance += Parsing.IntE(Parsing.FloatE(pom) * 10 + "");
       tab[i] = pre + ";" + (totalChance - 1);
     }
   }
@@ -6021,7 +5997,7 @@ function finalTranslate(varN) {
       {
           try{
 
-          mID=func.parseIntE(psPath[1]);
+          mID=Parsing.IntE(psPath[1]);
           customStructures[mID]=jse3Dat[i].replaceAll('^',' ');
 
           }catch{datapackError("Error in variable: " + jse3Var[i]);}
@@ -6030,14 +6006,14 @@ function finalTranslate(varN) {
       if (psPath[0] == "game_translate") {
         if (psPath[1] == "Asteroids") {
           try {
-            mID = func.parseIntE(psPath[2]);
+            mID = Parsing.IntE(psPath[2]);
             translateAsteroid[mID] = jse3Dat[i];
           } catch {
             datapackError("Error in variable: " + jse3Var[i]);
           }
         } else if (psPath[1] == "Items_and_objects") {
           try {
-            mID = func.parseIntE(psPath[2]);
+            mID = Parsing.IntE(psPath[2]);
             translateFob[mID] = jse3Dat[i];
           } catch {
             datapackError("Error in variable: " + jse3Var[i]);
@@ -6067,8 +6043,8 @@ function finalTranslate(varN) {
       ) {
         try {
           if (psPath[0] == "modified_drops")
-            mID = func.parseIntE(translate(psPath[1], 2));
-          else mID = func.parseIntE(translate(psPath[1], 1));
+            mID = Parsing.IntE(translate(psPath[1], 2));
+          else mID = Parsing.IntE(translate(psPath[1], 1));
           jse3Var[i] = psPath[0] + ";" + mID;
 
           jse3Dat[i] = translateAll(jse3Dat[i], 2);
@@ -6092,13 +6068,13 @@ function finalTranslate(varN) {
     } else if (lgt == 3) {
       if (psPath[0] == "craftings") {
         try {
-          mID = func.parseIntE(psPath[1]);
+          mID = Parsing.IntE(psPath[1]);
           if (psPath[2] == "title_image") {
             mID2 = 7;
             mID = 7 * (mID - 1) + 6;
             jse3Dat[i] = translate(jse3Dat[i], 2) + ";1;0;0;-1;1";
           } else {
-            mID2 = func.parseIntE(psPath[2]);
+            mID2 = Parsing.IntE(psPath[2]);
             mID = 7 * (mID - 1) + mID2 - 1;
             jse3Dat[i] = translateAll(jse3Dat[i], 2);
           }
@@ -6124,14 +6100,14 @@ function finalTranslate(varN) {
         }
       } else if (psPath[0] == "generator_settings") {
         try {
-          mID = func.parseIntE(psPath[1]);
+          mID = Parsing.IntE(psPath[1]);
           if (mID < 0 || mID > 31) throw "error";
 
           if (psPath[2] == "settings") {
             biomeTags[mID] = jse3Dat[i].replaceAll(" ", "_");
           } else if (psPath[2] != "chance") {
             if (psPath[2] == "all_sizes") mID2 = -4;
-            else mID2 = func.parseIntE(psPath[2]) - 4;
+            else mID2 = Parsing.IntE(psPath[2]) - 4;
             if ((mID2 < 0 || mID2 > 6) && mID2 != -4) throw "error";
 
             if (mID2 != -4) mID = 7 * mID + mID2;
@@ -6167,7 +6143,7 @@ function finalTranslate(varN) {
     if (lgt == 3) {
       if (psPath[0] == "generator_settings") {
         try {
-          mID = func.parseIntE(psPath[1]);
+          mID = Parsing.IntE(psPath[1]);
           if (mID < 0 || mID > 31) throw "error";
 
           if (psPath[2] == "chance") {
@@ -6183,7 +6159,7 @@ function finalTranslate(varN) {
             if (tagContains(biomeTags[mID], "structural")) mno = 2;
             else mno = 1;
 
-            cur1000biome += mno * func.parseIntE(func.parseFloatE(jse3Dat[i]) * 10 + "");
+            cur1000biome += mno * Parsing.IntE(Parsing.FloatE(jse3Dat[i]) * 10 + "");
             efe += cur1000biome - 1 + ";";
             biomeChances += efe;
           }
@@ -6244,7 +6220,7 @@ function intsAll(str, div) {
   try {
     if (str != "")
       for (i = 0; i < lngt; i++) {
-        pom = func.parseIntE(strs[i]);
+        pom = Parsing.IntE(strs[i]);
       }
   } catch {
     return false;
@@ -6264,12 +6240,12 @@ function in1000(str, must_be_1000) {
   var actual = -1;
   for (i = 1; i < lngt; i++) {
     if (ended) {
-      if (actual + 1 != func.parseIntE(strT[i])) return false;
+      if (actual + 1 != Parsing.IntE(strT[i])) return false;
       actual++;
       ended = false;
     } else {
-      if (actual > func.parseIntE(strT[i]) + 1) return false;
-      actual = func.parseIntE(strT[i]);
+      if (actual > Parsing.IntE(strT[i]) + 1) return false;
+      actual = Parsing.IntE(strT[i]);
       ended = true;
       i++;
     }
@@ -6286,7 +6262,7 @@ function goodItems(str, craft_mode) {
   if (str == "") lngt = 0;
 
   for (i = 0; i < lngt; i += 2) {
-    if (func.parseIntE(strT[i + 1]) < 0) return false;
+    if (Parsing.IntE(strT[i + 1]) < 0) return false;
     if (strT[i] == "0" && strT[i + 1] != "0") return false;
     if (strT[i + 1] == "0" && strT[i] != "0") return false;
   }
@@ -6365,14 +6341,14 @@ function datapackPaste(splitTab) {
     //Load data
     craftings = raws[0];
     biomeChances = raws[8];
-    craftMaxPage = func.parseIntE(raws[1]) + "";
+    craftMaxPage = Parsing.IntE(raws[1]) + "";
 
     for (i = 0; i < 16; i++) drillLoot[i] = raws[2].split("'")[i];
     for (i = 0; i < 64; i++) fobGenerate[i] = raws[3].split("'")[i];
     for (i = 0; i < 224; i++) typeSet[i] = raws[4].split("'")[i];
     for (i = 0; i < gpl_number; i++) {
       if (i==105||i==106) gameplay[i] = raws[5].split("'")[i];
-      else gameplay[i] = func.parseFloatE(raws[5].split("'")[i]) + "";
+      else gameplay[i] = Parsing.FloatE(raws[5].split("'")[i]) + "";
     }
     for (i = 0; i < 128; i++) modifiedDrops[i] = raws[6].split("'")[i];
     for (i = 0; i < 32; i++) biomeTags[i] = raws[7].replaceAll(" ", "_").split("'")[i];
@@ -6388,7 +6364,7 @@ function datapackPaste(splitTab) {
 
 function GplGet(str)
 {
-    return func.parseFloatU(gameplay[func.VarNumber(str,gpl_number)]);
+    return Parsing.FloatU(gameplay[func.VarNumber(str,gpl_number)]);
 }
 
 //Start functions
@@ -6532,8 +6508,8 @@ function MemoriesForClient(client_data)
   var spl = client_data.split(";");
   return [
     [7812,biome_memories[7812]].join("$"),
-    MemoriesOfCoords(func.parseFloatU(spl[0]),func.parseFloatU(spl[1])),
-    MemoriesOfCoords(func.parseFloatU(spl[6]),func.parseFloatU(spl[7]))
+    MemoriesOfCoords(Parsing.FloatU(spl[0]),Parsing.FloatU(spl[1])),
+    MemoriesOfCoords(Parsing.FloatU(spl[6]),Parsing.FloatU(spl[7]))
   ].join("?");
 }
 function MemoriesOfCoords(x,y)
@@ -6571,7 +6547,7 @@ else
     for(dii=0;dii<mem_files.length;dii++)
     {
         const mem_file = mem_files[dii];
-        const wyodr = parseInt(mem_file.match(/\d+/));
+        const wyodr = Parsing.IntU(mem_file.match(/\d+/));
         if("Memory_"+wyodr+".se3" == mem_file)
         {
             var natete = universe_name + "/Biomes/Memory_"+wyodr+".se3";
@@ -6583,7 +6559,7 @@ else
 
 //Generator initialize
 if(existsF(universe_name + "/Seed.se3")) seed = readF(universe_name + "/Seed.se3").split("\r\n")[0];
-seed = func.parseIntE(Generator.SetSeed(seed));
+seed = Parsing.IntE(Generator.SetSeed(seed));
 writeF(universe_name + "/Seed.se3", seed + "\r\n");
 Generator.TagNumbersInitialize();
 
@@ -6630,7 +6606,7 @@ if(gsol5a > gsol5b)
   gsol5b = gsolpom;
 }
 
-unstable_sprobability = Math.floor(func.parseFloatU(gameplay[24])*50+1);
+unstable_sprobability = Math.floor(Parsing.FloatU(gameplay[24])*50+1);
 if(unstable_sprobability < 1) unstable_sprobability = 1;
 
 growSolid[5] = gsol5a +";"+ gsol5b +";6";
@@ -6796,8 +6772,8 @@ class Commands
     }
     static difficultySet(arg)
     {
-        var diff_pars = func.parseIntP(arg[2]);
-        if(isNaN(diff_pars) || diff_pars < 0 || diff_pars > 5)
+        var diff_pars = Parsing.IntU(arg[2]);
+        if(!Parsing.IntC(arg[2]) || diff_pars < 0 || diff_pars > 5)
         {
             console.log("Couldn't set such difficulty.");
         }
@@ -6905,8 +6881,8 @@ class Commands
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
         {
-            var amnt = func.parseFloatP(arg[2]);
-            if(isNaN(amnt) || amnt==0)
+            var amnt = Parsing.FloatU(arg[2]);
+            if(!Parsing.FloatC(arg[2]) || amnt==0)
             {
                 console.log("Couldn't modify hp in such way.");
             }
@@ -6914,7 +6890,6 @@ class Commands
             {
                 HealFLOAT(indof,amnt);
                 console.log("Healed player "+arg[1]+": "+arg[2]+"hp");
-
             }
             else if(amnt<0)
             {
@@ -6929,10 +6904,10 @@ class Commands
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
         {
-            var item = func.parseIntP(arg[2]);
-            var count = func.parseIntP(arg[3]);
+            var item = Parsing.IntU(arg[2]);
+            var count = Parsing.IntU(arg[3]);
             
-            if(isNaN(item) || isNaN(count)) {
+            if(!Parsing.IntC(arg[2]) || !Parsing.IntC(arg[3])) {
                 console.log("Item and count should be integers.");
             }
             if(item<=0 || count<=0 || item>127) {
@@ -6950,8 +6925,8 @@ class Commands
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
         {
-            var x = (func.parseFloatU(arg[2])+"").replaceAll(".",",");
-            var y = (func.parseFloatU(arg[3])+"").replaceAll(".",",");
+            var x = (Parsing.FloatU(arg[2])+"").replaceAll(".",",");
+            var y = (Parsing.FloatU(arg[3])+"").replaceAll(".",",");
             give_array_add_temp("tp "+arg[1]+" "+x+" "+y);
             sendTo(se3_ws[indof],"/RetMemoryData "+MemoriesForClient([x,y,0,0,0,0,0,0].join(";"))+" X X");
             sendTo(se3_ws[indof],"/RetCommandTp "+x+" "+y+" X "+plr.livID[indof]);

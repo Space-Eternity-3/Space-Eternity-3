@@ -47,7 +47,7 @@ public class SC_upgrades : MonoBehaviour
         int i;
         if((int)Communtron4.position.y!=100)
         {
-            for(i=0;i<5;i++) UPG_levels[i] = int.Parse(SC_data.upgrades[i]);
+            for(i=0;i<5;i++) UPG_levels[i] = Parsing.IntE(SC_data.upgrades[i]);
             for(i=0;i<5;i++) MTP_levels[i] = UPG_levels[i];
         }
 
@@ -65,7 +65,7 @@ public class SC_upgrades : MonoBehaviour
         string[] upgS = entry.Split(';');
         for(i=0;i<5;i++)
         {
-            UPG_levels[i] = int.Parse(upgS[i]);
+            UPG_levels[i] = Parsing.IntE(upgS[i]);
             MTP_levels[i] = UPG_levels[i];
         }
     }
@@ -108,11 +108,11 @@ public class SC_upgrades : MonoBehaviour
     {
         switch(UPG_levels[ust])
         {
-            case 0: return int.Parse(SC_data.Gameplay[112]);
-            case 1: return int.Parse(SC_data.Gameplay[114]);
-            case 2: return int.Parse(SC_data.Gameplay[116]);
-            case 3: return int.Parse(SC_data.Gameplay[118]);
-            case 4: return int.Parse(SC_data.Gameplay[120]);
+            case 0: return Parsing.IntE(SC_data.Gameplay[112]);
+            case 1: return Parsing.IntE(SC_data.Gameplay[114]);
+            case 2: return Parsing.IntE(SC_data.Gameplay[116]);
+            case 3: return Parsing.IntE(SC_data.Gameplay[118]);
+            case 4: return Parsing.IntE(SC_data.Gameplay[120]);
             case 5: return 1;
         }
         return 0;
@@ -121,11 +121,11 @@ public class SC_upgrades : MonoBehaviour
     {
         switch(UPG_levels[ust])
         {
-            case 0: return int.Parse(SC_data.Gameplay[113]);
-            case 1: return int.Parse(SC_data.Gameplay[115]);
-            case 2: return int.Parse(SC_data.Gameplay[117]);
-            case 3: return int.Parse(SC_data.Gameplay[119]);
-            case 4: return int.Parse(SC_data.Gameplay[121]);
+            case 0: return Parsing.IntE(SC_data.Gameplay[113]);
+            case 1: return Parsing.IntE(SC_data.Gameplay[115]);
+            case 2: return Parsing.IntE(SC_data.Gameplay[117]);
+            case 3: return Parsing.IntE(SC_data.Gameplay[119]);
+            case 4: return Parsing.IntE(SC_data.Gameplay[121]);
             case 5: return 0;
         }
         return 0;

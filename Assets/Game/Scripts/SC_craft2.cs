@@ -52,8 +52,8 @@ public class SC_craft2 : MonoBehaviour {
 		if(SpaceID==1)
 		for(i=0;i<lngt&&i<16384;i++)
 		{
-			SC_data.imgID[i]=int.Parse(dGet[i*2]);
-			SC_data.imgCO[i]=int.Parse(dGet[i*2+1]);
+			SC_data.imgID[i]=Parsing.IntE(dGet[i*2]);
+			SC_data.imgCO[i]=Parsing.IntE(dGet[i*2+1]);
 		}
 	}
 	void Update()

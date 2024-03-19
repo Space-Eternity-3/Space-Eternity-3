@@ -61,7 +61,7 @@ public class SC_snd_loop : MonoBehaviour
                     V += Mathf.Log(Mathf.Pow(log_base[i],pom-V)-Mathf.Pow(log_base[i],-V)+1,log_base[i]);
                 }
             }
-            float mn = float.Parse(SC_sounds.SC_data.volume) * sound_nvl_[i] * SC_sounds.SC_data.global_volume;
+            float mn = Parsing.FloatE(SC_sounds.SC_data.volume) * sound_nvl_[i] * SC_sounds.SC_data.global_volume;
             V*=0.5f; if(V>=1f) V=1f;
             if(!SC_control.timeStop) sounds[i].volume = V * mn;
 			else sounds[i].volume = 0f;

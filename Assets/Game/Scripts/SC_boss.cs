@@ -492,7 +492,7 @@ public class SC_boss : MonoBehaviour
             if(type==1 && dataID[18]==2) dataID[24] = 0;
             if(dataID[24]>0) dataID[24]--;
             if(dataID[24]%50==0 && dataID[24]!=0) {
-                DamageSGP(float.Parse(SC_data.Gameplay[38]) * Mathf.Pow(1.08f,dataID[25]));
+                DamageSGP(Parsing.FloatE(SC_data.Gameplay[38]) * Mathf.Pow(1.08f,dataID[25]));
             }
             SC_behaviour._FixedUpdate();
         }

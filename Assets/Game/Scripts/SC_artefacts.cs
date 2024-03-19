@@ -44,24 +44,24 @@ public class SC_artefacts : MonoBehaviour
 	
 	public void LoadDataArt()
 	{
-		ProtLevelAdd = float.Parse(SC_data.Gameplay[16]);
-		ProtRegenMultiplier = float.Parse(SC_data.Gameplay[17]);
+		ProtLevelAdd = Parsing.FloatE(SC_data.Gameplay[16]);
+		ProtRegenMultiplier = Parsing.FloatE(SC_data.Gameplay[17]);
 		
-		powerRM[2] = float.Parse(SC_data.Gameplay[18]);
-		ImpulseTime = (int)(float.Parse(SC_data.Gameplay[19])*50+2);
+		powerRM[2] = Parsing.FloatE(SC_data.Gameplay[18]);
+		ImpulseTime = (int)(Parsing.FloatE(SC_data.Gameplay[19])*50+2);
 		if(ImpulseTime < 2) ImpulseTime = 2;
-		ImpulseSpeed = float.Parse(SC_data.Gameplay[20]);
+		ImpulseSpeed = Parsing.FloatE(SC_data.Gameplay[20]);
 		
-		powerRM[3] = float.Parse(SC_data.Gameplay[21]);
-		powerUM[3] = float.Parse(SC_data.Gameplay[22]);
+		powerRM[3] = Parsing.FloatE(SC_data.Gameplay[21]);
+		powerUM[3] = Parsing.FloatE(SC_data.Gameplay[22]);
 
-		powerRM[6] = float.Parse(SC_data.Gameplay[107]);
+		powerRM[6] = Parsing.FloatE(SC_data.Gameplay[107]);
 		
-		SC_control.unstable_probability = (int)(float.Parse(SC_data.Gameplay[23])*50+1);
+		SC_control.unstable_probability = (int)(Parsing.FloatE(SC_data.Gameplay[23])*50+1);
 		if(SC_control.unstable_probability < 1) SC_control.unstable_probability = 1;
-		SC_control.unstable_sprobability = (int)(float.Parse(SC_data.Gameplay[24])*50+1);
+		SC_control.unstable_sprobability = (int)(Parsing.FloatE(SC_data.Gameplay[24])*50+1);
 		if(SC_control.unstable_sprobability < 1) SC_control.unstable_sprobability = 1;
-		SC_control.unstable_force = float.Parse(SC_data.Gameplay[25]);
+		SC_control.unstable_force = Parsing.FloatE(SC_data.Gameplay[25]);
 
 		SC_control.LoadSomeGameplayData();
 	}

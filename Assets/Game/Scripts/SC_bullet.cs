@@ -83,18 +83,18 @@ public class SC_bullet : MonoBehaviour
         if(gun_own==0)
         {
             //Player pre-define
-            if(typ==1) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[3]);
-            if(typ==2) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[27]);
-            if(typ==3) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[28]);
-            if(typ==14) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[33]);
-            if(typ==15) gob.normal_damage = float.Parse(SC_fun.SC_data.Gameplay[34]);
+            if(typ==1) gob.normal_damage = Parsing.FloatE(SC_fun.SC_data.Gameplay[3]);
+            if(typ==2) gob.normal_damage = Parsing.FloatE(SC_fun.SC_data.Gameplay[27]);
+            if(typ==3) gob.normal_damage = Parsing.FloatE(SC_fun.SC_data.Gameplay[28]);
+            if(typ==14) gob.normal_damage = Parsing.FloatE(SC_fun.SC_data.Gameplay[33]);
+            if(typ==15) gob.normal_damage = Parsing.FloatE(SC_fun.SC_data.Gameplay[34]);
             gob.upgrade_boost = SC_control.SC_upgrades.MTP_levels[3];
             gob.normal_damage *= Mathf.Pow(1.08f,gob.upgrade_boost);
         }
         else
         {
             //Boss pre-define
-            gob.normal_damage = SC_fun.boss_damages[typ] * float.Parse(SC_fun.SC_data.Gameplay[32]);
+            gob.normal_damage = SC_fun.boss_damages[typ] * Parsing.FloatE(SC_fun.SC_data.Gameplay[32]);
         }
 
         if(next_bullet_virtual)

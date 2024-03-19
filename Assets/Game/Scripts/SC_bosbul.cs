@@ -270,8 +270,8 @@ public static class Bosbul
     public static void UpdateFobColliders(int ulam)
     {
         string[] nums = Universe.GetSectorNameByUlam(ulam).Split('_');
-        int X = int.Parse(nums[1]); if(X%2!=0) X++;
-        int Y = int.Parse(nums[2]); if(Y%2!=0) Y++;
+        int X = Parsing.IntE(nums[1]); if(X%2!=0) X++;
+        int Y = Parsing.IntE(nums[2]); if(Y%2!=0) Y++;
         Dictionary<string, CBosbulCollider> LocalDictionary = GetBosbuls(X,Y);
         UpdateFobCollidersInDictionary(LocalDictionary,ulam);
     }

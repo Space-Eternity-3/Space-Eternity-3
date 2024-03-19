@@ -71,11 +71,8 @@ public class SC_difficulty : MonoBehaviour
         {
             if(File.Exists(fileName))
             {
-                string contents = File.ReadAllText(fileName);
-                if (int.TryParse(contents, out int num))
-                {
-                    return num;
-                }
+                string contents = File.ReadAllText(fileName)[0]+"";
+                if(Parsing.IntC(contents)) return Parsing.IntU(contents);
                 else return 2;
             }
             else return 2;

@@ -33,7 +33,7 @@ public class SC_camera : MonoBehaviour {
 	}
 	void Update()
 	{
-		camZ=float.Parse(SC_data.camera_zoom);
+		camZ=Parsing.FloatE(SC_data.camera_zoom);
 		
 		//Ctrl + Scroll
 		if(Input.GetAxisRaw("Mouse ScrollWheel")<0&&SC_control.PressedNotInChat(KeyCode.LeftControl,"hold")&&Communtron1.position.z==0f&&!SC_control.pause)
@@ -97,8 +97,8 @@ public class SC_camera : MonoBehaviour {
 		SC_data.CollectAwakeUniversal();
 		fullS=Screen.fullScreen;
 
-		camZ=float.Parse(SC_data.camera_zoom);
-		worldID=int.Parse(SC_data.TempFile);
+		camZ=Parsing.FloatE(SC_data.camera_zoom);
+		worldID=Parsing.IntE(SC_data.TempFile);
 
 		//Interpretate worldID
 		if(!((worldID>=1&&worldID<=8)||(worldID==100)))
@@ -127,7 +127,7 @@ public class SC_camera : MonoBehaviour {
 		
 		if(worldID!=100)
 		{
-			TotalTime=int.Parse(SC_data.UniverseX[worldID-1,0]);
+			TotalTime=Parsing.IntE(SC_data.UniverseX[worldID-1,0]);
 		}
 
 		SC_control.AfterAwake();

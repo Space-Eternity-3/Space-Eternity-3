@@ -23,7 +23,7 @@ public class SC_colboss : MonoBehaviour
         if(collision.gameObject.name=="impulseBody" && SC_control.impulse_enabled && !impulse_used && !SC_boss.multiplayer)
         {
             impulse_used = true;
-            SC_boss.DamageSGP(float.Parse(SC_control.SC_data.Gameplay[29]));
+            SC_boss.DamageSGP(Parsing.FloatE(SC_control.SC_data.Gameplay[29]));
         }
         TriggerEnterOrStay(collision);
     }
@@ -46,7 +46,7 @@ public class SC_colboss : MonoBehaviour
                 }
                 if(bul.type==14)
                 {
-                    float wind_force = float.Parse(SC_control.SC_data.Gameplay[123]) / 50f;
+                    float wind_force = Parsing.FloatE(SC_control.SC_data.Gameplay[123]) / 50f;
                     Vector3 force_vector = SC_boss.bossModels.position - bul.transform.position;
                     force_vector = new Vector3(force_vector.x,force_vector.y,0f);
                     float dist = Mathf.Sqrt(force_vector.x*force_vector.x + force_vector.y*force_vector.y);
@@ -61,7 +61,7 @@ public class SC_colboss : MonoBehaviour
                 {
                     if(bul.upgrade_boost > SC_boss.dataID[25] || SC_boss.dataID[24]==0)
                         SC_boss.dataID[25] = bul.upgrade_boost;
-                    SC_boss.dataID[24] = (int)(float.Parse(SC_control.SC_data.Gameplay[37])+1) * 50;
+                    SC_boss.dataID[24] = (int)(Parsing.FloatE(SC_control.SC_data.Gameplay[37])+1) * 50;
                 }
             }
         }

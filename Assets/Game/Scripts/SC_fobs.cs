@@ -91,7 +91,7 @@ public class SC_fobs : MonoBehaviour
             int lngt=arra.Length/5;
             for(i=0;i<lngt;i++)
             {
-                for(j=0;j<5;j++) marray[j]=int.Parse(arra[5*i+j]);
+                for(j=0;j<5;j++) marray[j]=Parsing.IntE(arra[5*i+j]);
                 if(rander>=marray[3]&&rander<=marray[4]) return marray[0]+";"+UnityEngine.Random.Range(marray[1],marray[2]+1);
             }
         } catch (Exception) { return "8;1"; }
@@ -113,7 +113,7 @@ public class SC_fobs : MonoBehaviour
         if(arg[0]=="/RetFobsChange")
         if((arg[1]==ID+"") && (arg[2]==index+""))
         {
-            int turEnd=int.Parse(arg[3]);
+            int turEnd=Parsing.IntE(arg[3]);
             if(ObjID!=turEnd)
             {
                 potFob21Name = arg[4]+";";
@@ -124,9 +124,9 @@ public class SC_fobs : MonoBehaviour
         if(arg[0]=="/RetFobsDataChange")
         if((arg[1]==ID+"") && (arg[2]==index+"") && (arg[5]!=SC_control.connectionID+""))
         {
-            int itym=int.Parse(arg[3]);
-            int coynt=int.Parse(arg[4]);
-            int id21=int.Parse(arg[7]);
+            int itym=Parsing.IntE(arg[3]);
+            int coynt=Parsing.IntE(arg[4]);
+            int id21=Parsing.IntE(arg[7]);
 
             if(ObjID==id21)
             {
@@ -135,7 +135,7 @@ public class SC_fobs : MonoBehaviour
             }
             else
             {
-                coynt = int.Parse(arg[6]);
+                coynt = Parsing.IntE(arg[6]);
                 potFob21Name=itym+";"+coynt+";";
                 Replace(id21,true);
             }
@@ -144,9 +144,9 @@ public class SC_fobs : MonoBehaviour
         if(arg[0]=="/RetFobsDataCorrection")
         if((arg[1]==ID+"") && (arg[2]==index+"") && (arg[4]==SC_control.connectionID+""))
         {
-            int itym = int.Parse(arg[3].Split(';')[0]);
-            int deltaCoynt = int.Parse(arg[3].Split(';')[2]);
-            int id21=int.Parse(arg[5]);
+            int itym = Parsing.IntE(arg[3].Split(';')[0]);
+            int deltaCoynt = Parsing.IntE(arg[3].Split(';')[2]);
+            int id21=Parsing.IntE(arg[5]);
 
             if(ObjID==id21)
             {
@@ -159,7 +159,7 @@ public class SC_fobs : MonoBehaviour
         if(arg[0]=="/RetFobsTurn")
         if((arg[2]==ID+"") && (arg[3]==index+"") && MTPblocker<=0)
         {
-            int turEnd = int.Parse(arg[4]);
+            int turEnd = Parsing.IntE(arg[4]);
             Replace(turEnd,true);
             return true;
         }
@@ -334,8 +334,8 @@ public class SC_fobs : MonoBehaviour
         if(SC_data.ModifiedDrops[ObjID]!="")
         {
             string[] drp = SC_data.ModifiedDrops[ObjID].Split(';');
-            DropID=int.Parse(drp[0]);
-            DropCount=int.Parse(drp[1]);
+            DropID=Parsing.IntE(drp[0]);
+            DropCount=Parsing.IntE(drp[1]);
         }
 
         if(GrowTurn && !mother)
@@ -595,8 +595,8 @@ public class SC_fobs : MonoBehaviour
                     }
                     if(localDrop!="X")
                     {
-                        int ldI=int.Parse(localDrop.Split(';')[0]);
-                        int ldC=int.Parse(localDrop.Split(';')[1]);
+                        int ldI=Parsing.IntE(localDrop.Split(';')[0]);
+                        int ldC=Parsing.IntE(localDrop.Split(';')[1]);
                     
                         slot = SC_slots.InvChange(ldI,ldC,true,true,false);
 

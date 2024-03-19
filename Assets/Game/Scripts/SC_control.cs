@@ -243,7 +243,7 @@ public class SC_control : MonoBehaviour {
 	}
 	public float GetHealthFraction(float hp)
 	{
-		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
+		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+Parsing.FloatE(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
 		float heal=0.02f*hp/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
 		return heal;
@@ -336,11 +336,11 @@ public class SC_control : MonoBehaviour {
 			if(typ==14) coltyp = 2;
 			if(typ==15) coltyp = 3;
 			
-			cooldown = (int)float.Parse(SC_data.Gameplay[97+coltyp]);
+			cooldown = (int)Parsing.FloatE(SC_data.Gameplay[97+coltyp]);
 
 			float xpo = Input.mousePosition.x-Screen.width/2, ypo=Input.mousePosition.y-Screen.height/2;
-			float push_size = float.Parse(SC_data.Gameplay[30]);
-			float push_size_wind = float.Parse(SC_data.Gameplay[122]);
+			float push_size = Parsing.FloatE(SC_data.Gameplay[30]);
+			float push_size_wind = Parsing.FloatE(SC_data.Gameplay[122]);
 			if(typ==3) { /* no bullet push */ }
 			else if(typ==14) playerR.velocity += Skop(push_size_wind,new Vector3(-xpo,-ypo,0f));
 			else playerR.velocity += Skop(push_size,new Vector3(-xpo,-ypo,0f));
@@ -359,7 +359,7 @@ public class SC_control : MonoBehaviour {
 
 		if(SC_artefacts.unstabling && cooldown==0 && livTime>=50)
 		{
-			cooldown = (int)float.Parse(SC_data.Gameplay[97+4]);
+			cooldown = (int)Parsing.FloatE(SC_data.Gameplay[97+4]);
 
 			power_V += (at_unstable_regen2)/50f;
 
@@ -398,7 +398,7 @@ public class SC_control : MonoBehaviour {
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/Potion "+connectionID+" 1 "+slot);
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 11 0 0");
-					healBalance += float.Parse(SC_data.Gameplay[31]);
+					healBalance += Parsing.FloatE(SC_data.Gameplay[31]);
 				}
 				else HealSGP("1");
 			}
@@ -454,7 +454,7 @@ public class SC_control : MonoBehaviour {
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/Potion "+connectionID+" 2 "+slot);
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 14 0 0");
-					healBalance += float.Parse(SC_data.Gameplay[39]);
+					healBalance += Parsing.FloatE(SC_data.Gameplay[39]);
 				}
 				else HealSGP("2");
 				SC_effect.EffectClean();
@@ -474,7 +474,7 @@ public class SC_control : MonoBehaviour {
 					SendMTP("/Potion "+connectionID+" 6 "+slot);
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 15 0 0");
 				}
-				DamageFLOAT(float.Parse(SC_data.Gameplay[35]));
+				DamageFLOAT(Parsing.FloatE(SC_data.Gameplay[35]));
 				if(SC_artefacts.GetArtefactID()==6) power_V += at_unstable_regen3/50f;
 			}
 			else InfoUp("Potion blocked",380);
@@ -583,9 +583,9 @@ public class SC_control : MonoBehaviour {
 			if(!turbo&&!engineON)
 			{
 				if(Communtron2.position.x==0)
-				{F=V_to_F(float.Parse(SC_data.Gameplay[10]),false); enMode=3;}
+				{F=V_to_F(Parsing.FloatE(SC_data.Gameplay[10]),false); enMode=3;}
 				else
-				{F=V_to_F(float.Parse(SC_data.Gameplay[13]),false); enMode=3;}
+				{F=V_to_F(Parsing.FloatE(SC_data.Gameplay[13]),false); enMode=3;}
 				//engine.material=E4;
 			}
 		}
@@ -602,12 +602,12 @@ public class SC_control : MonoBehaviour {
 			{
 				if(Communtron2.position.x==0)
 				{
-					F=V_to_F(float.Parse(SC_data.Gameplay[9]),false);
+					F=V_to_F(Parsing.FloatE(SC_data.Gameplay[9]),false);
 					enMode=1;
 				}
 				else
 				{
-					F=V_to_F(float.Parse(SC_data.Gameplay[12]),false);
+					F=V_to_F(Parsing.FloatE(SC_data.Gameplay[12]),false);
 					enMode=1;
 				}
 				//engine.material=E2;
@@ -624,7 +624,7 @@ public class SC_control : MonoBehaviour {
 			if(turbo_V>=F_barrier)
 			{
 				turbo=true;
-				F=V_to_F(float.Parse(SC_data.Gameplay[11]),true);
+				F=V_to_F(Parsing.FloatE(SC_data.Gameplay[11]),true);
 				enMode=2;
 			}
 		}
@@ -761,7 +761,7 @@ public class SC_control : MonoBehaviour {
 
 		if((int)Communtron4.position.y==100)
 		{
-			livID=(int.Parse(livID)+1)+"";
+			livID=(Parsing.IntE(livID)+1)+"";
 			damageBalance = 0;
 		}
 		Debug.Log("Player died");
@@ -810,7 +810,7 @@ public class SC_control : MonoBehaviour {
 		}
 		if((int)Communtron4.position.y==100)
 		{
-			immID=(int.Parse(immID)+1)+"";
+			immID=(Parsing.IntE(immID)+1)+"";
 			damageBalance = 0;
 		}
 		Instantiate(ImmortalParticles,transform.position,transform.rotation);
@@ -915,7 +915,7 @@ public class SC_control : MonoBehaviour {
 	}
 	void health_Text_update()
 	{
-		float potH=SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
+		float potH=SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+Parsing.FloatE(SC_data.Gameplay[26]);
 		if(potH<-50f) potH = -50f; if(potH>56.397f) potH = 56.397f;
 		float maxH=50f*Mathf.Pow(health_base,potH) - 1f;
 		//health_V=Mathf.Round(health_V*10000f)/10000f;
@@ -1001,7 +1001,7 @@ public class SC_control : MonoBehaviour {
 			if(turbo&&turbo_V<=0f)
 			{
 				reg_wait=10;
-				F=V_to_F(float.Parse(SC_data.Gameplay[9]),false);
+				F=V_to_F(Parsing.FloatE(SC_data.Gameplay[9]),false);
 				turbo=false;
 				engine.material=E2;
 			}
@@ -1009,7 +1009,7 @@ public class SC_control : MonoBehaviour {
 		else enMode=0;
 
 		//force generate
-		float dX=0f,dY=0f,DragSize=float.Parse(SC_data.Gameplay[14]);
+		float dX=0f,dY=0f,DragSize=Parsing.FloatE(SC_data.Gameplay[14]);
 		
 		dX-=0.001f*VacuumDrag*DragSize*SC_effect.GetVacuumMultiplier()*playerR.velocity.x*Mathf.Abs(playerR.velocity.x);
 		dY-=0.001f*VacuumDrag*DragSize*SC_effect.GetVacuumMultiplier()*playerR.velocity.y*Mathf.Abs(playerR.velocity.y);
@@ -1098,9 +1098,9 @@ public class SC_control : MonoBehaviour {
 		//health regeneration
 		if(health_V<1f&&timerH==0 && (int)Communtron4.position.y!=100)
 		{
-			float potHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
+			float potHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+Parsing.FloatE(SC_data.Gameplay[26]);
 			if(potHH<-50f) potHH = -50f; if(potHH>56.397f) potHH = 56.397f;
-			float true_add = unit*SC_artefacts.GetProtRegenMultiplier()*float.Parse(SC_data.Gameplay[5])/(Mathf.Ceil(50*Mathf.Pow(health_base,potHH))/50f);
+			float true_add = unit*SC_artefacts.GetProtRegenMultiplier()*Parsing.FloatE(SC_data.Gameplay[5])/(Mathf.Ceil(50*Mathf.Pow(health_base,potHH))/50f);
 			if(true_add>0) health_V += true_add;
 		}
 		//timer H
@@ -1113,7 +1113,7 @@ public class SC_control : MonoBehaviour {
 		//turbo regeneration
 		if(!turbo && !impulse_enabled)
 		{
-			turbo_V+=unit*float.Parse(SC_data.Gameplay[0]);
+			turbo_V+=unit*Parsing.FloatE(SC_data.Gameplay[0]);
 		}
 		//power regeneration
 		int nn = SC_artefacts.GetArtefactID();
@@ -1128,7 +1128,7 @@ public class SC_control : MonoBehaviour {
 		//turbo eat
 		if(turbo && !impulse_enabled)
 		{
-			turbo_V-=unit*float.Parse(SC_data.Gameplay[1]);
+			turbo_V-=unit*Parsing.FloatE(SC_data.Gameplay[1]);
 		}
 		
 		//power eat
@@ -1276,9 +1276,9 @@ public class SC_control : MonoBehaviour {
 	void TranslateRPU()
 	{
 		string[] arg = RPU.Split(' ');
-		int i,lngt = int.Parse(arg[1]);
+		int i,lngt = Parsing.IntE(arg[1]);
 		string[] arh = splitChars(arg[2],lngt);
-		current_tick = int.Parse(arg[3]);
+		current_tick = Parsing.IntE(arg[3]);
 
 		for(i=1;i<lngt;i++)
 		{
@@ -1400,7 +1400,7 @@ public class SC_control : MonoBehaviour {
 	{
 		if(!living) return;
 		if(livTime<50 || impulse_enabled || !((livID==sr_livID && immID==sr_immID) || (int)Communtron4.position.y!=100)) return;
-		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
+		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+Parsing.FloatE(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
 		dmg=0.02f*dmg/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
 		if(dmg>1f) dmg=1f;
@@ -1432,7 +1432,7 @@ public class SC_control : MonoBehaviour {
 	{
 		health_V-=dmg;
 		if(Mathf.Round(health_V*10000f) == 0f) health_V = 0f;
-		timerH=(int)(50f*float.Parse(SC_data.Gameplay[4]));
+		timerH=(int)(50f*Parsing.FloatE(SC_data.Gameplay[4]));
 		if(!damage_ringed) Instantiate(explosion2,transform.position,transform.rotation);
 		else Instantiate(explosion3,transform.position,transform.rotation);
 	}
@@ -1443,9 +1443,9 @@ public class SC_control : MonoBehaviour {
 		if(arg2=="2") heal_size = SC_data.Gameplay[39];
 		if(arg2=="3") heal_size = "10000";
 
-		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+float.Parse(SC_data.Gameplay[26]);
+		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+Parsing.FloatE(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
-		float heal=0.02f*float.Parse(heal_size)/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
+		float heal=0.02f*Parsing.FloatE(heal_size)/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);
 
 		if(heal<0) heal=0;
 		health_V += heal;
@@ -1466,7 +1466,7 @@ public class SC_control : MonoBehaviour {
 	}
 	void OnCollisionEnter(Collision collision)
     {
-		float CME=float.Parse(SC_data.Gameplay[6]); 
+		float CME=Parsing.FloatE(SC_data.Gameplay[6]); 
 
 		if(collision.gameObject.name!="mini_crown" && collision.gameObject.name!="aBossScaled0")
 		{
@@ -1475,7 +1475,7 @@ public class SC_control : MonoBehaviour {
 			{
 				dmLicz=20;
 				float head_ache = head_ache=collision.impulse.magnitude-CME + 3f;
-				float hai=float.Parse(SC_data.Gameplay[7])*Mathf.Pow(SC_fun.difficulty,0.5f)*head_ache*1.2f;
+				float hai=Parsing.FloatE(SC_data.Gameplay[7])*Mathf.Pow(SC_fun.difficulty,0.5f)*head_ache*1.2f;
 				if(AllowCollisionDamage() && hai>0) {
 					damage_ringed = true;
 					DamageFLOAT(hai);
@@ -1504,12 +1504,12 @@ public class SC_control : MonoBehaviour {
 			if(licznikD==0)
 			{
 				float dmgg = 0f;
-				if(neme=="damager3") 				dmgg = float.Parse(SC_data.Gameplay[28]); //unstable matter
-				else if(neme=="star_collider") 		dmgg = float.Parse(SC_data.Gameplay[34]); //fire bullet
+				if(neme=="damager3") 				dmgg = Parsing.FloatE(SC_data.Gameplay[28]); //unstable matter
+				else if(neme=="star_collider") 		dmgg = Parsing.FloatE(SC_data.Gameplay[34]); //fire bullet
 				else if(neme=="star_collider_big") 	dmgg = SC_data.GplGet("star_collider_damage"); //stars
-				else if(neme=="S-fire") 			dmgg = SC_data.GplGet("boss_starandus_geyzer_damage") * float.Parse(SC_data.Gameplay[32]); //S-fire
+				else if(neme=="S-fire") 			dmgg = SC_data.GplGet("boss_starandus_geyzer_damage") * Parsing.FloatE(SC_data.Gameplay[32]); //S-fire
 				else if(neme=="lava_wind") 			dmgg = SC_data.GplGet("lava_geyzer_damage"); //lava geyzer
-				else 								dmgg = float.Parse(SC_data.Gameplay[8]); //spikes
+				else 								dmgg = Parsing.FloatE(SC_data.Gameplay[8]); //spikes
 
 				if(neme=="star_collider") 			SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_fire_time"));
 				else if(neme=="star_collider_big") 	SC_effect.SetEffect(5,(int)SC_data.GplGet("cyclic_star_time"));
@@ -1565,7 +1565,7 @@ public class SC_control : MonoBehaviour {
 			string pgg = arg[0],pggn="";
 			int i,lngt=pgg.Length;
 			for(i=1;i<lngt;i++) pggn+=pgg[i];
-			int new_returnedPing = int.Parse(pggn);
+			int new_returnedPing = Parsing.IntE(pggn);
 			if(new_returnedPing < returnedPing && new_returnedPing!=0) Debug.LogError("Error: Wrong message order confirmed: "+(new_returnedPing-returnedPing)+" : "+new_returnedPing+" : "+returnedPing);
 			returnedPing = new_returnedPing;
 			
@@ -1574,10 +1574,10 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="R")
 		{
 			//Medium health regenerate message
-			float fValue = float.Parse(arg[1]);
+			float fValue = Parsing.FloatE(arg[1]);
 			string fImmID = arg[2];
 			string fLivID = arg[3];
-			float fValueAbsolute = float.Parse(arg[4]);
+			float fValueAbsolute = Parsing.FloatE(arg[4]);
 			//Debug.Log(fValueAbsolute+"|"+arg[4]+" >---< "+fValue+"|"+arg[1]);
 
 			if(immID==fImmID && livID==fLivID) {
@@ -1596,8 +1596,8 @@ public class SC_control : MonoBehaviour {
 			return;
 		}
 		if(arg[0]=="/RetHeal" && arg[1]==connectionID+"") {
-			if(arg[2]=="1") healBalance -= float.Parse(SC_data.Gameplay[31]);
-			if(arg[2]=="2") healBalance -= float.Parse(SC_data.Gameplay[39]);
+			if(arg[2]=="1") healBalance -= Parsing.FloatE(SC_data.Gameplay[31]);
+			if(arg[2]=="2") healBalance -= Parsing.FloatE(SC_data.Gameplay[39]);
 			if(arg[2]=="3") healBalance -= 10000;
 		}
 
@@ -1621,7 +1621,7 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="/RPC")
 		{
 			//RPC small variables
-			int size = int.Parse(arg[1]);
+			int size = Parsing.IntE(arg[1]);
 			string str = arg[2];
 
 			int i,N=0,I,lngt = str.Length;
@@ -1693,11 +1693,11 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetDamageUsing")
 		{
-			int effectID = int.Parse(arg[1]);
+			int effectID = Parsing.IntE(arg[1]);
 			SC_effect.SetEffect(effectID,SC_fun.bullet_effector[effectID]);
 			if(effectID==16) GravitonCatch();
 			if(effectID==14) {
-				playerR.velocity += Skop(float.Parse(SC_data.Gameplay[124]),new Vector3(float.Parse(arg[2]),float.Parse(arg[3]),0f));
+				playerR.velocity += Skop(Parsing.FloatE(SC_data.Gameplay[124]),new Vector3(Parsing.FloatE(arg[2]),Parsing.FloatE(arg[3]),0f));
 			}
 		}
 		if(arg[0]=="/RetServerDamage")
@@ -1710,7 +1710,7 @@ public class SC_control : MonoBehaviour {
 				if(immID==arg[3]) cis+="T"; else cis+="F";
 
 				if(cis=="TT")
-					CookedDamage(float.Parse(arg[2]));
+					CookedDamage(Parsing.FloatE(arg[2]));
 
 				if(arg[5]=="K") //server kill
       			{
@@ -1738,11 +1738,11 @@ public class SC_control : MonoBehaviour {
 		{
 			//RetDamageBalance 1[damage] 2[livID] 3[immID]
 			if(livID==arg[2] && immID==arg[3])
-				damageBalance += float.Parse(arg[1]);
+				damageBalance += Parsing.FloatE(arg[1]);
 		}
 		if(arg[0]=="/RetUpgrade")
 		{
-			if(arg[1]==connectionID+"") SC_upgrades.MTP_levels[int.Parse(arg[2])]++;
+			if(arg[1]==connectionID+"") SC_upgrades.MTP_levels[Parsing.IntE(arg[2])]++;
 		}
 		if(arg[0]=="/RetNewBulletSend")
 		{
@@ -1759,14 +1759,14 @@ public class SC_control : MonoBehaviour {
 			if(connectionID+""!=arg[1])
 			{
 				SC_bullet bul3 = SC_bullet.ShotProjection(
-					new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f),
-					new Vector3(float.Parse(arg[5]),float.Parse(arg[6]),0f),
-					int.Parse(arg[2]),
+					new Vector3(Parsing.FloatE(arg[3]),Parsing.FloatE(arg[4]),0f),
+					new Vector3(Parsing.FloatE(arg[5]),Parsing.FloatE(arg[6]),0f),
+					Parsing.IntE(arg[2]),
 					"projection",
-					int.Parse(arg[7]),
+					Parsing.IntE(arg[7]),
 					arg[1]
 				);
-				bul3.InstantMove(int.Parse(arg[8]));
+				bul3.InstantMove(Parsing.IntE(arg[8]));
 				//Their bullets should not be delayed
 			}
 		}
@@ -1777,7 +1777,7 @@ public class SC_control : MonoBehaviour {
 			{
 				if(bul.mode!="mother" && bul.ID+""==arg[2])
 				{
-					bul.max_age = int.Parse(arg[3]);
+					bul.max_age = Parsing.IntE(arg[3]);
 					bul.destroy_mode = arg[4];
 					if(arg[4]=="false") bul.block_graphics = true;
 					bul.CheckAge();
@@ -1788,7 +1788,7 @@ public class SC_control : MonoBehaviour {
 		{
 			if(connectionID+"" != arg[1])
 			{
-				int cid = int.Parse(arg[1]);
+				int cid = Parsing.IntE(arg[1]);
 				if(arg[2]!="wait")
 				{
 					ramvis[cid] = timeInvisiblePulse;
@@ -1802,8 +1802,8 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetSeekData")
 		{
-			int seek_id = int.Parse(arg[1]);
-			int bul_id = int.Parse(arg[2]);
+			int seek_id = Parsing.IntE(arg[1]);
+			int bul_id = Parsing.IntE(arg[2]);
 			SC_seek_data.bulletID[seek_id] = bul_id;
 			SC_seek_data.steerData[seek_id] = "0000";
 		}
@@ -1812,8 +1812,8 @@ public class SC_control : MonoBehaviour {
 			try {
 			Vector3 particlePos;
 			Quaternion quat_foo = new Quaternion(0f,0f,0f,0f);
-			int put = int.Parse(arg[2]);
-			int pid = int.Parse(arg[1]);
+			int put = Parsing.IntE(arg[2]);
+			int pid = Parsing.IntE(arg[1]);
 			if(pid==0) pid = connectionID;
 			
 			if((put>=6 && put<=8) || (put>=11 && put<=15) || put==17)
@@ -1821,10 +1821,10 @@ public class SC_control : MonoBehaviour {
 				particlePos = PL[pid].GetComponent<Transform>().position;
 				if(put==7)
 				{
-					quat_foo.eulerAngles = new Vector3(0f,0f,90f+float.Parse(arg[3]));
+					quat_foo.eulerAngles = new Vector3(0f,0f,90f+Parsing.FloatE(arg[3]));
 				}
 			}
-			else particlePos = new Vector3(float.Parse(arg[3]),float.Parse(arg[4]),0f);
+			else particlePos = new Vector3(Parsing.FloatE(arg[3]),Parsing.FloatE(arg[4]),0f);
 		
 			switch(put)
 			{
@@ -1889,12 +1889,12 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="/RetInventory")
 		{
 			//RetInventory [connectionID] [item] [deltaCount] [slot]
-			if(arg[1]==connectionID+"") SC_slots.InvCorrectionMTP(int.Parse(arg[2]),int.Parse(arg[3]),int.Parse(arg[4]),int.Parse(arg[5]));
+			if(arg[1]==connectionID+"") SC_slots.InvCorrectionMTP(Parsing.IntE(arg[2]),Parsing.IntE(arg[3]),Parsing.IntE(arg[4]),Parsing.IntE(arg[5]));
 		}
 		if(arg[0]=="/RetDrillReady")
 		{
-			int mined = int.Parse(arg[1]);
-			int group = int.Parse(arg[2]);
+			int mined = Parsing.IntE(arg[1]);
+			int group = Parsing.IntE(arg[2]);
 			bool actualDrill = group==ActualDrillGroup && ActualDrillType!=-1;
 			if(mined!=0)
 			{
@@ -1909,8 +1909,8 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetTreasureLoot")
 		{
-			int item = int.Parse(arg[1].Split(';')[0]);
-			int count = int.Parse(arg[1].Split(';')[1]);
+			int item = Parsing.IntE(arg[1].Split(';')[0]);
+			int count = Parsing.IntE(arg[1].Split(';')[1]);
 			string treasure_type = arg[2];
 			if(treasure_type=="0") TreasureAllowed.Add(arg[1]);
 			if(treasure_type=="1") DarkTreasureAllowed.Add(arg[1]);
@@ -1931,8 +1931,8 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetCommandGive")
 		{
-			int item = int.Parse(arg[1]);
-			int count = int.Parse(arg[2]);
+			int item = Parsing.IntE(arg[1]);
+			int count = Parsing.IntE(arg[2]);
 			if(SC_slots.InvHaveB(item,count,true,true,true,0))
 			{
 				int slot = SC_slots.InvChange(item,count,true,true,true);
@@ -1941,14 +1941,14 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetCommandTp")
 		{
-			float x = float.Parse(arg[1]);
-			float y = float.Parse(arg[2]);
+			float x = Parsing.FloatE(arg[1]);
+			float y = Parsing.FloatE(arg[2]);
 			SendMTP("/CommandTp "+connectionID+" "+arg[1]+" "+arg[2]);
 			player.position = new Vector3(x,y,player.position.z);
 		}
 		if(arg[0]=="/RetDifficultySet")
 		{
-			SC_difficulty.HardSet(int.Parse(arg[1]));
+			SC_difficulty.HardSet(Parsing.IntE(arg[1]));
 		}
 		if(arg[0]=="/RetMemoryData")
 		{
@@ -2026,7 +2026,7 @@ public class SC_control : MonoBehaviour {
 		int i;
 		int[] invdata = new int[18];
 
-		for(i=0;i<18;i++) invdata[i]=int.Parse(getInventory.Split(';')[i]);
+		for(i=0;i<18;i++) invdata[i]=Parsing.IntE(getInventory.Split(';')[i]);
 		for(i=0;i<9;i++)
 		{
 			SC_slots.SlotX[i] = invdata[i*2];
@@ -2042,7 +2042,7 @@ public class SC_control : MonoBehaviour {
 		foreach(string str in tabb)
 		{
 			string[] stb = str.Split('$');
-			int stb_ind = int.Parse(stb[0]);
+			int stb_ind = Parsing.IntE(stb[0]);
 			SC_data.biome_memories[stb_ind] = stb[1];
 			SC_data.biome_memories_state[stb_ind] = 2;
 		}
@@ -2062,12 +2062,12 @@ public class SC_control : MonoBehaviour {
 
 		if((int)Communtron4.position.y==100)
 		{
-			connectionID=int.Parse(SC_data.TempFileConID[0]);
+			connectionID=Parsing.IntE(SC_data.TempFileConID[0]);
 			CommuntronM1.name=SC_data.TempFileConID[1];
 			nick=SC_data.TempFileConID[2];
 			getData=SC_data.TempFileConID[3];
 			getInventory=SC_data.TempFileConID[4];
-			max_players=int.Parse(SC_data.TempFileConID[5]);
+			max_players=Parsing.IntE(SC_data.TempFileConID[5]);
 			SC_upgrades.MTP_loadUpgrades(SC_data.TempFileConID[6]);
 			SC_backpack.MTP_loadBackpack(SC_data.TempFileConID[7]);
 			SC_data.DatapackMultiplayerLoad(SC_data.TempFileConID[9]);
@@ -2082,10 +2082,10 @@ public class SC_control : MonoBehaviour {
 			}
 		}
 
-		Engines*=float.Parse(SC_data.Gameplay[15]);
+		Engines*=Parsing.FloatE(SC_data.Gameplay[15]);
 		SC_artefacts.LoadDataArt();
 		
-		float limi = 2 * unit * float.Parse(SC_data.Gameplay[0]);
+		float limi = 2 * unit * Parsing.FloatE(SC_data.Gameplay[0]);
 		if(limi > 0.01f) limi = 0.01f;
 		F_barrier += limi;
 		//IM_barrier -= unit * SC_artefacts.powerRM[2];
@@ -2120,14 +2120,14 @@ public class SC_control : MonoBehaviour {
 			{
 				string[] gtd = getData.Split(';');
 
-				tX=float.Parse(gtd[0]);
-				tY=float.Parse(gtd[1]);
-				tH=float.Parse(gtd[8]);
-				tF=float.Parse(gtd[9]);
-				tVx=float.Parse(gtd[6]);
-				tVy=float.Parse(gtd[7]);
-				timerH=int.Parse(gtd[10]);
-				tP=float.Parse(gtd[11]);
+				tX=Parsing.FloatE(gtd[0]);
+				tY=Parsing.FloatE(gtd[1]);
+				tH=Parsing.FloatE(gtd[8]);
+				tF=Parsing.FloatE(gtd[9]);
+				tVx=Parsing.FloatE(gtd[6]);
+				tVy=Parsing.FloatE(gtd[7]);
+				timerH=Parsing.IntE(gtd[10]);
+				tP=Parsing.FloatE(gtd[11]);
 
 				transform.position=new Vector3(tX,tY,0f);
 				health_V=tH;
@@ -2153,14 +2153,14 @@ public class SC_control : MonoBehaviour {
 		{
 			if(SC_data.data[0]!="")
 			{
-				tX=float.Parse(SC_data.data[0]);
-				tY=float.Parse(SC_data.data[1]);
-				tH=float.Parse(SC_data.data[2]);
-				tF=float.Parse(SC_data.data[3]);
-				tVx=float.Parse(SC_data.data[4]);
-				tVy=float.Parse(SC_data.data[5]);
-				timerH=int.Parse(SC_data.data[6]);
-				tP=float.Parse(SC_data.data[7]);
+				tX=Parsing.FloatE(SC_data.data[0]);
+				tY=Parsing.FloatE(SC_data.data[1]);
+				tH=Parsing.FloatE(SC_data.data[2]);
+				tF=Parsing.FloatE(SC_data.data[3]);
+				tVx=Parsing.FloatE(SC_data.data[4]);
+				tVy=Parsing.FloatE(SC_data.data[5]);
+				timerH=Parsing.IntE(SC_data.data[6]);
+				tP=Parsing.FloatE(SC_data.data[7]);
 
 				transform.position=new Vector3(tX,tY,0f);
 				health_V=tH;
@@ -2171,8 +2171,8 @@ public class SC_control : MonoBehaviour {
 
 			for(i=0;i<21;i++)
             {
-                SC_slots.BackpackX[i]=int.Parse(SC_data.backpack[i,0]);
-                SC_slots.BackpackY[i]=int.Parse(SC_data.backpack[i,1]);
+                SC_slots.BackpackX[i]=Parsing.IntE(SC_data.backpack[i,0]);
+                SC_slots.BackpackY[i]=Parsing.IntE(SC_data.backpack[i,1]);
             }
 		}
 

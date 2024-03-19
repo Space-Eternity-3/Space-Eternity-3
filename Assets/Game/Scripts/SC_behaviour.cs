@@ -472,7 +472,7 @@ public class SC_behaviour : MonoBehaviour
         //Remote damage
         int reduced_frame = thys.dataID[19] - thys.dataID[17];
         if(thys.type==6 && thys.dataID[18]==3 && reduced_frame%20==0 && reduced_frame!=300)
-            if(players.Length>0) thys.SC_control.DamageFLOAT(thys.SC_data.GplGet("cyclic_remote_damage") * float.Parse(thys.SC_data.Gameplay[36]));
+            if(players.Length>0) thys.SC_control.DamageFLOAT(thys.SC_data.GplGet("cyclic_remote_damage") * Parsing.FloatE(thys.SC_data.Gameplay[36]));
 
         //Octogone teleportation
         float new_x=0, new_y=0;
