@@ -253,7 +253,7 @@ public class SC_boss : MonoBehaviour
         else //If multiplayer
         {
             //Boss initialization server side
-            SC_control.SendMTP("/WorldData "+SC_control.connectionID+" "+bID);
+            SC_control.SendMTP("/WorldData "+SC_control.connectionID+" "+bID+" "+SC_object_holder.holder_name);
 
             //Starting refresh
             SC_control.SendMTP("/ScrRefresh "+SC_control.connectionID+" "+bID+" F");

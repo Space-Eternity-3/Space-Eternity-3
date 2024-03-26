@@ -7,6 +7,7 @@ public class SC_object_holder : MonoBehaviour
     //Termination variables
     public bool mother = true;
     public int terminate_in = 300;
+    public bool aborted_worldgen = false;
 
     //Must be prepared before unlocking
     public CObjectInfo[] Objects;
@@ -185,5 +186,10 @@ public class SC_object_holder : MonoBehaviour
             SC_worldgen.Holders.Remove(holder_name);
             Destroy(gameObject);
         }
+    }
+    public void AbortWorldgen()
+    {
+        terminate_in = 50;
+        aborted_worldgen = true;
     }
 }

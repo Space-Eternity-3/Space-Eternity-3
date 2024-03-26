@@ -145,6 +145,7 @@ public class SC_control : MonoBehaviour {
 	public SC_inv_mover SC_inv_mover; //left
 	public SC_chat SC_chat;
 	public SC_difficulty SC_difficulty;
+	public SC_worldgen SC_worldgen;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -1953,6 +1954,16 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="/RetMemoryData")
 		{
 			LoadBiomeMemoriesMtp(arg[1].Split('?'));
+		}
+		if(arg[0]=="/RetWorldDataAbort")
+		{
+			foreach(KeyValuePair<string, SC_object_holder> entry in SC_worldgen.Holders)
+			{
+				if(entry.Key==arg[1]) {
+					entry.Value.AbortWorldgen();
+					break;
+				}
+			}
 		}
 
 		//Other scripts

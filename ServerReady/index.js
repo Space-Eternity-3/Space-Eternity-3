@@ -67,6 +67,7 @@ const default_config = {
 	"require_se3_account": false,
   "authorization_waiting_time": 15,
   "max_dict_size": 128,
+  "max_active_bosses": 16,
 	"whitelist_enabled": false,
 	"whitelist": [],
 	"banned_players": [],
@@ -74,7 +75,9 @@ const default_config = {
 	"anti_cheat": {
     "max_movement_speed": 100,
 		"bullet_spawn_allow_radius": 3,
-    "power_speculative_minimum_value": -0.2
+    "power_speculative_minimum_value": -0.2,
+    "max_interaction_range": 150,
+    "max_worldgen_range": 250
 	}
 };
 if(!existsF("./config.json")) {
@@ -1678,21 +1681,21 @@ class Bosbul
           Universe.GetSector("B_" + X + "_" + (Y - 1)).forEach(elm => Surroundings.push(elm));
           Universe.GetSector("B_" + (X - 1) + "_" + (Y - 1)).forEach(elm => Surroundings.push(elm));
 
-          const Build = {};
+          const Build = new Map();
           for(const obj of Surroundings)
               if(obj !== null)
               {
                   if(obj.obj === "asteroid")
                   {
-                      if (!obj.hidden) Build["ast_" + obj.ulam] = new CBosbulCollider(obj, -1);
+                      if (!obj.hidden) Build.set("ast_" + obj.ulam, new CBosbulCollider(obj, -1));
                       for (let i = 0; i < obj.size * 2; i++)
-                          Build["fob_" + obj.ulam + "_" + i] = new CBosbulCollider(obj, i);
+                          Build.set("fob_" + obj.ulam + "_" + i, new CBosbulCollider(obj, i));
                       this.UpdateFobCollidersInDictionary(Build, obj.ulam);
                   }
                   else if (["sphere", "star", "monster", "wall", "piston"].includes(obj.obj))
                   {
                       const random_key = Math.floor(Math.random() * 1000000000);
-                      Build[random_key] = new CBosbulCollider(obj, -1);
+                      Build.set(random_key, new CBosbulCollider(obj, -1));
                   }
               }
 
@@ -1706,7 +1709,7 @@ class Bosbul
   {
       const X = Math.round(C1.x / 200) * 2;
       const Y = Math.round(C1.y / 200) * 2;
-      const LocalBosbuls = Object.values(this.GetBosbuls(X, Y));
+      const LocalBosbuls = this.GetBosbuls(X, Y).values();
       for(const bbc of LocalBosbuls) {
           if (bbc.CheckCollision(C1, reduced_state)) {
               return true;
@@ -1730,8 +1733,8 @@ class Bosbul
       for (let i = 0; i < 20; i++)
       {
           const key = "fob_" + ulam + "_" + i;
-          if (LocalDictionary.hasOwnProperty(key))
-              LocalDictionary[key].UpdateFobCollider(WorldData.GetFob(i + 1));
+          if (LocalDictionary.has(key))
+              LocalDictionary.get(key).UpdateFobCollider(WorldData.GetFob(i + 1));
       }
   }
 }
@@ -2026,41 +2029,6 @@ class CShooter
     var pat = func.RotatePoint([x,y],-(this.angle+func.ScrdToFloat(this.thys.dataY[10-2])*3.14159/180),false);
     x = pat[0]-this.radius; y = pat[1];
     return Math.atan2(y,x);
-  }
-}
-class CShape
-{
-  constructor(neme1,shape_description1,default_offset1,col_id) {
-    this.neme = neme1;
-    this.sds = shape_description1; // sx sy
-    this.dof = default_offset1; // cx cy lx ly lrot
-    this.cop = {cx:0,cy:0};
-    this.col_identifier = col_id;
-  }
-  SetShapeCollider(dx,dy,drot)
-  {
-    var alpha = (drot) * Math.PI / 180;
-    var beta = (this.dof.lrot+drot) * Math.PI / 180;
-
-    var lroted = func.RotatePoint([this.dof.lx,this.dof.ly],alpha,false);
-    var cx = this.dof.cx + dx + lroted[0];
-    var cy = this.dof.cy + dy + lroted[1];
-    this.cop.cx = cx; this.cop.cy = cy;
-
-    if(this.neme=="sphere") return;
-
-    var srt1 = func.RotatePoint([0,this.sds.sy],beta,false)
-    var srt2 = [-srt1[0],-srt1[1]];
-    srt1[0] += cx; srt1[1] += cy;
-    srt2[0] += cx; srt2[1] += cy;
-
-    if(this.neme=="cylinder" || this.neme=="capsule") func.CollisionLinearBulletSet(srt1[0],srt1[1],srt2[0],srt2[1],this.sds.sx);
-  }
-  IsSphereColliding(cx,cy,r1)
-  {
-    if(this.neme=="sphere") return func.CollisionPointCheck(this.cop.cx,this.cop.cy,cx,cy,this.sds.sx,r1);
-    if(this.neme=="cylinder" || this.neme=="capsule") return func.CollisionLinearCheck(cx,cy,r1,(this.neme=="capsule"));
-    return false;
   }
 }
 class CInfo
@@ -4237,6 +4205,89 @@ function getBlockAt(ulam, place)
   return WorldData.GetFob(Parsing.IntU(place) + 1);
 }
 
+//Count boss battles
+function CountBossBattles()
+{
+    var i,lngt=scrs.length,n=0;
+    for(i=0;i<lngt;i++)
+        if(scrs[i].dataY[2-2]==2) n++;
+    return n;
+}
+
+//Authority functions
+function AsteroidPresency(ulam,pos)
+{
+    ulam = Parsing.IntU(ulam);
+    WorldData.Load(ulam);
+    var type = WorldData.GetType();
+    if(type<0 || type>63) return false;
+
+    var obj = Universe.GetObject(ulam);
+    if(obj==null) return false;
+    
+    if(new Vector3(pos.x-obj.default_position.x,pos.y-obj.default_position.y,0).Length() >= config.anti_cheat.max_interaction_range)
+        return false;
+
+    var anim = obj.animator_reference;
+    if(anim==null) return true;
+    if(anim.animation_type!=1) return true;
+    
+    var sec_tab = Universe.GetSectorNameByUlam(ulam).split("_");
+    if(sec_tab[0]=="B") return true;
+
+    sec_tab[1] = Parsing.IntU(sec_tab[1]);
+    sec_tab[2] = Parsing.IntU(sec_tab[2]);
+    var Ulam = makeUlam(sec_tab[1],sec_tab[2]);
+    var reduced_state = "default";
+        
+    var i,lngt = scrs.length;
+    for(i=0;i<lngt;i++) {
+        if(Ulam==scrs[i].sID) {
+            reduced_state = GetReducedState(scrs[i]);
+            break;
+        }
+    }
+    return !anim.animation_when_done.split(";").includes(reduced_state);   
+}
+function BossPresency(ulam,pos)
+{
+    ulam = Parsing.IntU(ulam);
+    WorldData.Load(ulam);
+    var type = WorldData.GetType();
+    if(type!=1024) return false;
+
+    var obj = Universe.GetObject(ulam);
+    if(obj==null) return false;
+  
+    return (new Vector3(pos.x-obj.default_position.x,pos.y-obj.default_position.y,0).Length() < config.anti_cheat.max_interaction_range);
+}
+function CheckForLocal(what,pos)
+{
+    let X = Math.round(pos.x / 200) * 2;
+    let Y = Math.round(pos.y / 200) * 2;
+    const Surroundings = [];
+    Universe.GetSector("S_" + X + "_" + Y).forEach(elm => Surroundings.push(elm));
+    for(var x=-2;x<=1;x++) for(var y=-2;y<=1;y++)
+        Universe.GetSector("B_" + (X+x) + "_" + (Y+y)).forEach(elm => Surroundings.push(elm));
+    var i,lngt = Surroundings.length;
+    for(i=0;i<lngt;i++) {
+    let obj = Surroundings[i];
+    if(obj!=null)
+    {
+        if(what=="star" && obj.obj=="star") return true;
+        if(what.startsWith("drill_"))
+        {
+            var drill_type = Parsing.IntU(what.split("_")[1]);
+            if(["wall","sphere","piston"].includes(obj.obj) && obj.type==drill_type) return true;
+            if(obj.obj == "asteroid" && !obj.hidden) {
+                WorldData.Load(obj.ulam);
+                if(WorldData.GetType()==drill_type) return true;
+            }
+        }
+    }}
+    return false;
+}
+
 //Death functions
 function kill(pid)
 {
@@ -4762,10 +4813,16 @@ wss.on("connection", function connection(ws,req)
     {
       if(!FilterArgs(arg,["PlaID","ulam","ulam","place"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
+      if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
+      if(CountBossBattles() >= config.max_active_bosses) return;
 
       var bID = arg[2];
       var fobID = arg[3];
       var fobIndex = arg[4];
+
+      var ppos = getPlayerPosition(arg[1]);
+      if(!BossPresency(bID,new Vector3(Parsing.FloatU(ppos[0]),Parsing.FloatU(ppos[1]),0))) return;
+      if(!AsteroidPresency(fobID,new Vector3(Parsing.FloatU(ppos[0]),Parsing.FloatU(ppos[1]),0))) return;
 
       var lngts = scrs.length;
       for(i=0;i<lngts;i++)
@@ -4834,6 +4891,8 @@ wss.on("connection", function connection(ws,req)
     {
       if(!FilterArgs(arg,["PlaID","fraction01","EndID","short","short"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
+      if(inHeaven(arg[1])) return;
+      if(arg[4]=="I" && (plr.backpack[arg[1]].split(";")[30]!="45" || Parsing.IntU(plr.backpack[arg[1]].split(";")[31])<=0)) return;
 
       var serLivID = plr.livID[arg[1]];
       var serImmID = plr.immID[arg[1]];
@@ -4885,6 +4944,7 @@ wss.on("connection", function connection(ws,req)
 
       var ljTab = plr.upgrades[ljPlaID].split(";");
       var current_level = Parsing.IntU(ljTab[ljUpgID]);
+      if(current_level < 0 || current_level > 4) return;
 
       var upg_costs = [
         [Parsing.IntU(gameplay[112]),Parsing.IntU(gameplay[113])],
@@ -4893,10 +4953,9 @@ wss.on("connection", function connection(ws,req)
         [Parsing.IntU(gameplay[118]),Parsing.IntU(gameplay[119])],
         [Parsing.IntU(gameplay[120]),Parsing.IntU(gameplay[121])]
       ];
+
       var ljItem = upg_costs[current_level][0];
       var ljCount = upg_costs[current_level][1];
-
-      if(current_level < 0 || current_level > 4) return;
 
       if(invChangeTry(ljPlaID, ljItem, -ljCount, ljSlot))
       {
@@ -4923,7 +4982,9 @@ wss.on("connection", function connection(ws,req)
       var gSlot = arg[6];
       var gID21 = arg[7];
       
-      if (checkFobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount, gID21) && !overolded)
+      var ppos; if(!overolded) ppos = getPlayerPosition(arg[1]);
+      if(checkFobDataChange(gUlamID, gPlaceID, gItem, gDeltaCount, gID21) && !overolded)
+      if(AsteroidPresency(gUlamID,new Vector3(Parsing.FloatU(ppos[0]),Parsing.FloatU(ppos[1]),0)))
       {
         if (invChangeTry(gPlayerID, gItem, -gDeltaCount, gSlot))
         {
@@ -5150,7 +5211,9 @@ wss.on("connection", function connection(ws,req)
       if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
-      plr.pclass[arg[1]].DrillAsk(arg[2],arg[1],arg[3]);
+      var ppos = getPlayerPosition(arg[1]);
+      if(CheckForLocal("drill_"+arg[2],new Vector3(Parsing.FloatU(ppos[0]),Parsing.FloatU(ppos[1]),0)))
+          plr.pclass[arg[1]].DrillAsk(arg[2],arg[1],arg[3]);
     }
     if (arg[0] == "/DrillGet") // 1[PlayerID] 2[Item] 3[Slot]
     {
@@ -5209,7 +5272,9 @@ wss.on("connection", function connection(ws,req)
 
       var fFob21TT = nbt(fUlamID, fPlaceID);
 
-      if (checkFobChange(fUlamID, fPlaceID, "0", "48") && !overolded)
+      var ppos; if(!overolded) ppos = getPlayerPosition(arg[1]);
+      if(checkFobChange(fUlamID, fPlaceID, "0", "48") && !overolded)
+      if(AsteroidPresency(fUlamID,new Vector3(Parsing.FloatU(ppos[0]),Parsing.FloatU(ppos[1]),0)))
       {
         if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
         {
@@ -5307,7 +5372,9 @@ wss.on("connection", function connection(ws,req)
       var udb = "NONE"; if(adb!=undefined) udb = adb[0]+"";
       var mTurnable = (checkFobChange(fUlamID, fPlaceID, "40", "-1") && [fStartFob1,fStartFob2].includes(udb));
 
-      if ((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) || mTurnable) && !overolded)
+      var ppos; if(!overolded) ppos = getPlayerPosition(arg[1]);
+      if((checkFobChange(fUlamID, fPlaceID, fStartFob1, fStartFob2) || mTurnable) && !overolded)
+      if(AsteroidPresency(fUlamID,new Vector3(Parsing.FloatU(ppos[0]),Parsing.FloatU(ppos[1]),0)))
       {
         if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
         {
@@ -5464,10 +5531,12 @@ wss.on("connection", function connection(ws,req)
       if(!checkPlayerG(arg[1],ws)) return;
 
       var lngt = bulletsT.length;
+      var bul_ref;
       for(i=0;i<=lngt;i++) {
         if(i==lngt) return;
         if(bulletsT[i].owner==arg[1] && bulletsT[i].ID==arg[5] && !bulletsT[i].turn_used && (arg[4]!="0" || (bulletsT[i].type=="3" && !bulletsT[i].unstable_virtual))) {
           bulletsT[i].turn_used = true;
+          bul_ref = bulletsT[i];
           break;
         }
       }
@@ -5476,7 +5545,9 @@ wss.on("connection", function connection(ws,req)
       if(arg[4]=="23") {arg4b = "25"; argend = "25";}
       if(arg[4]=="25") {arg4b = "23"; argend = "25";}
 
-      if (checkFobChange(arg[2],arg[3],arg[4],arg4b)) {
+      if(checkFobChange(arg[2],arg[3],arg[4],arg4b))
+      if(AsteroidPresency(arg[2],new Vector3(bul_ref.pos.x,bul_ref.pos.y,0)))
+      {
         fobChange(arg[2], arg[3], argend);
         sendToAllPlayers(
           "/RetFobsTurn " +
@@ -5488,14 +5559,31 @@ wss.on("connection", function connection(ws,req)
         );
       }
     }
-    if (arg[0] == "/WorldData") // 1[PlayerID] 2[Ulam]
+    if (arg[0] == "/WorldData") // 1[PlayerID] 2[Ulam] 3[AbortReference]
     {
-      if(!FilterArgs(arg,["PlaID","ulam"])) return;
+      if(!FilterArgs(arg,["PlaID","ulam","short"])) return;
       if(!checkPlayerG(arg[1],ws)) return;
       
-      var ulamID = arg[2];
-      var obj = Universe.GetObject(ulamID);
+      var ulamID = Parsing.IntU(arg[2]);
 
+      //generation spam anti-flood
+      var sect = Universe.GetSectorNameByUlam(ulamID).split("_");
+      sect[1] = Parsing.IntU(sect[1]) * 100;
+      sect[2] = Parsing.IntU(sect[2]) * 100;
+      if(sect[0]=="B") { sect[1]+=50; sect[2]+=50; }
+
+      var ppos = getPlayerPosition(arg[1]); //player or respawn position (plr.data based)
+      ppos[0] = Parsing.FloatU(ppos[0]);
+      ppos[1] = Parsing.FloatU(ppos[1]);
+
+      var vct = new Vector3(sect[1]-ppos[0],sect[2]-ppos[1],0);
+      if(vct.Length() >= config.anti_cheat.max_worldgen_range) {
+          sendTo(ws,"/RetWorldDataAbort "+arg[3]+" X X");
+          return;
+      }
+      
+      //actual generation
+      var obj = Universe.GetObject(ulamID);
       if(obj==null) return;
       if(obj.obj=="asteroid")
       {
@@ -5582,6 +5670,7 @@ function FilterArgs(args,formats,include_headers=true)
         formats.unshift("short");
         formats.push("EndID");
     }
+    if(args.length != formats.length) return false;
     let i, lngt = formats.length;
     for(i=0;i<lngt;i++)
     {
@@ -5692,21 +5781,28 @@ function FilterArgs(args,formats,include_headers=true)
         }
         else if(format=="UpdateData") //recursive
         {
-            if(args[i]!="1")
-            if(!FilterArgs(args[i].split(";"),["float","float","NULL","NULL","Angle","RocketInfo","NULL","NULL","NULL","fraction01","NULL","fraction01"],false))
-                return false;
+            if(args[i]!="1") {
+              let arg_tab = args[i].split(";");
+              if(!FilterArgs(arg_tab,["float","float","NULL","NULL","Angle","RocketInfo","NULL","NULL","NULL","fraction01","NULL","fraction01"],false))
+                  return false;
+              args[i] = arg_tab.join(";");
+            }
         }
         else if(format=="RocketInfo") //recursive
         {
-            if(!FilterArgs(args[i].split("&"),["OldIntInfo","NewIntInfo"],false))
+            let arg_tab = args[i].split("&");
+            if(!FilterArgs(arg_tab,["OldIntInfo","NewIntInfo"],false))
                 return false;
+            args[i] = arg_tab.join("&");
         }
         else if(format=="UlamList") //recursive
         {
             var jngt = args[i].split(";").length;
             if(jngt > 1024) return false;
-            if(!FilterArgs(args[i].split(";"),new Array(jngt).fill("ulam"),false))
+            let arg_tab = args[i].split(";");
+            if(!FilterArgs(arg_tab,new Array(jngt).fill("ulam"),false))
                 return false;
+            args[i] = arg_tab.join(";");
         }
         else {
             console.log("Unknown filtering format: "+format);
@@ -5816,7 +5912,7 @@ function allPercentRemove(str, must_be_1000) {
       lng--;
       pom = percentRemove(pom);
       pre = totalChance;
-      totalChance += Parsing.IntE(Parsing.FloatE(pom) * 10 + "");
+      totalChance += Math.round(Parsing.FloatE(pom) * 10);
       tab[i] = pre + ";" + (totalChance - 1);
     }
   }
@@ -6095,7 +6191,7 @@ function finalTranslate(varN) {
             if (tagContains(biomeTags[mID], "structural")) mno = 2;
             else mno = 1;
 
-            cur1000biome += mno * Parsing.IntE(Parsing.FloatE(jse3Dat[i]) * 10 + "");
+            cur1000biome += mno * Math.round(Parsing.FloatE(jse3Dat[i]) * 10);
             efe += cur1000biome - 1 + ";";
             biomeChances += efe;
           }

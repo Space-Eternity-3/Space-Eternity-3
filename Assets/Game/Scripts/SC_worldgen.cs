@@ -1205,7 +1205,7 @@ public class SC_worldgen : MonoBehaviour
                 holder.Unlock();
                 Holders.Add(holder_name,holder);
             }
-            else Holders[holder_name].terminate_in = 300;
+            else if(!Holders[holder_name].aborted_worldgen) Holders[holder_name].terminate_in = 300;
         }
         high_started = true;
     }
@@ -1234,7 +1234,7 @@ public class SC_worldgen : MonoBehaviour
                 holder.Unlock();
                 Holders.Add(holder_name,holder);
             }
-            else Holders[holder_name].terminate_in = 300;
+            else if(!Holders[holder_name].aborted_worldgen) Holders[holder_name].terminate_in = 300;
         }
     }
     

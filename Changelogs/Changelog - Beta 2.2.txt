@@ -181,6 +181,7 @@ c) Others
 - reworked boss bullet collision with the environment to include fobs, it no longer needs bosbul objects
 - reshaped ustable turn collider a bit
 - reshaped the following client bullet colliders: geyzer, lava geyzer, all elements, red spikes
+- int and float parsing system reworked to be the same on client and server side
 
 Bug fixes:
 

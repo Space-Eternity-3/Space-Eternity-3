@@ -45,6 +45,7 @@ class CParsing
         s=s+"";
         try{
             if(s=="") throw "error";
+            if(s.length > 256) throw "error";
             let i=0, lngt = s.length, dl = ('0').charCodeAt(0), cn;
             let sum = 0;
             let minus = s[0]=='-';
@@ -68,6 +69,7 @@ class CParsing
         s=s+"";
         try{
             if(s=="") throw "error";
+            if(s.length > 256) throw "error";
             let i=0, lngt = s.length, dl = ('0').charCodeAt(0), cn;
             let sum = 0, mn = 1;
             let minus = s[0]=='-';

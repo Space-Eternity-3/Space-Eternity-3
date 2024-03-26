@@ -1068,7 +1068,7 @@ public class SC_data : MonoBehaviour
                 lng--;
                 pom=PercentRemove(pom);
                 pre=totalChance;
-                totalChance+=Parsing.IntE((Parsing.FloatE(pom)*10f)+"");
+                totalChance+=(int)Mathf.Round(Parsing.FloatE(pom)*10f);
                 tab[i]=pre+";"+(totalChance-1);
             }
         }
@@ -1410,7 +1410,7 @@ public class SC_data : MonoBehaviour
 							int mno; if(TagContains(BiomeTags[mID],"structural")) mno = 2;
 							else mno = 1;
 							
-							cur1000biome += mno * Parsing.IntE((Parsing.FloatE(value[i])*10f)+"");
+							cur1000biome += mno * (int)Mathf.Round(Parsing.FloatE(value[i])*10f);
 							efe += (cur1000biome-1)+";";
 							biomeChances += efe;
 						}
@@ -1709,6 +1709,7 @@ public static class Parsing
     {
         try{
             if(s=="") throw(new Exception());
+            if(s.Length > 256) throw(new Exception());
             checked
             {
                 int i=0, lngt = s.Length, dl = (int)'0', cn;
@@ -1733,6 +1734,7 @@ public static class Parsing
     {
         try{
             if(s=="") throw(new Exception());
+            if(s.Length > 256) throw(new Exception());
             int i=0, lngt = s.Length, dl = (int)'0', cn;
             float sum = 0f, mn = 1f;
             bool minus = s[0]=='-';
