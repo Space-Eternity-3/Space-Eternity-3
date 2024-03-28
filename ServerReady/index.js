@@ -77,7 +77,9 @@ const default_config = {
 		"bullet_spawn_allow_radius": 3,
     "power_speculative_minimum_value": -0.2,
     "max_interaction_range": 150,
-    "max_worldgen_range": 250
+    "max_worldgen_range": 250,
+    "max_player_updates_per_3_seconds": 180,
+    "max_messages_per_second": 1200
 	}
 };
 if(!existsF("./config.json")) {
@@ -251,6 +253,8 @@ var se3_ws = new Array(max_players);
 var se3_wsS = new Array(max_players);
 se3_ws.fill(""); Object.seal(se3_ws);
 se3_wsS.fill(""); Object.seal(se3_wsS);
+
+const MsgMap = new Map();
 
 var memTemplate = {
   nicks: "0",
@@ -1767,11 +1771,22 @@ class CPlayer {
     this.force_teleport_respawn = false;
     this.ctrlPower = 0;
     this.powerRegenBlocked = false;
+    this.periodic = {};
   }
   DataImport(rsp_x,rsp_y,ctrl_power) {
     this.Reset();
     this.ModifyRespawn(rsp_x,rsp_y);
     this.ctrlPower = ctrl_power;
+    this.periodic = {
+      player_update: [null,0, 0,config.anti_cheat.max_player_updates_per_3_seconds, 3*1000], // [0nextdate,1current, 2min,3max, 4period] note: it has to be imported at least once in player lifetime for system to work
+      chat: [null,0, 0,5, 2*1000],
+      particles: [null,0, 0,20, 1*1000],
+      grow_loaded: [null,0, 0,1, 1*1000],
+      drill_ask: [null,0, 0,10, 1*1000],
+      request_memories: [null,0, 0,200, 1*1000]
+    };
+    this.bullet_wait = Date.now();
+    this.impulse_wait = Date.now();
   }
   ModifyRespawn(rsp_x,rsp_y) {
     this.respawn_x = Parsing.FloatU(rsp_x);
@@ -1836,6 +1851,13 @@ class CPlayer {
     var sum=0,i,lngt = this.last_pos_changes.length;
     for(i=0;i<lngt;i++) sum += this.last_pos_changes[i];
     return sum;
+  }
+  PeriodicInsert(per_type)
+  {
+    var lv = this.periodic[per_type];
+    if(lv[0]==null) lv[0] = Date.now() + lv[4];
+    lv[1]++;
+    return (this.periodic[per_type][1] <= this.periodic[per_type][3]);
   }
 }
 
@@ -2913,6 +2935,8 @@ setInterval(function () { // <interval #2>
         if (AlienDatabase[vrb][1] == 0)
           delete AlienDatabase[vrb];
       }
+
+      MsgMap.clear();
     }
 
     //LAG PREVENTING
@@ -3296,6 +3320,23 @@ setInterval(function () { // <interval #2>
         if(steer_cooldown[i]==5) steer_bulletID[i]=-1;
         if(steer_cooldown[i]>0) steer_cooldown[i]-=5;
       }
+
+      //Spam interval resets & checking
+      for(i=0;i<max_players;i++)
+      {
+          var pl = plr.pclass[i].periodic;
+          for(var per_type in pl)
+          {
+              var pl2 = pl[per_type];
+              if(pl2[0]==null) continue;
+              if(Date.now() < pl2[0]) continue;
+              if(pl2[1] < pl2[2]) { //if was not done enough times
+                  kick(i); break;
+              }
+              pl2[0] += pl2[4];
+              pl2[1] = 0;
+          }
+      }
     }
 
     var v2_date_now = Date.now();
@@ -3547,6 +3588,7 @@ function kick(i)
   plr.pushInventory[i] = "0";
   plr.impulsed[i] = [];
   plr.bossMemories[i] = [];
+  plr.pclass[i].periodic = {};
 }
 
 //Bullet functions
@@ -4516,14 +4558,19 @@ wss.on("connection", function connection(ws,req)
     var i, arg = (msg+"").split(" ");
     var msl = arg.length;
 
+    //IP bans execute 2
+    config.banned_ips.forEach(function(ip){
+      if(client_ip.endsWith(ip)) { ws.close(); retbol = true; }
+    });
+    if(retbol) return;
+
+    //messages for connection counter
+    if(!MsgMap.has(ws)) MsgMap.set(ws,1);
+    else MsgMap.set(ws,MsgMap.get(ws)+1);
+    if(MsgMap.get(ws) > config.anti_cheat.max_messages_per_second) { ws.close(); return; }
+
     if (arg[0] == "/AllowConnection") // 1[nick] 2[RedVersion] 3[ConID]
     {
-      //IP bans execute 2
-      config.banned_ips.forEach(function(ip){
-        if(client_ip.endsWith(ip)) { ws.close(); retbol = true; }
-      });
-      if(retbol) return;
-
       if(!FilterArgs(arg,["nick","short","EndID"])) return;
 
       var bV = arg[2] != serverRedVersion;
@@ -4655,10 +4702,16 @@ wss.on("connection", function connection(ws,req)
 
     // ----- GAMEPLAY COMMANDS ----- \\
 
+    //Gameplay filter
+    if(arg[1]==undefined) { ws.close(); return; }
+    if(!FilterArgs([arg[1]],["PlaID"],false)) { ws.close(); return; }
+    if(!checkPlayerG(arg[1],ws)) { ws.close(); return; }
+
+    //Commands
     if (arg[0] == "/PlayerUpdate") // 1[PlayerID] 2<PlayerData> 3[pingTemp] 4[flags]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("player_update")) {kick(arg[1]); return;}
       if(!FilterArgs(arg,["PlaID","UpdateData","short","Flags"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       var censured = Censure(arg[2],arg[1],arg[msl-1]);
       if(!updateHasSense(plr.players[arg[1]],censured,arg[1],arg[4])) {kick(arg[1]); return;}
 
@@ -4699,6 +4752,10 @@ wss.on("connection", function connection(ws,req)
 
       //Flags executing
       if(arg[4][1]=="T") {
+        var dtn = Date.now();
+        var pl = plr.pclass[arg[1]];
+        if(pl.impulse_wait > dtn) {kick(arg[1]); return;} // impulsed too fast
+        pl.impulse_wait = dtn + (Math.round(Parsing.FloatU(gameplay[102]))-1) * 20;
         plr.pclass[arg[1]].ctrlPower -= 0.2;
         plr.impulsed[arg[1]] = [];
       }
@@ -4753,8 +4810,8 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/ChatMessage") // 1[PlayerID] 2[Message]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("chat")) return;
       if(!FilterArgs(arg,["PlaID","Msg256"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
 
       console.log(hourHeader + "<" + plr.nicks[Parsing.FloatU(arg[1])] + "> " + arg[2].replaceAll("\t"," "));
       sendToAllPlayers("/RetChatMessage " + plr.nicks[Parsing.FloatU(arg[1])] + " " + arg[2] + " X X");
@@ -4762,7 +4819,7 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/InventoryPush") // 1[PlayerID] 2[PushID]
     {
       if(!FilterArgs(arg,["PlaID","PushID"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
+      
 
       var locPlaID = arg[1];
       var locPushID = arg[2];
@@ -4780,7 +4837,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/GeyzerTurnTry") // 1[PlayerID] 2[ulam] 3[place] 4[turnID]
     {
       if(!FilterArgs(arg,["PlaID","ulam","place","turnID"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
 
       if(arg[4]=="40") //dead alien turn
         if ( checkFobChange(arg[2], arg[3], "13", "23") || checkFobChange(arg[2], arg[3], "25", "27") ) {
@@ -4797,8 +4853,8 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/EmitParticles") // 1[PlayerID] 2[particles] 3[posX/dat1] 4[posY/dat2]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("particles")) return;
       if(!FilterArgs(arg,["PlaID","ID128","float","float"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
 
       sendToAllPlayers(
         "/RetEmitParticles " +
@@ -4812,7 +4868,6 @@ wss.on("connection", function connection(ws,req)
     if(arg[0] == "/TryBattleStart") // 1[PlayerID] 2[bID] 3[storageUlam] 4[storagePlace]
     {
       if(!FilterArgs(arg,["PlaID","ulam","ulam","place"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
       if(CountBossBattles() >= config.max_active_bosses) return;
 
@@ -4849,7 +4904,6 @@ wss.on("connection", function connection(ws,req)
     if(arg[0] == "/GiveUpTry") // 1[PlayerID] 2[bID]
     {
       if(!FilterArgs(arg,["PlaID","ulam"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
 
       var bID = arg[2];
       var blivID = arg[msl-1];
@@ -4889,8 +4943,8 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/ClientDamage") // 1[PlayerID] 2[dmg] 3[ImmID] 4[info] 5[ifRinged]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("particles")) { kick(arg[1]); return; }
       if(!FilterArgs(arg,["PlaID","fraction01","EndID","short","short"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(inHeaven(arg[1])) return;
       if(arg[4]=="I" && (plr.backpack[arg[1]].split(";")[30]!="45" || Parsing.IntU(plr.backpack[arg[1]].split(";")[31])<=0)) return;
 
@@ -4935,7 +4989,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/Upgrade") // 1[PlayerID] 2[upgID] 3[slot]
     {
       if(!FilterArgs(arg,["PlaID","UpgID","Slot"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       var ljPlaID = arg[1];
@@ -4970,7 +5023,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/FobsDataChange") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[Item] 5[DeltaCount] 6[Slot] 7[StorageID]
     {
       if(!FilterArgs(arg,["PlaID","ulam","place","item","1,-1","Slot","StorageID"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[5]=="1" && arg[7]=="2") return; //Trying to insert item into driller
       var overolded = (arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1]));
 
@@ -5036,7 +5088,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/Backpack") // 1[PlayerID] 2[Item] 3[Count] 4[SlotI] 5[SlotB]
     {
       if(!FilterArgs(arg,["PlaID","item","count","SlotI","SlotB"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       var bpPlaID = arg[1];
@@ -5066,7 +5117,6 @@ wss.on("connection", function connection(ws,req)
     if(arg[0] == "/ScrRefresh") // 1[PlayerID] 2[bID] 3[inArena]
     {
       if(!FilterArgs(arg,["PlaID","ulam","short"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
 
       var bID = arg[2];
       var inArena = (arg[3]=="T");
@@ -5090,7 +5140,6 @@ wss.on("connection", function connection(ws,req)
     if(arg[0] == "/ScrForget") // 1[PlayerID] 2[bID]
     {
       if(!FilterArgs(arg,["PlaID","ulam"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
 
       var remindex = plr.bossMemories[arg[1]].indexOf(arg[2]);
       if(remindex!=-1)
@@ -5098,8 +5147,8 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/GrowLoaded") // 1[PlayerID] 2[UlamList]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("grow_loaded")) return;
       if(!FilterArgs(arg,["PlaID","UlamList"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
 
       var tab = arg[2].split(";");
       var lngt = tab.length;
@@ -5108,7 +5157,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/Crafting") // 1[PlaID] 2[CraftID] 3[Slot1] 4[Slot2] 5[SlotE]
     {
       if(!FilterArgs(arg,["PlaID","CraftID","Slot","SlotIf","Slot"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       var cPlaID = arg[1];
@@ -5144,7 +5192,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/Potion") // 1[PlaID] 2[PotionID] 3[SlotID]
     {
       if(!FilterArgs(arg,["PlaID","PotionID","SlotI"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) {
         sendTo(ws,"/RetHeal "+arg[1]+" "+arg[2]+" X X");
         return;
@@ -5178,7 +5225,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/JunkDiscard") // 1[PlayerID] 2[Item] 3[Count]
     {
       if(!FilterArgs(arg,["PlaID","item","count-"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       if(!invChangeTry(arg[1], arg[2], arg[3], "25")) kick(arg[1]);
@@ -5186,7 +5232,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/SetRespawn") // 1[PlayerID] 2[Slot] 3,4[newpos(0 0/1 1)]
     {
       if(!FilterArgs(arg,["PlaID","Slot","short","short"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) {kick(arg[1]); return;} //Kick if modified respawn while not living
       
       if(arg[3]+" "+arg[4]!="0 0") { //create
@@ -5207,8 +5252,8 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/DrillAsk") // 1[PlayerID] 2[DrillID] 3[DrillGroup]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("drill_ask")) return;
       if(!FilterArgs(arg,["PlaID","DrillID","EndID"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       var ppos = getPlayerPosition(arg[1]);
@@ -5218,7 +5263,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/DrillGet") // 1[PlayerID] 2[Item] 3[Slot]
     {
       if(!FilterArgs(arg,["PlaID","item","Slot"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) arg[3]="25";
 
       if(arg[3]!="25") {
@@ -5229,7 +5273,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/CommandGive") // 1[PlayerID] 2[Item] 3[Count] 4[Slot]
     {
       if(!FilterArgs(arg,["PlaID","item","count+","Slot"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       var indof = give_array.indexOf("give "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
@@ -5243,7 +5286,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/CommandTp") // 1[PlayerID] 2[x] 3[y]
     {
       if(!FilterArgs(arg,["PlaID","float","float"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       var indof = give_array.indexOf("tp "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
@@ -5259,7 +5301,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/FobPlace") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[EndFob] 5[Slot]
     {
       if(!FilterArgs(arg,["PlaID","ulam","place","fob-interactable","Slot"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       var overolded = (arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1]));
 
       var fPlayerID = arg[1];
@@ -5325,7 +5366,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/FobBreak") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[StartFob] 5[Slot]
     {
       if(!FilterArgs(arg,["PlaID","ulam","place","fob-interactable","Slot"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       var overolded = (arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1]));
 
       var fPlayerID = arg[1];
@@ -5428,7 +5468,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/BulletSend") // 1[PlayerID] 2[type] 3,4[vector] 5[ID] 6[BulletSource] 7[Slot] 8,9[position]
     {
       if(!FilterArgs(arg,["PlaID","BulletType","float","float","EndID","short","Slot","float","float"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       var revert_string = "/RetNewBulletDestroy "+arg[1]+" "+arg[5]+" 0 "+false+"  X X";
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) { sendTo(ws,revert_string); return; } //not living
       for(i=0;i<bulletsT.length;i++) if(bulletsT[i].ID+""==arg[5]) { sendTo(ws,revert_string); return; } //existing ID (veeery small chance)
@@ -5472,6 +5511,25 @@ wss.on("connection", function connection(ws,req)
         if(!(plr.backpack[bPlaID].split(";")[30]=="47" && plr.backpack[bPlaID].split(";")[31]!="0")) { sendTo(ws,revert_string); return; } //unstabling without artefact
       }
       else return;
+
+      //Check cooldowns
+      if(bBulSrc=="I" || bBulSrc=="A")
+      {
+          var dtn = Date.now();
+          var pl = plr.pclass[arg[1]];
+          if(pl.bullet_wait > dtn) { sendTo(ws,revert_string); return; } //ignored cooldown
+          var here_cooldown;
+          switch(bType)
+          {
+            case "1": here_cooldown = Math.floor(Parsing.FloatU(gameplay[97+0])); break;
+            case "2": here_cooldown = Math.floor(Parsing.FloatU(gameplay[97+1])); break;
+            case "3": here_cooldown = Math.floor(Parsing.FloatU(gameplay[97+4])); break;
+            case "14": here_cooldown = Math.floor(Parsing.FloatU(gameplay[97+2])); break;
+            case "15": here_cooldown = Math.floor(Parsing.FloatU(gameplay[97+3])); break;
+            default: return;
+          }
+          pl.bullet_wait = dtn + (here_cooldown-1) * 20;
+      }
 
       //Speed anti-cheat
       if((Parsing.FloatU(bVectX)**2 + Parsing.FloatU(bVectY)**2) ** 0.5 > 1.2) { sendTo(ws,revert_string); return; } //bullet too fast
@@ -5518,7 +5576,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/BulletRemove") // 1[PlayerID] 2[BulletID] 3[age]
     {
       if(!FilterArgs(arg,["PlaID","EndID","int"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       
       var lngt = bulletsT.length;
       for(i=0;i<lngt;i++)
@@ -5528,7 +5585,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/ShotTurn") // 1[PlayerID] 2[ulam] 3[place] 4[FobStart] 5[BulletID]
     {
       if(!FilterArgs(arg,["PlaID","ulam","place","ShotTurnFob","EndID"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
 
       var lngt = bulletsT.length;
       var bul_ref;
@@ -5562,7 +5618,6 @@ wss.on("connection", function connection(ws,req)
     if (arg[0] == "/WorldData") // 1[PlayerID] 2[Ulam] 3[AbortReference]
     {
       if(!FilterArgs(arg,["PlaID","ulam","short"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       
       var ulamID = Parsing.IntU(arg[2]);
 
@@ -5654,8 +5709,8 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/RequestMemories") // 1[PlayerID] 2[MemoryID]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("request_memories")) {kick(arg[i]); return;}
       if(!FilterArgs(arg,["PlaID","0-16k"])) return;
-      if(!checkPlayerG(arg[1],ws)) return;
       
       sendTo(ws,"/RetMemoryData "+arg[2]+"$"+biome_memories[Parsing.IntU(arg[2])]+" X X");
     }
