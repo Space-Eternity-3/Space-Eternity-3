@@ -678,7 +678,7 @@ public class SC_data : MonoBehaviour
 
         DirQ(savesDIR);
         DirQ(settingsDIR);
-        DirQ(GetPath("Biomes2"));
+        if(worlded) DirQ(GetPath("Biomes2"));
         if(worlded) DirQ(asteroidDIR);
 
         if(E=="settings")

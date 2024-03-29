@@ -138,6 +138,10 @@ b) Server run
 - conID safety system replaced with better, se3-ws safety system
 - messages to all clients are sent only to players confirmed to be in game
 - server will no longer crash after receiving a wrong message (if it does, contact with the game developer)
+- remote messages from clients are handled better (for example when client wants to activate the arena too far away)
+- cooldown system is handled better (bullets, impulse)
+- there was introduced the limit messages per second for connection: 1200
+- there was introduced the max length of message to server: 65536
 - server communication protocol was drastically reworked in client -> server commands, check server code comments for more information
 - server anti-cheat improved (there was completely no anti-cheat before)
 - player bullet speed will always be reduced to 1.2 units when too big
