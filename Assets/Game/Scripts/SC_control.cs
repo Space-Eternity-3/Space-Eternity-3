@@ -75,7 +75,7 @@ public class SC_control : MonoBehaviour {
 	int reg_wait=0;
 	int cooldown=0;
 	public int imp_cooldown=0;
-	int dmLicz=0;
+	int collision_cooldown=0;
 	int saveCo=0;
 	public int max_players = 10;
 	public bool blockEscapeThisFrame = false;
@@ -191,8 +191,8 @@ public class SC_control : MonoBehaviour {
 	public int actualTarDisp = 0; //no F1 included
 	bool escaped = false;
 	string RPU = "XXX";
+	public string RespawnDelay = "";
 	int MTPloadedCounter=0;
-	Quaternion lock_rot = new Quaternion(0f,0f,0f,0f);
 	
 	public bool impulse_enabled;
 	public int impulse_time;
@@ -950,7 +950,7 @@ public class SC_control : MonoBehaviour {
 		if(cooldown>0) cooldown--;
 		if(imp_cooldown>0) imp_cooldown--;
 		if(licznikD>0) licznikD--;
-		if(dmLicz>0) dmLicz--;
+		if(collision_cooldown>0) collision_cooldown--;
 		if(saveCo>0) saveCo--;
 
 		impulse_time--;
@@ -1095,6 +1095,9 @@ public class SC_control : MonoBehaviour {
 				power_V += at_unstable_regen2/50f;
 			}
 		}
+
+		//movement array add
+		MovementAdd(playerR.velocity,10);
 
 		//health regeneration
 		if(health_V<1f&&timerH==0 && (int)Communtron4.position.y!=100)
@@ -1456,6 +1459,21 @@ public class SC_control : MonoBehaviour {
 	{
 		return SC_fun.Skop(vec3,F);
 	}
+	public List<Vector3> LastPlayerMovements = new List<Vector3>();
+	void MovementAdd(Vector3 movement, int lngt)
+	{
+		LastPlayerMovements.Add(movement);
+		if(LastPlayerMovements.Count > lngt)
+			LastPlayerMovements.RemoveAt(0);
+	}
+	Vector3 MovementSum()
+	{
+		Vector3 ret = new Vector3(0f,0f,0f);
+		int i,lngt = LastPlayerMovements.Count;
+		for(i=0;i<lngt;i++)
+			ret += LastPlayerMovements[i];
+		return ret;
+	}
 	bool AllowCollisionDamage()
 	{
 		SC_adecodron[] SC_adecodron2 = FindObjectsOfType<SC_adecodron>();
@@ -1467,20 +1485,25 @@ public class SC_control : MonoBehaviour {
 	}
 	void OnCollisionEnter(Collision collision)
     {
-		float CME=Parsing.FloatE(SC_data.Gameplay[6]); 
+		if(collision.gameObject.name=="aBossScaled0") return;
 
-		if(collision.gameObject.name!="mini_crown" && collision.gameObject.name!="aBossScaled0")
-		{
-			if(dmLicz<=0)
-       		if(collision.impulse.magnitude>CME&&collision.relativeVelocity.magnitude>CME)
+		float minimal = Parsing.FloatE(SC_data.Gameplay[6]); 
+		float multiplier = Parsing.FloatE(SC_data.Gameplay[7]);
+		if(
+			collision_cooldown <= 0 &&
+			collision.impulse.magnitude > minimal &&
+			collision.relativeVelocity.magnitude > minimal &&
+			Pitagoras(MovementSum())/10f > minimal &&
+			collision.gameObject.GetComponent<SC_collider_counter>().age > 10
+		){
+			collision_cooldown = 20;
+			float crash_size = crash_size = collision.impulse.magnitude - minimal + 3f;
+			float crash_damage = 1.2f * multiplier * crash_size * Mathf.Pow(SC_fun.difficulty,0.5f);
+			
+			if(crash_damage > 0 && AllowCollisionDamage())
 			{
-				dmLicz=20;
-				float head_ache = head_ache=collision.impulse.magnitude-CME + 3f;
-				float hai=Parsing.FloatE(SC_data.Gameplay[7])*Mathf.Pow(SC_fun.difficulty,0.5f)*head_ache*1.2f;
-				if(AllowCollisionDamage() && hai>0) {
-					damage_ringed = true;
-					DamageFLOAT(hai);
-				}
+				damage_ringed = true;
+				DamageFLOAT(crash_damage);
 			}
 		}
     }
@@ -1928,7 +1951,7 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="/RetChatMessage")
 		{
 			if(arg[1]==connectionID+"") return;
-			SC_chat.AddMessage(arg[1],new StringBuilder(arg[2]).Replace("\t"," ").ToString());
+			SC_chat.AddMessage(arg[1] + " " + new StringBuilder(arg[2]).Replace("\t"," ").ToString());
 		}
 		if(arg[0]=="/RetCommandGive")
 		{
@@ -1946,6 +1969,10 @@ public class SC_control : MonoBehaviour {
 			float y = Parsing.FloatE(arg[2]);
 			SendMTP("/CommandTp "+connectionID+" "+arg[1]+" "+arg[2]);
 			player.position = new Vector3(x,y,player.position.z);
+		}
+		if(arg[0]=="/RetKeepInventory")
+		{
+			RespawnDelay = cmdThis;
 		}
 		if(arg[0]=="/RetDifficultySet")
 		{
@@ -2070,6 +2097,12 @@ public class SC_control : MonoBehaviour {
 
 		worldID=(int)Communtron4.position.y;
 		worldDIR=SC_data.savesDIR+"UniverseData"+worldID+"/";
+
+		foreach(Collider col in FindObjectsOfType<Collider>())
+		{
+			if(col.gameObject.GetComponent<SC_collider_counter>()==null)
+				col.gameObject.AddComponent<SC_collider_counter>();
+		}
 
 		if((int)Communtron4.position.y==100)
 		{

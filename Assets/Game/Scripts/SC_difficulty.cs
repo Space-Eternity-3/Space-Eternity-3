@@ -29,7 +29,8 @@ public class SC_difficulty : MonoBehaviour
         fileName = SC_fun.SC_data.worldDIR + "difficulty.txt";
         if((int)SC_fun.SC_control.Communtron4.position.y==100) HardSet(0);
         else {
-            local_difficulty = ReadDifficultySGP();
+            string read_diff = ReadVariableSGP("difficulty");
+            if(read_diff!="") local_difficulty = Parsing.IntU(read_diff);
             if(local_difficulty<0 || local_difficulty>5) local_difficulty=2;
         }
     }
@@ -55,28 +56,28 @@ public class SC_difficulty : MonoBehaviour
     public void ChangeDifficulty(bool right)
     {
         if(right) local_difficulty++; else local_difficulty--;
-        SaveDifficultySGP(local_difficulty);
+        SaveVariableSGP("difficulty",local_difficulty+"");
     }
 
     //Saving and reading difficulty
-    void SaveDifficultySGP(int num)
+    public void SaveVariableSGP(string variable_name, string s)
     {
-        using (StreamWriter writer = new StreamWriter(fileName)) {
-            writer.WriteLine(num);
+        using (StreamWriter writer = new StreamWriter(SC_fun.SC_data.worldDIR + variable_name + "_var.se3")) {
+            writer.WriteLine(s);
         }
     }
-    int ReadDifficultySGP()
+    public string ReadVariableSGP(string variable_name)
     {
         try
         {
-            if(File.Exists(fileName))
+            string file = SC_fun.SC_data.worldDIR + variable_name + "_var.se3";
+            if(File.Exists(file))
             {
-                string contents = File.ReadAllText(fileName)[0]+"";
-                if(Parsing.IntC(contents)) return Parsing.IntU(contents);
-                else return 2;
+                string contents = File.ReadAllText(file)[0]+"";
+                return contents;
             }
-            else return 2;
+            else return "";
         }
-        catch(Exception) { return 2; }
+        catch(Exception) { return ""; }
     }
 }

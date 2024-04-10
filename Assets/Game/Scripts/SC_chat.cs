@@ -31,9 +31,8 @@ public class SC_chat : MonoBehaviour
     public SC_control SC_control;
 
     bool first_message_added = false;
-    public void AddMessage(string nickname, string message)
+    public void AddMessage(string message)
     {
-        message = "<" + nickname + "> " + message;
         int lines_occupied = 1;
 
         StringBuilder sb = new StringBuilder();
@@ -113,7 +112,7 @@ public class SC_chat : MonoBehaviour
         }
         else
         {
-            AddMessage("Player",msg);
+            AddMessage("<Player> " + msg);
         }
     }
     void TextUpdateFromHistory(int his)

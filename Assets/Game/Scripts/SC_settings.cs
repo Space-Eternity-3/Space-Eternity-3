@@ -36,6 +36,7 @@ public class SC_settings : MonoBehaviour
     {
         if(namte=="music" && SC_data.menu)
 			music.volume=(slider.value*a+b)*music_natural_volume;
+        if(namte=="camera_zoom") valueRead();
     }
     void Start()
     {

@@ -1183,6 +1183,7 @@ public class SC_worldgen : MonoBehaviour
         started = true; last_x = cx; last_y = cy;
 
         int x,y;
+        if(!(Mathf.Abs(cx) > 20100 || Mathf.Abs(cy) > 20100))
         for(x=cx-GenerationRange;x<=cx+GenerationRange;x++)
         for(y=cy-GenerationRange;y<=cy+GenerationRange;y++)
         if((x+y)%2==0)
@@ -1220,6 +1221,7 @@ public class SC_worldgen : MonoBehaviour
         started2 = true; last_x2 = cx; last_y2 = cy;
 
         int x,y;
+        if(!(Mathf.Abs(cx) > 20100 || Mathf.Abs(cy) > 20100))
         for(x=cx-StructRange;x<=cx+StructRange;x++)
         for(y=cy-StructRange;y<=cy+StructRange;y++)
         if(x%2==0 && y%2==0)

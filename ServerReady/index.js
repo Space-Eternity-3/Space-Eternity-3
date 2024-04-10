@@ -63,6 +63,7 @@ const default_config = {
 	"port": 27683,
 	"pvp": true,
   "difficulty": 2,
+  "keep_inventory": false,
 	"show_positions": true,
 	"require_se3_account": false,
   "authorization_waiting_time": 15,
@@ -79,7 +80,8 @@ const default_config = {
     "max_interaction_range": 150,
     "max_worldgen_range": 250,
     "max_player_updates_per_3_seconds": 180,
-    "max_messages_per_second": 1200
+    "max_messages_per_second": 1200,
+    "allow_everywhere_spawn": false
 	}
 };
 if(!existsF("./config.json")) {
@@ -4340,9 +4342,20 @@ function kill(pid)
   plr.data[pid].split(";")[7] + ";0;0;0;0;" +
   plr.data[pid].split(";")[6] + ";" +
   plr.data[pid].split(";")[7] + ";1;0;0;0";
-  plr.inventory[pid] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
-  plr.upgrades[pid] = "0;0;0;0;0";
-  plr.backpack[pid] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+  if(!config.keep_inventory)
+  {
+      plr.inventory[pid] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+      plr.upgrades[pid] = "0;0;0;0;0";
+      plr.backpack[pid] = "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0";
+  }
+  else
+  {
+      sendTo(se3_ws[pid],"/RetKeepInventory "+plr.livID[pid]+" "+
+        plr.inventory[pid]+" "+
+        plr.upgrades[pid]+" "+
+        plr.backpack[pid]+
+      " X X");
+  }
 
   plr.sHealth[pid] = 1;
   plr.sRegTimer[pid] = 0;
@@ -4450,7 +4463,7 @@ function updateHasSense(before,after,pid,flags)
     var pos_dat_x = Parsing.FloatU(tab_dat[0]);
     var pos_dat_y = Parsing.FloatU(tab_dat[1]);
     var spawn_deviation = Math.sqrt((pos_aft_x-pos_dat_x)**2 + (pos_aft_y-pos_dat_y)**2);
-    if(spawn_deviation > 1) return false;
+    if(spawn_deviation > 1 && !config.anti_cheat.allow_everywhere_spawn) return false;
   }
 
   else if(before.length>1 && after.length>1) //player normally updates
@@ -4755,7 +4768,7 @@ wss.on("connection", function connection(ws,req)
         var dtn = Date.now();
         var pl = plr.pclass[arg[1]];
         if(pl.impulse_wait > dtn) {kick(arg[1]); return;} // impulsed too fast
-        pl.impulse_wait = dtn + (Math.round(Parsing.FloatU(gameplay[102]))-1) * 20;
+        pl.impulse_wait = dtn + (Math.round(Parsing.FloatU(gameplay[102]))-3) * 20;
         plr.pclass[arg[1]].ctrlPower -= 0.2;
         plr.impulsed[arg[1]] = [];
       }
@@ -4812,9 +4825,9 @@ wss.on("connection", function connection(ws,req)
     {
       if(!plr.pclass[arg[1]].PeriodicInsert("chat")) return;
       if(!FilterArgs(arg,["PlaID","Msg256"])) return;
-
-      console.log(hourHeader + "<" + plr.nicks[Parsing.FloatU(arg[1])] + "> " + arg[2].replaceAll("\t"," "));
-      sendToAllPlayers("/RetChatMessage " + plr.nicks[Parsing.FloatU(arg[1])] + " " + arg[2] + " X X");
+      
+      console.log("<" + plr.nicks[Parsing.FloatU(arg[1])] + "> " + arg[2].replaceAll("\t"," "));
+      sendToAllPlayers("/RetChatMessage <" + plr.nicks[Parsing.FloatU(arg[1])] + "> " + arg[2] + " X X");
     }
     if (arg[0] == "/InventoryPush") // 1[PlayerID] 2[PushID]
     {
@@ -5285,7 +5298,7 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/CommandTp") // 1[PlayerID] 2[x] 3[y]
     {
-      if(!FilterArgs(arg,["PlaID","float","float"])) return;
+      if(!FilterArgs(arg,["PlaID","length 1 256","length 1 256"])) return;
       if(arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1])) return;
 
       var indof = give_array.indexOf("tp "+plr.nicks[arg[1]]+" "+arg[2]+" "+arg[3]);
@@ -5528,7 +5541,7 @@ wss.on("connection", function connection(ws,req)
             case "15": here_cooldown = Math.floor(Parsing.FloatU(gameplay[97+3])); break;
             default: return;
           }
-          pl.bullet_wait = dtn + (here_cooldown-1) * 20;
+          pl.bullet_wait = dtn + (here_cooldown-3) * 20;
       }
 
       //Speed anti-cheat
@@ -6720,71 +6733,78 @@ function saveConfig() {
 function listenForMessages()
 {
   rl.question('', (message) => {
-    if(["stop","quit","exit"].includes(message)) Commands.stop();
-    else
-    {
-      var arg = message.split(" ");
-
-      if(message == "save") Commands.save();
-      else if(message == "players") Commands.players();
-      else if(message == "connections") Commands.connections();
-      else if(message == "difficulty get") Commands.difficultyGet();
-      else if(message == "banlist") Commands.banlist();
-      else if(message == "baniplist") Commands.baniplist();
-      else if(message == "whitelist list") Commands.whitelistList();
-      else if(message == "whitelist toggle") Commands.whitelistToggle();
-
-      else if(arg.length==2 && arg[0]=="kick") Commands.kick(arg);
-      else if(arg.length==3 && arg[0]=="difficulty" && arg[1]=="set") Commands.difficultySet(arg);
-      else if(arg.length==2 && arg[0]=="ban") Commands.ban(arg);
-      else if(arg.length==2 && arg[0]=="unban") Commands.unban(arg);
-      else if(arg.length==2 && arg[0]=="banip") Commands.banip(arg);
-      else if(arg.length==2 && arg[0]=="unbanip") Commands.unbanip(arg);
-      else if(arg.length==2 && arg[0]=="getip") Commands.getip(arg);
-      else if(arg.length==3 && arg[0]=="whitelist" && arg[1]=="add") Commands.whitelistAdd(arg);
-      else if(arg.length==3 && arg[0]=="whitelist" && arg[1]=="remove") Commands.whitelistRemove(arg);
-
-      else if(arg.length==3 && arg[0]=="health") Commands.health(arg);
-      else if(arg.length==4 && arg[0]=="give") Commands.give(arg);
-      else if(arg.length==4 && arg[0]=="tp" && arg[2]=="to") Commands.tpPlayer(arg);
-      else if(arg.length==4 && arg[0]=="tp") Commands.tpCoords(arg);
-
-      else if(message=="help")
-      {
-        console.log("\n------ List of all commands ------\n");
-
-        console.log("'help' - Displays this documentation.");
-        console.log("'save' - Saves server data. (happens automatically once per 15 seconds)");
-        console.log("'players' - Displays a list of all players.");
-        console.log("'connections' - Displays a list of all WebSocket connections.");
-        console.log("'getip [nickname]' - Displays player's IPv4 address.")
-        console.log("'difficulty get' - Displays the actual server difficulty.");
-        console.log("'difficulty set [1-4]' - Changes the server difficulty.");
-        console.log("'stop' / 'quit' / 'exit' - Stops the server.\n");
-
-        console.log("'ban [nickname]' - Bans a player.");
-        console.log("'unban [nickname]' - Unbans a player.");
-        console.log("'banlist' - Displays a list of all banned players.");
-        console.log("'banip [IPv4]' - Bans an IPv4 address.");
-        console.log("'unbanip [IPv4]' - Unbans an IPv4 address.");
-        console.log("'baniplist' - Displays a list of all banned IPv4s.\n");
-
-        console.log("'whitelist add/remove [nickname]' - Adds or removes a player to/from whitelist.");
-        console.log("'whitelist list' - Displays all players on whitelist.");
-        console.log("'whitelist toggle' - Enables/disables whitelist.\n");
-      
-        console.log("'kick [nickname]' - Kicks a player.");
-        console.log("'health [nickname] [hp]' - Modifies hp of a player.");
-        console.log("'give [nickname] [item] [amount]' - Gives an item to a player.");
-        console.log("'tp [nickname] [x] [y]' - Teleports a player to specified coordinates.");
-        console.log("'tp [nickname] to [target-nickname]' - Teleports a player to another player.");
-
-        console.log("\n----------------------------------\n");
-      }
-      else console.log("Incorrect command. Type 'help' for documentation.");
-      listenForMessages();
-    }
+    ExecuteCommand(message);
+    listenForMessages();
   });
+}
+function ExecuteCommand(message)
+{
+  if(["stop","quit","exit"].includes(message)) Commands.stop();
+  else
+  {
+    var arg = message.split(" ");
+
+    if(message == "save") Commands.save();
+    else if(message == "players") Commands.players();
+    else if(message == "connections") Commands.connections();
+    else if(message == "difficulty get") Commands.difficultyGet();
+    else if(message == "banlist") Commands.banlist();
+    else if(message == "baniplist") Commands.baniplist();
+    else if(message == "whitelist list") Commands.whitelistList();
+    else if(message == "whitelist toggle") Commands.whitelistToggle();
+
+    else if(arg[0]=="say") Commands.say(arg);
+
+    else if(arg.length==2 && arg[0]=="kick") Commands.kick(arg);
+    else if(arg.length==3 && arg[0]=="difficulty" && arg[1]=="set") Commands.difficultySet(arg);
+    else if(arg.length==2 && arg[0]=="ban") Commands.ban(arg);
+    else if(arg.length==2 && arg[0]=="unban") Commands.unban(arg);
+    else if(arg.length==2 && arg[0]=="banip") Commands.banip(arg);
+    else if(arg.length==2 && arg[0]=="unbanip") Commands.unbanip(arg);
+    else if(arg.length==2 && arg[0]=="getip") Commands.getip(arg);
+    else if(arg.length==3 && arg[0]=="whitelist" && arg[1]=="add") Commands.whitelistAdd(arg);
+    else if(arg.length==3 && arg[0]=="whitelist" && arg[1]=="remove") Commands.whitelistRemove(arg);
+
+    else if(arg.length==3 && arg[0]=="health") Commands.health(arg);
+    else if(arg.length==4 && arg[0]=="give") Commands.give(arg);
+    else if(arg.length==4 && arg[0]=="tp" && arg[2]=="to") Commands.tpPlayer(arg);
+    else if(arg.length==4 && arg[0]=="tp") Commands.tpCoords(arg);
+
+    else if(message=="help")
+    {
+      console.log("\n------ List of all commands ------\n");
+
+      console.log("'help' - Displays this documentation.");
+      console.log("'save' - Saves server data. (happens automatically once per 15 seconds)");
+      console.log("'players' - Displays a list of all players.");
+      console.log("'connections' - Displays a list of all WebSocket connections.");
+      console.log("'getip [nickname]' - Displays player's IPv4 address.")
+      console.log("'difficulty get' - Displays the actual server difficulty.");
+      console.log("'difficulty set [1-4]' - Changes the server difficulty.");
+      console.log("'stop' / 'quit' / 'exit' - Stops the server.\n");
+
+      console.log("'ban [nickname]' - Bans a player.");
+      console.log("'unban [nickname]' - Unbans a player.");
+      console.log("'banlist' - Displays a list of all banned players.");
+      console.log("'banip [IPv4]' - Bans an IPv4 address.");
+      console.log("'unbanip [IPv4]' - Unbans an IPv4 address.");
+      console.log("'baniplist' - Displays a list of all banned IPv4s.\n");
+
+      console.log("'whitelist add/remove [nickname]' - Adds or removes a player to/from whitelist.");
+      console.log("'whitelist list' - Displays all players on whitelist.");
+      console.log("'whitelist toggle' - Enables/disables whitelist.\n");
+    
+      console.log("'say [message]' - Sends a chat message to all players.");
+      console.log("'kick [nickname]' - Kicks a player.");
+      console.log("'health [nickname] [hp]' - Modifies hp of a player.");
+      console.log("'give [nickname] [item] [amount]' - Gives an item to a player.");
+      console.log("'tp [nickname] [x] [y]' - Teleports a player to specified coordinates.");
+      console.log("'tp [nickname] to [target-nickname]' - Teleports a player to another player.");
+
+      console.log("\n----------------------------------\n");
+    }
+    else console.log("Incorrect command. Type 'help' for documentation.");
+  }
 }
 listenForMessages();
 
@@ -6813,7 +6833,7 @@ class Commands
     }
     static connections()
     {
-        console.log('\nConnections ['+con_map.size+'/'+config.max_connections_per_ip+']:');
+        console.log('\nConnections:');
         con_map.forEach((value, key) => {
             console.log(`${key} (${value})`);
         });
@@ -6848,6 +6868,12 @@ class Commands
         config.whitelist_enabled = !config.whitelist_enabled;
         console.log("Whitelist toggled to: "+config.whitelist_enabled);
         saveConfig();
+    }
+    static say(arg)
+    {
+        arg.splice(0,1); arg = arg.join("\t");
+        console.log("[server] " + arg.replaceAll("\t"," "));
+        sendToAllPlayers("/RetChatMessage [server] " + arg + " X X");
     }
     static getip(arg)
     {
@@ -6890,7 +6916,7 @@ class Commands
             config.banned_players.push(arg[1]);
             console.log("Banned player: "+arg[1]);
             saveConfig();
-            Commands.kick(["kick ",arg[1]])
+            Commands.kick(["kick ",arg[1]]);
         }
         else console.log("This player is already banned.");
     }
@@ -6964,7 +6990,7 @@ class Commands
         else console.log("This player is not on a server.");
     }
     static health(arg)
-    {
+    {      
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
         {
@@ -7012,8 +7038,8 @@ class Commands
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
         {
-            var x = (Parsing.FloatU(arg[2])+"").replaceAll(".",",");
-            var y = (Parsing.FloatU(arg[3])+"").replaceAll(".",",");
+            var x = Parsing.FloatU(arg[2])+"";
+            var y = Parsing.FloatU(arg[3])+"";
             give_array_add_temp("tp "+arg[1]+" "+x+" "+y);
             sendTo(se3_ws[indof],"/RetMemoryData "+MemoriesForClient([x,y,0,0,0,0,0,0].join(";"))+" X X");
             sendTo(se3_ws[indof],"/RetCommandTp "+x+" "+y+" X "+plr.livID[indof]);

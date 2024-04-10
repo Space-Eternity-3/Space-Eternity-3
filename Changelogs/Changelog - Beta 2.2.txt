@@ -186,6 +186,7 @@ c) Others
 - reshaped ustable turn collider a bit
 - reshaped the following client bullet colliders: geyzer, lava geyzer, all elements, red spikes
 - int and float parsing system reworked to be the same on client and server side
+- only colliders older than 10 frames will be able to deal collision damage
 
 Bug fixes:
 
@@ -219,6 +220,7 @@ Bug fixes:
 - client bullets on singleplayer flying through the boss directly after the boss appearing state were igored by the boss
 - unstable turn collider was destroying bullets even if they were not unstable
 - bullets weren't flying through unstable matter
+- buggy quake collisions were dealing a lot of unfair damage
 
 Universe updating warnings:
 
