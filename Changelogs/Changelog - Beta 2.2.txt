@@ -2,9 +2,9 @@ New features (gameplay):
 
 - added bone asteroids
 - added copper chimneys (hidden objects, available only through datapacks)
-- added background colors dependent of biome and active boss
+- added background colors dependent on biome and active boss
 - added various difficulties: EASY, NORMAL, HARD, DIABOLIC + hidden: NONE, IMPOSSIBLE
-  - difficulties affect damage received by everything except for other players, potions and remote damage
+  - difficulties affect damage received by everything except other players, potions and remote damage
 - added wind bullets, obtainable on geyzer biomes (removed coal bullets, all will turn into wind bullets)
   - wind bullets push the enemy away
   - wind bullets are faster and have a bigger range than copper bullets, but also smaller damage
@@ -21,6 +21,8 @@ New features (technical):
 - you can drill from pistons now
 - datapack importing on servers improved, just add your datapack into Datapacks folder and start an empty server
 - magnetic alien activated is now a proper item and fob, it uses the magnetic alien texture
+- info about other player's death will be displayed on top of the screen
+- added 3 new treasures with IDs: 73, 74, 75 (second and third are reserved for use in custom datapacks)
 
 Old feature changes:
 
@@ -118,7 +120,6 @@ Default datapack changes:
   - level 5: amethyst 20 -> 30
 - redA (id=25) object generation replaced with other (id=2) object generation in catastrophic arenas
 - blank element is now drillable from bone asteroid instead of metalic and drill chance changed: 5,5% -> 8%
-- unstable matter is now possible to drill from red asteroid: 4%
 - changed seon codes in datapack
 - added bone asteroids to both types of cementeries
 - treasures updated: shrinked junk loot, rarer treasures, useful items have overall a similar rarity

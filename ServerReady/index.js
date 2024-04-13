@@ -65,6 +65,7 @@ const default_config = {
   "difficulty": 2,
   "keep_inventory": false,
 	"show_positions": true,
+  "display_full_date": false,
 	"require_se3_account": false,
   "authorization_waiting_time": 15,
   "max_dict_size": 128,
@@ -225,7 +226,7 @@ var seed;
 var biome_memories = new Array(16000).fill("");
 var biome_memories_state = new Array(16000).fill(0);
 var hourHeader = "";
-var gpl_number = 125;
+var gpl_number = 128;
 var max_players = 10;
 var verF;
 var connectionAddress = "IP or DNS + port";
@@ -1629,11 +1630,15 @@ class CBosbulCollider
           RY = 2.6;
           OF = 0.5;
       }
+      if ([37, 68, 73, 74, 75].includes(num)) { // treasures
+          RX = 1.4;
+          RY = 2.2;
+          OF = 0.5;
+      }
 
       // More individual
       if ([23, 53].includes(num)) { RX = 1.4; RY = 3; OF = 0.5; } // bigger aliens
       if ([1].includes(num)) { RX = 1.15; RY = 1.5; OF = 0; } // stone with crystals
-      if ([37, 68].includes(num)) { RX = 1.4; RY = 2.2; OF = 0.5; } // treasures
       if ([34, 36].includes(num)) { RX = 0.4; RY = 2.3; OF = 0.5; } // drills
       if ([35].includes(num)) { RX = 0.4; RY = 3; OF = 0.5; } // magnetic lamp
       if ([54].includes(num)) { RX = 1; RY = 2.2; OF = 0.5; } // bone
@@ -1753,11 +1758,13 @@ class CPlayer {
   constructor(pid) {
     this.Reset();
     this.gpid = pid;
-    this.TreasureNextDrops = [];
-    this.DarkTreasureNextDrops = [];
+    this.NextDropsT = [[],[],[],[],[]];
     for(var i=0;i<4;i++) {
-      this.TreasureNextDrops.push(TreasureDrop(gameplay[105]));
-      this.DarkTreasureNextDrops.push(TreasureDrop(gameplay[106]));
+      this.NextDropsT[0].push(TreasureDrop(gameplay[105]));
+      this.NextDropsT[1].push(TreasureDrop(gameplay[106]));
+      this.NextDropsT[2].push(TreasureDrop(gameplay[125]));
+      this.NextDropsT[3].push(TreasureDrop(gameplay[126]));
+      this.NextDropsT[4].push(TreasureDrop(gameplay[127]));
     }
   }
   Reset() {
@@ -1817,33 +1824,20 @@ class CPlayer {
     if(iof!=-1) this.drill_list.remove(iof);
   }
   TreasureArrayUpdate(treasure_type,generate_new_loot) {
-    var spliced;
+    var new_drop;
     if(generate_new_loot) {
-      if(treasure_type==0) {
-        spliced = this.TreasureNextDrops[0];
-        this.TreasureNextDrops.remove(0);
-        this.TreasureNextDrops.push(TreasureDrop(gameplay[105]));
-      }
-      else {
-        spliced = this.DarkTreasureNextDrops[0];
-        this.DarkTreasureNextDrops.remove(0);
-        this.DarkTreasureNextDrops.push(TreasureDrop(gameplay[106]));
-      }
+        if(treasure_type==0) new_drop = TreasureDrop(gameplay[105]);
+        if(treasure_type==1) new_drop = TreasureDrop(gameplay[106]);
+        if(treasure_type==2) new_drop = TreasureDrop(gameplay[125]);
+        if(treasure_type==3) new_drop = TreasureDrop(gameplay[126]);
+        if(treasure_type==4) new_drop = TreasureDrop(gameplay[127]);
     }
-    else {
-      if(treasure_type==0) {
-        spliced = this.TreasureNextDrops[0];
-        this.TreasureNextDrops.remove(0);
-        this.TreasureNextDrops.push(spliced);
-      }
-      else {
-        spliced = this.DarkTreasureNextDrops[0];
-        this.DarkTreasureNextDrops.remove(0);
-        this.DarkTreasureNextDrops.push(spliced);
-      }
-    }
-    if(treasure_type==0) sendTo(se3_ws[this.gpid],"/RetTreasureLoot "+plr.pclass[this.gpid].TreasureNextDrops[3]+" "+treasure_type+" X X");
-    else sendTo(se3_ws[this.gpid],"/RetTreasureLoot "+plr.pclass[this.gpid].DarkTreasureNextDrops[3]+" "+treasure_type+" X X");
+    else new_drop = this.NextDropsT[treasure_type][0];
+    
+    this.NextDropsT[treasure_type].remove(0);
+    this.NextDropsT[treasure_type].push(new_drop);
+
+    sendTo(se3_ws[this.gpid],"/RetTreasureLoot "+plr.pclass[this.gpid].NextDropsT[treasure_type][3]+" "+treasure_type+" X X");
   }
   PosChangeAdd(distance) {
     if(this.last_pos_changes.length >= 10) this.last_pos_changes.shift();
@@ -3364,7 +3358,8 @@ function updateHourHeader()
   var hours = ToTwo(date_ob.getHours());
   var minutes = ToTwo(date_ob.getMinutes());
   var seconds = ToTwo(date_ob.getSeconds());
-  hourHeader = `[${years}-${months}-${days} ${hours}:${minutes}:${seconds}] `;
+  if(config.display_full_date) hourHeader = `[${years}-${months}-${days} ${hours}:${minutes}:${seconds}] `;
+  else hourHeader = `[${hours}:${minutes}:${seconds}] `;
 }
 function ToTwo(n) {
   if(n>9) return n+"";
@@ -4364,6 +4359,14 @@ function kill(pid)
   plr.pclass[pid].last_pos_changes = [];
   plr.pclass[pid].ctrlPower = 0;
 
+  sendToAllPlayers(
+    "/RetInfoClient " +
+      (plr.nicks[pid] + " has exploded").replaceAll(" ", "`") +
+      " " +
+      pid +
+      " X X"
+  );
+
   if(plr.players[pid]=="0" || plr.players[pid]=="1") return;
 
   var xx = plr.players[pid].split(";")[0];
@@ -4696,16 +4699,10 @@ wss.on("connection", function connection(ws,req)
       for(i=0;i<lngt;i++)
         bulletsT[i].immune.push(arg[1]+"");
 
-      //Treasure data sending
-      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].TreasureNextDrops[0]+" 0 X X");
-      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].TreasureNextDrops[1]+" 0 X X");
-      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].TreasureNextDrops[2]+" 0 X X");
-      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].TreasureNextDrops[3]+" 0 X X");
-      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[0]+" 1 X X");
-      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[1]+" 1 X X");
-      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[2]+" 1 X X");
-      sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].DarkTreasureNextDrops[3]+" 1 X X");
-
+      //Starting data sending
+      var j;
+      for(i=0;i<5;i++) for(j=0;j<4;j++)
+          sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].NextDropsT[i][j]+" "+i+" X X");
       sendTo(ws,"/RetDifficultySet "+config.difficulty+" X X");
 
       //Join info
@@ -5405,18 +5402,17 @@ wss.on("connection", function connection(ws,req)
       }
 
       //Treasure drop set
-      var treasure_type = -1;
-      if(fStartFob1=="37") {
-        var treTab = plr.pclass[fPlayerID].TreasureNextDrops[0].split(";");
+      var treasure_type = -1, treTab = "NO";
+      if(fStartFob1=="37") treasure_type = 0;
+      if(fStartFob1=="68") treasure_type = 1;
+      if(fStartFob1=="73") treasure_type = 2;
+      if(fStartFob1=="74") treasure_type = 3;
+      if(fStartFob1=="75") treasure_type = 4;
+
+      if(treasure_type!=-1) {
+        treTab = plr.pclass[fPlayerID].NextDropsT[treasure_type][0].split(";");
         fDropID = treTab[0];
         fCount = treTab[1];
-        treasure_type = 0;
-      }
-      if(fStartFob1=="68") {
-        var treTab = plr.pclass[fPlayerID].DarkTreasureNextDrops[0].split(";");
-        fDropID = treTab[0];
-        fCount = treTab[1];
-        treasure_type = 1;
       }
 
       var fFob21TT = nbt(fUlamID, fPlaceID);
@@ -5827,7 +5823,8 @@ function FilterArgs(args,formats,include_headers=true)
               (p>=40 && p<=48) ||
               (p==51) ||
               (p>=54 && p<=62 && p%2==0) ||
-              (p>=64 && p<=70)
+              (p>=64 && p<=70) ||
+              (p>=73 && p<=75)
             )) return false;
             args[i] = p+"";
         }
@@ -6447,7 +6444,7 @@ function datapackPaste(splitTab) {
     for (i = 0; i < 64; i++) fobGenerate[i] = raws[3].split("'")[i];
     for (i = 0; i < 224; i++) typeSet[i] = raws[4].split("'")[i];
     for (i = 0; i < gpl_number; i++) {
-      if (i==105||i==106) gameplay[i] = raws[5].split("'")[i];
+      if (i==105||i==106||i==125||i==126||i==127) gameplay[i] = raws[5].split("'")[i];
       else gameplay[i] = Parsing.FloatE(raws[5].split("'")[i]) + "";
     }
     for (i = 0; i < 128; i++) modifiedDrops[i] = raws[6].split("'")[i];
@@ -6755,7 +6752,6 @@ function ExecuteCommand(message)
 
     else if(arg[0]=="say") Commands.say(arg);
 
-    else if(arg.length==2 && arg[0]=="kick") Commands.kick(arg);
     else if(arg.length==3 && arg[0]=="difficulty" && arg[1]=="set") Commands.difficultySet(arg);
     else if(arg.length==2 && arg[0]=="ban") Commands.ban(arg);
     else if(arg.length==2 && arg[0]=="unban") Commands.unban(arg);
@@ -6765,6 +6761,7 @@ function ExecuteCommand(message)
     else if(arg.length==3 && arg[0]=="whitelist" && arg[1]=="add") Commands.whitelistAdd(arg);
     else if(arg.length==3 && arg[0]=="whitelist" && arg[1]=="remove") Commands.whitelistRemove(arg);
 
+    else if(arg.length==2 && arg[0]=="kick") Commands.kick(arg);
     else if(arg.length==3 && arg[0]=="health") Commands.health(arg);
     else if(arg.length==4 && arg[0]=="give") Commands.give(arg);
     else if(arg.length==4 && arg[0]=="tp" && arg[2]=="to") Commands.tpPlayer(arg);
@@ -6783,14 +6780,14 @@ function ExecuteCommand(message)
       console.log("'difficulty set [1-4]' - Changes the server difficulty.");
       console.log("'stop' / 'quit' / 'exit' - Stops the server.\n");
 
-      console.log("'ban [nickname]' - Bans a player.");
-      console.log("'unban [nickname]' - Unbans a player.");
+      console.log("'ban [nickname-string]' - Bans a player.");
+      console.log("'unban [nickname-string]' - Unbans a player.");
       console.log("'banlist' - Displays a list of all banned players.");
       console.log("'banip [IPv4]' - Bans an IPv4 address.");
       console.log("'unbanip [IPv4]' - Unbans an IPv4 address.");
       console.log("'baniplist' - Displays a list of all banned IPv4s.\n");
 
-      console.log("'whitelist add/remove [nickname]' - Adds or removes a player to/from whitelist.");
+      console.log("'whitelist add/remove [nickname-string]' - Adds or removes a player to/from whitelist.");
       console.log("'whitelist list' - Displays all players on whitelist.");
       console.log("'whitelist toggle' - Enables/disables whitelist.\n");
     
@@ -6799,7 +6796,9 @@ function ExecuteCommand(message)
       console.log("'health [nickname] [hp]' - Modifies hp of a player.");
       console.log("'give [nickname] [item] [amount]' - Gives an item to a player.");
       console.log("'tp [nickname] [x] [y]' - Teleports a player to specified coordinates.");
-      console.log("'tp [nickname] to [target-nickname]' - Teleports a player to another player.");
+      console.log("'tp [nickname] to [nickname-target]' - Teleports a player to another player.\n");
+
+      console.log("Note: To target all players on the server use '0' in the [nickname] field.");
 
       console.log("\n----------------------------------\n");
     }
@@ -6877,6 +6876,15 @@ class Commands
     }
     static getip(arg)
     {
+        if(arg[1]=="0") {
+          for(var p=0 ; p < max_players ; p++)
+            if(plr.nicks[p]!="0") {
+              arg[1] = plr.nicks[p];
+              Commands.getip(arg);
+            }
+          return;
+        }
+
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]))
             console.log("Player "+arg[1]+" has the following IPv4 address: "+IPv4s[indof]);
@@ -6916,7 +6924,7 @@ class Commands
             config.banned_players.push(arg[1]);
             console.log("Banned player: "+arg[1]);
             saveConfig();
-            Commands.kick(["kick ",arg[1]]);
+            if(arg[1]!="0") Commands.kick(["kick ",arg[1]]);
         }
         else console.log("This player is already banned.");
     }
@@ -6974,13 +6982,22 @@ class Commands
         if(indof!=-1)
         {
             config.whitelist.splice(indof,1);
-            console.log("Removed player from whitelist: "+arg[1]);
+            console.log("Removed player from whitelist: "+arg[2]);
             saveConfig();
         }
         else console.log("This player is not whitelisted.");
     }
     static kick(arg)
     {
+        if(arg[1]=="0") {
+          for(var p=0 ; p < max_players ; p++)
+            if(plr.nicks[p]!="0") {
+              arg[1] = plr.nicks[p];
+              Commands.kick(arg);
+            }
+          return;
+        }
+
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]))
         {
@@ -6990,7 +7007,16 @@ class Commands
         else console.log("This player is not on a server.");
     }
     static health(arg)
-    {      
+    {
+        if(arg[1]=="0") {
+          for(var p=0 ; p < max_players ; p++)
+            if(plr.nicks[p]!="0") {
+              arg[1] = plr.nicks[p];
+              Commands.health(arg);
+            }
+          return;
+        }
+
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
         {
@@ -7014,6 +7040,15 @@ class Commands
     }
     static give(arg)
     {
+        if(arg[1]=="0") {
+          for(var p=0 ; p < max_players ; p++)
+            if(plr.nicks[p]!="0") {
+              arg[1] = plr.nicks[p];
+              Commands.give(arg);
+            }
+          return;
+        }
+
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
         {
@@ -7035,6 +7070,15 @@ class Commands
     }
     static tpCoords(arg)
     {
+        if(arg[1]=="0") {
+          for(var p=0 ; p < max_players ; p++)
+            if(plr.nicks[p]!="0") {
+              arg[1] = plr.nicks[p];
+              Commands.tpCoords(arg);
+            }
+          return;
+        }
+
         var indof = plr.nicks.indexOf(arg[1]);
         if(indof!=-1 && !nickWrong(arg[1]) && se3_wsS[indof]=="game" && !inHeaven(arg[1]))
         {
@@ -7048,6 +7092,15 @@ class Commands
     }
     static tpPlayer(arg)
     {
+        if(arg[1]=="0") {
+          for(var p=0 ; p < max_players ; p++)
+            if(plr.nicks[p]!="0") {
+              arg[1] = plr.nicks[p];
+              Commands.tpPlayer(arg);
+            }
+          return;
+        }
+
         var indof1 = plr.nicks.indexOf(arg[1]);
         var indof2 = plr.nicks.indexOf(arg[3]);
         if(indof1!=-1 && !nickWrong(arg[1]) && se3_wsS[indof1]=="game" && !inHeaven(indof1) &&

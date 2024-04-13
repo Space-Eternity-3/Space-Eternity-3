@@ -256,6 +256,9 @@ class cfun
             "wind_owner_push:*", //122
 	        "wind_boss_push:*", //123
             "wind_victim_push:*", //124
+            "metal_treasure_loot:s", //125
+            "soft_treasure_loot:s", //126
+            "hard_treasure_loot:s", //127
         ];
     }
 

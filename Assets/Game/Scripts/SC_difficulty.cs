@@ -59,23 +59,46 @@ public class SC_difficulty : MonoBehaviour
         SaveVariableSGP("difficulty",local_difficulty+"");
     }
 
-    //Saving and reading difficulty
-    public void SaveVariableSGP(string variable_name, string s)
+    //Saving and reading sgp variables
+    public void SaveVariableSGP(string variable_name, string value)
     {
-        using (StreamWriter writer = new StreamWriter(SC_fun.SC_data.worldDIR + variable_name + "_var.se3")) {
-            writer.WriteLine(s);
+        string all_text = "";
+        bool included = false;
+        string[] str = ReadDataSGP().Split(';');
+        foreach(string st in str)
+        {
+            string[] s = st.Split(':');
+            if(s[0]==variable_name)
+            {
+                s[1] = value;
+                included = true;
+            }
+            if(s[0]!="") all_text += s[0] + ":" + s[1] + ";";
         }
+        if(!included) all_text += variable_name + ":" + value + ";";
+        try
+        {
+            string file = SC_fun.SC_data.worldDIR + "SgpData.se3";
+            File.WriteAllText(file,all_text);
+        }
+        catch(Exception) {}
     }
     public string ReadVariableSGP(string variable_name)
     {
+        string[] str = ReadDataSGP().Split(';');
+        foreach(string st in str)
+        {
+            string[] s = st.Split(':');
+            if(s[0]==variable_name) return s[1];
+        }
+        return "";
+    }
+    public string ReadDataSGP()
+    {
         try
         {
-            string file = SC_fun.SC_data.worldDIR + variable_name + "_var.se3";
-            if(File.Exists(file))
-            {
-                string contents = File.ReadAllText(file)[0]+"";
-                return contents;
-            }
+            string file = SC_fun.SC_data.worldDIR + "SgpData.se3";
+            if(File.Exists(file)) return File.ReadAllText(file);
             else return "";
         }
         catch(Exception) { return ""; }

@@ -169,11 +169,12 @@ public class CBosbulCollider
             { RX = 1.15f; RY = 1.2f; OF = 0f; } // artefacts
         if((new List<int>{13,25,27,40}).Contains(num))
             { RX = 1.4f; RY = 2.6f; OF = 0.5f; } // smaller aliens
+        if((new List<int>{37,68,73,74,75}).Contains(num))
+            { RX = 1.4f; RY = 2.2f; OF = 0.5f; } // treasures
 
         //More individual
         if((new List<int>{23,53}).Contains(num))    { RX = 1.4f; RY = 3f; OF = 0.5f; } // bigger aliens
         if((new List<int>{1}).Contains(num))        { RX = 1.15f; RY = 1.5f; OF = 0f; } // stone with crystals
-        if((new List<int>{37,68}).Contains(num))    { RX = 1.4f; RY = 2.2f; OF = 0.5f; } // treasures
         if((new List<int>{34,36}).Contains(num))    { RX = 0.4f; RY = 2.3f; OF = 0.5f; } // drills
         if((new List<int>{35}).Contains(num))       { RX = 0.4f; RY = 3f; OF = 0.5f; } // magnetic lamp
         if((new List<int>{54}).Contains(num))       { RX = 1f; RY = 2.2f; OF = 0.5f; } // bone

@@ -17,6 +17,9 @@ public class SC_gameplay_set : MonoBehaviour
     public SC_fobs magnetic_alien;
     public SC_fobs treasure;
     public SC_fobs dark_treasure;
+    public SC_fobs metal_treasure;
+    public SC_fobs soft_treasure;
+    public SC_fobs hard_treasure;
     public SC_control SC_control;
 
     public void GameplayAwakeSet()
@@ -73,6 +76,9 @@ public class SC_gameplay_set : MonoBehaviour
 
         treasure.lootSE3 = SC_data.Gameplay[105];
         dark_treasure.lootSE3 = SC_data.Gameplay[106];
+        metal_treasure.lootSE3 = SC_data.Gameplay[125];
+        soft_treasure.lootSE3 = SC_data.Gameplay[126];
+        hard_treasure.lootSE3 = SC_data.Gameplay[127];
 
         SC_control.at_unstable_regen1 = -Parsing.FloatE(SC_data.Gameplay[108]);
         SC_control.at_unstable_regen2 = -Parsing.FloatE(SC_data.Gameplay[109]);

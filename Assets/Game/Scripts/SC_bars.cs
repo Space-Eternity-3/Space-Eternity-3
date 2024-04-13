@@ -72,7 +72,7 @@ public class SC_bars : MonoBehaviour
 			DynamicClockArrow.LaterUpdate();
 
 			Vector2 mousePosition = Input.mousePosition;
-			if(!SC_data.SC_control.SC_fun.AreCoordinatesInsideRect(butter,mousePosition.x,mousePosition.y)) {
+			if(!SC_data.SC_control.SC_fun.AreCoordinatesInsideRect(butter,mousePosition.x,mousePosition.y,0,0)) {
 				CompassInfo.localPosition = new Vector3(10000f,0f,0f);
 				TimeInfo.localPosition = new Vector3(0f,0f,0f);
 			} else {

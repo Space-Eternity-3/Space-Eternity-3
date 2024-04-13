@@ -12,12 +12,14 @@ public class SC_fun : MonoBehaviour
 	public GameObject[] GenPlaceM = new GameObject[18];
     public Material[] M = new Material[128];
     public Texture[] Item = new Texture[128];
+	public string[] ItemNames = new string[128];
     public Texture Item20u, Item55u, Item57u, Item59u, Item61u, Item63u, Item71u;
 	public Material[] texture = new Material[16];
 	public Material[] textureStone;
 	public Material[] textureDark;
 	public Material textureERROR;
 	
+	public bool ExperimentalItemInfo;
     public float volume;
 	public float seek_default_angle;
 	public float camera_add;
@@ -64,7 +66,7 @@ public class SC_fun : MonoBehaviour
     	if(angle < 0) angle += 360;
     	return angle;
 	}
-	public bool AreCoordinatesInsideRect(RectTransform trn, float x, float y)
+	public bool AreCoordinatesInsideRect(RectTransform trn, float x, float y, float dx, float dy)
     {
         Vector3[] corners = new Vector3[4];
         trn.GetWorldCorners(corners);
@@ -74,7 +76,7 @@ public class SC_fun : MonoBehaviour
         float minY = Mathf.Min(corners[0].y, corners[1].y, corners[2].y, corners[3].y);
         float maxY = Mathf.Max(corners[0].y, corners[1].y, corners[2].y, corners[3].y);
 
-        return (x >= minX && x <= maxX && y >= minY && y <= maxY);
+        return (x >= minX-dx && x <= maxX+dx && y >= minY-dy && y <= maxY+dy);
     }
 	public float FluentFraction(float f)
     {

@@ -208,6 +208,9 @@ public class SC_control : MonoBehaviour {
 
 	public List<string> TreasureAllowed = new List<string>();
 	public List<string> DarkTreasureAllowed = new List<string>();
+	public List<string> MetalTreasureAllowed = new List<string>();
+	public List<string> SoftTreasureAllowed = new List<string>();
+	public List<string> HardTreasureAllowed = new List<string>();
 
 	public int unstable_pulses_available = 0;
 	public bool already_teleported = false;
@@ -1938,6 +1941,9 @@ public class SC_control : MonoBehaviour {
 			string treasure_type = arg[2];
 			if(treasure_type=="0") TreasureAllowed.Add(arg[1]);
 			if(treasure_type=="1") DarkTreasureAllowed.Add(arg[1]);
+			if(treasure_type=="2") MetalTreasureAllowed.Add(arg[1]);
+			if(treasure_type=="3") SoftTreasureAllowed.Add(arg[1]);
+			if(treasure_type=="4") HardTreasureAllowed.Add(arg[1]);
 		}
 		if(arg[0]=="/RetUnstablePulse")
 		{

@@ -27,7 +27,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 125;
+	int gpl_number = 128;
     
 	bool lockData = false;
 	bool remember = false;
@@ -232,6 +232,9 @@ public class SC_data : MonoBehaviour
             "wind_owner_push:*", //122
 	        "wind_boss_push:*", //123
             "wind_victim_push:*", //124
+            "metal_treasure_loot:s", //125
+            "soft_treasure_loot:s", //126
+            "hard_treasure_loot:s", //127
         };
         public int VarNumber(string str,int gnome)
         {
@@ -1586,7 +1589,7 @@ public class SC_data : MonoBehaviour
             for(i=0;i<224;i++) TypeSet[i] = raws[4].Split('\'')[i];
             for(i=0;i<gpl_number;i++)
             {
-                if(i==105||i==106) Gameplay[i] = raws[5].Split('\'')[i];
+                if(i==105||i==106||i==125||i==126||i==127) Gameplay[i] = raws[5].Split('\'')[i];
                 else Gameplay[i] = Parsing.FloatE(raws[5].Split('\'')[i])+"";
             }
             for(i=0;i<128;i++) ModifiedDrops[i] = raws[6].Split('\'')[i];

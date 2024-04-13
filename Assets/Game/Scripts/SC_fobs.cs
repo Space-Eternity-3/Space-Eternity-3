@@ -198,6 +198,7 @@ public class SC_fobs : MonoBehaviour
 		if(b==51) return true;
         if(b>=54 && b<=62 && b%2==0) return true;
         if(b>=64 && b<=70) return true;
+        if(b>=73 && b<=75) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)
@@ -574,24 +575,19 @@ public class SC_fobs : MonoBehaviour
                     }
                     else
                     {
-                        if(ObjID==37) //normal treasure
+                        List<string> TreasureList = new List<string>();
+                        if(ObjID==37) TreasureList = SC_control.TreasureAllowed;
+                        if(ObjID==68) TreasureList = SC_control.DarkTreasureAllowed;
+                        if(ObjID==73) TreasureList = SC_control.MetalTreasureAllowed;
+                        if(ObjID==74) TreasureList = SC_control.SoftTreasureAllowed;
+                        if(ObjID==75) TreasureList = SC_control.HardTreasureAllowed;
+
+                        if(TreasureList.Count>0)
                         {
-                            if(SC_control.TreasureAllowed.Count>0)
-                            {
-                                localDrop = SC_control.TreasureAllowed[0];
-                                SC_control.TreasureAllowed.RemoveAt(0);
-                            }
-                            else localDrop = "X";
+                            localDrop = TreasureList[0];
+                            TreasureList.RemoveAt(0);
                         }
-                        else //dark treasure
-                        {
-                            if(SC_control.DarkTreasureAllowed.Count>0)
-                            {
-                                localDrop = SC_control.DarkTreasureAllowed[0];
-                                SC_control.DarkTreasureAllowed.RemoveAt(0);
-                            }
-                            else localDrop = "X";
-                        }
+                        else localDrop = "X";
                     }
                     if(localDrop!="X")
                     {

@@ -15,14 +15,15 @@ public class SC_inventory_manager : MonoBehaviour {
 	public Transform Communtron4;
 	public Transform NumParent;
 	public Text NumValue;
-	Vector3 NumParDef;
 	public SC_fun SC_fun;
 	public SC_backpack SC_backpack;
 	public SC_slots SC_slots;
 	public SC_data SC_data;
 	public SC_craft3 SC_craft3;
 	public SC_resp_blocker SC_resp_blocker;
+	public SC_cursor_follow SC_cursor_follow;
 
+	Vector3 NumParDef;
 	int pvNum=0;
 
 	void Start()
@@ -91,5 +92,20 @@ public class SC_inventory_manager : MonoBehaviour {
 					sImg.texture=SC_fun.Item71u;
 			}
 		}
+
+		string text_display = GetTextDisplay((int)pvNum);
+		if(SC_fun.AreCoordinatesInsideRect(transform.GetComponent<RectTransform>(),Input.mousePosition.x,Input.mousePosition.y,0,0))
+			if(text_display!="") SC_cursor_follow.source_text = text_display;
+	}
+	string GetTextDisplay(int item)
+	{
+		if(!SC_fun.ExperimentalItemInfo) return "";
+
+		if(gameObject.name=="ItemImageB" || gameObject.name=="ItemImageO")
+		{
+			item = (int)Mathf.Abs(item); item %= 128;
+			return SC_fun.ItemNames[item];
+		}
+		else return "";
 	}
 }
