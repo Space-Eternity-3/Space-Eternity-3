@@ -1,13 +1,17 @@
 New features (gameplay):
 
 - added bone asteroids
-- added copper chimneys (hidden objects, available only through datapacks)
 - added background colors dependent on biome and active boss
 - added various difficulties: EASY, NORMAL, HARD, DIABOLIC + hidden: NONE, IMPOSSIBLE
   - difficulties affect damage received by everything except other players, potions and remote damage
 - added wind bullets, obtainable on geyzer biomes (removed coal bullets, all will turn into wind bullets)
   - wind bullets push the enemy away
   - wind bullets are faster and have a bigger range than copper bullets, but also smaller damage
+- added the following hidden objects (available through datapacks):
+  - copper chimney
+  - small copper chimney
+  - copper diode
+  - tiger gem (not functional yet)
 
 New features (technical):
 

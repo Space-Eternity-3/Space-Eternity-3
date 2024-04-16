@@ -1611,36 +1611,26 @@ class CBosbulCollider
 
       // More general
       if ([8, 9, 10, 11, 16, 30, 50, 56, 58, 60, 62, 66].includes(num))  { // stones & elements
-          RX = 0.9;
-          RY = 1;
-          OF = 0;
+          RX = 0.9; RY = 1; OF = 0;
       }
       if ([17, 18, 19, 22, 26, 31, 49, 67, 32].includes(num)) { // packeds & big diamond
-          RX = 1.4;
-          RY = 1.6;
-          OF = 0.5;
+          RX = 1.4; RY = 1.6; OF = 0.5;
       }
-      if ([41, 42, 43, 44, 45, 46, 47].includes(num)) { // artefacts
-          RX = 1.15;
-          RY = 1.2;
-          OF = 0;
+      if ([41, 42, 43, 44, 45, 46, 47, 78].includes(num)) { // artefacts & tiger gem
+          RX = 1.15; RY = 1.2; OF = 0;
       }
       if ([13, 25, 27, 40].includes(num)) { // smaller aliens
-          RX = 1.4;
-          RY = 2.6;
-          OF = 0.5;
+          RX = 1.4; RY = 2.6; OF = 0.5;
       }
       if ([37, 68, 73, 74, 75].includes(num)) { // treasures
-          RX = 1.4;
-          RY = 2.2;
-          OF = 0.5;
+          RX = 1.4; RY = 2.2; OF = 0.5;
       }
 
       // More individual
       if ([23, 53].includes(num)) { RX = 1.4; RY = 3; OF = 0.5; } // bigger aliens
       if ([1].includes(num)) { RX = 1.15; RY = 1.5; OF = 0; } // stone with crystals
       if ([34, 36].includes(num)) { RX = 0.4; RY = 2.3; OF = 0.5; } // drills
-      if ([35].includes(num)) { RX = 0.4; RY = 3; OF = 0.5; } // magnetic lamp
+      if ([35, 77].includes(num)) { RX = 0.5; RY = 3; OF = 0.5; } // magnetic lamp & copper diode
       if ([54].includes(num)) { RX = 1; RY = 2.2; OF = 0.5; } // bone
       if ([51].includes(num)) { RX = 1.4; RY = 2; OF = 0.5; } // metal piece
       if ([29, 69].includes(num)) { RX = 1.4; RY = 3.6; OF = 1; } // tombs
@@ -1654,6 +1644,7 @@ class CBosbulCollider
       if ([2].includes(num)) { RX = 1.4; RY = 3.2; OF = 1; } // driller
       if ([21, 52].includes(num)) { RX = 1.4; RY = 2.4; OF = 1; } // storages
       if ([15].includes(num)) { RX = 1.8; RY = 8; OF = 3.7; } // copper chimney
+      if ([76].includes(num)) { RX = 1.4; RY = 4; OF = 1.6; } // small copper chimney
 
       const dXY = func.RotatePoint([0, OF], this.ColliderDefault.angle);
 
@@ -1790,6 +1781,7 @@ class CPlayer {
       player_update: [null,0, 0,config.anti_cheat.max_player_updates_per_3_seconds, 3*1000], // [0nextdate,1current, 2min,3max, 4period] note: it has to be imported at least once in player lifetime for system to work
       chat: [null,0, 0,5, 2*1000],
       particles: [null,0, 0,20, 1*1000],
+      fob_modify: [null,0, 0,50, 1*1000],
       grow_loaded: [null,0, 0,1, 1*1000],
       drill_ask: [null,0, 0,10, 1*1000],
       request_memories: [null,0, 0,200, 1*1000]
@@ -4846,6 +4838,7 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/GeyzerTurnTry") // 1[PlayerID] 2[ulam] 3[place] 4[turnID]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("fob_modify")) {kick(arg[1]); return;}
       if(!FilterArgs(arg,["PlaID","ulam","place","turnID"])) return;
 
       if(arg[4]=="40") //dead alien turn
@@ -5211,7 +5204,7 @@ wss.on("connection", function connection(ws,req)
       var tab = [0,55,61,71,57,59,63]; //special potion ID
 
       if(!invChangeTry(arg[1],tab[arg[2]],-1,arg[3])) {
-        kick(arg[i]);
+        kick(arg[1]);
         return;
       }
 
@@ -5310,6 +5303,7 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/FobPlace") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[EndFob] 5[Slot]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("fob_modify")) {kick(arg[1]); return;}
       if(!FilterArgs(arg,["PlaID","ulam","place","fob-interactable","Slot"])) return;
       var overolded = (arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1]));
 
@@ -5375,6 +5369,7 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/FobBreak") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[StartFob] 5[Slot]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("fob_modify")) {kick(arg[1]); return;}
       if(!FilterArgs(arg,["PlaID","ulam","place","fob-interactable","Slot"])) return;
       var overolded = (arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1]));
 
@@ -5593,6 +5588,7 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/ShotTurn") // 1[PlayerID] 2[ulam] 3[place] 4[FobStart] 5[BulletID]
     {
+      if(!plr.pclass[arg[1]].PeriodicInsert("fob_modify")) {kick(arg[1]); return;}
       if(!FilterArgs(arg,["PlaID","ulam","place","ShotTurnFob","EndID"])) return;
 
       var lngt = bulletsT.length;
@@ -5718,7 +5714,7 @@ wss.on("connection", function connection(ws,req)
     }
     if (arg[0] == "/RequestMemories") // 1[PlayerID] 2[MemoryID]
     {
-      if(!plr.pclass[arg[1]].PeriodicInsert("request_memories")) {kick(arg[i]); return;}
+      if(!plr.pclass[arg[1]].PeriodicInsert("request_memories")) {kick(arg[1]); return;}
       if(!FilterArgs(arg,["PlaID","0-16k"])) return;
       
       sendTo(ws,"/RetMemoryData "+arg[2]+"$"+biome_memories[Parsing.IntU(arg[2])]+" X X");
@@ -5824,7 +5820,7 @@ function FilterArgs(args,formats,include_headers=true)
               (p==51) ||
               (p>=54 && p<=62 && p%2==0) ||
               (p>=64 && p<=70) ||
-              (p>=73 && p<=75)
+              (p>=73 && p<=78)
             )) return false;
             args[i] = p+"";
         }

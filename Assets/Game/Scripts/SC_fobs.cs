@@ -198,7 +198,7 @@ public class SC_fobs : MonoBehaviour
 		if(b==51) return true;
         if(b>=54 && b<=62 && b%2==0) return true;
         if(b>=64 && b<=70) return true;
-        if(b>=73 && b<=75) return true;
+        if(b>=73 && b<=78) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)

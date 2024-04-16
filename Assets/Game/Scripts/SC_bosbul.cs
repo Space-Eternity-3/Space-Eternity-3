@@ -165,8 +165,8 @@ public class CBosbulCollider
             { RX = 0.9f; RY = 1f; OF = 0f; } // stones & elements
         if((new List<int>{17,18,19,22,26,31,49,67,32}).Contains(num))
             { RX = 1.4f; RY = 1.6f; OF = 0.5f; } // packeds & big diamond
-        if((new List<int>{41,42,43,44,45,46,47}).Contains(num))
-            { RX = 1.15f; RY = 1.2f; OF = 0f; } // artefacts
+        if((new List<int>{41,42,43,44,45,46,47,78}).Contains(num))
+            { RX = 1.15f; RY = 1.2f; OF = 0f; } // artefacts & tiger gem
         if((new List<int>{13,25,27,40}).Contains(num))
             { RX = 1.4f; RY = 2.6f; OF = 0.5f; } // smaller aliens
         if((new List<int>{37,68,73,74,75}).Contains(num))
@@ -176,7 +176,7 @@ public class CBosbulCollider
         if((new List<int>{23,53}).Contains(num))    { RX = 1.4f; RY = 3f; OF = 0.5f; } // bigger aliens
         if((new List<int>{1}).Contains(num))        { RX = 1.15f; RY = 1.5f; OF = 0f; } // stone with crystals
         if((new List<int>{34,36}).Contains(num))    { RX = 0.4f; RY = 2.3f; OF = 0.5f; } // drills
-        if((new List<int>{35}).Contains(num))       { RX = 0.4f; RY = 3f; OF = 0.5f; } // magnetic lamp
+        if((new List<int>{35,77}).Contains(num))    { RX = 0.5f; RY = 3f; OF = 0.5f; } // magnetic lamp & copper diode
         if((new List<int>{54}).Contains(num))       { RX = 1f; RY = 2.2f; OF = 0.5f; } // bone
         if((new List<int>{51}).Contains(num))       { RX = 1.4f; RY = 2f; OF = 0.5f; } // metal piece
         if((new List<int>{29,69}).Contains(num))    { RX = 1.4f; RY = 3.6f; OF = 1f; } // tombs
@@ -190,6 +190,7 @@ public class CBosbulCollider
         if((new List<int>{2}).Contains(num))        { RX = 1.4f; RY = 3.2f; OF = 1f; } // driller
         if((new List<int>{21,52}).Contains(num))    { RX = 1.4f; RY = 2.4f; OF = 1f; } // storages
         if((new List<int>{15}).Contains(num))       { RX = 1.8f; RY = 8f; OF = 3.7f; } // copper chimney
+        if((new List<int>{76}).Contains(num))       { RX = 1.4f; RY = 4f; OF = 1.6f; } // small copper chimney
 
         float[] dXY = SC_fun.RotateVector(0f,OF,ColliderDefault.angle);
 

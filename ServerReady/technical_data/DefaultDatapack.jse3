@@ -565,6 +565,9 @@ game_translate <low-level settings>
 		73: metal_treasure;
 		74: soft_treasure;				<for datapack use>
 		75: hard_treasure;				<for datapack use>
+		76: small_copper_chimney;
+		77: copper_diode;
+		78: tiger_gem;
 	}
 }
 custom_structures <advanced settings>
