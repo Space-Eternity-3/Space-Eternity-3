@@ -177,6 +177,8 @@ public class SC_asteroid : MonoBehaviour
 				}
 				gobT.transform.parent = gameObject.transform;
 				gobT.GetComponent<SC_fobs>().index = i;
+				SC_diode dio = gobT.GetComponent<SC_fobs>().SC_diode;
+				if(dio!=null) dio.randomize_start = true;
 
 				SC_seon_remote ser = transform.parent.GetComponent<SC_seon_remote>();
 				if(ser!=null) //assuming that SC_object_holder has scale 1:1:1

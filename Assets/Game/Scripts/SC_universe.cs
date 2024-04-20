@@ -18,6 +18,8 @@ public class SC_universe : MonoBehaviour
     public Transform Communtron1;
     public SC_data SC_data;
     public SC_connection SC_connection;
+    public SC_difficulty SC_difficulty;
+    public SC_universe_create SC_universe_create;
 
     bool crB=true;
     bool plB=false;
@@ -156,11 +158,18 @@ public class SC_universe : MonoBehaviour
     }
     public void V_Play()
     {
+        SC_difficulty.SetFileName(WorldID);
+        if(SC_difficulty.ReadVariableSGP("difficulty")=="")
+        {
+            SC_universe_create.StartCreating(WorldID);
+            return;
+        }
+
 		SC_data.TempFile=WorldID+"";
         SC_data.Save("temp");
 
         string dir=SC_data.savesDIR+"Universe"+WorldID+"/";
-        if(!Directory.Exists(dir))
+        if(!Directory.Exists(dir) || !File.Exists(dir+"UniverseInfo.se3"))
         {
 		    SC_data.UniverseX[WorldID-1,0]="0";
 			string dtpn = GetDatapackName(SC_data.datapack_name.text,true);

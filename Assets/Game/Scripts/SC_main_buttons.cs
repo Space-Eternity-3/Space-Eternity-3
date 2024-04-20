@@ -11,6 +11,7 @@ public class SC_main_buttons : MonoBehaviour {
 	public SC_connection SC_connection;
 	public SC_data SC_data;
 	public SC_account SC_account;
+	public SC_universe_create SC_universe_create;
 	public bool fullS;
 
 	public RectTransform NameField;
@@ -29,7 +30,7 @@ public class SC_main_buttons : MonoBehaviour {
 		SAS(0);
 		if(SC_data.TempFile=="-1") SAS(1); //singleplayer return
 		if(SC_data.TempFile=="-2") SAS(2); //multiplayer return
-		//if(SC_data.has_played=="0") start_SAS = 5; //how to play page
+		//if(SC_data.has_played=="0") SAS(5); //how to play page
 	}
 	public void Button5PermanentExit()
 	{
@@ -41,7 +42,11 @@ public class SC_main_buttons : MonoBehaviour {
 	}
 	void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.Escape)) SAS(0);
+		if(Input.GetKeyDown(KeyCode.Escape))
+		{
+			if(SC_universe_create.creating_index==0) SAS(0);
+			else SC_universe_create.EndCreating();
+		}
 		if(Input.GetKeyDown(KeyCode.F11)) fullS=!fullS;
             
         if(Screen.fullScreen&&!fullS)

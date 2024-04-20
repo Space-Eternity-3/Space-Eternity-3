@@ -779,21 +779,24 @@ public class SC_control : MonoBehaviour {
 	void InLaterUpdateIfNotLiving()
 	{
 		if(living) return;
-
 		int y;
-		for(y=0;y<9;y++)
+
+		if(!SC_fun.keep_inventory || (int)Communtron4.position.y==100)
 		{
-			SC_slots.SlotX[y] = 0;
-			SC_slots.SlotY[y] = 0;
+			for(y=0;y<9;y++)
+			{
+				SC_slots.SlotX[y] = 0;
+				SC_slots.SlotY[y] = 0;
+			}
+			for(y=0;y<21;y++)
+			{
+				SC_slots.BackpackX[y] = 0;
+				SC_slots.BackpackY[y] = 0;
+			}
+			SC_slots.ResetYAB();
+			for(y=0;y<5;y++) SC_upgrades.MTP_levels[y]=0;
+			for(y=0;y<5;y++) SC_upgrades.UPG_levels[y]=0;
 		}
-		for(y=0;y<21;y++)
-		{
-			SC_slots.BackpackX[y] = 0;
-			SC_slots.BackpackY[y] = 0;
-		}
-		SC_slots.ResetYAB();
-		for(y=0;y<5;y++) SC_upgrades.MTP_levels[y]=0;
-		for(y=0;y<5;y++) SC_upgrades.UPG_levels[y]=0;
 
 		transform.position=solidPos;
 		playerR.velocity=new Vector3(0f,0f,0f);
@@ -1982,7 +1985,13 @@ public class SC_control : MonoBehaviour {
 		}
 		if(arg[0]=="/RetDifficultySet")
 		{
-			SC_difficulty.HardSet(Parsing.IntE(arg[1]));
+			int ret_diff = Parsing.IntE(arg[1]);
+			if(ret_diff >= 0) SC_difficulty.HardSet(ret_diff);
+			else
+			{
+				if(ret_diff == -1) SC_fun.keep_inventory = false;
+				if(ret_diff == -2) SC_fun.keep_inventory = true;
+			}
 		}
 		if(arg[0]=="/RetMemoryData")
 		{

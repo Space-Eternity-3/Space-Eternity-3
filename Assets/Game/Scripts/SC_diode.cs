@@ -9,13 +9,20 @@ public class SC_diode : MonoBehaviour
     public int min, max;
     public int counter;
     public bool is_active = false;
+    public bool randomize_start = false;
 
     void Start()
     {
         counter = 0;
+        int temp_min = min; min=0;
         FixedUpdate();
-        is_active = false;
-        int rand = UnityEngine.Random.Range(0,2);
+        min = temp_min;
+        if(randomize_start)
+        {
+            int rand = UnityEngine.Random.Range(0,2);
+            is_active = (rand==1);
+        }
+        else is_active = false;
     }
     void FixedUpdate()
     {

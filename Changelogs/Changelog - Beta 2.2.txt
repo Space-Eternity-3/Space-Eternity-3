@@ -1,13 +1,14 @@
 New features (gameplay):
 
-- added bone asteroids
+- added bone asteroids on cementeries
 - added background colors dependent on biome and active boss
 - added various difficulties: EASY, NORMAL, HARD, DIABOLIC + hidden: NONE, IMPOSSIBLE
   - difficulties affect damage received by everything except other players, potions and remote damage
-- added wind bullets, obtainable on geyzer biomes (removed coal bullets, all will turn into wind bullets)
+- added wind bullets, obtainable on geyzer biomes
+- removed coal bullets, all from previous versions will turn into wind bullets
   - wind bullets push the enemy away
-  - wind bullets are faster and have a bigger range than copper bullets, but also smaller damage
-- added the following hidden objects (available through datapacks):
+  - wind bullets are faster and have a bigger range than copper bullets, but also smaller DPS
+- added the following experimental fobs (available only through datapacks):
   - copper chimney
   - small copper chimney
   - copper diode
@@ -27,6 +28,7 @@ New features (technical):
 - magnetic alien activated is now a proper item and fob, it uses the magnetic alien texture
 - info about other player's death will be displayed on top of the screen
 - added 3 new treasures with IDs: 73, 74, 75 (second and third are reserved for use in custom datapacks)
+- added keep inventory option available when creating new universe and in server config
 
 Old feature changes:
 
@@ -76,6 +78,7 @@ UI changes:
 - battle can be activated only using LMB from now
 - 'adress' changed to 'address' in main menu placeholder field
 - F1 is now independent of pause menu
+- added universe creation screen, which contains various local settings, including datapacks
 
 Configurables:
 
@@ -226,6 +229,7 @@ Bug fixes:
 - unstable turn collider was destroying bullets even if they were not unstable
 - bullets weren't flying through unstable matter
 - buggy quake collisions were dealing a lot of unfair damage
+- darkner objects in main menu were in some cases over page titles
 
 Universe updating warnings:
 

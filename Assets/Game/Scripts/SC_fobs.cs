@@ -46,6 +46,7 @@ public class SC_fobs : MonoBehaviour
     public SC_push SC_push;
     public SC_slots SC_slots;
     public SC_snd_loop SC_snd_loop;
+    public SC_diode SC_diode; //local
     SC_Fob21 SC_Fob21;
 
     public int ID,index,X,Y;

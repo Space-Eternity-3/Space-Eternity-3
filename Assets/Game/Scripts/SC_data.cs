@@ -299,7 +299,7 @@ public class SC_data : MonoBehaviour
         ArchiveTake(ind,16);
         SaveAsteroid(16);
     }
-    void DirQ(string path)
+    public void DirQ(string path)
     {
         if(!Directory.Exists(path)) Directory.CreateDirectory(path);
     }
@@ -935,6 +935,7 @@ public class SC_data : MonoBehaviour
     {
         warning_text4.text="";
         warning_field4.localPosition=new Vector3(10000f,0f,0f);
+        if(datapack_name.text=="DEFAULT") return; //optimization
         PreData=example;
         dataSource=example; DatapackTranslate(); //Reset translate DEFAULT
         Save("settings");
@@ -949,7 +950,7 @@ public class SC_data : MonoBehaviour
         if(menu)
         {
             warning_text4.text="Can't import datapack: "+e;
-            warning_field4.localPosition=new Vector3(0f,-186f,0f);
+            warning_field4.localPosition=new Vector3(0f,-190f,0f);
         }
         UnityEngine.Debug.LogWarning("Can't import datapack: "+e);
 

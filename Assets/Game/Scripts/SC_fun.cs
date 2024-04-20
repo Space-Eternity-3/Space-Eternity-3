@@ -25,6 +25,7 @@ public class SC_fun : MonoBehaviour
 	public float camera_add;
 	public bool arms_did = false;
 	public float difficulty = 1f;
+	public bool keep_inventory = false;
 	public bool respawn_allow = true; //Only for Update() use!
 	public bool respawn_allow_reinit = true;
 	public bool dev_bosbul = false;

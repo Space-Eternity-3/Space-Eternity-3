@@ -4695,6 +4695,7 @@ wss.on("connection", function connection(ws,req)
       var j;
       for(i=0;i<5;i++) for(j=0;j<4;j++)
           sendTo(ws,"/RetTreasureLoot "+plr.pclass[arg[1]].NextDropsT[i][j]+" "+i+" X X");
+      if(config.keep_inventory) sendTo(ws,"/RetDifficultySet -2 X X");
       sendTo(ws,"/RetDifficultySet "+config.difficulty+" X X");
 
       //Join info
@@ -6741,6 +6742,8 @@ function ExecuteCommand(message)
     else if(message == "players") Commands.players();
     else if(message == "connections") Commands.connections();
     else if(message == "difficulty get") Commands.difficultyGet();
+    else if(message == "keepinv get") Commands.keepinvGet();
+    else if(message == "keepinv toggle") Commands.keepinvToggle();
     else if(message == "banlist") Commands.banlist();
     else if(message == "baniplist") Commands.baniplist();
     else if(message == "whitelist list") Commands.whitelistList();
@@ -6772,8 +6775,10 @@ function ExecuteCommand(message)
       console.log("'players' - Displays a list of all players.");
       console.log("'connections' - Displays a list of all WebSocket connections.");
       console.log("'getip [nickname]' - Displays player's IPv4 address.")
-      console.log("'difficulty get' - Displays the actual server difficulty.");
+      console.log("'difficulty get' - Displays the server difficulty.");
       console.log("'difficulty set [1-4]' - Changes the server difficulty.");
+      console.log("'keepinv get' - Displays the KeepInventory state.");
+      console.log("'keepinv toggle' - Changes the KeepInventory state.");
       console.log("'stop' / 'quit' / 'exit' - Stops the server.\n");
 
       console.log("'ban [nickname-string]' - Bans a player.");
@@ -6838,6 +6843,10 @@ class Commands
     {
         console.log("The current difficulty is "+difficulty_name_tab[config.difficulty]+" ("+config.difficulty+")");
     }
+    static keepinvGet()
+    {
+        console.log("KeepInventory is set to "+(config.keep_inventory+"").toUpperCase());
+    }
     static stop()
     {
         rl.close();
@@ -6896,7 +6905,7 @@ class Commands
         }
         else if(diff_pars==config.difficulty)
         {
-            console.log("Difficulty is already "+difficulty_name_tab[diff_pars]);
+            console.log("Difficulty is already set to "+difficulty_name_tab[diff_pars]);
         }
         else
         {
@@ -6912,6 +6921,20 @@ class Commands
             );
             saveConfig();
         }
+    }
+    static keepinvToggle()
+    {
+        config.keep_inventory = !config.keep_inventory;
+        if(config.keep_inventory) sendToAllPlayers("/RetDifficultySet -2 X X");
+        else sendToAllPlayers("/RetDifficultySet -1 X X");
+        var info_keepinv = "KeepInventory toggled to "+(config.keep_inventory+"").toUpperCase();
+        console.log(info_keepinv);
+        sendToAllPlayers(
+            "/RetInfoClient " +
+            (info_keepinv).replaceAll(" ", "`") +
+            " -1 X X"
+        );
+        saveConfig();
     }
     static ban(arg)
     {
