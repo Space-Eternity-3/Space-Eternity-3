@@ -8,7 +8,7 @@ public class SC_universe_create : MonoBehaviour
 {
     public RectTransform Settings, Creation;
     public RectTransform DatapackOptions, DatapackStatic;
-    public Text CreationTitle;
+    public Text CreationTitle, ButtonText;
 
     public int creating_index = 0;
 
@@ -35,6 +35,7 @@ public class SC_universe_create : MonoBehaviour
     {
         creating_index = n;
         CreationTitle.text = " Universe " + n;
+        ButtonText.text = "Create & Play";
         SC_difficulty.local_difficulty = 2;
         bird_lockdiff.state = false;
         bird_keepinv.state = false;
@@ -65,10 +66,13 @@ public class SC_universe_create : MonoBehaviour
     public void CreateAndPlay()
     {
         SC_difficulty.SaveVariableSGP("difficulty",SC_difficulty.local_difficulty+"");
+        
         if(bird_lockdiff.state) SC_difficulty.SaveVariableSGP("lockdiff","1");
-        else SC_difficulty.SaveVariableSGP("lockdiff","");
+        else SC_difficulty.SaveVariableSGP("lockdiff","0");
+        
         if(bird_keepinv.state) SC_difficulty.SaveVariableSGP("keepinv","1");
-        else SC_difficulty.SaveVariableSGP("keepinv","");
+        else SC_difficulty.SaveVariableSGP("keepinv","0");
+        
         SC_universe[creating_index].V_PlayDirect();
     }
 }

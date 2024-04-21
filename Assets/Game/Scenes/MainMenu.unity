@@ -40770,6 +40770,7 @@ MonoBehaviour:
   DatapackOptions: {fileID: 1489690336}
   DatapackStatic: {fileID: 30394114}
   CreationTitle: {fileID: 1563066621}
+  ButtonText: {fileID: 1695782806}
   creating_index: 0
   SC_main_buttons: {fileID: 1205799743}
   SC_difficulty: {fileID: 344256203}

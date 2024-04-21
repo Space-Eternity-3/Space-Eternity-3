@@ -62,6 +62,7 @@ Artistic changes:
 - reworked the starandus neutronium animation
 - fob placing selector material has changed to be semi-transparent
 - packed copper material has changed a bit
+- copper stone, packed copper and copper bullet texture colors have changed a bit
 
 UI changes:
 

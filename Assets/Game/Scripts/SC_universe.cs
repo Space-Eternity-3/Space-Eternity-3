@@ -158,14 +158,13 @@ public class SC_universe : MonoBehaviour
     }
     public void V_Play()
     {
-        SC_difficulty.SetFileName(WorldID);
-        if(SC_difficulty.ReadVariableSGP("difficulty")=="" ||
-        !Directory.Exists("../../saves/Universe"+WorldID+"/") || !File.Exists("../../saves/Universe"+WorldID+"/UniverseInfo.se3"))
-        {
+        if(!Directory.Exists("../../saves/Universe"+WorldID+"/") ||
+        !File.Exists("../../saves/Universe"+WorldID+"/UniverseInfo.se3") ||
+        !File.Exists("../../saves/Universe"+WorldID+"/SgpData.se3")) {
             SC_universe_create.StartCreating(WorldID);
-            return;
-        }
-        V_PlayDirect();
+            SC_universe_create.ButtonText.text = "Update & Play";
+        } else
+            V_PlayDirect();
     }
     public void V_PlayDirect()
     {
