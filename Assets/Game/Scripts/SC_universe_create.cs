@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class SC_universe_create : MonoBehaviour
 {
     public RectTransform Settings, Creation;
+    public RectTransform DatapackOptions, DatapackStatic;
     public Text CreationTitle;
 
     public int creating_index = 0;
@@ -43,6 +45,17 @@ public class SC_universe_create : MonoBehaviour
     {
         ChangeCreatingIndex(n);
         SC_main_buttons.SAS(3);
+
+        if(Directory.Exists("../../saves/Universe"+n+"/") && File.Exists("../../saves/Universe"+n+"/UniverseInfo.se3"))
+        {
+            DatapackOptions.localPosition = new Vector3(10000f,0f,0f);
+            DatapackStatic.localPosition = new Vector3(0f,0f,0f);
+        }
+        else
+        {
+            DatapackOptions.localPosition = new Vector3(0f,0f,0f);
+            DatapackStatic.localPosition = new Vector3(10000f,0f,0f);
+        }
     }
     public void EndCreating()
     {
@@ -53,7 +66,9 @@ public class SC_universe_create : MonoBehaviour
     {
         SC_difficulty.SaveVariableSGP("difficulty",SC_difficulty.local_difficulty+"");
         if(bird_lockdiff.state) SC_difficulty.SaveVariableSGP("lockdiff","1");
+        else SC_difficulty.SaveVariableSGP("lockdiff","");
         if(bird_keepinv.state) SC_difficulty.SaveVariableSGP("keepinv","1");
-        SC_universe[creating_index].V_Play();
+        else SC_difficulty.SaveVariableSGP("keepinv","");
+        SC_universe[creating_index].V_PlayDirect();
     }
 }

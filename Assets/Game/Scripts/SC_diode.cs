@@ -14,7 +14,7 @@ public class SC_diode : MonoBehaviour
     void Start()
     {
         counter = 0;
-        int temp_min = min; min=0;
+        int temp_min = min; if(randomize_start) min=0;
         FixedUpdate();
         min = temp_min;
         if(randomize_start)

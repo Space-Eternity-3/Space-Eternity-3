@@ -8,10 +8,10 @@ New features (gameplay):
 - removed coal bullets, all from previous versions will turn into wind bullets
   - wind bullets push the enemy away
   - wind bullets are faster and have a bigger range than copper bullets, but also smaller DPS
+- added copper diodes
 - added the following experimental fobs (available only through datapacks):
   - copper chimney
   - small copper chimney
-  - copper diode
   - tiger gem (not functional yet)
 
 New features (technical):
@@ -56,10 +56,12 @@ Artistic changes:
 - artefact lights changed a bit
 - all 0-1 animations (hiding, camera zoom, bgcolor etc.) are less sharp from now
 - added smooth camera zoom when being close to activated arena
-- cementery big asteroid is now as fat as it should have been
+- cementery big asteroid is now as fat as it should be
 - adecodron glass is now a bit more flat
 - boss damage particles modified to be more noticeable
 - reworked the starandus neutronium animation
+- fob placing selector material has changed to be semi-transparent
+- packed copper material has changed a bit
 
 UI changes:
 

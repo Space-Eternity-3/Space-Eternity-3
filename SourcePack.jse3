@@ -58,7 +58,8 @@ craftings
 		1: stone(2) -> stone_drill;
 		2: gold(2) -> golden_drill;
 		3: magnetic_stone(3) -> magnetic_lamp;
-		4: stone(3) + small_diamond -> stone_with_crystals;
+		4: copper(3) + coal -> copper_diode;
+		5: stone(3) + small_diamond -> stone_with_crystals;
 	}
 	<Category>7
 	{
