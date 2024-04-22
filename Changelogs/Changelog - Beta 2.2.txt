@@ -63,6 +63,7 @@ Artistic changes:
 - fob placing selector material has changed to be semi-transparent
 - packed copper material has changed a bit
 - copper stone, packed copper and copper bullet texture colors have changed a bit
+- music natural volume reduced: 0,75 -> 0,5
 
 UI changes:
 
