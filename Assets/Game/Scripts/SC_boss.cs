@@ -281,9 +281,14 @@ public class SC_boss : MonoBehaviour
     }
     void SetBarLength(int current, int max)
     {
-        if(max==0) max=40000;
-        CanvBar.GetComponent<RectTransform>().sizeDelta = new Vector2(120f*max/smallest_boss_health,26f); /* 120 - 190 */
-        CanvBar.GetComponent<Slider>().value = (current*1f/max);
+        int max_visible = max; if(max==0) max = 1;
+        if(max<=20000) max_visible=20000;
+        if(max>=140000) max_visible=140000;
+        CanvBar.GetComponent<RectTransform>().sizeDelta = new Vector2(120f*max_visible/smallest_boss_health,26f);
+        float bar_value = (current*1f/max);
+        if(bar_value < 0f) bar_value = 0f;
+        if(bar_value > 1f) bar_value = 1f;
+        CanvBar.GetComponent<Slider>().value = bar_value;
     }
     public void DamageSGP(float dmg)
     {

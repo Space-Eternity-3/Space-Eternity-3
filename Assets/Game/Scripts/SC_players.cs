@@ -68,6 +68,7 @@ public class SC_players : MonoBehaviour
 
         CanvP = Instantiate(CanvPS,new Vector3(0f,0f,0f),Quaternion.identity);
         CanvP.SetParent(TestNick,false); CanvP.name = "CanvP" + IDP;
+        CanvP.localPosition = new Vector3(0f,-50f,0f);
 
         foreach(Transform trn in CanvP) {
             if(trn.name=="HPBar") SC_bar_game = trn.GetComponent<SC_bar_game>();

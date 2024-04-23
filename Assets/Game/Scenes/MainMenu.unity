@@ -32905,7 +32905,7 @@ MonoBehaviour:
   visibleNamte: Music
   a: 0.1
   b: 0
-  music_natural_volume: 0.5
+  music_natural_volume: 0.4
   music: {fileID: 35467492}
   SC_data: {fileID: 35467493}
 --- !u!114 &689294871
@@ -57029,7 +57029,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1706223725}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -60097,7 +60097,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1973185339}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}

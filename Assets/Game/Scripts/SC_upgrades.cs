@@ -92,7 +92,7 @@ public class SC_upgrades : MonoBehaviour
         {
             max_frame.localPosition=startMaxFrame+frame_offset;
             max_about.localPosition=startMaxAbout+about_offset;
-            about.text="Max Level!";
+            about.text="Max Level";
         }
         namet.text=namets[I];
 

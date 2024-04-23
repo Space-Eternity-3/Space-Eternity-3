@@ -189,10 +189,10 @@ gameplay
     upg_2_cost: 10;
     upg_3_item: 10;
     upg_3_cost: 15;
-    upg_4_item: 5;
+    upg_4_item: 10;
     upg_4_cost: 20;
-    upg_5_item: 5;
-    upg_5_cost: 30;
+    upg_5_item: 10;
+    upg_5_cost: 25;
 	
 	<ARTEFACTS>
 	at_protection_health_level_add: 2,272;
@@ -267,21 +267,21 @@ gameplay
 
 	<BOSS BATTLE SETTINGS>
 	boss_battle_time: 180;
-	boss_hp_protector_1: 800;
-	boss_hp_protector_2: 1000;
-	boss_hp_protector_3: 1200;
-	boss_hp_adecodron_1: 800;
-	boss_hp_adecodron_2: 1000;
-	boss_hp_adecodron_3: 1200;
-	boss_hp_octogone_1: 800;
-	boss_hp_octogone_2: 1000;
-	boss_hp_octogone_3: 1200;
-	boss_hp_starandus_1: 800;
-	boss_hp_starandus_2: 1000;
-	boss_hp_starandus_3: 1200;
-	boss_hp_degenerator_1: 800;
-	boss_hp_degenerator_2: 1000;
-	boss_hp_degenerator_3: 1200;
+	boss_hp_protector_1: 600;
+	boss_hp_protector_2: 800;
+	boss_hp_protector_3: 1000;
+	boss_hp_adecodron_1: 600;
+	boss_hp_adecodron_2: 800;
+	boss_hp_adecodron_3: 1000;
+	boss_hp_octogone_1: 600;
+	boss_hp_octogone_2: 800;
+	boss_hp_octogone_3: 1000;
+	boss_hp_starandus_1: 600;
+	boss_hp_starandus_2: 800;
+	boss_hp_starandus_3: 1000;
+	boss_hp_degenerator_1: 600;
+	boss_hp_degenerator_2: 800;
+	boss_hp_degenerator_3: 1000;
 	
 	<TREASURE LOOTTABLES>
 	treasure_loot:

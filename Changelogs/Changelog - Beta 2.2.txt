@@ -63,7 +63,7 @@ Artistic changes:
 - fob placing selector material has changed to be semi-transparent
 - packed copper material has changed a bit
 - copper stone, packed copper and copper bullet texture colors have changed a bit
-- music natural volume reduced: 0,75 -> 0,5
+- music natural volume reduced: 0,75 -> 0,4
 
 UI changes:
 
@@ -72,17 +72,20 @@ UI changes:
 - new junkyard messages added
 - multiplayer connection panel reworked, added "stop" button to stop connecting to the server
 - junkyard discard button reworked
-- amethyst conture added to the bedrock storage
+- lighter amethyst added to the bedrock storage when it is empty
 - in the right UI segment small letter-buttons were replaced with arrows
 - settings credits reworked
 - reworked SE3 logo and added version subtitle to it
 - font changed in the main menu
-- locked backpack slots are now marked with text "Upgrade 1/2/3/4/5"
+- locked backpack slots are now marked with text "Locked"
 - there will appear text "No power bar" when trying to use power potion and not wearing a proper artefact
 - battle can be activated only using LMB from now
 - 'adress' changed to 'address' in main menu placeholder field
 - F1 is now independent of pause menu
 - added universe creation screen, which contains various local settings, including datapacks
+- upgrade text "Max Level!" has changed to "Max Level"
+- boss bar proportion to health shrinked: boss with 1000 health has the same bar as boss with 1200 from previous version
+- boss bar will set its size properly only when max box health is larger than 200 and smaller than 1400
 
 Configurables:
 
@@ -124,19 +127,20 @@ Default datapack changes:
 - that means fire bullet DPS changed to 15 + delayed: 16 in 4s (bosses) or 4 in 2s (players)
 - added modified drop: magnetic_alien_activated: magnetic_alien;
 - upgrade prices changed:
-  - level 1: gold 3 -> 5
-  - level 2: gold 6 -> 10
-  - level 3: gold 10 -> 15
-  - level 4: amethyst 12 -> 20
-  - level 5: amethyst 20 -> 30
+  - level 1: gold 3 -> gold 5
+  - level 2: gold 6 -> gold 10
+  - level 3: gold 10 -> gold 15
+  - level 4: amethyst 12 -> gold 20
+  - level 5: amethyst 20 -> gold 25
 - redA (id=25) object generation replaced with other (id=2) object generation in catastrophic arenas
-- blank element is now drillable from bone asteroid instead of metalic and drill chance changed: 5,5% -> 8%
+- blank element is now drillable from bone asteroid instead of metalic, drill chance changed: 5,5% -> 8%
 - changed seon codes in datapack
 - added bone asteroids to both types of cementeries
-- treasures updated: shrinked junk loot, rarer treasures, useful items have overall a similar rarity
+- treasures updated: shrinked junk loot, rarer treasures, useful items have overall similar rarity
 - changed biome tags to fit new background changes
 - rebalanced bullet rarity
-- every structure has "even" tag now, which means, it generates at the asteroid and not empty grid square
+- every structure has "even" tag now, which means, it generates on the asteroid and not empty grid square
+- bosses have a lower health from now: [800,1000,1200] -> [600,800,1000]
 
 Technical changes:
 
@@ -234,6 +238,7 @@ Bug fixes:
 - bullets weren't flying through unstable matter
 - buggy quake collisions were dealing a lot of unfair damage
 - darkner objects in main menu were in some cases over page titles
+- other player health bars had a small offset to the left
 
 Universe updating warnings:
 

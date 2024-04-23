@@ -82,8 +82,8 @@ public class SC_difficulty : MonoBehaviour
         local_difficulty = diff;
         min_difficulty = diff;
         max_difficulty = diff;
-        Arrow1.GetComponent<Transform>().position = new Vector3(0f,10000f,0f);
-        Arrow2.GetComponent<Transform>().position = new Vector3(0f,10000f,0f);
+        //Arrow1.GetComponent<Transform>().position = new Vector3(0f,10000f,0f);
+        //Arrow2.GetComponent<Transform>().position = new Vector3(0f,10000f,0f);
     }
     public void ChangeDifficulty(bool right)
     {
