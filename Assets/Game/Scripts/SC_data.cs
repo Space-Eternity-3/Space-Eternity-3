@@ -27,7 +27,7 @@ public class SC_data : MonoBehaviour
     public string clientVersion, clientRedVersion;
     public bool DEV_mode;
 	public float global_volume;
-	int gpl_number = 128;
+	int gpl_number = 129;
     
 	bool lockData = false;
 	bool remember = false;
@@ -235,6 +235,7 @@ public class SC_data : MonoBehaviour
             "metal_treasure_loot:s", //125
             "soft_treasure_loot:s", //126
             "hard_treasure_loot:s", //127
+            "at_illusion_speed_multiplier:*", //128
         };
         public int VarNumber(string str,int gnome)
         {

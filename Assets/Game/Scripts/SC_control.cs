@@ -55,7 +55,7 @@ public class SC_control : MonoBehaviour {
 	public Material E4;
 
 	bool engineON=false;
-	public bool turbo=false;
+	bool turbo=false;
 	bool brake=false;
 	public bool drill3B=false;
 	public int enMode=0;
@@ -72,7 +72,6 @@ public class SC_control : MonoBehaviour {
 	
 	int licznikD=0, licznikC=0, timerH=0;
 	public int livTime=0;
-	int reg_wait=0;
 	int cooldown=0;
 	public int imp_cooldown=0;
 	int collision_cooldown=0;
@@ -84,7 +83,6 @@ public class SC_control : MonoBehaviour {
 	public float IL_barrier;
 	public float IM_barrier;
 
-	public float VacuumDrag,Engines;
 	public float unit=0.0008f;
 	public float health_base;
 	public float mushroom_force;
@@ -100,6 +98,9 @@ public class SC_control : MonoBehaviour {
 	public int bos_num = 0;
 	public int current_tick = -1;
 	public bool absolute_health_sync = true;
+
+	public float Engines = 1f;
+	public float DragSize = 1f;
 
 	public Color32 HealthNormal;
 
@@ -215,11 +216,9 @@ public class SC_control : MonoBehaviour {
 	public int unstable_pulses_available = 0;
 	public bool already_teleported = false;
 	
-	float V_to_F(float V,bool turboo)
+	float V_to_F(float V)
 	{
-		if(V==0f) return 0f;
-		V=Engines*V;
-		if(turboo) V=V*Mathf.Pow(1.08f,SC_upgrades.MTP_levels[1]);
+		V *= Engines;
 		if(V>=0f) return V*(V+15f)/1000f;
 		else
 		{
@@ -580,87 +579,56 @@ public class SC_control : MonoBehaviour {
 			if(sc.idWord=="inv_part") sc.Update();
 		}
 
-		//BRAKE
-		if(PressedNotInChat(KeyCode.LeftAlt,"hold")&&!pause)
+		//ENGINES
+		bool want_engine = PressedNotInChat(KeyCode.Space,"hold");
+		bool want_brake = PressedNotInChat(KeyCode.LeftAlt,"hold");
+		bool want_turbo = PressedNotInChat(KeyCode.LeftShift,"hold");
+		bool engine_allowed = living && !pause && !impulse_enabled;
+		bool drill_active = Communtron2.position.x!=0;
+		bool sneak_active = SC_invisibler.invisible;
+		bool turbo_hold_allowed = turbo_V > 0f && !drill_active && engine_allowed;
+		bool turbo_start_allowed = turbo_V >= F_barrier && turbo_hold_allowed;
+		bool turbo_allowed = (turbo_hold_allowed && turbo) || turbo_start_allowed;
+
+		if(want_turbo && turbo_allowed)
 		{
-			brake=true;
-			if(!turbo&&!engineON)
-			{
-				if(Communtron2.position.x==0)
-				{F=V_to_F(Parsing.FloatE(SC_data.Gameplay[10]),false); enMode=3;}
-				else
-				{F=V_to_F(Parsing.FloatE(SC_data.Gameplay[13]),false); enMode=3;}
-				//engine.material=E4;
-			}
+			F = (Parsing.FloatE(SC_data.Gameplay[11]) * Mathf.Pow(1.08f,SC_upgrades.MTP_levels[1]));
+			enMode = 2;
+		}
+		else if(want_engine && engine_allowed)
+		{
+			if(!drill_active) F = (Parsing.FloatE(SC_data.Gameplay[9]));
+			else F = (Parsing.FloatE(SC_data.Gameplay[12]));
+			enMode = 1;
+		}
+		else if(want_brake && engine_allowed)
+		{
+			if(!drill_active) F = (Parsing.FloatE(SC_data.Gameplay[10]));
+			else F = (Parsing.FloatE(SC_data.Gameplay[13]));
+			enMode = 3;
 		}
 		else
 		{
-			brake=false;
-			//engine.material=E1;
-		}
-		//ENGINE
-		if((PressedNotInChat(KeyCode.Space,"hold")||tempengine)&&living&&!pause)
-		{
-			engineON=true;
-			if(!turbo)
-			{
-				if(Communtron2.position.x==0)
-				{
-					F=V_to_F(Parsing.FloatE(SC_data.Gameplay[9]),false);
-					enMode=1;
-				}
-				else
-				{
-					F=V_to_F(Parsing.FloatE(SC_data.Gameplay[12]),false);
-					enMode=1;
-				}
-				//engine.material=E2;
-			}
-		}
-		else
-		{
-			engineON=false;
-			//engine.material=E1;
-		}
-		//TURBO
-		if(((PressedNotInChat(KeyCode.LeftShift,"hold")||tempturbo)&&turbo_V>0f)&&Communtron2.position.x==0&&living&&!pause)
-		{
-			if(turbo_V>=F_barrier)
-			{
-				turbo=true;
-				F=V_to_F(Parsing.FloatE(SC_data.Gameplay[11]),true);
-				enMode=2;
-			}
-		}
-		else
-		{
-			turbo=false;
+			F = 0f;
+			enMode = 0;
 		}
 
-		//CHECK MATERIAL
-		if(turbo||impulse_enabled)
-		{
-			//turbo
-			engine.material=E3;
-		}
-		else if(engineON)
-		{
-			//normal
-			engine.material=E2;
-		}
-		else if(brake)
-		{
-			//brake
-			engine.material=E4;
-		}
-		else 
-		{
-			//off
-			engine.material=E1;
-		}
+		if(!sneak_active) F = V_to_F(F);
+		else F = V_to_F(F * Parsing.FloatE(SC_data.Gameplay[128]));
+
+		engineON = (enMode==1);
+		turbo = (enMode==2);
+		brake = (enMode==3);
+		if(impulse_enabled) enMode = 2;
+
+		//SET MATERIAL
+		if(turbo || impulse_enabled) engine.material = E3;
+		else if(engineON) engine.material = E2;
+		else if(brake) engine.material = E4;
+		else engine.material = E1;
 		
 		//DRILL
-		if(!SC_invisibler.invisible)
+		if(!SC_invisibler.invisible && living)
 		{
 			if(PressedNotInChat(KeyCode.R,"down")&&!pause)
 			{
@@ -952,7 +920,6 @@ public class SC_control : MonoBehaviour {
 	}
 	void FixedUpdate()
 	{
-		if(reg_wait>0) reg_wait--;
 		if(cooldown>0) cooldown--;
 		if(imp_cooldown>0) imp_cooldown--;
 		if(licznikD>0) licznikD--;
@@ -997,34 +964,17 @@ public class SC_control : MonoBehaviour {
 			MTPloadedCounter++;
 		}
 
-		//something engine
-		float pX=0f,pY=0f;
-		if(engineON||turbo||brake)
-		{
-			X=mX*F*SC_effect.GetSpeedFMultiplier()/Pitagoras(new Vector3(mX,mY,0f));
-			Y=mY*F*SC_effect.GetSpeedFMultiplier()/Pitagoras(new Vector3(mX,mY,0f));
-			pX+=X; pY+=Y;
+		//Actual force generate
+		float C = F * SC_effect.GetSpeedFMultiplier() / Pitagoras(new Vector3(mX,mY,0f));
+		float pX = mX * C;
+		float pY = mY * C;
 
-			if(turbo&&turbo_V<=0f)
-			{
-				reg_wait=10;
-				F=V_to_F(Parsing.FloatE(SC_data.Gameplay[9]),false);
-				turbo=false;
-				engine.material=E2;
-			}
-		}
-		else enMode=0;
+		float D = SC_effect.GetVacuumMultiplier();
+		float dX = -0.001f * D * DragSize * playerR.velocity.x * ( DragSize * Mathf.Abs(playerR.velocity.x) + 15f );
+		float dY = -0.001f * D * DragSize * playerR.velocity.y * ( DragSize * Mathf.Abs(playerR.velocity.y) + 15f );
 
-		//force generate
-		float dX=0f,dY=0f,DragSize=Parsing.FloatE(SC_data.Gameplay[14]);
-		
-		dX-=0.001f*VacuumDrag*DragSize*SC_effect.GetVacuumMultiplier()*playerR.velocity.x*Mathf.Abs(playerR.velocity.x);
-		dY-=0.001f*VacuumDrag*DragSize*SC_effect.GetVacuumMultiplier()*playerR.velocity.y*Mathf.Abs(playerR.velocity.y);
-		dX-=0.015f*VacuumDrag*DragSize*SC_effect.GetVacuumMultiplier()*playerR.velocity.x;
-		dY-=0.015f*VacuumDrag*DragSize*SC_effect.GetVacuumMultiplier()*playerR.velocity.y;
-
-		if(Mathf.Abs(dX)>Mathf.Abs(playerR.velocity.x)) dX=playerR.velocity.x;
-		if(Mathf.Abs(dY)>Mathf.Abs(playerR.velocity.y)) dY=playerR.velocity.y;
+		if(Mathf.Abs(dX) > Mathf.Abs(playerR.velocity.x)) dX = -playerR.velocity.x;
+		if(Mathf.Abs(dY) > Mathf.Abs(playerR.velocity.y)) dY = -playerR.velocity.y;
 		
 		if(!impulse_enabled) playerR.velocity+=new Vector3(dX+pX,dY+pY,0f);
 		else
@@ -1482,6 +1432,7 @@ public class SC_control : MonoBehaviour {
 	}
 	bool AllowCollisionDamage()
 	{
+		if(SC_invisibler.invisible) return false;
 		SC_adecodron[] SC_adecodron2 = FindObjectsOfType<SC_adecodron>();
 		foreach(SC_adecodron adc in SC_adecodron2)
 		{
@@ -2141,14 +2092,14 @@ public class SC_control : MonoBehaviour {
 			}
 		}
 
-		Engines*=Parsing.FloatE(SC_data.Gameplay[15]);
+		DragSize = Parsing.FloatE(SC_data.Gameplay[14]);
+		Engines = Parsing.FloatE(SC_data.Gameplay[15]);
+
 		SC_artefacts.LoadDataArt();
 		
 		float limi = 2 * unit * Parsing.FloatE(SC_data.Gameplay[0]);
 		if(limi > 0.01f) limi = 0.01f;
 		F_barrier += limi;
-		//IM_barrier -= unit * SC_artefacts.powerRM[2];
-		//IL_barrier -= unit * SC_artefacts.powerRM[3];
 		
 		Generator.TagNumbersInitialize();
 

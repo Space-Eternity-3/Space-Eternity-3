@@ -4,7 +4,7 @@ New features (gameplay):
 - added background colors dependent on biome and active boss
 - added various difficulties: EASY, NORMAL, HARD, DIABOLIC + hidden: NONE, IMPOSSIBLE
   - difficulties affect damage received by everything except other players, potions and remote damage
-- added wind bullets, obtainable on geyzer biomes
+- added wind bullets, obtainable sometimes on geyzer biomes
 - removed coal bullets, all from previous versions will turn into wind bullets
   - wind bullets push the enemy away
   - wind bullets are faster and have a bigger range than copper bullets, but also smaller DPS
@@ -44,6 +44,9 @@ Old feature changes:
 - fire bullets can now set bosses on fire, but have a lower base damage
   - bosses are much more vulnerable to fire effect than players
   - fire effect on bosses is affected by the bullet upgrade of the attacker
+- illusion artefact buffed:
+  - players are 20% faster when invisible
+  - players don't receive crash damage when invisible
 
 Artistic changes:
 
@@ -72,7 +75,7 @@ UI changes:
 - new junkyard messages added
 - multiplayer connection panel reworked, added "stop" button to stop connecting to the server
 - junkyard discard button reworked
-- lighter amethyst added to the bedrock storage when it is empty
+- lighter amethyst is now visible in the bedrock storage when it is empty
 - in the right UI segment small letter-buttons were replaced with arrows
 - settings credits reworked
 - reworked SE3 logo and added version subtitle to it
@@ -99,6 +102,7 @@ Configurables:
   - wind_boss_push: 25;
   - wind_victim_push: 20;
   - wind_owner_push: 1,8;
+  - at_illusion_speed_multiplier: 1,3;
 - coal bullet gameplay variables reworked to be wind bullet variables
 - removed all structural tags except for struct=X, moved all built-in structures into custom structures
 - added "monster" to command "summon" in seon, it summons a weird ornament creature
@@ -110,6 +114,7 @@ Configurables:
   - use tags "odd" and "even" to customize whether center of the biome will be at the asteroid (even) or empty (odd) grid square
   - removed tag swap and ring.X.change, replaced their functionality with the new hole seon object
 - removed bosbul objects, they were replaced with the new bullet collision system
+- vacuum_drag gameplay variable works a bit different from now, calibrate your old datapacks
 
 Default datapack changes:
 
@@ -124,14 +129,14 @@ Default datapack changes:
 - power element drill chance: 5,5% -> 2,6%
 - fire bullet player cooldown: 11 -> 10
 - changed fire bullet damage: 4 -> 3
-- that means fire bullet DPS changed to 15 + delayed: 16 in 4s (bosses) or 4 in 2s (players)
+  - that means fire bullet DPS changed to 15 + delayed: 16 in 4s (bosses) or 4 in 2s (players)
 - added modified drop: magnetic_alien_activated: magnetic_alien;
 - upgrade prices changed:
-  - level 1: gold 3 -> gold 5
-  - level 2: gold 6 -> gold 10
-  - level 3: gold 10 -> gold 15
-  - level 4: amethyst 12 -> gold 20
-  - level 5: amethyst 20 -> gold 25
+  - level 1: gold 3 -> gold 4
+  - level 2: gold 6 -> gold 8
+  - level 3: gold 10 -> gold 12
+  - level 4: amethyst 12 -> gold 16
+  - level 5: amethyst 20 -> gold 20
 - redA (id=25) object generation replaced with other (id=2) object generation in catastrophic arenas
 - blank element is now drillable from bone asteroid instead of metalic, drill chance changed: 5,5% -> 8%
 - changed seon codes in datapack
@@ -140,7 +145,7 @@ Default datapack changes:
 - changed biome tags to fit new background changes
 - rebalanced bullet rarity
 - every structure has "even" tag now, which means, it generates on the asteroid and not empty grid square
-- bosses have a lower health from now: [800,1000,1200] -> [600,800,1000]
+- boss healths have been reduced: [800,1000,1200] -> [600,800,1000]
 
 Technical changes:
 
@@ -203,6 +208,7 @@ c) Others
 - reshaped the following client bullet colliders: geyzer, lava geyzer, all elements, red spikes
 - int and float parsing system reworked to be the same on client and server side
 - only colliders older than 10 frames will be able to deal collision damage
+- reworked player movement code
 
 Bug fixes:
 
@@ -239,6 +245,7 @@ Bug fixes:
 - buggy quake collisions were dealing a lot of unfair damage
 - darkner objects in main menu were in some cases over page titles
 - other player health bars had a small offset to the left
+- drill kept being extended after death and respawn
 
 Universe updating warnings:
 

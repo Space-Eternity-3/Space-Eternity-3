@@ -40,8 +40,8 @@ craftings
 		title_image: copper_bullet;
 		1: copper -> copper_bullet(5);
 		2: red_stone -> red_bullet(4);
-		3: coal + fire_bullet -> fire_bullet(3);
-		4: magnetic_stone + wind_bullet -> wind_bullet(3);
+		3: magnetic_stone + wind_bullet -> wind_bullet(3);
+		4: coal + fire_bullet -> fire_bullet(2);
 	}
 	<Category>5
 	{
@@ -184,15 +184,15 @@ gameplay
 
 	<UPGRADES>
 	upg_1_item: 10;
-    upg_1_cost: 5;
+    upg_1_cost: 4;
     upg_2_item: 10;
-    upg_2_cost: 10;
+    upg_2_cost: 8;
     upg_3_item: 10;
-    upg_3_cost: 15;
+    upg_3_cost: 12;
     upg_4_item: 10;
-    upg_4_cost: 20;
+    upg_4_cost: 16;
     upg_5_item: 10;
-    upg_5_cost: 25;
+    upg_5_cost: 20;
 	
 	<ARTEFACTS>
 	at_protection_health_level_add: 2,272;
@@ -203,6 +203,7 @@ gameplay
 	at_impulse_damage: 10;
 	at_illusion_power_regenerate_multiplier: 1;
 	at_illusion_power_use_multiplier: 2;
+	at_illusion_speed_multiplier: 1,2;
 	at_unstable_normal_avarage_time: 1,5;
 	at_unstable_special_avarage_time: 1,5;
 	at_unstable_force: 10;
@@ -460,7 +461,7 @@ objects_generate
 	coal: coal(35%);
 	coalA: coal(35%) + fire_bullet(20%);
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
-	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%) + wind_bullet(0,7%);
+	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%) + wind_bullet(0,1%);
 	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	metalic: stone(35%) + metal_piece(25%);

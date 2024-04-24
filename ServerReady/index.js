@@ -226,7 +226,7 @@ var seed;
 var biome_memories = new Array(16000).fill("");
 var biome_memories_state = new Array(16000).fill(0);
 var hourHeader = "";
-var gpl_number = 128;
+var gpl_number = 129;
 var max_players = 10;
 var verF;
 var connectionAddress = "IP or DNS + port";

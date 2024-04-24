@@ -259,6 +259,7 @@ class cfun
             "metal_treasure_loot:s", //125
             "soft_treasure_loot:s", //126
             "hard_treasure_loot:s", //127
+            "at_illusion_speed_multiplier:*", //128
         ];
     }
 
