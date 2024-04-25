@@ -89,6 +89,7 @@ UI changes:
 - upgrade text "Max Level!" has changed to "Max Level"
 - boss bar proportion to health shrinked: boss with 1000 health has the same bar as boss with 1200 from previous version
 - boss bar will set its size properly only when max box health is larger than 200 and smaller than 1400
+- main menu button selected color has changed from white to blue
 
 Configurables:
 
@@ -132,11 +133,11 @@ Default datapack changes:
   - that means fire bullet DPS changed to 15 + delayed: 16 in 4s (bosses) or 4 in 2s (players)
 - added modified drop: magnetic_alien_activated: magnetic_alien;
 - upgrade prices changed:
-  - level 1: gold 3 -> gold 4
-  - level 2: gold 6 -> gold 8
-  - level 3: gold 10 -> gold 12
-  - level 4: amethyst 12 -> gold 16
-  - level 5: amethyst 20 -> gold 20
+  - level 1: gold 3 -> gold 5
+  - level 2: gold 6 -> gold 10
+  - level 3: gold 10 -> gold 15
+  - level 4: amethyst 12 -> gold 20
+  - level 5: amethyst 20 -> gold 25
 - redA (id=25) object generation replaced with other (id=2) object generation in catastrophic arenas
 - blank element is now drillable from bone asteroid instead of metalic, drill chance changed: 5,5% -> 8%
 - changed seon codes in datapack
@@ -209,6 +210,7 @@ c) Others
 - int and float parsing system reworked to be the same on client and server side
 - only colliders older than 10 frames will be able to deal collision damage
 - reworked player movement code
+- full screen manager code reworked, full screen will be always enabled at the start of the game, you can always close it using F11
 
 Bug fixes:
 
@@ -246,6 +248,7 @@ Bug fixes:
 - darkner objects in main menu were in some cases over page titles
 - other player health bars had a small offset to the left
 - drill kept being extended after death and respawn
+- the full screen resolution was always set to 1920:1080 instead of getting the screen native resolution
 
 Universe updating warnings:
 

@@ -1644,8 +1644,6 @@ public class SC_data : MonoBehaviour
             #endif
         }
         catch (Exception) {}
-
-        Globals.emergency_save_terminate = true;
     }
     void HandleLog(string logString, string stackTrace, LogType type)
     {
@@ -1655,6 +1653,8 @@ public class SC_data : MonoBehaviour
             SaveErrorLog(logString+"\r\nTrace:\r\n"+stackTrace);
             Application.Quit();
             #endif
+
+            Globals.emergency_save_terminate = true;
         }
     }
     void OnDestroy()

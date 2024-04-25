@@ -23,7 +23,6 @@ public class SC_camera : MonoBehaviour {
 
 	int sCounter=50;
 	public int TotalTime=0;
-	bool fullS;
 
 	int worldID=0;
 
@@ -47,18 +46,6 @@ public class SC_camera : MonoBehaviour {
      		if(camZ<max) camZ+=2.5f;
 			save_zoom(camZ);
  		}
-
-		if(Input.GetKeyDown(KeyCode.F11)) fullS=!fullS;
-        if(Screen.fullScreen&&!fullS)
-        {
-            Screen.SetResolution(1280,720,true);
-            Screen.fullScreen=false;
-        }
-        if(!Screen.fullScreen&&fullS)
-        {
-            Screen.SetResolution(1920,1080,true);
-            Screen.fullScreen=true;
-        }
 	}
 	void LateUpdate()
 	{
@@ -137,7 +124,6 @@ public class SC_camera : MonoBehaviour {
 	void Awake()
 	{
 		SC_data.CollectAwakeUniversal();
-		fullS=Screen.fullScreen;
 
 		camZ=Parsing.FloatE(SC_data.camera_zoom);
 		worldID=Parsing.IntE(SC_data.TempFile);

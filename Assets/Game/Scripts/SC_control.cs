@@ -1454,7 +1454,7 @@ public class SC_control : MonoBehaviour {
 			collision.gameObject.GetComponent<SC_collider_counter>().age > 10
 		){
 			collision_cooldown = 20;
-			float crash_size = crash_size = collision.impulse.magnitude - minimal + 3f;
+			float crash_size = collision.impulse.magnitude - minimal + 3f;
 			float crash_damage = 1.2f * multiplier * crash_size * Mathf.Pow(SC_fun.difficulty,0.5f);
 			
 			if(crash_damage > 0 && AllowCollisionDamage())

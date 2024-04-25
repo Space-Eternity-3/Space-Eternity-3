@@ -24221,8 +24221,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.8254717, g: 0.87269706, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.6367924, g: 0.6896227, b: 1, a: 1}
-    m_PressedColor: {r: 0.9019608, g: 0.92941177, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.5896226, g: 0.65139985, b: 1, a: 1}
+    m_PressedColor: {r: 0.5235849, g: 0.59632003, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 0.8844007, b: 0.5896226, a: 1}
     m_DisabledColor: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
     m_ColorMultiplier: 1
@@ -38379,8 +38379,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.8254717, g: 0.87269706, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.6367924, g: 0.6896227, b: 1, a: 1}
-    m_PressedColor: {r: 0.9019608, g: 0.92941177, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.5896226, g: 0.65139985, b: 1, a: 1}
+    m_PressedColor: {r: 0.5235849, g: 0.59632003, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 0.8844007, b: 0.5896226, a: 1}
     m_DisabledColor: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
     m_ColorMultiplier: 1
@@ -41268,8 +41268,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.8254717, g: 0.87269706, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.6367924, g: 0.6896227, b: 1, a: 1}
-    m_PressedColor: {r: 0.9019608, g: 0.92941177, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.5896226, g: 0.65139985, b: 1, a: 1}
+    m_PressedColor: {r: 0.5235849, g: 0.59632003, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 0.8844007, b: 0.5896226, a: 1}
     m_DisabledColor: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
     m_ColorMultiplier: 1
@@ -43122,7 +43122,6 @@ MonoBehaviour:
   SC_data: {fileID: 35467493}
   SC_account: {fileID: 466491862}
   SC_universe_create: {fileID: 1086555220}
-  fullS: 0
   NameField: {fileID: 841226590}
   Name2parent: {fileID: 819508943}
   Name5parent: {fileID: 1193934302}
@@ -43151,8 +43150,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.8254717, g: 0.87269706, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.6367924, g: 0.6896227, b: 1, a: 1}
-    m_PressedColor: {r: 0.9019608, g: 0.92941177, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.5896226, g: 0.65139985, b: 1, a: 1}
+    m_PressedColor: {r: 0.5235849, g: 0.59632003, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 0.8844007, b: 0.5896226, a: 1}
     m_DisabledColor: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
     m_ColorMultiplier: 1
@@ -43314,6 +43313,7 @@ GameObject:
   - component: {fileID: 1215367032}
   - component: {fileID: 1215367031}
   - component: {fileID: 1215367030}
+  - component: {fileID: 1215367033}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -43370,6 +43370,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1215367033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215367029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 428e0695e380a404992af8b231ae5039, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1225943802
 GameObject:
   m_ObjectHideFlags: 0
@@ -45617,8 +45629,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.8254717, g: 0.87269706, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.6367924, g: 0.6896227, b: 1, a: 1}
-    m_PressedColor: {r: 0.9019608, g: 0.92941177, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.5896226, g: 0.65139985, b: 1, a: 1}
+    m_PressedColor: {r: 0.5235849, g: 0.59632003, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 0.8844007, b: 0.5896226, a: 1}
     m_DisabledColor: {r: 0.6117647, g: 0.6117647, b: 0.6117647, a: 1}
     m_ColorMultiplier: 1
@@ -53614,7 +53626,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0.4, y: 0}
-  m_SizeDelta: {x: 400, y: 455}
+  m_SizeDelta: {x: 435, y: 485}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1548638901
 MonoBehaviour:
@@ -53649,11 +53661,24 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'This game was developed with passion for over 3 years.
+  m_Text: 'This game was
+
+    developed with passion
+
+    for over 3 years.
 
 
-    Special thanks
-    to Nadwey for creating the launcher, helping with multiplayer, and much more.
+    Special
+    thanks to
+
+    Nadwey for creating
+
+    the launcher, helping
+
+    with multiplayer,
+    and
+
+    much more.
 
 
     Kamiloso'
@@ -57029,7 +57054,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1706223725}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -60097,7 +60122,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1973185339}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}

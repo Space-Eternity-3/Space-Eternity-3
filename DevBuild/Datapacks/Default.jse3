@@ -184,15 +184,15 @@ gameplay
 
 	<UPGRADES>
 	upg_1_item: 10;
-    upg_1_cost: 4;
+    upg_1_cost: 5;
     upg_2_item: 10;
-    upg_2_cost: 8;
+    upg_2_cost: 10;
     upg_3_item: 10;
-    upg_3_cost: 12;
+    upg_3_cost: 15;
     upg_4_item: 10;
-    upg_4_cost: 16;
+    upg_4_cost: 20;
     upg_5_item: 10;
-    upg_5_cost: 20;
+    upg_5_cost: 25;
 	
 	<ARTEFACTS>
 	at_protection_health_level_add: 2,272;

@@ -12,7 +12,6 @@ public class SC_main_buttons : MonoBehaviour {
 	public SC_data SC_data;
 	public SC_account SC_account;
 	public SC_universe_create SC_universe_create;
-	public bool fullS;
 
 	public RectTransform NameField;
 	public RectTransform Name2parent, Name5parent;
@@ -23,7 +22,6 @@ public class SC_main_buttons : MonoBehaviour {
 	void Start()
 	{
 		Time.timeScale = 1f;
-		fullS=Screen.fullScreen;
 		foreach(Canvas cnv in Screens)
 			cnv.enabled = true;
 
@@ -47,18 +45,6 @@ public class SC_main_buttons : MonoBehaviour {
 			if(SC_universe_create.creating_index==0) SAS(0);
 			else SC_universe_create.EndCreating();
 		}
-		if(Input.GetKeyDown(KeyCode.F11)) fullS=!fullS;
-            
-        if(Screen.fullScreen&&!fullS)
-        {
-            Screen.SetResolution(1280,720,true);
-            Screen.fullScreen=false;
-        }
-        if(!Screen.fullScreen&&fullS)
-		{
-            Screen.SetResolution(1920,1080,true);
-            Screen.fullScreen=true;
-        }
 	}
 	public void SAS(int n)
 	{
