@@ -249,6 +249,7 @@ Bug fixes:
 - other player health bars had a small offset to the left
 - drill kept being extended after death and respawn
 - the full screen resolution was always set to 1920:1080 instead of getting the screen native resolution
+- fonts will (should) no longer blur for no reason
 
 Universe updating warnings:
 
