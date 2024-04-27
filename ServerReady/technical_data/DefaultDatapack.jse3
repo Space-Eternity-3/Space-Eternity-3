@@ -172,10 +172,11 @@ gameplay
 	boss_fire_damage: 4;
 	wind_boss_push: 25;
 	
-	<HEALING>
+	<POTIONS>
 	healing_potion_hp: 20;
 	blank_potion_hp: 15;
 	killing_potion_hp: 15;
+	shield_potion_duration: 2,5;
 	
 	<GROW TIMES>
 	amethyst_grow_time_min: 60;
@@ -570,6 +571,7 @@ game_translate <low-level settings>
 		76: small_copper_chimney;
 		77: copper_diode;
 		78: tiger_gem;
+		79: shield_potion;
 	}
 }
 custom_structures <advanced settings>

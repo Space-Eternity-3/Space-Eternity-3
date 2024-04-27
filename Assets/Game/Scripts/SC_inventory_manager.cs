@@ -90,6 +90,8 @@ public class SC_inventory_manager : MonoBehaviour {
 					sImg.texture=SC_fun.Item63u;
 				if(pvNum==71f) if(SC_fun.SC_control.AllowingPotion("max"))
 					sImg.texture=SC_fun.Item71u;
+				if(pvNum==79f) if(SC_fun.SC_control.AllowingPotion("shield"))
+					sImg.texture=SC_fun.Item79u;
 			}
 		}
 

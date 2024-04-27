@@ -215,6 +215,8 @@ public class SC_control : MonoBehaviour {
 
 	public int unstable_pulses_available = 0;
 	public bool already_teleported = false;
+
+	public int shield_time = 0;
 	
 	float V_to_F(float V)
 	{
@@ -502,6 +504,24 @@ public class SC_control : MonoBehaviour {
 				if(AllowingPotion("power-unlocked")) power_V = 1f;
 			}
 			else InfoUp("Potion blocked",380);
+
+			//Shield potion
+			if(SC_slots.InvHaving(79)) if(AllowingPotion("shield"))
+			{
+				if(!SC_invisibler.invisible)
+				{
+					Transform trn11 = Instantiate(particlesEmptyBulb[5],transform.position,new Quaternion(0f,0f,0f,0f));
+					trn11.GetComponent<SC_seeking>().enabled = true;
+				}
+				int slot = SC_slots.InvChange(79,-1,true,false,true);
+				if((int)Communtron4.position.y==100) {
+					SendMTP("/Potion "+connectionID+" 7 "+slot);
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 17 0 0");
+				}
+				SC_effect.EffectClean();
+				shield_time = (int)(Parsing.FloatE(SC_data.Gameplay[129])*50);
+			}
+			else InfoUp("Potion blocked",380);
 		}
 
 		/* Potion sending IDs
@@ -707,6 +727,7 @@ public class SC_control : MonoBehaviour {
 			case "blank": return hB || eB;
 			case "killing": return true;
 			case "max": return hB || tB || pB || eB;
+			case "shield": return true;
 			default: return false;
 		}
 	}
@@ -925,6 +946,7 @@ public class SC_control : MonoBehaviour {
 		if(licznikD>0) licznikD--;
 		if(collision_cooldown>0) collision_cooldown--;
 		if(saveCo>0) saveCo--;
+		if(shield_time>0) shield_time--;
 
 		impulse_time--;
 		if(impulse_time==1) RemoveImpulse();
@@ -1360,6 +1382,8 @@ public class SC_control : MonoBehaviour {
 	{
 		if(!living) return;
 		if(livTime<50 || impulse_enabled || !((livID==sr_livID && immID==sr_immID) || (int)Communtron4.position.y!=100)) return;
+		if(shield_time > 0) return;
+		
 		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+Parsing.FloatE(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;
 		dmg=0.02f*dmg/(Mathf.Ceil(50*Mathf.Pow(health_base,potHHH))/50f);

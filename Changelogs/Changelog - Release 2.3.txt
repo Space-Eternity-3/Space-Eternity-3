@@ -1,10 +1,7 @@
-New features (gameplay):
+New features:
 
-
-
-New features (technical):
-
-
+- Added shield potion, obtainable and possible to produce on copper facilities.
+  - Shield potion removes your effect and gives you a shield for 2,5s.
 
 Old feature changes:
 
@@ -20,11 +17,13 @@ UI changes:
 
 Configurables:
 
-
+- Added gameplay variables in datapack format:
+  - shield_potion_duration: 2,5;
 
 Default datapack changes:
 
-
+- To fit new datapack format:
+  - Added new gameplay variables.
 
 Technical changes:
 
