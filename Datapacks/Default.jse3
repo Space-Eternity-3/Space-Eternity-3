@@ -461,7 +461,7 @@ objects_generate
 	coal: coal(35%);
 	coalA: coal(35%) + fire_bullet(20%);
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
-	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%) + wind_bullet(0,1%);
+	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%) + wind_bullet(0,2%);
 	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	metalic: stone(35%) + metal_piece(25%);

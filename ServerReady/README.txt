@@ -25,7 +25,7 @@ On singleplayer the game uses "PlayerData.se3" file. On multiplayer all player d
 
 If your server is commercial, you may need to protect it from hackers. You should activate the nickname verification
 system to require from players the valid SE3 account to join. You will also be able to customize your server address. Start
-your server to see the instruction.
+your server to see the instructions.
 
 If you want to protect your connection using wss:// protocol, search how to do this in the internet. If you will be using
 a proxy, go to "config.json" file and change "trust_proxy" option to "true". If you don't use any proxy, it's not safe to
