@@ -219,14 +219,14 @@ const unit = 0.0008;
 const in_arena_range = 37;
 
 //Global variables
-var serverVersion = "Beta 2.2";
-var serverRedVersion = "Beta_2_2";
+var serverVersion = "Release 2.3";
+var serverRedVersion = "Release_2_3";
 var clientDatapacksVar = "";
 var seed;
 var biome_memories = new Array(16000).fill("");
 var biome_memories_state = new Array(16000).fill(0);
 var hourHeader = "";
-var gpl_number = 129;
+var gpl_number = 130;
 var max_players = 10;
 var verF;
 var connectionAddress = "IP or DNS + port";
@@ -1772,6 +1772,7 @@ class CPlayer {
     this.ctrlPower = 0;
     this.powerRegenBlocked = false;
     this.periodic = {};
+    this.shield_time = 0;
   }
   DataImport(rsp_x,rsp_y,ctrl_power) {
     this.Reset();
@@ -1846,6 +1847,11 @@ class CPlayer {
     if(lv[0]==null) lv[0] = Date.now() + lv[4];
     lv[1]++;
     return (this.periodic[per_type][1] <= this.periodic[per_type][3]);
+  }
+  SetVirtualShield(new_value)
+  {
+    if(new_value > this.shield_time)
+      this.shield_time = new_value;
   }
 }
 
@@ -2748,11 +2754,11 @@ function HealFLOAT(pid,hp)
 function DamageFLOAT(pid,dmg)
 {
   dmg = Parsing.FloatU(dmg);
-  if(dmg>0 && plr.players[pid].split(";").length!=1 && plr.connectionTime[pid]>=50)
+  if(dmg>0 && plr.players[pid].split(";").length!=1 && plr.connectionTime[pid]>=50 && plr.pclass[pid].shield_time==0)
   {
     var artid = plr.backpack[pid].split(";")[30] - 41;
     if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
-    if(Parsing.FloatU(plr.players[pid].split(";")[5].split("&")[1])%25==2) return;
+    //if(Parsing.FloatU(plr.players[pid].split(";")[5].split("&")[1])%25==2) return; // god mode spotted and disabled
     var potHHH = Parsing.FloatU(plr.upgrades[pid].split(";")[0]) + getProtLevelAdd(artid) + Parsing.FloatU(gameplay[26]);
 		if(potHHH<-50) potHHH = -50; if(potHHH>56.397) potHHH = 56.397;
 		dmg=0.02*dmg/(Math.ceil(50*Math.pow(health_base,potHHH))/50);
@@ -3139,6 +3145,7 @@ setInterval(function () { // <interval #2>
             sendTo(se3_ws[i],"/RetUnstablePulse X X");
           }
         }
+        if(plr.pclass[i].shield_time > 0) plr.pclass[i].shield_time--;
     }
 
     //Health regeneration & Power speculation
@@ -4754,6 +4761,9 @@ wss.on("connection", function connection(ws,req)
       if(artef!=3 && (hiddenFlags[0]=="T" || arg[4][2]=="T")) {kick(arg[1]); return;} //ILLUSION
 
       //Flags executing
+      if(arg[4][0]=="T") {
+        plr.pclass[arg[1]].SetVirtualShield(Math.floor(Parsing.FloatU(gameplay[19])*50));
+      }
       if(arg[4][1]=="T") {
         var dtn = Date.now();
         var pl = plr.pclass[arg[1]];
@@ -5202,14 +5212,14 @@ wss.on("connection", function connection(ws,req)
       }
 
       var pid=arg[1];
-      var tab = [0,55,61,71,57,59,63]; //special potion ID
+      var tab = [0,55,61,71,57,59,63,79]; //special potion ID
 
       if(!invChangeTry(arg[1],tab[arg[2]],-1,arg[3])) {
         kick(arg[1]);
         return;
       }
 
-      if(arg[2]=="1" || arg[2]=="2" || arg[2]=="3")
+      if(arg[2]=="1" || arg[2]=="2" || arg[2]=="3") //heal
       {
         var heal_size;
         if(arg[2]=="1") heal_size = gameplay[31];
@@ -5219,11 +5229,16 @@ wss.on("connection", function connection(ws,req)
         sendTo(ws,"/RetHeal "+arg[1]+" "+arg[2]+" X X");
       }
 
-      if(arg[2]=="5" || arg[2]=="3")
+      if(arg[2]=="5" || arg[2]=="3") //power
       {
         var artid = plr.backpack[arg[1]].split(";")[30] - 41;
         if(plr.backpack[arg[1]].split(";")[31]=="0") artid = -41;
         if(artid==2 || artid==3) plr.pclass[arg[1]].ctrlPower = 1;
+      }
+
+      if(arg[2]=="7") //shield
+      {
+          plr.pclass[arg[1]].SetVirtualShield(Math.floor(Parsing.FloatU(gameplay[129])*50));
       }
     }
     if (arg[0] == "/JunkDiscard") // 1[PlayerID] 2[Item] 3[Count]
@@ -5753,7 +5768,7 @@ function FilterArgs(args,formats,include_headers=true)
         if(format=="count") format = "int -9999999 9999999";
         if(format=="count+") format = "int 1 9999999";
         if(format=="count-") format = "int -9999999 -1";
-        if(format=="PotionID") format = "int 1 6";
+        if(format=="PotionID") format = "int 1 7";
         if(format=="DrillID") format = "int 0 15";
         if(format=="0-16k") format = "int 0 15999";
         if(format=="float") format = "float -1e+32 1e+32";

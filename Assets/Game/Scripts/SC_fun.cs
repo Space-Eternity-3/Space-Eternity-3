@@ -13,7 +13,7 @@ public class SC_fun : MonoBehaviour
     public Material[] M = new Material[128];
     public Texture[] Item = new Texture[128];
 	public string[] ItemNames = new string[128];
-    public Texture Item20u, Item55u, Item57u, Item59u, Item61u, Item63u, Item71u;
+    public Texture Item20u, Item55u, Item57u, Item59u, Item61u, Item63u, Item71u, Item79u;
 	public Material[] texture = new Material[16];
 	public Material[] textureStone;
 	public Material[] textureDark;
