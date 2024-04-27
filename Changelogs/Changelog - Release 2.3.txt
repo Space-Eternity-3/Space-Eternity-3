@@ -1,0 +1,39 @@
+New features (gameplay):
+
+
+
+New features (technical):
+
+
+
+Old feature changes:
+
+
+
+Artistic changes:
+
+
+
+UI changes:
+
+- Text "Version: " was removed from the universe selection menu. The version name will be displayed alone from now.
+
+Configurables:
+
+
+
+Default datapack changes:
+
+
+
+Technical changes:
+
+
+
+Bug fixes:
+
+
+
+Universe updating warnings:
+
+- None, you can update your universe without any corruption.

@@ -88,7 +88,7 @@ public class SC_universe : MonoBehaviour
             crB=false; plB=true;
 		}
 
-        info.text="Time: "+TimeConvert(Parsing.IntE(timeF))+"\nVersion: "+versionF;
+        info.text="Time: "+TimeConvert(Parsing.IntE(timeF))+"\n"+versionF;
         if(scoreF!="DEFAULT") info.text=info.text+"\n"+scoreF;
 
         bool iuv = IsUpdatableVersion(versionF) && scoreF=="DEFAULT";

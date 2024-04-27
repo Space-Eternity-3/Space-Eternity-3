@@ -219,8 +219,8 @@ const unit = 0.0008;
 const in_arena_range = 37;
 
 //Global variables
-var serverVersion = "Beta 2.2";
-var serverRedVersion = "Beta_2_2";
+var serverVersion = "Release 2.3";
+var serverRedVersion = "Release_2_3";
 var clientDatapacksVar = "";
 var seed;
 var biome_memories = new Array(16000).fill("");
