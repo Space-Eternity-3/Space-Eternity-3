@@ -27,12 +27,8 @@ Default datapack changes:
 
 Technical changes:
 
-
+- Anti-aliasing increased from x4 to x8 on ultra (default) settings.
 
 Bug fixes:
 
-
-
-Universe updating warnings:
-
-- None, you can update your universe without any corruption.
+- Chat was positioned wrongly, when user had other than 16:9 screen ratio.

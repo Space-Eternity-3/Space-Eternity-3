@@ -211,6 +211,7 @@ c) Others
 - only colliders older than 10 frames will be able to deal collision damage
 - reworked player movement code
 - full screen manager code reworked, full screen will be always enabled at the start of the game, you can always close it using F11
+- unity version updated to: 2023.2.20f1
 
 Bug fixes:
 
