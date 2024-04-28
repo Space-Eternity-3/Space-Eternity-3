@@ -2,12 +2,12 @@
 
 <
 Datapack documentation:
-https://se3.page/docs/Beta-2.2/SE3Documentation/
+https://se3.page/docs/Release-2.3/SE3Documentation/
 Edit file and select it in your SE3 browser.
 >
 
-version: 'Beta 2.2'; <Don't change>
-name: 'not default'; <Rename it>
+version: 'Release 2.3'; <Don't change>
+name: 'Geyzers'; <Rename it>
 craftings
 {
 	<Category>1
@@ -102,8 +102,6 @@ craftings
 		title_image: unstable_matter;
 		1: bone(3) + unstable_matter -> dead_alien;
 		2: dark_stone(5) + unstable_matter -> red_stone(5);
-		3: stone -> small_amethyst(999);
-		4: stone -> copper_bullet(999);
 	}
 	<Max 512 categories>
 }
@@ -174,10 +172,11 @@ gameplay
 	boss_fire_damage: 4;
 	wind_boss_push: 25;
 	
-	<HEALING>
+	<POTIONS>
 	healing_potion_hp: 20;
 	blank_potion_hp: 15;
 	killing_potion_hp: 15;
+	shield_potion_duration: 2;
 	
 	<GROW TIMES>
 	amethyst_grow_time_min: 60;
@@ -185,7 +184,7 @@ gameplay
 	magnetic_alien_grow_time: 3;
 
 	<UPGRADES>
-	upg_1_item: 9;
+	upg_1_item: 10;
     upg_1_cost: 5;
     upg_2_item: 10;
     upg_2_cost: 10;
@@ -343,9 +342,9 @@ generator_settings
 	}
 	<Geyzer biome> 2
 	{
-		chance: 8%;
+		chance: 50%;
 		settings: [
-			bgcolor-255-252-220,
+			bgcolor-255-252-220, spawn,
 		];
 	
 		all_sizes: stoneA(100%);
@@ -369,7 +368,7 @@ generator_settings
 		chance: 4%;
 		settings: [
 			bgcolor-212-218-224,
-			structural, struct=4, spawn,
+			structural, struct=4,
 			radius = 80, even,
 			density = 100%,
 		];
@@ -572,6 +571,7 @@ game_translate <low-level settings>
 		76: small_copper_chimney;
 		77: copper_diode;
 		78: tiger_gem;
+		79: shield_potion;
 	}
 }
 custom_structures <advanced settings>

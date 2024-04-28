@@ -62,14 +62,6 @@ public class SC_main_buttons : MonoBehaviour {
 		int base_false = 1; if(n==-2) base_false = 0;
 		for(i=0;i<lngt;i++) Screens[i].targetDisplay = base_false;
 		if(n>=0) Screens[n].targetDisplay = 0;
-		if(n==3)
-		{
-			//MAIN MENU, CAN BE HERE
-			SC_settings[] SC_settings = FindObjectsOfType<SC_settings>();
-			foreach(SC_settings ss in SC_settings) {
-				ss.valueRead();
-			}
-		}
 		if(n==0)
 		{
 			SC_account.RemoveWarning();

@@ -1,13 +1,13 @@
 {
-  "name": "Se11a",
-  "version": "1.0.0",
-  "description": "",
+  "name": "SE3-Server",
+  "version": "2.3.0",
+  "description": "A server for SE3 multiplayer.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Kamiloso",
   "license": "ISC",
   "dependencies": {
     "readline-sync": "^1.4.10",

@@ -1,7 +1,7 @@
 New features:
 
 - Added shield potion, obtainable and possible to produce on copper facilities.
-  - Shield potion removes your effect and gives you a shield for 2,5s.
+  - Shield potion removes your effect and gives you a shield, which makes you indestructible and unable to shoot for 2 seconds.
 
 Old feature changes:
 
@@ -14,11 +14,13 @@ Artistic changes:
 UI changes:
 
 - Text "Version: " was removed from the universe selection menu. The version name will be displayed alone from now.
+- Text "Recharge artefact using star" changed to "Recharge artefact near star".
+- Music and Volume settings can now be set to all whole values from 0% to 100%.
 
 Configurables:
 
 - Added gameplay variables in datapack format:
-  - shield_potion_duration: 2,5;
+  - shield_potion_duration: 2;
 
 Default datapack changes:
 
@@ -28,7 +30,9 @@ Default datapack changes:
 Technical changes:
 
 - Anti-aliasing increased from x4 to x8 on ultra (default) settings.
+- Reworked the impulse shield system to fit the potion shield too.
 
 Bug fixes:
 
 - Chat was positioned wrongly, when user had other than 16:9 screen ratio.
+- Impulse "god-mode" is no longer possible through cheats.

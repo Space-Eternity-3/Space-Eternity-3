@@ -310,7 +310,7 @@ public class SC_control : MonoBehaviour {
 		bool wr_cotr = !(Input.GetKey(KeyCode.LeftControl) && (SC_slots.InvHaving(48) || SC_slots.InvHaving(64) || SC_slots.InvHaving(65)));
 		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && wr_cotr;
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
-		bool wr_noblocker = (!SC_artefacts.unstabling) && SC_effect.effect!=8;
+		bool wr_noblocker = !SC_artefacts.unstabling && SC_effect.effect!=8 && shield_time==0;
 		bool wr_oktime = livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100);
 		
 		if(wr_tick && wr_isok && wr_moustay && !public_placed && wr_oktime && wr_noblocker)
@@ -519,7 +519,7 @@ public class SC_control : MonoBehaviour {
 					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 17 0 0");
 				}
 				SC_effect.EffectClean();
-				shield_time = (int)(Parsing.FloatE(SC_data.Gameplay[129])*50);
+				SetVirtualShield((int)(Parsing.FloatE(SC_data.Gameplay[129])*50),"green");
 			}
 			else InfoUp("Potion blocked",380);
 		}
@@ -1377,11 +1377,17 @@ public class SC_control : MonoBehaviour {
 		if(inpg%10==0) return pig+"0";
 		return pig+"";
 	}
+	public void SetVirtualShield(int new_value, string shield_type)
+	{
+		//sendToAllPlayers("/RetShieldVisual "+this.gpid+" "+new_value+" "+shield_type+" X X");
+    	if(new_value > shield_time)
+      		shield_time = new_value;
+	}
 	public void DamageFLOAT(float dmgFLOAT) {if(dmgFLOAT>0f) Damage(dmgFLOAT);}
 	public void Damage(float dmg)
 	{
 		if(!living) return;
-		if(livTime<50 || impulse_enabled || !((livID==sr_livID && immID==sr_immID) || (int)Communtron4.position.y!=100)) return;
+		if(livTime<50 || !((livID==sr_livID && immID==sr_immID) || (int)Communtron4.position.y!=100)) return;
 		if(shield_time > 0) return;
 		
 		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+Parsing.FloatE(SC_data.Gameplay[26]);

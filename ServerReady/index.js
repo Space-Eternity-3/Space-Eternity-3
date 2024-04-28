@@ -1848,8 +1848,9 @@ class CPlayer {
     lv[1]++;
     return (this.periodic[per_type][1] <= this.periodic[per_type][3]);
   }
-  SetVirtualShield(new_value)
+  SetVirtualShield(new_value,shield_type)
   {
+    sendToAllPlayers("/RetShieldVisual "+this.gpid+" "+new_value+" "+shield_type+" X X");
     if(new_value > this.shield_time)
       this.shield_time = new_value;
   }
@@ -4736,38 +4737,38 @@ wss.on("connection", function connection(ws,req)
       plr.players[arg[1]] = censured;
       if(censured!="1")
       {
-        if(Parsing.IntU(censured.split(";")[5].split("&")[1])%25==1) hiddenFlags += "T";
-        else hiddenFlags += "F";
+        if(Parsing.IntU(censured.split(";")[5].split("&")[1])%25==1) hiddenFlags += "T"; else hiddenFlags += "F"; //invisibility
+        if(Parsing.IntU(censured.split(";")[5].split("&")[1])%25==2) hiddenFlags += "T"; else hiddenFlags += "F"; //impulse
         plr.data[arg[1]] = censured;
       }
-      else hiddenFlags += "F";
+      else hiddenFlags += "FF";
 
       //Small technicals
       if (plr.waiter[arg[1]] > 1) plr.waiter[arg[1]] = 250;
       sendTo(ws,"P"+arg[3]); //Short type command
 
       // Flags explained
-      // [0] - impulseEnabled
-      // [1] - impulseStarted     | POWER -= IMPULSE
+      // [0] - impulseEnabled (relict -> in hidden)
+      // [1] - impulseStarted
       // [2] - invisibilityPulse (relict)
       // [3] - doTeleport
 
       // Hidden flags
-      // [0] - invisible          | POWER_REGEN_BLOCKED, POWER -= ILLUSION_USE
+      // [0] - invisible
+      // [1] - impulseEnabled
 
       //Flags questioning
       var artef = getPlayerArtefact(arg[1]);
-      if(artef!=2 && (arg[4][0]=="T" || arg[4][1]=="T")) {kick(arg[1]); return;} //IMPULSE
+      if(artef!=2 && (hiddenFlags[1]=="T" || arg[4][1]=="T")) {kick(arg[1]); return;} //IMPULSE
       if(artef!=3 && (hiddenFlags[0]=="T" || arg[4][2]=="T")) {kick(arg[1]); return;} //ILLUSION
 
       //Flags executing
-      if(arg[4][0]=="T") {
-        plr.pclass[arg[1]].SetVirtualShield(Math.floor(Parsing.FloatU(gameplay[19])*50));
-      }
       if(arg[4][1]=="T") {
         var dtn = Date.now();
         var pl = plr.pclass[arg[1]];
         if(pl.impulse_wait > dtn) {kick(arg[1]); return;} // impulsed too fast
+        var ImpulseTime = Math.floor(Parsing.FloatU(gameplay[19])*50+2); if(ImpulseTime < 2) ImpulseTime = 2;
+        plr.pclass[arg[1]].SetVirtualShield(ImpulseTime,"orange");
         pl.impulse_wait = dtn + (Math.round(Parsing.FloatU(gameplay[102]))-3) * 20;
         plr.pclass[arg[1]].ctrlPower -= 0.2;
         plr.impulsed[arg[1]] = [];
@@ -4775,11 +4776,11 @@ wss.on("connection", function connection(ws,req)
       if(hiddenFlags[0]=="T") {
         plr.pclass[arg[1]].ctrlPower -= unit * Parsing.FloatU(gameplay[22]);
       }
-      plr.pclass[arg[1]].powerRegenBlocked = (hiddenFlags[0]=="T") || (arg[4][0]=="T");
+      plr.pclass[arg[1]].powerRegenBlocked = (hiddenFlags[0]=="T") || (hiddenFlags[1]=="T");
 
       //Impulse damage
       var j, caray = censured.split(";");
-      if(caray.length>1 && arg[4][0]=="T")
+      if(caray.length>1 && hiddenFlags[1]=="T")
       {
         var xa = Parsing.FloatU(caray[0]);
         var ya = Parsing.FloatU(caray[1]);
@@ -5238,7 +5239,7 @@ wss.on("connection", function connection(ws,req)
 
       if(arg[2]=="7") //shield
       {
-          plr.pclass[arg[1]].SetVirtualShield(Math.floor(Parsing.FloatU(gameplay[129])*50));
+          plr.pclass[arg[1]].SetVirtualShield(Math.floor(Parsing.FloatU(gameplay[129])*50),"green");
       }
     }
     if (arg[0] == "/JunkDiscard") // 1[PlayerID] 2[Item] 3[Count]

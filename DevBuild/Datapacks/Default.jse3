@@ -176,7 +176,7 @@ gameplay
 	healing_potion_hp: 20;
 	blank_potion_hp: 15;
 	killing_potion_hp: 15;
-	shield_potion_duration: 2,5;
+	shield_potion_duration: 2;
 	
 	<GROW TIMES>
 	amethyst_grow_time_min: 60;
