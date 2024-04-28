@@ -11,6 +11,7 @@ public class SC_snd : MonoBehaviour
     public float volume;
     public float deeprange = 0;
     AudioSource audio;
+    public int mute_after = -1;
     public bool updator = false;
     bool activated = false;
     public bool terminated = false;
@@ -37,6 +38,8 @@ public class SC_snd : MonoBehaviour
         {
             volume=SC_sounds.GetVolume(transform.position,naturalVolume,deeprange);
             audio.volume = volume;
+            if(mute_after==0) terminated = true;
+            mute_after--;
         }
         if(terminated) audio.volume = 0f;
     }
