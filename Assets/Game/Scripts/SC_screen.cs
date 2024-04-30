@@ -25,8 +25,6 @@ public class SC_screen : MonoBehaviour
     }
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.R)) ReloadScreen();
-
         if(fullS) {
             if(reload_counter==2) SetFull2();
             if(reload_counter==1) SetFull();

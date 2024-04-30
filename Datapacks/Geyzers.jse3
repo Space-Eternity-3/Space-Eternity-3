@@ -342,7 +342,7 @@ generator_settings
 	}
 	<Geyzer biome> 2
 	{
-		chance: 50%;
+		chance: 8%;
 		settings: [
 			bgcolor-255-252-220, spawn,
 		];
@@ -419,7 +419,7 @@ generator_settings
 	}
 	<Star> 8
 	{
-		chance: 1,5%;
+		chance: 29%;
 		settings: [
 			bgcolor-255-245-140,
 			structural, struct=3,

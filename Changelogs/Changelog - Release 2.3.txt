@@ -10,6 +10,7 @@ Old feature changes:
 Artistic changes:
 
 - Geyzer volume was reduced: 0.25 -> 0.16
+- Star light intensity reduced: 3.5 -> 2.5
 
 UI changes:
 
@@ -22,11 +23,6 @@ Configurables:
 - Added gameplay variables in datapack format:
   - shield_potion_duration: 2;
 
-Default datapack changes:
-
-- To fit new datapack format:
-  - Added new gameplay variables.
-
 Technical changes:
 
 - Anti-aliasing increased from x4 to x8 on ultra (default) settings.
@@ -36,4 +32,9 @@ Bug fixes:
 
 - Chat was positioned wrongly, when user had other than 16:9 screen ratio.
 - Impulse "god-mode" is no longer possible through cheats.
-- SND_fire sound (for fire and wind bullets) had some weird artefacts at the end
+- SND_fire sound (for fire and wind bullets) had some weird artefacts at the end.
+- Error texture in storages was magnetic alien instead of empty texture.
+
+To page:
+
+- Change star appearance

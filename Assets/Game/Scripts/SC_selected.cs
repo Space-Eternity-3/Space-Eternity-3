@@ -46,9 +46,6 @@ public class SC_selected : MonoBehaviour {
 		if(selected<1) selected=9;
 
 		Communtron1.position=new Vector3(Communtron1.position.x,selected,Communtron1.position.z);
-
-		//if(Input.GetMouseButton(0)) sel.color=col_sel;
-		//else sel.color=col_desel;
 	}
 	public void set_selected(int seth)
 	{

@@ -58,7 +58,7 @@ public class SC_Fob21 : MonoBehaviour {
 	{
 		try{
 			Ention.material=SC_fun.M[item];
-		}catch{Ention.material=SC_fun.M[23];}
+		}catch{Ention.material=SC_fun.M[52];}
 		if(item==0 && isDriller) Ention.material = Material5E;
 		int i;
 
