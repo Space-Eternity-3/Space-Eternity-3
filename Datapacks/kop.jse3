@@ -369,7 +369,7 @@ generator_settings
 		chance: 4%;
 		settings: [
 			bgcolor-212-218-224,
-			structural, struct=4, spawn,
+			structural, struct=4,
 			radius = 80, even,
 			density = 100%,
 		];
@@ -423,7 +423,7 @@ generator_settings
 		chance: 1,5%;
 		settings: [
 			bgcolor-255-245-140,
-			structural, struct=3,
+			structural, struct=3, spawn,
 			radius = 40, even,
 			density = 100%,
 		];
