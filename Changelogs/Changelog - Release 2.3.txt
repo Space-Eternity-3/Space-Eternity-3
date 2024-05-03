@@ -20,6 +20,7 @@ Configurables:
 
 - Added gameplay variables in datapack format:
   - shield_potion_duration: 2;
+- Default boss colors moved from Unity to datapack like it is with biomes.
 
 Technical changes:
 
@@ -31,3 +32,11 @@ Bug fixes:
 - Impulse "god-mode" is no longer possible through cheats.
 - SND_fire sound (for fire and wind bullets) had some weird artefacts at the end.
 - Error texture in storages was magnetic alien instead of empty texture.
+- Respawn had a broken behaviour while holding mouse both over UI and over it.
+
+Update to page:
+
+- New items: How To Play, Game Data
+- Copper Facilities: How To Play
+- Gameplay: new variables
+- Biome tags: default boss colors reduced

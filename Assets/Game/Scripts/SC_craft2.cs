@@ -23,6 +23,7 @@ public class SC_craft2 : MonoBehaviour {
 	public Transform player;
 	public Transform R_set_particles;
 	public Transform R_destroy_particles;
+	public SC_respawn SC_respawn;
 	public int SpaceID;
 	
 	bool stille = false;
@@ -141,6 +142,7 @@ public class SC_craft2 : MonoBehaviour {
 			{
 				SC_control.SendMTP("/SetRespawn "+SC_control.connectionID+" "+slot+" 0 0");
 			}
+			Instantiate(SC_respawn.RespDestParticles,respawn_point.position,new Quaternion(0f,0f,0f,0f));
 			respawn_point.position=new Vector3(0f,0f,1f);
 		}
 	}

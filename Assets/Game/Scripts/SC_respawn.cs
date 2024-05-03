@@ -13,6 +13,7 @@ public class SC_respawn : MonoBehaviour
     public Color32 offed;
     public Color32 oned;
     public Transform RespDestParticles;
+    public Transform Communtron3;
 
     void Update()
     {
@@ -25,7 +26,6 @@ public class SC_respawn : MonoBehaviour
             resp2.color=oned;
             if(Input.GetMouseButtonDown(0))
             {
-                Instantiate(RespDestParticles,transform.position,new Quaternion(0f,0f,0f,0f));
                 SC_craft2.ResetSpawn();
             }
         }
@@ -41,7 +41,7 @@ public class SC_respawn : MonoBehaviour
         float dY=player.position.y-transform.position.y;
         float distance=Mathf.Sqrt(dX*dX+dY*dY);
 
-        if(distance<15f) on=true;
+        if(distance<15f && Communtron3.position.y==0f) on=true;
         else on=false;
     }
     void OnMouseExit()

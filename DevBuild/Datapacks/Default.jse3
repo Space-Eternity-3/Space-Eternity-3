@@ -315,7 +315,14 @@ generator_settings
 {
 	<Default generation> 0
 	{
-		settings: [];
+		settings: [
+			<Global boss colors>
+			boss.1.color-74-255-182,	<Protector>
+			boss.2.color-255-145-69,	<Adecodron>
+			boss.3.color-255-112-237,	<Octogone>
+			boss.4.color-255-216-62,	<Starandus>
+			boss.6.color-255-136-146,	<Degenerator>
+		];
 		
 		<Size>4: stone(50%) + copper(47%) + gold(3%);
 		<Size>5: stone(50%) + copper(47%) + gold(3%);
