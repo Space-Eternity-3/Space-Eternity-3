@@ -1,6 +1,0 @@
-Bugfixes:
-
-- Push inventory hold wasn't in sync with mouse on some screen ratios.
-- After updating Unity version (all builds with the new logo), button highlightning wasn't working properly.
-- Saving asteroids on singleplayer was unsynced with the main data save function.
-- Singleplayer save system was adding one additional line at the end of every file.

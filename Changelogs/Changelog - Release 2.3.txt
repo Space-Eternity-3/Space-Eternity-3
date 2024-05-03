@@ -9,8 +9,6 @@ Old feature changes:
 
 Artistic changes:
 
-- Geyzer volume was reduced: 0.25 -> 0.16
-- Star light intensity reduced: 3.5 -> 2.5
 
 UI changes:
 
@@ -34,7 +32,3 @@ Bug fixes:
 - Impulse "god-mode" is no longer possible through cheats.
 - SND_fire sound (for fire and wind bullets) had some weird artefacts at the end.
 - Error texture in storages was magnetic alien instead of empty texture.
-
-To page:
-
-- Change star appearance

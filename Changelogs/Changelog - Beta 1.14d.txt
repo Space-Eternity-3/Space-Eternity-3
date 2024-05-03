@@ -1,4 +1,0 @@
-Bugfixes:
-
-- bug with english healthbar removed
-- thread safe SC_control code
