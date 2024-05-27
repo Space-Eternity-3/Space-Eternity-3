@@ -146,6 +146,7 @@ public class SC_control : MonoBehaviour {
 	public SC_chat SC_chat;
 	public SC_difficulty SC_difficulty;
 	public SC_worldgen SC_worldgen;
+	public SC_shield SC_shield;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -309,7 +310,7 @@ public class SC_control : MonoBehaviour {
 		bool wr_cotr = !(Input.GetKey(KeyCode.LeftControl) && (SC_slots.InvHaving(48) || SC_slots.InvHaving(64) || SC_slots.InvHaving(65)));
 		bool wr_isok = cooldown==0 && wr_comms && wr_have && !impulse_enabled && !Input.GetMouseButton(0) && wr_cotr;
 		bool wr_moustay = Input.GetMouseButton(1) && !Input.GetMouseButtonDown(1);
-		bool wr_noblocker = !SC_artefacts.unstabling && SC_effect.effect!=8 && shield_time==0;
+		bool wr_noblocker = !SC_artefacts.unstabling && SC_effect.effect!=8 && shield_time==0 && SC_shield.green_time==0;
 		bool wr_oktime = livTime>=50 && (intPing!=-1 || (int)Communtron4.position.y!=100);
 		
 		if(wr_tick && wr_isok && wr_moustay && !public_placed && wr_oktime && wr_noblocker)
@@ -530,6 +531,7 @@ public class SC_control : MonoBehaviour {
 	   *4 - turbo
 	   *5 - power
 	   *6 - killing
+	   *7 - shield
 		*/
 		
 		}
@@ -726,13 +728,14 @@ public class SC_control : MonoBehaviour {
 			case "blank": return hB || eB;
 			case "killing": return true;
 			case "max": return hB || tB || pB || eB;
-			case "shield": return false;
+			case "shield": return true;
 			default: return false;
 		}
 	}
 	void KillMe()
 	{
 		SC_effect.EffectClean();
+		SC_shield.green_time = 0;
 		solidPos=transform.position+new Vector3(0f,0f,2500f);
 		Communtron1.position+=new Vector3(0f,0f,75f);
 		SC_sounds.PlaySound(transform.position,2,2);
@@ -1378,15 +1381,22 @@ public class SC_control : MonoBehaviour {
 	}
 	public void SetVirtualShield(int new_value, string shield_type)
 	{
-    	if(new_value > shield_time)
-      		shield_time = new_value;
+		if(shield_type=="orange")
+		{
+			if(new_value > shield_time)
+      			shield_time = new_value;
+		}
+		if(shield_type=="green")
+		{
+			SC_shield.SetShieldIfSmaller(new_value);
+		}
 	}
 	public void DamageFLOAT(float dmgFLOAT) {if(dmgFLOAT>0f) Damage(dmgFLOAT);}
 	public void Damage(float dmg)
 	{
 		if(!living) return;
 		if(livTime<50 || !((livID==sr_livID && immID==sr_immID) || (int)Communtron4.position.y!=100)) return;
-		if(shield_time > 0) return;
+		if(shield_time > 0 || SC_shield.green_time > 0) return;
 		
 		float potHHH = SC_upgrades.MTP_levels[0]+SC_artefacts.GetProtLevelAdd()+Parsing.FloatE(SC_data.Gameplay[26]);
 		if(potHHH<-50f) potHHH = -50f; if(potHHH>56.397f) potHHH = 56.397f;

@@ -4778,8 +4778,6 @@ wss.on("connection", function connection(ws,req)
       plr.pclass[arg[1]].powerRegenBlocked = (hiddenFlags[0]=="T") || (hiddenFlags[1]=="T");
       if(hiddenFlags[1]!="T") plr.pclass[arg[1]].shield_time = 0;
 
-      console.log(plr.pclass[arg[1]].shield_time);
-
       //Impulse damage
       var j, caray = censured.split(";");
       if(caray.length>1 && hiddenFlags[1]=="T")
@@ -5238,6 +5236,9 @@ wss.on("connection", function connection(ws,req)
         if(plr.backpack[arg[1]].split(";")[31]=="0") artid = -41;
         if(artid==2 || artid==3) plr.pclass[arg[1]].ctrlPower = 1;
       }
+
+      if(arg[2]=="7") //shield
+        console.log("Shield create code...");
     }
     if (arg[0] == "/JunkDiscard") // 1[PlayerID] 2[Item] 3[Count]
     {

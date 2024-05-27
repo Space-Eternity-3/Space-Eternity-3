@@ -84,12 +84,18 @@ craftings
 	<Category>10
 	{
 		title_image: rolling_spikes;
-
 		1: packed_copper -> rolling_spikes(2);
 		2: packed_copper(2) + coal(2) -> small_copper_chimney;
 		3: small_copper_chimney(5) -> copper_chimney;
+		4: copper(3) + small_diamond -> copper_treasure_base;
 	}
 	<Category>11
+	{
+		title_image: unstable_matter;
+		1: bone(3) + unstable_matter -> dead_alien;
+		2: dark_stone(5) + unstable_matter -> red_stone(5);
+	}
+	<Category>12
 	{
 		title_image: dead_alien;
 		1: dead_alien -> bone(3);
@@ -97,12 +103,6 @@ craftings
 		3: packed_dark_stone + dead_alien -> dark_tomb;
 		4: stone_tomb -> dead_alien;
 		5: dark_tomb -> dead_alien;
-	}
-	<Category>12
-	{
-		title_image: unstable_matter;
-		1: bone(3) + unstable_matter -> dead_alien;
-		2: dark_stone(5) + unstable_matter -> red_stone(5);
 	}
 	<Max 512 categories>
 }
@@ -128,6 +128,7 @@ modified_drops
 	big_bush: bush(3);
 	medium_diamond: small_diamond(2);
 	magnetic_alien_activated: magnetic_alien;
+	copper_chimney: small_copper_chimney(5);
 }
 gameplay
 {
@@ -581,6 +582,8 @@ game_translate <low-level settings>
 		78: tiger_gem;
 		79: shield_potion;
 		80: rolling_spikes;
+		81: bedrock_treasure_base;
+		82: copper_treasure_base;
 	}
 }
 custom_structures <advanced settings>

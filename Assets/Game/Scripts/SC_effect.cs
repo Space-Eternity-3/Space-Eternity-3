@@ -46,7 +46,7 @@ public class SC_effect : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if(damage_cycle_timer<=0)
+        if(damage_cycle_timer<=0 || SC_control.SC_shield.green_time > 0)
             EffectClean();
         else
         {

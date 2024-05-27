@@ -1,10 +1,13 @@
 New features:
 
-- Shield potion, coming soon...
+- Shield potion
+- Treasure bases: bedrock, copper
+- Rolling spikes
 
 Old feature changes:
 
-- Resurrecting aliens through crafting is no longer possible
+- Resurrecting aliens through crafting is no longer possible.
+- Copper chimneys now drop 5 small copper chimneys when broken.
 
 Artistic changes:
 
@@ -25,7 +28,7 @@ Configurables:
 Technical changes:
 
 - Anti-aliasing increased from x4 to x8 on ultra (default) settings.
-- Reworked the impulse shield system to fit the potion shield too.
+- Reworked the impulse shield system.
 
 Bug fixes:
 
