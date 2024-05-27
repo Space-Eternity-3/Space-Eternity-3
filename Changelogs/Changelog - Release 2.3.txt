@@ -1,8 +1,9 @@
 New features:
 
-- Shield potion
-- Treasure bases: bedrock, copper
-- Rolling spikes
+- Added shield potion, which makes you immune to all damage for 2,5s. Obtainable from copper facilities.
+- SOON: Treasure bases: bedrock, copper + generator asteroid
+- SOON: Rolling spikes
+- SOON: Copper facilities
 
 Old feature changes:
 
@@ -21,14 +22,14 @@ UI changes:
 Configurables:
 
 - Added gameplay variables in datapack format:
-  - shield_potion_duration: 2;
+  - shield_potion_duration: 2,5;
 - Default boss colors moved from Unity to datapack like it is with biomes.
 - Craftings changed a bit, check in game for details
 
 Technical changes:
 
 - Anti-aliasing increased from x4 to x8 on ultra (default) settings.
-- Reworked the impulse shield system.
+- Reworked impulse shield system.
 
 Bug fixes:
 

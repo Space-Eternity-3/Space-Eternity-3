@@ -238,7 +238,7 @@ public class SC_slots : MonoBehaviour
     }
     public int InvHaveM(int item, int count, bool aI, bool aB, bool physical, int commID)
     {
-		if(SC_control.pause) return 0;
+		if(SC_control.pause || !SC_control.living) return 0;
 
         int slot = GetSlot(item,count,aI,aB,physical);
         int YA,YB;
@@ -278,12 +278,16 @@ public class SC_slots : MonoBehaviour
     }
     public bool InvHaving(int item)
     {
+        if(SC_control.pause || !SC_control.living) return false;
+
         int selected = (int)Communtron1.position.y-1;
         if(SlotX[selected]==item && SlotYA[selected]>0) return true;
         else return false;
     }
     public int SelectedItem()
     {
+        if(SC_control.pause || !SC_control.living) return 0;
+
         int selected = (int)Communtron1.position.y-1;
         if(SlotYA[selected]>0) return SlotX[selected];
         else return 0;

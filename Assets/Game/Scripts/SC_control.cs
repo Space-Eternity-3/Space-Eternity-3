@@ -112,6 +112,9 @@ public class SC_control : MonoBehaviour {
 	public Color32 PowerBurning;
 	public Color32 PowerBlocked;
 
+	//this is root
+	public Color32 ShieldBarColor;
+
 	string worldDIR="";
 	int worldID=1;
 
@@ -217,6 +220,7 @@ public class SC_control : MonoBehaviour {
 	public bool already_teleported = false;
 
 	public int shield_time = 0;
+	public int time_from_last_green = 10000;
 	
 	float V_to_F(float V)
 	{
@@ -510,13 +514,13 @@ public class SC_control : MonoBehaviour {
 			{
 				if(!SC_invisibler.invisible)
 				{
-					Transform trn11 = Instantiate(particlesEmptyBulb[5],transform.position,new Quaternion(0f,0f,0f,0f));
+					Transform trn11 = Instantiate(particlesEmptyBulb[6],transform.position,new Quaternion(0f,0f,0f,0f));
 					trn11.GetComponent<SC_seeking>().enabled = true;
 				}
 				int slot = SC_slots.InvChange(79,-1,true,false,true);
 				if((int)Communtron4.position.y==100) {
 					SendMTP("/Potion "+connectionID+" 7 "+slot);
-					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 17 0 0");
+					if(!SC_invisibler.invisible) SendMTP("/EmitParticles "+connectionID+" 19 0 0");
 				}
 				SC_effect.EffectClean();
 				SetVirtualShield((int)(Parsing.FloatE(SC_data.Gameplay[129])*50),"green");
@@ -719,6 +723,7 @@ public class SC_control : MonoBehaviour {
 		bool tB = turbo_V<0.95f;
 		bool pB = power_V<0.95f && power_unlocked;
 		bool eB = SC_effect.effect!=0;
+		bool sB = time_from_last_green > (int)(Parsing.FloatE(SC_data.Gameplay[129])*50) + 50f; // 1s cooldown
 
 		switch(potname)
 		{
@@ -728,7 +733,7 @@ public class SC_control : MonoBehaviour {
 			case "blank": return hB || eB;
 			case "killing": return true;
 			case "max": return hB || tB || pB || eB;
-			case "shield": return true;
+			case "shield": return sB;
 			default: return false;
 		}
 	}
@@ -736,6 +741,7 @@ public class SC_control : MonoBehaviour {
 	{
 		SC_effect.EffectClean();
 		SC_shield.green_time = 0;
+		time_from_last_green = 10000;
 		solidPos=transform.position+new Vector3(0f,0f,2500f);
 		Communtron1.position+=new Vector3(0f,0f,75f);
 		SC_sounds.PlaySound(transform.position,2,2);
@@ -949,6 +955,7 @@ public class SC_control : MonoBehaviour {
 		if(collision_cooldown>0) collision_cooldown--;
 		if(saveCo>0) saveCo--;
 		if(shield_time>0) shield_time--;
+		if(time_from_last_green<10000) time_from_last_green++;
 
 		impulse_time--;
 		if(impulse_time==1) RemoveImpulse();
@@ -1326,7 +1333,8 @@ public class SC_control : MonoBehaviour {
 					
 				//Based on <atf> value
 				NC[i].enabled = !f1 && (atf%25!=1);
-				NCHOF[i].color = SC_artefacts.Color1N[atf/100];
+				if(!PL[i].SC_shield.mtp_active) NCHOF[i].color = SC_artefacts.Color1N[atf/100];
+				else NCHOF[i].color = ShieldBarColor;
 			}
 		}
 
@@ -1388,6 +1396,7 @@ public class SC_control : MonoBehaviour {
 		}
 		if(shield_type=="green")
 		{
+			time_from_last_green = 0;
 			SC_shield.SetShieldIfSmaller(new_value);
 		}
 	}
@@ -1835,7 +1844,7 @@ public class SC_control : MonoBehaviour {
 			int pid = Parsing.IntE(arg[1]);
 			if(pid==0) pid = connectionID;
 			
-			if((put>=6 && put<=8) || (put>=11 && put<=15) || put==17)
+			if((put>=6 && put<=8) || (put>=11 && put<=15) || put==17 || put==19)
 			{
 				particlePos = PL[pid].GetComponent<Transform>().position;
 				if(put==7)
@@ -1889,10 +1898,11 @@ public class SC_control : MonoBehaviour {
 					Instantiate(explosion3M,particlePos,new Quaternion(0f,0f,0f,0f));
 					break;
 				default:
-					if((put>=11&&put<=15)||put==17)
+					if((put>=11&&put<=15)||put==17||put==19)
 					{
 						int put2 = put;
 						if(put==17) put2=16;
+						if(put==19) put2=17;
 						Transform trn11 = Instantiate(particlesEmptyBulb[put2-11],particlePos,new Quaternion(0f,0f,0f,0f));
 						trn11.GetComponent<SC_seeking>().seek = PL[pid].GetComponent<Transform>();
 						trn11.GetComponent<SC_seeking>().enabled = true;
@@ -1940,6 +1950,13 @@ public class SC_control : MonoBehaviour {
 		if(arg[0]=="/RetUnstablePulse")
 		{
 			unstable_pulses_available++;
+		}
+		if(arg[0]=="/RetShieldVisual")
+		{
+			int pid = Parsing.IntE(arg[1]);
+			if(pid==connectionID) return;
+			if(pid==0) pid = connectionID;
+			PL[pid].SC_shield.mtp_active = (arg[2]=="T");
 		}
 		if(arg[0]=="/RetInfoClient")
 		{
@@ -2091,6 +2108,9 @@ public class SC_control : MonoBehaviour {
 	}
 	public void AfterAwake()
 	{
+		Queue tsList = Queue.Synchronized(cmdList);
+		tsList.Clear();
+
 		actualTarDisp = 0;
 		Screen3.enabled = true;
 		Screen3.targetDisplay = 1;

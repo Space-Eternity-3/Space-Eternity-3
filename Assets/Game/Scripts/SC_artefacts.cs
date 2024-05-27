@@ -139,7 +139,8 @@ public class SC_artefacts : MonoBehaviour
 			description.text = descriptions[7];
 		}
 		
-		SC_control.HealthNormal = Color1N[n];
+		if(SC_control.SC_shield.green_time==0) SC_control.HealthNormal = Color1N[n];
+		else SC_control.HealthNormal = SC_control.ShieldBarColor;
 		
 		SC_control.FuelNormal = Color2N[n];
 		SC_control.FuelBurning = Color2B[n];
@@ -169,7 +170,7 @@ public class SC_artefacts : MonoBehaviour
 		
 		if(n==2 && key_A && SC_control.imp_cooldown==0 && !SC_control.pause && !SC_control.drill3B)
 		{
-			if(SC_control.power_V >= SC_control.IM_barrier)
+			if(SC_control.power_V >= SC_control.IM_barrier && SC_control.SC_shield.green_time==0)
 			{
 				SC_control.imp_cooldown = (int)SC_data.GplGet("impulse_cooldown");
 

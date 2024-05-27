@@ -1747,8 +1747,8 @@ class Bosbul
 
 class CPlayer {
   constructor(pid) {
-    this.Reset();
     this.gpid = pid;
+    this.Reset();
     this.NextDropsT = [[],[],[],[],[]];
     for(var i=0;i<4;i++) {
       this.NextDropsT[0].push(TreasureDrop(gameplay[105]));
@@ -1773,6 +1773,8 @@ class CPlayer {
     this.powerRegenBlocked = false;
     this.periodic = {};
     this.shield_time = 0;
+    this.green_time = 0;
+    sendToAllPlayers("/RetShieldVisual "+this.gpid+" F X X");
   }
   DataImport(rsp_x,rsp_y,ctrl_power) {
     this.Reset();
@@ -1850,8 +1852,17 @@ class CPlayer {
   }
   SetVirtualShield(new_value,shield_type)
   {
-    if(new_value > this.shield_time)
-      this.shield_time = new_value;
+    if(shield_type=="orange")
+    {
+      if(new_value > this.shield_time)
+        this.shield_time = new_value;
+    }
+    if(shield_type=="green")
+    {
+      if(new_value > this.green_time)
+        this.green_time = new_value;
+      sendToAllPlayers("/RetShieldVisual "+this.gpid+" T X X");
+    }
   }
 }
 
@@ -2754,7 +2765,7 @@ function HealFLOAT(pid,hp)
 function DamageFLOAT(pid,dmg)
 {
   dmg = Parsing.FloatU(dmg);
-  if(dmg>0 && plr.players[pid].split(";").length!=1 && plr.connectionTime[pid]>=50 && plr.pclass[pid].shield_time==0)
+  if(dmg>0 && plr.players[pid].split(";").length!=1 && plr.connectionTime[pid]>=50 && plr.pclass[pid].shield_time==0 && plr.pclass[pid].green_time==0)
   {
     var artid = plr.backpack[pid].split(";")[30] - 41;
     if(plr.backpack[pid].split(";")[31]=="0") artid = -41;
@@ -3146,6 +3157,8 @@ setInterval(function () { // <interval #2>
           }
         }
         if(plr.pclass[i].shield_time > 0) plr.pclass[i].shield_time--;
+        if(plr.pclass[i].green_time > 0) plr.pclass[i].green_time--;
+        if(plr.pclass[i].green_time == 0) sendToAllPlayers("/RetShieldVisual "+i+" F X X");
     }
 
     //Health regeneration & Power speculation
@@ -5238,7 +5251,9 @@ wss.on("connection", function connection(ws,req)
       }
 
       if(arg[2]=="7") //shield
-        console.log("Shield create code...");
+      {
+        plr.pclass[pid].SetVirtualShield(Math.floor(Parsing.FloatU(gameplay[129])*50),"green");
+      }
     }
     if (arg[0] == "/JunkDiscard") // 1[PlayerID] 2[Item] 3[Count]
     {

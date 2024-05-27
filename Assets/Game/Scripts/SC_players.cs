@@ -15,6 +15,7 @@ public class SC_players : MonoBehaviour
     public Transform drillPar;
     public Transform drill3T;
     public SC_invisibler SC_invisibler;
+    public SC_shield SC_shield;
 
     //Less relative constants
     public Transform TestNick;
