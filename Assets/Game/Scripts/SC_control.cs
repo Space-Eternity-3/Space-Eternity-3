@@ -2053,6 +2053,9 @@ public class SC_control : MonoBehaviour {
 	}
 	public void AfterAwake()
 	{
+		Queue tsList = Queue.Synchronized(cmdList);
+		tsList.Clear();
+
 		int j;
 		for(j=0;j<9;j++)
 			betterInvConverted[j]=new Vector3(0f,0f,0f);
