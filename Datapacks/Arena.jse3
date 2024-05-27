@@ -72,6 +72,8 @@ craftings
 		title_image: dark_stone;
 		1: packed_dark_stone -> dark_stone(5);
 		2: packed_red -> red_stone(5);
+		3: stone -> small_amethyst(999);
+		4: stone -> copper_bullet(999);
 	}
 	<Category>9
 	{
@@ -376,7 +378,7 @@ generator_settings
 		chance: 4%;
 		settings: [
 			bgcolor-212-218-224,
-			structural, struct=4,
+			structural, struct=4, spawn,
 			radius = 80, even,
 			density = 100%,
 		];

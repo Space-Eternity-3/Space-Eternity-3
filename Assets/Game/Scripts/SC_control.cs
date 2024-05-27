@@ -125,7 +125,6 @@ public class SC_control : MonoBehaviour {
 	string getData="";
 	string getInventory="";
 	int[] invdata = new int[18];
-	Vector3[] betterInvConverted = new Vector3[9];
 	
 	public SC_fun SC_fun;
 	public SC_upgrades SC_upgrades;
@@ -727,7 +726,7 @@ public class SC_control : MonoBehaviour {
 			case "blank": return hB || eB;
 			case "killing": return true;
 			case "max": return hB || tB || pB || eB;
-			case "shield": return true;
+			case "shield": return false;
 			default: return false;
 		}
 	}
@@ -937,7 +936,7 @@ public class SC_control : MonoBehaviour {
 		impulse_time = 0;
 		impulse_enabled = false;
 		playerR.velocity = new Vector3(0f,0f,0f);
-		//SC_invisibler.invisible_or = false;
+		shield_time = 0;
 	}
 	void FixedUpdate()
 	{
@@ -1379,7 +1378,6 @@ public class SC_control : MonoBehaviour {
 	}
 	public void SetVirtualShield(int new_value, string shield_type)
 	{
-		//sendToAllPlayers("/RetShieldVisual "+this.gpid+" "+new_value+" "+shield_type+" X X");
     	if(new_value > shield_time)
       		shield_time = new_value;
 	}
@@ -2083,10 +2081,6 @@ public class SC_control : MonoBehaviour {
 	}
 	public void AfterAwake()
 	{
-		int j;
-		for(j=0;j<9;j++)
-			betterInvConverted[j]=new Vector3(0f,0f,0f);
-		
 		actualTarDisp = 0;
 		Screen3.enabled = true;
 		Screen3.targetDisplay = 1;

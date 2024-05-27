@@ -1,11 +1,10 @@
 New features:
 
-- Added shield potion, obtainable and possible to produce on copper facilities.
-  - Shield potion removes your effect and gives you a shield, which makes you indestructible and unable to shoot for 2 seconds.
+- Shield potion, coming soon...
 
 Old feature changes:
 
-
+- Resurrecting aliens through crafting is no longer possible
 
 Artistic changes:
 
@@ -21,6 +20,7 @@ Configurables:
 - Added gameplay variables in datapack format:
   - shield_potion_duration: 2;
 - Default boss colors moved from Unity to datapack like it is with biomes.
+- Craftings changed a bit, check in game for details
 
 Technical changes:
 

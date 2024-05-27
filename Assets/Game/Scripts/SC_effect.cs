@@ -47,10 +47,7 @@ public class SC_effect : MonoBehaviour
     void FixedUpdate()
     {
         if(damage_cycle_timer<=0)
-        {
-            damage_cycle_timer = 0;
-            effect = 0;
-        }
+            EffectClean();
         else
         {
             if(damage_cycle_timer % cycle_period == 0)

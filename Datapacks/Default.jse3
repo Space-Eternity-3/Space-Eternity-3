@@ -83,19 +83,20 @@ craftings
 	}
 	<Category>10
 	{
-		title_image: stone_tomb;
-		1: packed_stone + dead_alien -> stone_tomb;
-		2: packed_dark_stone + dead_alien -> dark_tomb;
-		3: stone_tomb -> dead_alien;
-		4: dark_tomb -> dead_alien;
+		title_image: rolling_spikes;
+
+		1: packed_copper -> rolling_spikes(2);
+		2: packed_copper(2) + coal(2) -> small_copper_chimney;
+		3: small_copper_chimney(5) -> copper_chimney;
 	}
 	<Category>11
 	{
 		title_image: dead_alien;
 		1: dead_alien -> bone(3);
-		2: dead_alien + bush(3) -> alien;
-		3: dead_alien + magnetic_stone(3) -> magnetic_alien;
-		4: dead_alien + red_spikes -> red_alien;
+		2: packed_stone + dead_alien -> stone_tomb;
+		3: packed_dark_stone + dead_alien -> dark_tomb;
+		4: stone_tomb -> dead_alien;
+		5: dark_tomb -> dead_alien;
 	}
 	<Category>12
 	{
@@ -316,7 +317,7 @@ generator_settings
 	<Default generation> 0
 	{
 		settings: [
-			<Global boss colors>
+			<global boss colors>
 			boss.1.color-74-255-182,	<Protector>
 			boss.2.color-255-145-69,	<Adecodron>
 			boss.3.color-255-112-237,	<Octogone>
@@ -579,6 +580,7 @@ game_translate <low-level settings>
 		77: copper_diode;
 		78: tiger_gem;
 		79: shield_potion;
+		80: rolling_spikes;
 	}
 }
 custom_structures <advanced settings>
