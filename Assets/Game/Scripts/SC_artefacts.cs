@@ -198,7 +198,7 @@ public class SC_artefacts : MonoBehaviour
 
 		if(n==6 && !SC_control.pause)
 		{
-			if(key_A && SC_control.power_V>=0.2f)
+			if(key_A && SC_control.power_V>=0.2f && SC_control.SC_shield.green_time==0)
 				unstabling = true;
 		}
 		if(SC_control.power_V==0f || n!=6) unstabling = false;

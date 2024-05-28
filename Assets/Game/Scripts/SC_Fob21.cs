@@ -177,6 +177,8 @@ public class SC_Fob21 : MonoBehaviour {
 	}
 	bool InDistance(float dist, Vector3 deltapos)
 	{
+		if(!SC_control.living) return false;
+		
 		float dX=player.position.x-(transform.position.x+deltapos.x);
 		float dY=player.position.y-(transform.position.y+deltapos.y);
 		if(Mathf.Sqrt(dX*dX+dY*dY)<dist) return true;

@@ -22,6 +22,8 @@ public class SC_podswu : MonoBehaviour
     public Transform player;
     public bool Cmt3z_plus;
 
+    public SC_control SC_control;
+
     bool active=false;
 
     void Highlight(bool bright)
@@ -55,6 +57,8 @@ public class SC_podswu : MonoBehaviour
     }
     bool InDistance(float dist)
 	{
+        if(!SC_control.living) return false;
+
 		float dX=player.position.x-transform.position.x;
 		float dY=player.position.y-transform.position.y;
 		if(Mathf.Sqrt(dX*dX+dY*dY)<dist) return true;

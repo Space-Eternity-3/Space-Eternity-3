@@ -3150,15 +3150,18 @@ setInterval(function () { // <interval #2>
         var bpckArray = plr.backpack[i].split(";");
         var loc_artid = Parsing.IntU(bpckArray[30]) - 41;
         if(Parsing.IntU(bpckArray[31]) < 1) loc_artid = -42;
-        if(plr.connectionTime[i] > 50 && plr.pclass[i].unstable_pulses_available < 5 && loc_artid==6) {
+        if(plr.connectionTime[i] > 50 && plr.pclass[i].unstable_pulses_available < 5 && loc_artid==6 && plr.pclass[i].green_time==0) {
           if(func.randomInteger(0,unstable_sprobability-1)==0) {
             plr.pclass[i].unstable_pulses_available++;
             sendTo(se3_ws[i],"/RetUnstablePulse X X");
           }
         }
         if(plr.pclass[i].shield_time > 0) plr.pclass[i].shield_time--;
-        if(plr.pclass[i].green_time > 0) plr.pclass[i].green_time--;
-        if(plr.pclass[i].green_time == 0) sendToAllPlayers("/RetShieldVisual "+i+" F X X");
+        if(plr.pclass[i].green_time > 0) {
+          plr.pclass[i].green_time--;
+          if(plr.pclass[i].green_time == 0)
+            sendToAllPlayers("/RetShieldVisual "+i+" F X X");
+        }
     }
 
     //Health regeneration & Power speculation
@@ -4370,6 +4373,10 @@ function kill(pid)
   plr.pclass[pid].force_teleport_respawn = true;
   plr.pclass[pid].last_pos_changes = [];
   plr.pclass[pid].ctrlPower = 0;
+
+  plr.pclass[pid].shield_time = 0;
+  plr.pclass[pid].green_time = 0;
+  sendToAllPlayers("/RetShieldVisual "+pid+" F X X");
 
   sendToAllPlayers(
     "/RetInfoClient " +

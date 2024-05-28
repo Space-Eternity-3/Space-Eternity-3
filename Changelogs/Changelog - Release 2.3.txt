@@ -12,6 +12,7 @@ Old feature changes:
 
 Artistic changes:
 
+- Rocket nose will no longer be highlighted when cursor is over fob.
 
 UI changes:
 
@@ -37,6 +38,7 @@ Bug fixes:
 - SND_fire sound (for fire and wind bullets) had some weird artefacts at the end.
 - Error texture in storages was magnetic alien instead of empty texture.
 - Respawn had a broken behaviour while holding mouse both over UI and over it.
+- It was possible to highlight storages and even activate a boss while not alive.
 
 Update to page:
 

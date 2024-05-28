@@ -385,6 +385,8 @@ public class SC_fobs : MonoBehaviour
                 count21=SC_Fob21.pub_count;
             }
         }
+
+        //quite weird, probably useless
         if(Communtron4.position.x!=0f&&Input.GetMouseButtonDown(0)) cursed=true;
         if(cursed&&Input.GetMouseButtonUp(0)) cursed=false;
     }
@@ -505,7 +507,7 @@ public class SC_fobs : MonoBehaviour
 
         float sdst = safeDistance(SC_slots.SelectedItem());
 
-        if(IsEmpty&&Communtron3.position.y==0f&&distance<15f&&distance>=sdst&&topDistance(sdst)&&!Input.GetMouseButton(0)&&Communtron2.position.x==0f&&
+        if(IsEmpty&&Communtron3.position.y==0f&&InDistance(15f)&&distance>=sdst&&topDistance(sdst)&&!Input.GetMouseButton(0)&&Communtron2.position.x==0f&&
         CanBePlaced(SC_slots.SelectedItem())&&MTPblocker<=0)
         {
             if(!Input.GetMouseButton(1)&&emptyShow)
@@ -526,7 +528,7 @@ public class SC_fobs : MonoBehaviour
                 Replace(hId,multiplayer);
             }
         }
-        if(PickUp&&distance<15f&&Communtron1.position.z==0f&&!SC_backpack.destroyLock&&SC_push.clicked_on==0&&FobInteractable(ObjID)&&MTPblocker<=0)
+        if(PickUp&&InDistance(15f)&&Communtron1.position.z==0f&&!SC_backpack.destroyLock&&SC_push.clicked_on==0&&FobInteractable(ObjID)&&MTPblocker<=0)
         {
             if(Input.GetMouseButton(0)&&
             Communtron2.position.x==0f&&Communtron3.position.y==0f)
@@ -544,7 +546,7 @@ public class SC_fobs : MonoBehaviour
                 }
             }
         }
-        if(IsStorage&&!StaticStorage&&distance<15f&&Communtron1.position.z==0f&&FobInteractable(ObjID)&&MTPblocker<=0)
+        if(IsStorage&&!StaticStorage&&InDistance(15f)&&Communtron1.position.z==0f&&FobInteractable(ObjID)&&MTPblocker<=0)
         {
             if(Input.GetMouseButtonDown(0)&&!ReplaceReserved&&
             Communtron2.position.x==0f&&Communtron3.position.y==0f&&SC_Fob21.pub_count==0)
@@ -562,7 +564,7 @@ public class SC_fobs : MonoBehaviour
                 }
             }
         }
-        if(IsTreasure&&distance<15f&&Communtron1.position.z==0f&&FobInteractable(ObjID)&&MTPblocker<=0)
+        if(IsTreasure&&InDistance(15f)&&Communtron1.position.z==0f&&FobInteractable(ObjID)&&MTPblocker<=0)
         {
             if(Input.GetMouseButtonDown(0)&&
             Communtron2.position.x==0f&&Communtron3.position.y==0f)
@@ -607,7 +609,35 @@ public class SC_fobs : MonoBehaviour
                 }
             }
         }
+
+        if(PickUp||IsStorage||IsTreasure)
+        if(!com1act)
+        {
+            if(false) // disabled fob highlighting
+            if(InDistance(15f))
+            {
+                com1act = true;
+                Communtron1.position += new Vector3(1f,0f,0f);
+            }
+        }
+        else
+        {
+            if(!InDistance(15f))
+            {
+                com1act = false;
+                Communtron1.position -= new Vector3(1f,0f,0f);
+            }
+        }
     }
+    bool InDistance(float dist)
+	{
+        if(!SC_control.living) return false;
+
+		float dX=player.position.x-transform.position.x;
+		float dY=player.position.y-transform.position.y;
+		if(Mathf.Sqrt(dX*dX+dY*dY)<dist) return true;
+		else return false;
+	}
     void OnMouseEnter()
     {
         if(onu==0) emptyShow=true;
@@ -615,7 +645,7 @@ public class SC_fobs : MonoBehaviour
         {
             Communtron4.position+=new Vector3(1f,0f,0f);
         }
-        if(PickUp||IsStorage||IsTreasure)
+        /*if(PickUp||IsStorage||IsTreasure)
         {
             com1act=true;
             Communtron1.position+=new Vector3(1f,0f,0f);
@@ -624,7 +654,7 @@ public class SC_fobs : MonoBehaviour
 		{
 			com1act=true;
             Communtron1.position-=new Vector3(1f,0f,0f);
-		}
+		}*/
     }
     void OnMouseExit()
     {
@@ -632,7 +662,7 @@ public class SC_fobs : MonoBehaviour
         {
             Communtron4.position-=new Vector3(1f,0f,0f);
         }
-        if(PickUp||IsStorage||IsTreasure)
+        /*if(PickUp||IsStorage||IsTreasure)
         {
             com1act=false;
             Communtron1.position-=new Vector3(1f,0f,0f);
@@ -641,6 +671,12 @@ public class SC_fobs : MonoBehaviour
 		{
 			com1act=false;
             Communtron1.position+=new Vector3(1f,0f,0f);
-		}
+		}*/
+        if(PickUp||IsStorage||IsTreasure)
+        if(com1act)
+        {
+            com1act = false;
+            Communtron1.position -= new Vector3(1f,0f,0f);
+        }
     }
 }

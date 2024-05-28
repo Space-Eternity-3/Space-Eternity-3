@@ -524,6 +524,7 @@ public class SC_control : MonoBehaviour {
 				}
 				SC_effect.EffectClean();
 				SetVirtualShield((int)(Parsing.FloatE(SC_data.Gameplay[129])*50),"green");
+				SC_artefacts.unstabling = false;
 			}
 			else InfoUp("Potion blocked",380);
 		}
@@ -1054,7 +1055,8 @@ public class SC_control : MonoBehaviour {
 
 				power_V += at_unstable_regen1/50f;
 			}
-			if((is_artefact_6 && UnityEngine.Random.Range(0,unstable_sprobability)==0 && (int)Communtron4.position.y!=100) || unstable_pulses_available > 0)
+			if((is_artefact_6 && UnityEngine.Random.Range(0,unstable_sprobability)==0 && (int)Communtron4.position.y!=100 && SC_shield.green_time==0)
+			 || unstable_pulses_available > 0)
 			{
 				unstable_pulses_available--;
 				bool wr_tick = (int)Communtron4.position.y!=100 || current_tick!=-1;
