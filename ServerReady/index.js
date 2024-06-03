@@ -5857,7 +5857,9 @@ function FilterArgs(args,formats,include_headers=true)
               (p==51) ||
               (p>=54 && p<=62 && p%2==0) ||
               (p>=64 && p<=70) ||
-              (p>=73 && p<=78)
+              (p>=73 && p<=78) ||
+              (p==80) ||
+              (p==82)
             )) return false;
             args[i] = p+"";
         }

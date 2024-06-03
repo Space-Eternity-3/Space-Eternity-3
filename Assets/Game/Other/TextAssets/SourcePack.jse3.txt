@@ -83,8 +83,8 @@ craftings
 	}
 	<Category>10
 	{
-		title_image: rolling_spikes;
-		1: packed_copper -> rolling_spikes(2);
+		title_image: copper_cogs;
+		1: packed_copper -> copper_cogs(2);
 		2: packed_copper(2) + coal(2) -> small_copper_chimney;
 		3: small_copper_chimney(5) -> copper_chimney;
 		4: copper(3) + small_diamond -> copper_treasure_base;
@@ -581,7 +581,7 @@ game_translate <low-level settings>
 		77: copper_diode;
 		78: tiger_gem;
 		79: shield_potion;
-		80: rolling_spikes;
+		80: copper_cogs;
 		81: bedrock_treasure_base;
 		82: copper_treasure_base;
 	}

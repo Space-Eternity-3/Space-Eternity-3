@@ -1,18 +1,25 @@
 New features:
 
 - Added shield potion, which makes you immune to all damage for 2,5s. Obtainable from copper facilities.
+- Added copper cogs.
+- Added small copper chimneys.
+- Added copper chimneys.
+- Added small bedrock chimneys.
+- Added bedrock cogs.
+
 - SOON: Treasure bases: bedrock, copper + generator asteroid
-- SOON: Rolling spikes
 - SOON: Copper facilities
 
 Old feature changes:
 
 - Resurrecting aliens through crafting is no longer possible.
 - Copper chimneys now drop 5 small copper chimneys when broken.
+- Copper chimneys and small copper chimneys have a bigger pick up range from now.
 
 Artistic changes:
 
 - Rocket nose will no longer be highlighted when cursor is over fob.
+- Copper asteroid can have both rectangular and triangular texture from now.
 
 UI changes:
 
@@ -30,7 +37,7 @@ Configurables:
 Technical changes:
 
 - Anti-aliasing increased from x4 to x8 on ultra (default) settings.
-- Reworked impulse shield system.
+- Reworked impulse shield system and added potion shield system.
 
 Bug fixes:
 
@@ -46,3 +53,4 @@ Update to page:
 - Copper Facilities: How To Play
 - Gameplay: new variables
 - Biome tags: default boss colors reduced
+- Copper asteroid texture add

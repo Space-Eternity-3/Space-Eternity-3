@@ -17,6 +17,7 @@ public class SC_fun : MonoBehaviour
 	public Material[] texture = new Material[16];
 	public Material[] textureStone;
 	public Material[] textureDark;
+	public Material[] textureCopper;
 	public Material textureERROR;
 	
 	public bool ExperimentalItemInfo;

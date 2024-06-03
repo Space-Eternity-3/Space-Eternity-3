@@ -14,7 +14,7 @@ stores all previous datapack and the game version of the univere. It will allow 
 ------ Universes ------
 
 All universe data is stored in the "ServerUniverse" folder. You can change this name in the "config.json" file.
-You can copy the universe to the singleplayer "saves" folder or import any universe from it.
+You can copy the universe to the singleplayer "saves" folder (remember about changing folder's name) or import any universe from it.
 All singleplayer universes are saved into the "%appdata%\Space Eternity 3\saves\" folder on Windows.
 
 The player data is saved in the same format on multiplayer and on singleplayer, however file paths are different.

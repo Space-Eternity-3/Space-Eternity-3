@@ -200,6 +200,8 @@ public class SC_fobs : MonoBehaviour
         if(b>=54 && b<=62 && b%2==0) return true;
         if(b>=64 && b<=70) return true;
         if(b>=73 && b<=78) return true;
+        if(b==80) return true;
+        if(b==82) return true;
         return false;
     }
     void Replace(int id, bool MTPchange)
@@ -629,12 +631,25 @@ public class SC_fobs : MonoBehaviour
             }
         }
     }
+    Vector3 RealPosition()
+    {
+        float constant_delta = 0f;
+        if(ObjID==15) constant_delta = 2.5f; //copper chimney
+        if(ObjID==76) constant_delta = 1f; //small copper chimney
+        float[] vrot = SC_fun.RotateVector(0f,constant_delta,transform.eulerAngles.z);
+        return transform.position + new Vector3(vrot[0],vrot[1],0f);
+    }
     bool InDistance(float dist)
 	{
         if(!SC_control.living) return false;
 
-		float dX=player.position.x-transform.position.x;
-		float dY=player.position.y-transform.position.y;
+        //Distance modifiers
+        if(ObjID==15) dist += 2.5f;
+        if(ObjID==76) dist += 1f;
+
+        Vector3 realpos = RealPosition();
+		float dX=player.position.x-realpos.x;
+		float dY=player.position.y-realpos.y;
 		if(Mathf.Sqrt(dX*dX+dY*dY)<dist) return true;
 		else return false;
 	}
@@ -645,16 +660,6 @@ public class SC_fobs : MonoBehaviour
         {
             Communtron4.position+=new Vector3(1f,0f,0f);
         }
-        /*if(PickUp||IsStorage||IsTreasure)
-        {
-            com1act=true;
-            Communtron1.position+=new Vector3(1f,0f,0f);
-        }
-		if(IsEmpty)
-		{
-			com1act=true;
-            Communtron1.position-=new Vector3(1f,0f,0f);
-		}*/
     }
     void OnMouseExit()
     {
@@ -662,16 +667,6 @@ public class SC_fobs : MonoBehaviour
         {
             Communtron4.position-=new Vector3(1f,0f,0f);
         }
-        /*if(PickUp||IsStorage||IsTreasure)
-        {
-            com1act=false;
-            Communtron1.position-=new Vector3(1f,0f,0f);
-        }
-		if(IsEmpty)
-		{
-			com1act=false;
-            Communtron1.position+=new Vector3(1f,0f,0f);
-		}*/
         if(PickUp||IsStorage||IsTreasure)
         if(com1act)
         {

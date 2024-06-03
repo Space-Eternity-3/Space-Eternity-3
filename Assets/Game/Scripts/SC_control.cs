@@ -725,6 +725,7 @@ public class SC_control : MonoBehaviour {
 		bool pB = power_V<0.95f && power_unlocked;
 		bool eB = SC_effect.effect!=0;
 		bool sB = time_from_last_green > (int)(Parsing.FloatE(SC_data.Gameplay[129])*50) + 50f; // 1s cooldown
+		bool sK = SC_shield.green_time==0;
 
 		switch(potname)
 		{
@@ -732,7 +733,7 @@ public class SC_control : MonoBehaviour {
 			case "turbo": return tB;
 			case "power": return pB;
 			case "blank": return hB || eB;
-			case "killing": return true;
+			case "killing": return sK;
 			case "max": return hB || tB || pB || eB;
 			case "shield": return sB;
 			default: return false;
