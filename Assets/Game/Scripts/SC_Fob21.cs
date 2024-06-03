@@ -57,8 +57,8 @@ public class SC_Fob21 : MonoBehaviour {
 	void CountTranslate()
 	{
 		try{
-			Ention.material=SC_fun.M[item];
-		}catch{Ention.material=SC_fun.M[52];}
+			Ention.material=SC_fun.Fob21Material(item);
+		}catch{Ention.material=SC_fun.Fob21Material(72);}
 		if(item==0 && isDriller) Ention.material = Material5E;
 		int i;
 

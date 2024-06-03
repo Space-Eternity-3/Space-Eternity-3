@@ -10,7 +10,7 @@ public class SC_fun : MonoBehaviour
     public Transform Communtron1;
 	public GameObject[] GenPlaceT = new GameObject[128];
 	public GameObject[] GenPlaceM = new GameObject[18];
-    public Material[] M = new Material[128];
+    public Material[] M_auto = new Material[128];
     public Texture[] Item = new Texture[128];
 	public string[] ItemNames = new string[128];
     public Texture Item20u, Item55u, Item57u, Item59u, Item61u, Item63u, Item71u, Item79u;
@@ -19,6 +19,7 @@ public class SC_fun : MonoBehaviour
 	public Material[] textureDark;
 	public Material[] textureCopper;
 	public Material textureERROR;
+	public Material baseFob21Material;
 	
 	public bool ExperimentalItemInfo;
     public float volume;
@@ -84,6 +85,11 @@ public class SC_fun : MonoBehaviour
     {
         return f*f*((-2)*f+3);
     }
+	public Material Fob21Material(int n)
+	{
+		if(M_auto[0]==null) return baseFob21Material;
+		else return M_auto[n];
+	}
 
 	//Ulam <---> X,Y methods
     public int MakeUlam(int X,int Y)
@@ -228,5 +234,16 @@ public class SC_fun : MonoBehaviour
 		int num = (int)ch;
 		if(num < 65) return num-48;
 		else return num-55;
+	}
+
+	//Unity methods
+	void Start()
+	{
+		int i;
+		for(i=0;i<Item.Length;i++)
+		{
+			M_auto[i] = new Material(baseFob21Material);
+            M_auto[i].mainTexture = Item[i];
+		}
 	}
 }

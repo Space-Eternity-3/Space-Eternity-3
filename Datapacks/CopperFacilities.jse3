@@ -33,7 +33,8 @@ craftings
 		title_image: storage;
 		1: stone(4) + magnetic_stone(2) -> storage;
 		2: stone_with_crystals(3) + stone_drill -> driller;
-		3: gold(3) + copper(2) -> respawn;
+		3: copper(3) + small_diamond -> copper_treasure_base;
+		4: gold(3) + copper(2) -> respawn;
 	}
 	<Category>4
 	{
@@ -58,8 +59,7 @@ craftings
 		1: stone(2) -> stone_drill;
 		2: gold(2) -> golden_drill;
 		3: magnetic_stone(3) -> magnetic_lamp;
-		4: copper(3) + coal -> copper_diode;
-		5: stone(3) + small_diamond -> stone_with_crystals;
+		4: stone(3) + small_diamond -> stone_with_crystals;
 	}
 	<Category>7
 	{
@@ -85,9 +85,9 @@ craftings
 	{
 		title_image: copper_cog;
 		1: packed_copper -> copper_cog(2);
-		2: packed_copper(2) + coal(2) -> small_copper_chimney;
-		3: small_copper_chimney(5) -> copper_chimney;
-		4: copper(3) + small_diamond -> copper_treasure_base;
+		2: copper(3) + coal -> copper_diode;
+		3: packed_copper(2) + coal(2) -> small_copper_chimney;
+		4: small_copper_chimney(5) -> copper_chimney;
 	}
 	<Category>11
 	{
@@ -451,9 +451,9 @@ generator_settings
 		<Size>10: copperA(100%);
 		<Size>9: copperA(100%);
 		<Size>8: copperA(40%) + bedrockB(60%);
-		<Size>7: copperA(40%) + redA(30%) + metalic(30%);
-		<Size>6: copperA(30%) + redA(30%) + metalic(40%);
-		<Size>5: copperA(20%) + redA(20%) + metalic(60%);
+		<Size>7: copperA(60%) + redA(20%) + metalic(20%);
+		<Size>6: copperA(40%) + redA(30%) + metalic(30%);
+		<Size>5: copperA(30%) + redA(20%) + metalic(50%);
 		<Size>4: copperA(20%) + metalic(80%);
 	}
 	<max 31 biomes + default>
@@ -465,7 +465,7 @@ objects_generate
 	stoneB: stone(15%) + bone(20%) + stone_tomb(24%) + treasure(6%) + dead_alien(1%) + pumpkin(1%);
 	dark: dark_stone(15%) + bone(12%) + dark_tomb(24%) + dark_treasure(6%) + lava_geyzer(8%) + gold(3%);
 	copper: copper(35%);
-	copperA: copper(20%) + copper_diode(20%) + copper_cog(25%) + small_copper_chimney(15%) + metal_treasure(4%);
+	copperA: copper(15%) + packed_copper(5%) + copper_diode(20%) + copper_cog(25%) + small_copper_chimney(15%) + metal_treasure(4%);
 	gold: gold(25%);
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%);
 	amethyst: small_amethyst(20%) + medium_amethyst(20%) + large_amethyst(20%);
@@ -474,13 +474,13 @@ objects_generate
 	magnetic: magnetic_stone(35%) + magnetic_alien_activated(15%);
 	magneticA: magnetic_stone(35%) + magnetic_alien_activated(15%) + mega_geyzer(8%) + wind_bullet(0,2%);
 	red: red_stone(35%) + red_spikes(7,5%) + red_alien(15%);
-	redA: red_stone(40%) + packed_red(12%) + red_spikes(10%);
+	redA: red_stone(40%) + packed_red(10%) + red_spikes(10%);
 	diamond: medium_diamond(15%) + small_diamond(25%);
 	metalic: stone(35%) + metal_piece(25%);
 	metalicA: stone(35%) + metal_piece(25%) + unstable_matter(8%);
 	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
 	bedrockA: bedrock_stone(30%) + packed_bedrock(15%) + unstable_matter(20%);
-	bedrockB: bedrock_cog(20%) + bedrock_stone(20%) + small_bedrock_chimney(20%) + bedrock_treasure_base(13%);
+	bedrockB: bedrock_cog(20%) + bedrock_stone(20%) + micro_bedrock_chimney(20%) + bedrock_treasure_base(13%);
 	bone: bone(45%);
 	other: unstable_matter(20%);
 }
@@ -588,7 +588,7 @@ game_translate <low-level settings>
 		81: bedrock_treasure_base;
 		82: copper_treasure_base;
 		83: bedrock_cog;
-		84: small_bedrock_chimney;
+		84: micro_bedrock_chimney;
 	}
 }
 custom_structures <advanced settings>

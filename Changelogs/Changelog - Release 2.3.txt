@@ -4,7 +4,7 @@ New features:
 - Added copper cogs.
 - Added small copper chimneys.
 - Added copper chimneys.
-- Added small bedrock chimneys.
+- Added micro bedrock chimneys.
 - Added bedrock cogs.
 
 - SOON: Treasure bases: bedrock, copper + generator asteroid
@@ -19,7 +19,8 @@ Old feature changes:
 Artistic changes:
 
 - Rocket nose will no longer be highlighted when cursor is over fob.
-- Copper asteroid can have both rectangular and triangular texture from now.
+- Copper asteroid can have both rectangular and triangular texture and it's more metalic from now.
+- Copper stone and packed copper meterials have changed a bit.
 
 UI changes:
 
@@ -38,12 +39,13 @@ Technical changes:
 
 - Anti-aliasing increased from x4 to x8 on ultra (default) settings.
 - Reworked impulse shield system and added potion shield system.
+- Reworked storage material system to automatically generate item materials.
 
 Bug fixes:
 
 - Impulse "god-mode" is no longer possible through cheats.
 - SND_fire sound (for fire and wind bullets) had some weird artefacts at the end.
-- Error texture in storages was magnetic alien instead of empty texture.
+- Error texture in storages was magnetic alien instead of particle texture.
 - Respawn had a broken behaviour while holding mouse both over UI and over it.
 - It was possible to highlight storages and even activate a boss while not alive.
 
