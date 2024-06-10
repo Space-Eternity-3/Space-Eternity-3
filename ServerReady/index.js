@@ -1357,7 +1357,8 @@ class WorldData
                 }
             }
             
-            //Generate type and fobs
+            //Generate type and fobs & T-base proof
+            let T_bases = 0;
             WorldData.UpdateType(type);
             for(i=1;i<=size*2;i++)
             {
@@ -1365,7 +1366,21 @@ class WorldData
                 if(gen==-1) gen = Deterministics.CalculateFromString(fobGenerate[type], 20*((d_ulam + Generator.seed) % 1000000)+i);
                 d_dont_update_bosbul = true;
                 WorldData.UpdateFob(i,gen);
+                if(gen==81) T_bases++;
             }
+            if(T_bases==0)
+            {
+                let fob_gens = fobGenerate[type].split(";");
+                for(i=0;3*i<fob_gens.length;i++) if(fob_gens[3*i]=="81")
+                {
+                    let I = Deterministics.Random10e2((d_ulam + Generator.seed) % 1000000) % (size*2) + 1;
+                    d_dont_update_bosbul = true;
+                    WorldData.UpdateFob(I,81);
+                    break;
+                }
+            }
+
+            Bosbul.UpdateFobColliders(d_ulam);
         }
     }
     
@@ -5858,8 +5873,7 @@ function FilterArgs(args,formats,include_headers=true)
               (p>=54 && p<=62 && p%2==0) ||
               (p>=64 && p<=70) ||
               (p>=73 && p<=78) ||
-              (p==80) ||
-              (p==82)
+              (p==80)
             )) return false;
             args[i] = p+"";
         }

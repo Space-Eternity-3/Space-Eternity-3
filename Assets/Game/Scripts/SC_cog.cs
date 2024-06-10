@@ -4,26 +4,20 @@ using UnityEngine;
 
 public class SC_cog : MonoBehaviour
 {
+    public Transform Hold;
     public Transform Body;
-    public int DeltaRot;
     public SC_fobs SC_fobs;
+    public SC_control SC_control;
 
-    bool started = false;
-    int rot = 0;
-
-    void FixedUpdate()
+    void Update()
     {
-        if(!started)
+        if(SC_fobs.index % 2 == 0)
         {
-            if(SC_fobs.index % 2 == 0)
-            {
-                rot += 15;
-                DeltaRot *= -1;
-            }
-            started = true;
+            Body.localRotation = Quaternion.Euler(0,-SC_control.cog_global_rot,0);
         }
-        rot += DeltaRot;
-        rot %= 360;
-        Body.localRotation = Quaternion.Euler(0,rot,0);
+        else
+        {
+            Body.localRotation = Quaternion.Euler(0,SC_control.cog_global_rot+15f,0);
+        }
     }
 }

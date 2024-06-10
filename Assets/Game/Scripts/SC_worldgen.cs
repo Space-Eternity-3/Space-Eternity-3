@@ -111,7 +111,8 @@ public static class WorldData
                     if(Parsing.IntC(s_gens[i])) gens[i] = Parsing.IntU(s_gens[i]);
             }
             
-            //Generate type and fobs
+            //Generate type and fobs & T-base proof
+            int T_bases = 0;
             UpdateType(type);
             for(i=1;i<=size*2;i++)
             {
@@ -119,6 +120,18 @@ public static class WorldData
                 if(gen==-1) gen = Deterministics.CalculateFromString(SC_data.FobGenerate[type], 20*((ulam_hold + Generator.seed) % 1000000)+i);
                 dont_update_bosbul = true;
                 UpdateFob(i,gen);
+                if(gen==81) T_bases++;
+            }
+            if(T_bases==0)
+            {
+                string[] fob_gens = SC_data.FobGenerate[type].Split(";");
+                for(i=0;3*i<fob_gens.Length;i++) if(fob_gens[3*i]=="81")
+                {
+                    int I = Deterministics.Random10e2((ulam_hold + Generator.seed) % 1000000) % (size*2) + 1;
+                    dont_update_bosbul = true;
+                    UpdateFob(I,81);
+                    break;
+                }
             }
 
             Bosbul.UpdateFobColliders(ulam_hold);

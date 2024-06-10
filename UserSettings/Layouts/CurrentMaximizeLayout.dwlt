@@ -24,7 +24,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 18825
+  controlID: 125
 --- !u!114 &2
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -152,7 +152,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 18770
+  controlID: 71
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -177,7 +177,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 18746
+  controlID: 60
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -197,8 +197,8 @@ MonoBehaviour:
     y: 0
     width: 351
     height: 646
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 6}
   m_Panes:
   - {fileID: 6}
@@ -246,7 +246,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: b428e7ffb628e7ffb828e7ffe8faffffd8620000206f0000d66f0000567400008e7a0000cc7a0000e07a0000ac7b0000a87c0000
+      m_ExpandedIDs: 1840f5ffd8f6f6ff88b0feffe8faffffc86a0000b06d00002c6e0000f6770000ce7800008a7a00007c8200007a870000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -822,9 +822,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 56.88045, y: -3.7963307, z: 410.02527}
+    m_Target: {x: 72.501495, y: 2.6465163, z: 413.42072}
     speed: 2
-    m_Value: {x: 56.88045, y: -3.7963307, z: 410.02527}
+    m_Value: {x: 72.501495, y: 2.6465163, z: 413.42072}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -870,13 +870,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.17630737, y: -0.030414036, z: 0.005458871, w: -0.98390734}
+    m_Target: {x: -0.043770716, y: -0.036866177, z: 0.0015681295, w: -0.9984399}
     speed: 2
-    m_Value: {x: -0.17629743, y: -0.03041232, z: 0.005458563, w: -0.98385185}
+    m_Value: {x: -0.04376722, y: -0.036863234, z: 0.0015680043, w: -0.99836016}
   m_Size:
-    m_Target: 8.890471
+    m_Target: 4.4171405
     speed: 2
-    m_Value: 8.890471
+    m_Value: 4.4171405
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -926,8 +926,8 @@ MonoBehaviour:
     y: 646
     width: 1438
     height: 293
-  m_MinSize: {x: 230, y: 250}
-  m_MaxSize: {x: 10000, y: 10000}
+  m_MinSize: {x: 231, y: 271}
+  m_MaxSize: {x: 10001, y: 10021}
   m_ActualView: {fileID: 10}
   m_Panes:
   - {fileID: 10}
@@ -982,7 +982,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Game/Materials1/Fob15
+    - Assets/Game/Materials1
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -992,16 +992,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Game/Materials1/Fob15
+  - Assets/Game/Materials1
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\lenovo\Documents\GitHub\Space-Eternity-3
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 95}
-    m_SelectedIDs: 62a20000
-    m_LastClickedID: 41570
-    m_ExpandedIDs: 00000000dca1000032a2000056a2000000ca9a3bffffff7f
+    m_SelectedIDs: b6a20000
+    m_LastClickedID: 41654
+    m_ExpandedIDs: 000000003ca2000092a2000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1030,7 +1030,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000dca1000000ca9a3bffffff7f
+    m_ExpandedIDs: 000000003ca20000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1056,8 +1056,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 7acd0c00
-    m_LastClickedInstanceID: 839034
+    m_SelectedInstanceIDs: ccff0300
+    m_LastClickedInstanceID: 262092
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000f281000000000000
     m_RenameOverlay:
@@ -1194,7 +1194,7 @@ MonoBehaviour:
     m_CachedPref: 160
     m_ControlHash: -371814159
     m_PrefName: Preview_InspectorPreview
-  m_LastInspectedObjectInstanceID: 839034
+  m_LastInspectedObjectInstanceID: 262092
   m_LastVerticalScrollValue: 0
   m_GlobalObjectId: 
   m_InspectorMode: 0

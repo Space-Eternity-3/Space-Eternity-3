@@ -197,6 +197,7 @@ public class SC_control : MonoBehaviour {
 	string RPU = "XXX";
 	public string RespawnDelay = "";
 	int MTPloadedCounter=0;
+	public int cog_global_rot = 0;
 	
 	public bool impulse_enabled;
 	public int impulse_time;
@@ -958,6 +959,7 @@ public class SC_control : MonoBehaviour {
 		if(saveCo>0) saveCo--;
 		if(shield_time>0) shield_time--;
 		if(time_from_last_green<10000) time_from_last_green++;
+		cog_global_rot += 3; cog_global_rot %= 360;
 
 		impulse_time--;
 		if(impulse_time==1) RemoveImpulse();
