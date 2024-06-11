@@ -1366,6 +1366,8 @@ class WorldData
                 d_dont_update_bosbul = true;
                 WorldData.UpdateFob(i,gen);
             }
+
+            Bosbul.UpdateFobColliders(d_ulam);
         }
     }
     
