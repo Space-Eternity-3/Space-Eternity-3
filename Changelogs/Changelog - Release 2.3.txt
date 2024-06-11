@@ -53,7 +53,6 @@ Bug fixes:
 - Error texture in storages was magnetic alien instead of particle texture.
 - Respawn had a broken behaviour while holding mouse both over UI and over it.
 - It was possible to highlight storages and even activate a boss while not alive.
-- Bosbul on multiplayer wasn't updating after generation of a new asteroid.
 
 Update to page:
 
