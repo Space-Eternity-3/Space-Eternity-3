@@ -37,6 +37,9 @@ public class SC_fobs : MonoBehaviour
     public int GeyzerTime=0;
     public int inGeyzer=0;
 
+    public int ActivatorType = 0;
+    public Transform[] ActivatorObjects;
+
     public SC_control SC_control;
     public SC_asteroid SC_asteroid;
     public SC_backpack SC_backpack;

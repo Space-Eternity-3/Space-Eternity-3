@@ -24,6 +24,7 @@ public class SC_factory_move : MonoBehaviour
             factory.localScale = transform.localScale / 2f;
             factory.localScale = new Vector3(factory.localScale.x,factory.localScale.y,factory.localScale.z*0.8f);
             factory.GetComponent<Renderer>().material = transform.GetComponent<Renderer>().material;
+            factory.rotation = Quaternion.Euler(0f,0f,factory.eulerAngles.z + UnityEngine.Random.Range(0,6)*60f);
             factory.SetParent(transform,true);
 
             if(!transform.GetComponent<SphereCollider>().enabled)
