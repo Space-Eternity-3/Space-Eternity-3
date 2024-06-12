@@ -37,6 +37,7 @@ sysinfo.txt
 *.apk
 *.unitypackage
 ServerReady/ServerUniverse/
+ServerReady/node_modules/
 ServerReady/config.json
 ServerReady/authConfig.json
 ServerReady/Datapack.jse3
