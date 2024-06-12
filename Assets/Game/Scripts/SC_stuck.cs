@@ -36,4 +36,9 @@ public class SC_stuck : MonoBehaviour
 
         in_collider = false;
     }
+    void Start()
+    {
+        if(!transform.parent.GetComponent<SphereCollider>().enabled)
+            Destroy(gameObject);
+    }
 }

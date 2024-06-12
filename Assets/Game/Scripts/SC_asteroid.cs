@@ -21,7 +21,7 @@ public class SC_asteroid : MonoBehaviour
 	public bool UUTCed=false;
 	public string generation_code="";
 	public float upg3down, upg3up, upg3hugity;
-	int type=0, size;
+	public int type=0, size;
 	public bool temporary_blocker = false;
 	
 	//Seon asteroid data holders
@@ -194,6 +194,8 @@ public class SC_asteroid : MonoBehaviour
 			}
 		}
 		SC_object_holder.scaling_blocker--;
+
+		transform.GetComponent<SC_factory_move>().CreateFactoryIfPossible();
 	}
 	public int SetLoot(int typp)
 	{
