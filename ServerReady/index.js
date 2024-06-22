@@ -1358,7 +1358,7 @@ class WorldData
             }
             
             //Generate type and fobs & T-base proof
-            let T_bases = 0;
+            let T_bases = 0, D_bases = 0;
             WorldData.UpdateType(type);
             for(i=1;i<=size*2;i++)
             {
@@ -1367,6 +1367,7 @@ class WorldData
                 d_dont_update_bosbul = true;
                 WorldData.UpdateFob(i,gen);
                 if(gen==81) T_bases++;
+                if(gen==82) D_bases++;
             }
             if(T_bases==0)
             {
@@ -1377,6 +1378,20 @@ class WorldData
                     d_dont_update_bosbul = true;
                     WorldData.UpdateFob(I,81);
                     break;
+                }
+            }
+
+            //D-base diamond probability
+            for(i=1;i<=size*2;i++)
+            {
+                if(D_bases <= 1) break;
+                if(WorldData.GetFob(i)==82)
+                {
+                    let diamonded_chance = 0.2;
+                    if((Deterministics.Random10e4((d_ulam + Generator.seed + 153*i) % 1000000) + 1) / 10000 <= diamonded_chance) {
+                        WorldData.UpdateNbt(i,0,1);
+                        D_bases--;
+                    }
                 }
             }
 
@@ -2914,7 +2929,7 @@ function GetReducedState(scr)
 
 //HUB INTERVAL <interval #0>
 var date_before = Date.now();
-var date_start = Date.now();
+var date_start = date_before;
 var time_loan = 0;
 setInterval(function () { // <interval #2>
   while(Date.now() > date_before)
@@ -5520,6 +5535,64 @@ wss.on("connection", function connection(ws,req)
           " X " + plr.livID[fPlayerID]
       );
       sendTo(ws,"/RetFobsPing "+arg[1]+";"+arg[2]+";"+arg[3]+" X X");
+    }
+    if (arg[0] == "/DiamondPlaceTry") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[Slot]
+    {
+      if(!plr.pclass[arg[1]].PeriodicInsert("fob_modify")) {kick(arg[1]); return;}
+      if(!FilterArgs(arg,["PlaID","ulam","place","Slot"])) return;
+      var overolded = (arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1]));
+
+      var fPlayerID = arg[1];
+      var fUlamID = arg[2];
+      var fPlaceID = arg[3];
+      var fDropID = "33";
+      var fCount = "-1";
+      var fSlot = arg[4];
+
+      var ppos; if(!overolded) ppos = getPlayerPosition(arg[1]);
+      WorldData.Load(Parsing.IntU(fUlamID));
+      if(WorldData.GetFob(Parsing.IntU(fPlaceID)+1)==82 && WorldData.GetNbt(Parsing.IntU(fPlaceID)+1,0)!=1 && !overolded)
+      if(AsteroidPresency(fUlamID,new Vector3(Parsing.FloatU(ppos[0]),Parsing.FloatU(ppos[1]),0)))
+      {
+        if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
+        {
+          WorldData.UpdateNbt(Parsing.IntU(fPlaceID)+1,0,1);
+          sendToAllPlayers(
+            "/RetSolidNbt " +
+              fUlamID + " " +
+              fPlaceID + " " +
+              nbt(fUlamID,fPlaceID) +
+              " X X"
+          );
+          sendTo(ws,
+            "/RetInventory " +
+              fPlayerID + " " +
+              fDropID + " 0 " +
+              fSlot + " " +
+              -fCount +
+              " X " + plr.livID[fPlayerID]
+          );
+          return;
+        }
+        else {kick(fPlayerID); return;}
+      }
+
+      sendTo(ws,
+        "/RetSolidNbt " +
+          fUlamID + " " +
+          fPlaceID + " " +
+          nbt(fUlamID,fPlaceID) +
+          " X X"
+      );
+      sendTo(ws,
+        "/RetInventory " +
+          fPlayerID + " " +
+          fDropID + " " +
+          -fCount + " " +
+          fSlot + " " +
+          fCount +
+          " X " + plr.livID[fPlayerID]
+      );
     }
     if (arg[0] == "/BulletSend") // 1[PlayerID] 2[type] 3,4[vector] 5[ID] 6[BulletSource] 7[Slot] 8,9[position]
     {

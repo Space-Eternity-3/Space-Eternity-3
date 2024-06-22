@@ -60,7 +60,7 @@ public class SC_fobs : MonoBehaviour
     int id21, count21;
     bool cursed=false;
     bool emptyShow=false; int onu=2;
-    bool multiplayer=false;
+    public bool multiplayer=false;
     string potFob21Name="0;0;";
     public int MTPblocker = 0;
     Transform mainWind;
@@ -69,6 +69,9 @@ public class SC_fobs : MonoBehaviour
     public int lsid;
     public bool lsb;
     bool started = false;
+
+    public int new_nbt_get_1 = 0;
+    public int new_nbt_get_2 = 0;
 
     bool localRendererMem = true; //Local temp variable
     bool localRendererMem2 = true; //Memory of renderer state
@@ -86,7 +89,7 @@ public class SC_fobs : MonoBehaviour
         }
         return true;
     }
-    string getLoot(string str)
+    public string getLoot(string str)
     {
         try {
             int[] marray = new int[5];
@@ -183,6 +186,18 @@ public class SC_fobs : MonoBehaviour
         if(arg[1]==(SC_control.connectionID+";"+ID+";"+index))
         {
             MTPblocker--;
+            return true;
+        }
+        if(arg[0]=="/RetSolidNbt")
+        if((arg[1]==ID+"") && (arg[2]==index+""))
+        {
+            UnityEngine.Debug.Log(eData);
+            int l_nbt1 = Parsing.IntU(arg[3].Split(';')[0]);
+            int l_nbt2 = Parsing.IntU(arg[3].Split(';')[1]);
+            if(ObjID==82)
+            {
+                transform.GetComponent<SC_dbase>().nbt1 = l_nbt1;
+            }
             return true;
         }
         return false;
@@ -364,6 +379,9 @@ public class SC_fobs : MonoBehaviour
             }
             else GrowTimeLeft=99999999;
         }
+
+        if(ObjID==82 && !mother)
+            transform.GetComponent<SC_dbase>().DiamondStateLoad();
     }
     void Update()
     {
@@ -487,12 +505,6 @@ public class SC_fobs : MonoBehaviour
         }
         return true;
     }
-    float safeDistance(int id)
-    {
-        if(id==0) return 100000f; //ERROR
-        if(id==2||id==21||id==29) return 2f; //BIGGER OBJECT
-        return 2f; //DEFAULT
-    }
     public bool IsTransitionBlocked()
     {
         return (asst.temporary_blocker);
@@ -509,9 +521,7 @@ public class SC_fobs : MonoBehaviour
 
 		if(SC_control.impulse_enabled) return;
 
-        float sdst = safeDistance(SC_slots.SelectedItem());
-
-        if(IsEmpty&&Communtron3.position.y==0f&&InDistance(15f)&&distance>=sdst&&topDistance(sdst)&&!Input.GetMouseButton(0)&&Communtron2.position.x==0f&&
+        if(IsEmpty&&Communtron3.position.y==0f&&InDistance(15f)&&distance>=2f&&topDistance(2f)&&!Input.GetMouseButton(0)&&Communtron2.position.x==0f&&
         CanBePlaced(SC_slots.SelectedItem())&&MTPblocker<=0)
         {
             if(!Input.GetMouseButton(1)&&emptyShow)
@@ -641,7 +651,7 @@ public class SC_fobs : MonoBehaviour
         float[] vrot = SC_fun.RotateVector(0f,constant_delta,transform.eulerAngles.z);
         return transform.position + new Vector3(vrot[0],vrot[1],0f);
     }
-    bool InDistance(float dist)
+    public bool InDistance(float dist)
 	{
         if(!SC_control.living) return false;
 

@@ -9,6 +9,10 @@ public class SC_collider_counter : MonoBehaviour
     {
         age = 0;
     }
+    void OnDisable()
+    {
+        age = 0;
+    }
     void FixedUpdate()
     {
         age++;

@@ -1,30 +1,29 @@
 New features:
 
+- Added new biome: Copper Facilities
 - Added shield potion, which makes you immune to all damage for 2.5s. Obtainable from copper facility treasures.
 - Added copper cogs.
 - Added small copper chimneys.
 - Added copper chimneys.
-
-- SOON: generator asteroid + treasure creation
-- SOON: copper facilities
-
-Hidden features (only in datapacks):
-
 - Added bedrock cogs.
 - Added micro bedrock chimneys.
+- Added factory asteroid, which generates on copper facilities.
+- Added treasure base, which collects treasures generated in factory.
+- Added diamond base, which boosts factory efficiency when activated with a diamond.
 
 Old feature changes:
 
 - Resurrecting aliens through crafting is no longer possible.
 - Copper chimneys now drop 5 small copper chimneys when broken.
 - Copper chimneys and small copper chimneys have a bigger pick up range from now.
+- Treasures have a larger mouse collider from now.
 
 Artistic changes:
 
 - Rocket nose will no longer be highlighted when cursor is over fob.
 - Copper asteroid can have both rectangular and triangular texture and it's more metalic from now.
 - Copper stone and packed copper meterials have changed a bit.
-- Artefact fob light sphere will now be positioned properly relative to the camera.
+- Artefact fob light sphere will now be positioned properly relatively to the camera.
 - Artefact base material changed to be more metalic.
 
 UI changes:
@@ -53,6 +52,7 @@ Bug fixes:
 - Error texture in storages was magnetic alien instead of particle texture.
 - Respawn had a broken behaviour while holding mouse both over UI and over it.
 - It was possible to highlight storages and even activate a boss while not alive.
+- Server could rarely enter the broken loop state on its start, which was causing majority of the update code to not execute.
 
 Update to page:
 

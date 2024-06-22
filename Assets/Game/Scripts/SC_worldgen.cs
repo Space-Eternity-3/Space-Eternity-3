@@ -112,7 +112,7 @@ public static class WorldData
             }
             
             //Generate type and fobs & T-base proof
-            int T_bases = 0;
+            int T_bases = 0, D_bases = 0;
             UpdateType(type);
             for(i=1;i<=size*2;i++)
             {
@@ -121,6 +121,7 @@ public static class WorldData
                 dont_update_bosbul = true;
                 UpdateFob(i,gen);
                 if(gen==81) T_bases++;
+                if(gen==82) D_bases++;
             }
             if(T_bases==0)
             {
@@ -131,6 +132,20 @@ public static class WorldData
                     dont_update_bosbul = true;
                     UpdateFob(I,81);
                     break;
+                }
+            }
+
+            //D-base diamond probability
+            for(i=1;i<=size*2;i++)
+            {
+                if(D_bases <= 1) break;
+                if(WorldData.GetFob(i)==82)
+                {
+                    float diamonded_chance = 0.2f;
+                    if((Deterministics.Random10e4((ulam_hold + Generator.seed + 153*i) % 1000000) + 1) / 10000f <= diamonded_chance) {
+                        WorldData.UpdateNbt(i,0,1);
+                        D_bases--;
+                    }
                 }
             }
 

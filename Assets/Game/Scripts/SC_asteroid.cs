@@ -102,11 +102,11 @@ public class SC_asteroid : MonoBehaviour
 				}catch(Exception) {
 					objectID[i] = 72;
 				}
-				
+
 				try{
 					objectData[i]=arg[3+i];
 				}catch(Exception) {
-					if(objectID[i]==21||objectID[i]==2||objectID[i]==52) objectData[i] = "0;0";
+					objectData[i] = "0;0";
 				}
 			}
 			UUTC();
@@ -181,6 +181,10 @@ public class SC_asteroid : MonoBehaviour
 					gobT = Instantiate(SC_fun.GenPlaceM[tud*3+rand],rotation_place,quat_angle);
 				}
 				gobT.transform.parent = gameObject.transform;
+				if((int)Communtron4.position.y==100) {
+					gobT.GetComponent<SC_fobs>().new_nbt_get_1 = Parsing.IntU(objectData[i].Split(';')[0]);
+					gobT.GetComponent<SC_fobs>().new_nbt_get_2 = Parsing.IntU(objectData[i].Split(';')[1]);
+				}
 				gobT.GetComponent<SC_fobs>().index = i;
 				SC_diode dio = gobT.GetComponent<SC_fobs>().SC_diode;
 				if(dio!=null) dio.randomize_start = true;

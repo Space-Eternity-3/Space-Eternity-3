@@ -2048,6 +2048,7 @@ public class SC_control : MonoBehaviour {
 		arg[0]=="/RetFobsDataCorrection"||
 		arg[0]=="/RetGeyzerTurn"||
 		arg[0]=="/RetGrowNow"||
+		arg[0]=="/RetSolidNbt"||
 		arg[0]=="/RetFobsTurn"||
 		arg[0]=="/RetFobsPing")
 		{
