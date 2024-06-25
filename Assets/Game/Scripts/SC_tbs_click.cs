@@ -10,11 +10,39 @@ public class SC_tbs_click : MonoBehaviour
     public SC_data SC_data;
     public SC_slots SC_slots;
 
-    public int TreasureID = 0;
+    public int TreasureID = -1;
 
+    public static int FindTreasureInLocation(List<string> treasureStrings, int locationId)
+    {
+        for (int i = 0; i < treasureStrings.Count; i++)
+        {
+            string treasureString = treasureStrings[i];
+            string[] parts = treasureString.Split('+');
+
+            if(parts.Length < 2) continue;
+
+            string locationFragment = parts[1];
+            string[] locationIds = locationFragment.Split('-');
+
+            foreach (string id in locationIds)
+            {
+                if(id==locationId+"")
+                    return i;
+            }
+        }
+        return -1;
+    }
+    void Start()
+    {
+        if(transform.position.z < 100f)
+        TreasureID = FindTreasureInLocation(
+            new List<string> { SC_data.Gameplay[105], SC_data.Gameplay[106], SC_data.Gameplay[125], SC_data.Gameplay[126], SC_data.Gameplay[127] },
+            SC_fobs.transform.parent.GetComponent<SC_asteroid>().type % 16
+        );
+    }
     void OnMouseOver()
     {
-        if(SC_fobs.InDistance(15f) && SC_fobs.Communtron1.position.z==0f && SC_tbase.diode_mode==5)
+        if(SC_fobs.InDistance(15f) && SC_fobs.Communtron1.position.z==0f && SC_tbase.nbt1==5)
         {
             if(Input.GetMouseButtonDown(0) && SC_fobs.Communtron2.position.x==0f && SC_fobs.Communtron3.position.y==0f)
             {
@@ -52,11 +80,7 @@ public class SC_tbs_click : MonoBehaviour
                     
                         int slot = SC_slots.InvChange(ldI,ldC,true,true,false);
 
-                        if(SC_fobs.multiplayer)
-                        {
-                            // HERE SEND TREASURE BREAKING MESSAGE TO SERVER
-                        }
-                        SC_tbase.diode_mode = 0;
+                        SC_tbase.BreakTreasure(slot);
                     }
                 }
             }

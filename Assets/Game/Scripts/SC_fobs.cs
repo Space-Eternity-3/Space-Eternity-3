@@ -91,6 +91,7 @@ public class SC_fobs : MonoBehaviour
     }
     public string getLoot(string str)
     {
+        str = str.Split('+')[0];
         try {
             int[] marray = new int[5];
             int i,j,rander=UnityEngine.Random.Range(0,10000);
@@ -191,9 +192,12 @@ public class SC_fobs : MonoBehaviour
         if(arg[0]=="/RetSolidNbt")
         if((arg[1]==ID+"") && (arg[2]==index+""))
         {
-            UnityEngine.Debug.Log(eData);
             int l_nbt1 = Parsing.IntU(arg[3].Split(';')[0]);
             int l_nbt2 = Parsing.IntU(arg[3].Split(';')[1]);
+            if(ObjID==81)
+            {
+                transform.GetComponent<SC_tbase>().nbt1 = l_nbt1;
+            }
             if(ObjID==82)
             {
                 transform.GetComponent<SC_dbase>().nbt1 = l_nbt1;
@@ -379,6 +383,9 @@ public class SC_fobs : MonoBehaviour
             }
             else GrowTimeLeft=99999999;
         }
+
+        if(ObjID==81 && !mother)
+            transform.GetComponent<SC_tbase>().TreasureStateLoad();
 
         if(ObjID==82 && !mother)
             transform.GetComponent<SC_dbase>().DiamondStateLoad();

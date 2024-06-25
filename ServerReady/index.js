@@ -274,6 +274,7 @@ const give_array = [];
 
 function TreasureDrop(str)
 {
+  str = str.split('+')[0];
   try {
       var marray = [];
       var i,j,rander=func.randomInteger(0,9999);
@@ -286,6 +287,25 @@ function TreasureDrop(str)
       }
     } catch { return "8;1"; }
     return "8;1";
+}
+
+function FindTreasureInLocation(treasureStrings, locationId) {
+  for (let i = 0; i < treasureStrings.length; i++) {
+      let treasureString = treasureStrings[i];
+      let parts = treasureString.split('+');
+
+      if (parts.length < 2) continue;
+
+      let locationFragment = parts[1];
+      let locationIds = locationFragment.split('-');
+
+      for (let id of locationIds) {
+          if (id === locationId.toString()) {
+              return i;
+          }
+      }
+  }
+  return -1;
 }
 
 function getAllSuchFiles(folderPath,ext) {
@@ -5577,6 +5597,75 @@ wss.on("connection", function connection(ws,req)
         else {kick(fPlayerID); return;}
       }
 
+      sendTo(ws,
+        "/RetSolidNbt " +
+          fUlamID + " " +
+          fPlaceID + " " +
+          nbt(fUlamID,fPlaceID) +
+          " X X"
+      );
+      sendTo(ws,
+        "/RetInventory " +
+          fPlayerID + " " +
+          fDropID + " " +
+          -fCount + " " +
+          fSlot + " " +
+          fCount +
+          " X " + plr.livID[fPlayerID]
+      );
+    }
+    if (arg[0] == "/TreasurePickUpTry") // 1[PlayerID] 2[UlamID] 3[PlaceID] 4[Slot]
+    {
+      if(!plr.pclass[arg[1]].PeriodicInsert("fob_modify")) {kick(arg[1]); return;}
+      if(!FilterArgs(arg,["PlaID","ulam","place","Slot"])) return;
+      var overolded = (arg[msl-1] != plr.livID[arg[1]] || inHeaven(arg[1]));
+
+      var fPlayerID = arg[1];
+      var fUlamID = arg[2];
+      var fPlaceID = arg[3];
+      var fDropID = "?";
+      var fCount = "?";
+      var fSlot = arg[4];
+
+      WorldData.Load(Parsing.IntU(fUlamID));
+      var tr_type = WorldData.GetType() % 16;
+      var tr_strings = [gameplay[105],gameplay[106],gameplay[125],gameplay[126],gameplay[127]];
+      tr_type = FindTreasureInLocation(tr_strings, tr_type);
+      if(tr_type==-1) {kick(fPlayerID); return;}
+
+      var treTab = plr.pclass[fPlayerID].NextDropsT[tr_type][0].split(";");
+      fDropID = treTab[0];
+      fCount = treTab[1];
+
+      var ppos; if(!overolded) ppos = getPlayerPosition(arg[1]);
+      if(WorldData.GetFob(Parsing.IntU(fPlaceID)+1)==81 && WorldData.GetNbt(Parsing.IntU(fPlaceID)+1,0)==5 && !overolded)
+      if(AsteroidPresency(fUlamID,new Vector3(Parsing.FloatU(ppos[0]),Parsing.FloatU(ppos[1]),0)))
+      {
+        if (invChangeTry(fPlayerID, fDropID, fCount, fSlot))
+        {
+          WorldData.UpdateNbt(Parsing.IntU(fPlaceID)+1,0,0);
+          plr.pclass[fPlayerID].TreasureArrayUpdate(tr_type,true);
+          sendToAllPlayers(
+            "/RetSolidNbt " +
+              fUlamID + " " +
+              fPlaceID + " " +
+              nbt(fUlamID,fPlaceID) +
+              " X X"
+          );
+          sendTo(ws,
+            "/RetInventory " +
+              fPlayerID + " " +
+              fDropID + " 0 " +
+              fSlot + " " +
+              -fCount +
+              " X " + plr.livID[fPlayerID]
+          );
+          return;
+        }
+        else {kick(fPlayerID); return;}
+      }
+
+      plr.pclass[fPlayerID].TreasureArrayUpdate(tr_type,false);
       sendTo(ws,
         "/RetSolidNbt " +
           fUlamID + " " +

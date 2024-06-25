@@ -306,7 +306,7 @@ gameplay
 		5-4-8-8400-9799-
 		33-1-3-9800-9999;
 	metal_treasure_loot:
-		79-1-3-0-9999;
+		79-1-3-0-9999 + 3;
 	soft_treasure_loot:
 		8-1-3-0-9999;
 	hard_treasure_loot:

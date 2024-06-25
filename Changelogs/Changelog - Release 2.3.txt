@@ -44,6 +44,7 @@ Technical changes:
 - Anti-aliasing increased from x4 to x8 on ultra (default) settings.
 - Reworked impulse shield system and added potion shield system.
 - Reworked storage material system to automatically generate item materials.
+- Treasure string format updated to handle treasure bases
 
 Bug fixes:
 
@@ -62,3 +63,4 @@ Update to page:
 - Biome tags: default boss colors reduced
 - Copper asteroid texture add
 - FobGenerate fob81 special generation and function note
+- Treasure string additional rules

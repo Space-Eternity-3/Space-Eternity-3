@@ -32,7 +32,7 @@ public class SC_factory : MonoBehaviour
             if(fob!=null)
             {
                 if(fob.ObjID==81)
-                    if(fob.GetComponent<SC_tbase>().diode_mode != 5)
+                    if(fob.GetComponent<SC_tbase>().nbt1 != 5)
                     {
                         production = true;
                         break;
