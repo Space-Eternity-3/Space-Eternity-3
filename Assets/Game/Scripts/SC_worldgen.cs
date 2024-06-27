@@ -211,6 +211,19 @@ public static class WorldData
         else SC_data.World[a,0,c] = "";
     }
 
+    //Other methods
+    public static int GetCountOf(int data,int nbt1)
+    {
+        int ret_count = 0;
+        for(int i=1;i<=20;i++)
+        {
+            if(GetFob(i) == data)
+            if(GetNbt(i,0) == nbt1 || nbt1 == -1)
+                ret_count++;
+        }
+        return ret_count;
+    }
+
     //Private methods
     private static void ResetNbt(int place) //Resets fob nbt data ("")
     {

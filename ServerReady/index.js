@@ -258,6 +258,7 @@ se3_ws.fill(""); Object.seal(se3_ws);
 se3_wsS.fill(""); Object.seal(se3_wsS);
 
 const MsgMap = new Map();
+let TreasureFrame = 0;
 
 var memTemplate = {
   nicks: "0",
@@ -1477,6 +1478,19 @@ class WorldData
         else chunk_data[d0][d1][0] = "";
     }
 
+    //Other methods
+    static GetCountOf(data,nbt1)
+    {
+        let ret_count = 0;
+        for(let i=1;i<=20;i++)
+        {
+            if(WorldData.GetFob(i) == data)
+            if(WorldData.GetNbt(i,0) == nbt1 || nbt1 == -1)
+                ret_count++;
+        }
+        return ret_count;
+    }
+
     //Private methods
     static ResetNbt(place) //Resets fob nbt data ("")
     {
@@ -2066,13 +2080,37 @@ function CharToNum31(ch)
 
 function replaceCharAtIndex(inputStr, index, newChar) {
   if (index < 0 || index >= inputStr.length) {
-      return inputStr; // Jeśli indeks jest poza zakresem, zwróć oryginalny string
+      return inputStr;
   }
 
   return inputStr.slice(0, index) + newChar + inputStr.slice(index + 1);
 }
 
 //Classes
+class TempInfo { //written by ChatGPT
+  constructor() {
+      this.elements = new Map();
+  }
+  addElement(value, lifespan) {
+      this.elements.set(value, lifespan);
+  }
+  makeTick() {
+      for (let [value, lifespan] of this.elements) {
+          lifespan -= 1;
+          if (lifespan <= 0) {
+              this.elements.delete(value);
+          } else {
+              this.elements.set(value, lifespan);
+          }
+      }
+  }
+  getElements() {
+      return Array.from(this.elements.keys());
+  }
+}
+
+const Fob81Infos = new TempInfo();
+
 class CShooter
 {
   constructor(bul_typ,angl_deg,deviat_deg,precis_deg,rad,ths,alway,freq,activess,cld,otid,slvc) {
@@ -3400,6 +3438,67 @@ setInterval(function () { // <interval #2>
       }
     }
 
+    if((date_before-date_start) % 300 == 0) //precisely 3.(3) times per second, every 15 frames
+    {
+      let infos = Fob81Infos.getElements();
+      var i,lngt = infos.length;
+      var NbtChanges = [];
+
+      TreasureFrame++;
+    
+      if(TreasureFrame % 2 == 0)
+      {
+        //Treasure generating
+        for(i=0;i<lngt;i++)
+        {
+            var uai = infos[i].split(";");
+            WorldData.Load(Parsing.IntU(uai[0]));
+            var diamond_count = WorldData.GetCountOf(82,1);
+            //var diode_probability = (1 + 0.1*diamond_count*(diamond_count+1)) / 31.6;
+            console.log(diamond_count);
+            var diode_probability = 0.3;
+
+            if(func.randomInteger(0,9999) < diode_probability * 10000)
+            {
+                if(WorldData.GetFob(Parsing.IntU(uai[1])+1)==81) //double check if all right
+                {
+                    var loc_dm = WorldData.GetNbt(Parsing.IntU(uai[1])+1,0);
+                    if(loc_dm > 0 && loc_dm < 5)
+                    {
+                        loc_dm++;
+                        NbtChanges.push([uai[0],uai[1],loc_dm].join(";"));
+                        WorldData.UpdateNbt(Parsing.IntU(uai[1])+1,0,loc_dm);
+                    }
+                }
+            }
+        }
+
+        //Treasure generation starting
+        for(i=0;i<lngt;i++)
+        {
+            var uai = infos[i].split(";");
+            WorldData.Load(Parsing.IntU(uai[0]));
+            var bases_count = WorldData.GetCountOf(81,-1);
+            var empty_bases_count = WorldData.GetCountOf(81,0);
+            var done_bases_count = WorldData.GetCountOf(81,5);
+            
+            if(empty_bases_count + done_bases_count == bases_count && empty_bases_count > 0)
+            {
+                var next_place;
+                do { next_place = func.randomInteger(1,20); }
+                while(WorldData.GetFob(next_place) != 81 || WorldData.GetNbt(next_place,0) != 0);
+
+                NbtChanges.push([uai[0],next_place-1,1].join(";"));
+                WorldData.UpdateNbt(next_place,0,1);
+            }
+        }
+      }
+      
+      NbtChanges = NbtChanges.join("|");
+      sendToAllPlayers("/RetTreasureFrame "+TreasureFrame+" "+NbtChanges+" X X");
+      Fob81Infos.makeTick();
+    }
+
     var v2_date_now = Date.now();
     var date_dif = v2_date_now - v1_date_now;
     if(date_dif>15) time_loan += date_dif-15;
@@ -4166,6 +4265,10 @@ function growActive(ulam)
                 drillC.push(tim);
             }
             else drillW[drillT.indexOf(ulam+"w"+i)] = 100;
+        }
+        if(block==81) // Treasure base segment
+        {
+            Fob81Infos.addElement(ulam+";"+i,35);
         }
     }
 }

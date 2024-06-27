@@ -150,6 +150,7 @@ public class SC_control : MonoBehaviour {
 	public SC_difficulty SC_difficulty;
 	public SC_worldgen SC_worldgen;
 	public SC_shield SC_shield;
+	public SC_tb_manager SC_tb_manager;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -2017,6 +2018,11 @@ public class SC_control : MonoBehaviour {
 					break;
 				}
 			}
+		}
+		if(arg[0]=="/RetTreasureFrame")
+		{
+			SC_tb_manager.TreasureFrame = Parsing.IntU(arg[1]);
+			SC_tb_manager.UpdateNbtsFromServer(arg[2]);
 		}
 
 		//Other scripts

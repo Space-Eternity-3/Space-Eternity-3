@@ -83,7 +83,6 @@ public class SC_tbase : MonoBehaviour
     public void DiodeNextLevel()
     {
         nbt1++;
-        if(!SC_fobs.multiplayer)
-            SaveSGP();
+        SaveSGP();
     }
 }
