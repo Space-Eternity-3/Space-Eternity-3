@@ -226,7 +226,7 @@ var seed;
 var biome_memories = new Array(16000).fill("");
 var biome_memories_state = new Array(16000).fill(0);
 var hourHeader = "";
-var gpl_number = 130;
+var gpl_number = 133;
 var max_players = 10;
 var verF;
 var connectionAddress = "IP or DNS + port";
@@ -1408,7 +1408,7 @@ class WorldData
                 if(D_bases <= 1) break;
                 if(WorldData.GetFob(i)==82)
                 {
-                    let diamonded_chance = 0.2;
+                    let diamonded_chance = Parsing.FloatU(gameplay[132]);
                     if((Deterministics.Random10e4((d_ulam + Generator.seed + 153*i) % 1000000) + 1) / 10000 <= diamonded_chance) {
                         WorldData.UpdateNbt(i,0,1);
                         D_bases--;
@@ -3454,9 +3454,7 @@ setInterval(function () { // <interval #2>
             var uai = infos[i].split(";");
             WorldData.Load(Parsing.IntU(uai[0]));
             var diamond_count = WorldData.GetCountOf(82,1);
-            //var diode_probability = (1 + 0.1*diamond_count*(diamond_count+1)) / 31.6;
-            console.log(diamond_count);
-            var diode_probability = 0.3;
+            var diode_probability = Math.pow(Parsing.FloatU(gameplay[131]),diamond_count) * Parsing.FloatU(gameplay[130]);
 
             if(func.randomInteger(0,9999) < diode_probability * 10000)
             {

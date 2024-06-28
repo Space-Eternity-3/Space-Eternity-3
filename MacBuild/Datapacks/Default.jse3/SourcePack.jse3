@@ -184,17 +184,17 @@ gameplay
 	amethyst_grow_time_max: 180;
 	magnetic_alien_grow_time: 3;
 
+	<FACTORY>
+	factory_default_diode_chance: 0,03165;
+	factory_diamond_modifier: 1,35;
+	active_diamond_base_chance: 0,2;
+
 	<UPGRADES>
-	upg_1_item: 10;
-    upg_1_cost: 5;
-    upg_2_item: 10;
-    upg_2_cost: 10;
-    upg_3_item: 10;
-    upg_3_cost: 15;
-    upg_4_item: 10;
-    upg_4_cost: 20;
-    upg_5_item: 10;
-    upg_5_cost: 25;
+	upg_1_item: 10; upg_1_cost: 5;
+    upg_2_item: 10; upg_2_cost: 10;
+    upg_3_item: 10; upg_3_cost: 15;
+    upg_4_item: 10; upg_4_cost: 20;
+    upg_5_item: 10;	upg_5_cost: 25;
 	
 	<ARTEFACTS>
 	at_protection_health_level_add: 2,272;

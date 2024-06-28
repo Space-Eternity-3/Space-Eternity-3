@@ -141,7 +141,7 @@ public static class WorldData
                 if(D_bases <= 1) break;
                 if(WorldData.GetFob(i)==82)
                 {
-                    float diamonded_chance = 0.2f;
+                    float diamonded_chance = Parsing.FloatU(SC_data.Gameplay[132]);
                     if((Deterministics.Random10e4((ulam_hold + Generator.seed + 153*i) % 1000000) + 1) / 10000f <= diamonded_chance) {
                         WorldData.UpdateNbt(i,0,1);
                         D_bases--;

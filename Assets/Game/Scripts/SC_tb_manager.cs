@@ -5,6 +5,7 @@ using UnityEngine;
 public class SC_tb_manager : MonoBehaviour
 {
     public SC_control SC_control;
+    public SC_data SC_data;
     public Transform Communtron4;
     public int TreasureFrame = 0;
     int sgp_counter = 0;
@@ -31,9 +32,7 @@ public class SC_tb_manager : MonoBehaviour
                         {
                             WorldData.Load(fob.X,fob.Y);
                             int diamond_count = WorldData.GetCountOf(82,1);
-                            //float diode_probability = (1f + 0.1f*diamond_count*(diamond_count+1)) / 31.6f;
-                            UnityEngine.Debug.Log(diamond_count);
-                            float diode_probability = 1f;
+                            float diode_probability = Mathf.Pow(Parsing.FloatU(SC_data.Gameplay[131]),diamond_count) * Parsing.FloatU(SC_data.Gameplay[130]);
 
                             if(UnityEngine.Random.Range(0,10000) < diode_probability * 10000f)
                             {
