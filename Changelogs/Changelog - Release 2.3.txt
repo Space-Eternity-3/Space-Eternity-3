@@ -67,3 +67,4 @@ Update to page:
 - Copper asteroid texture add
 - FobGenerate fob81 special generation and function note
 - Treasure string additional rules
+- Broken summon object list :(

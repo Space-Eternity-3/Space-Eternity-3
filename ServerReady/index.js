@@ -1709,6 +1709,10 @@ class CBosbulCollider
       if ([21, 52].includes(num)) { RX = 1.4; RY = 2.4; OF = 1; } // storages
       if ([15].includes(num)) { RX = 1.8; RY = 8; OF = 3.7; } // copper chimney
       if ([76].includes(num)) { RX = 1.4; RY = 4; OF = 1.6; } // small copper chimney
+      if ([84].includes(num)) { RX = 1.4; RY = 2.2; OF = 1; } // micro bedrock chimney
+      if ([80,83].includes(num)) { RX = 1.4; RY = 1.4; OF = 0; } // cogs
+      if ([81].includes(num)) { RX = 1.8; RY = 1.5; OF = 0; } // treasure base (only empty, purposeful)
+      if ([82].includes(num)) { RX = 1.4; RY = 1.7; OF = 0; } // diamond base (only empty, purposeful)
 
       const dXY = func.RotatePoint([0, OF], this.ColliderDefault.angle);
 

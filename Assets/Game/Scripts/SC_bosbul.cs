@@ -191,6 +191,10 @@ public class CBosbulCollider
         if((new List<int>{21,52}).Contains(num))    { RX = 1.4f; RY = 2.4f; OF = 1f; } // storages
         if((new List<int>{15}).Contains(num))       { RX = 1.8f; RY = 8f; OF = 3.7f; } // copper chimney
         if((new List<int>{76}).Contains(num))       { RX = 1.4f; RY = 4f; OF = 1.6f; } // small copper chimney
+        if((new List<int>{84}).Contains(num))       { RX = 1.4f; RY = 2.2f; OF = 1f; } // micro bedrock chimney
+        if((new List<int>{80,83}).Contains(num))    { RX = 1.4f; RY = 1.4f; OF = 0f; } // cogs
+        if((new List<int>{81}).Contains(num))       { RX = 1.8f; RY = 1.5f; OF = 0f; } // treasure base (only empty, purposeful)
+        if((new List<int>{82}).Contains(num))       { RX = 1.4f; RY = 1.7f; OF = 0f; } // diamond base (only empty, purposeful)
 
         float[] dXY = SC_fun.RotateVector(0f,OF,ColliderDefault.angle);
 
