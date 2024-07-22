@@ -1499,12 +1499,14 @@ public class SC_control : MonoBehaviour {
 
 		float minimal = Parsing.FloatE(SC_data.Gameplay[6]); 
 		float multiplier = Parsing.FloatE(SC_data.Gameplay[7]);
+		SC_collider_counter cct = collision.gameObject.GetComponent<SC_collider_counter>();
+		if(cct==null) return;
 		if(
 			collision_cooldown <= 0 &&
 			collision.impulse.magnitude > minimal &&
 			collision.relativeVelocity.magnitude > minimal &&
 			Pitagoras(MovementSum())/10f > minimal &&
-			collision.gameObject.GetComponent<SC_collider_counter>().age > 10
+			cct.age > 10
 		){
 			collision_cooldown = 20;
 			float crash_size = collision.impulse.magnitude - minimal + 3f;

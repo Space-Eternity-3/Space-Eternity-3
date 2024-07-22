@@ -176,7 +176,7 @@ public class CBosbulCollider
         if((new List<int>{23,53}).Contains(num))    { RX = 1.4f; RY = 3f; OF = 0.5f; } // bigger aliens
         if((new List<int>{1}).Contains(num))        { RX = 1.15f; RY = 1.5f; OF = 0f; } // stone with crystals
         if((new List<int>{34,36}).Contains(num))    { RX = 0.4f; RY = 2.3f; OF = 0.5f; } // drills
-        if((new List<int>{35,77}).Contains(num))    { RX = 0.5f; RY = 3f; OF = 0.5f; } // magnetic lamp & copper diode
+        if((new List<int>{35,77,85}).Contains(num))    { RX = 0.5f; RY = 3f; OF = 0.5f; } // magnetic lamp & copper diodes
         if((new List<int>{54}).Contains(num))       { RX = 1f; RY = 2.2f; OF = 0.5f; } // bone
         if((new List<int>{51}).Contains(num))       { RX = 1.4f; RY = 2f; OF = 0.5f; } // metal piece
         if((new List<int>{29,69}).Contains(num))    { RX = 1.4f; RY = 3.6f; OF = 1f; } // tombs

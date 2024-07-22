@@ -10,6 +10,7 @@ New features:
 - Added factory asteroid, which generates on copper facilities.
 - Added treasure base, which collects treasures generated in factory.
 - Added diamond base, which boosts factory efficiency when activated with a diamond.
+- Added supreme white diode, the rarest fob in the entire game with only 0.2% drop rate from copper facility treasures.
 
 Old feature changes:
 
@@ -40,7 +41,16 @@ Configurables:
   - factory_diamond_modifier: 1,35;
   - active_diamond_base_chance: 0,2;
 - Default boss colors moved from Unity to datapack like it is with biomes.
-- Craftings changed a bit, check in game for details
+- Craftings changed a bit, check in game for details.
+- Treasure loottable has been modified, for example:
+  - Unstable matter no longer generates on dark cementeries.
+  - Diamonds can now be found everywhere with the highest chance on dark cementeries.
+- Metal treasure has an assigned loottable for copper facilities from now.
+- Chances for cementeries, dark cementeries and coppper facilities (treasure biomes) changed:
+  - Cementeries: 2.7% -> 2.5%
+  - Dark cementeries: 1.3% -> 1.5%
+  - Copper facilities: 0% -> 2%
+  - All treasure biomes: 4% -> 6%
 
 Technical changes:
 
@@ -62,7 +72,7 @@ Update to page:
 
 - New items: How To Play, Game Data
 - Copper Facilities: How To Play
-- Gameplay: new variables
+- Gameplay: new variables, default metal treasure
 - Biome tags: default boss colors reduced
 - Copper asteroid texture add
 - FobGenerate fob81 special generation and function note

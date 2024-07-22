@@ -7,10 +7,16 @@ public class SC_factory : MonoBehaviour
     public GameObject Off, On;
     public SC_cog[] LocalCogs;
     public SC_particle_transition[] LocalParticles;
+    public SC_pulse SC_pulse; //locally set
+    public Transform UpgradeParticles;
+    public float BaseSimulationSpeed = 2.5f;
     public int internal_rotation_delta = 0;
     public bool mother;
 
     bool production = false;
+    int diamonds_before = -1;
+
+    public SC_data SC_data;
 
     void Start()
     {
@@ -40,6 +46,14 @@ public class SC_factory : MonoBehaviour
             }
         }
         SetActivation(production);
+
+        int diamonds_now = CountVisualDiamonds();
+        if(diamonds_before != -1 && diamonds_before < diamonds_now) {
+            //Transform prt = Instantiate(UpgradeParticles,transform.position,Quaternion.identity);
+            //prt.SetParent(transform,true);
+            SC_pulse.MakePulse();
+        }
+        diamonds_before = diamonds_now;
     }
     void FixedUpdate()
     {
@@ -59,6 +73,8 @@ public class SC_factory : MonoBehaviour
         foreach(SC_particle_transition SC_particle_transition in LocalParticles)
         {
             SC_particle_transition.active = want_true;
+            var ps = SC_particle_transition.GetComponent<ParticleSystem>().main;
+            ps.simulationSpeed = BaseSimulationSpeed * Mathf.Pow(Parsing.FloatU(SC_data.Gameplay[131]),CountVisualDiamonds());
         }
         foreach(Transform trn in transform.parent)
         {
@@ -88,5 +104,19 @@ public class SC_factory : MonoBehaviour
                 }
             }
         }
+    }
+    int CountVisualDiamonds()
+    {
+        int counted = 0;
+        foreach(Transform trn in transform.parent)
+        {
+            SC_fobs fob = trn.GetComponent<SC_fobs>();
+            if(fob!=null)
+            {
+                if(fob.ObjID==82 && trn.GetComponent<SC_dbase>().nbt1==1)
+                    counted++;
+            }
+        }
+        return counted;
     }
 }

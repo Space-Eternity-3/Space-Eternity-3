@@ -1694,7 +1694,7 @@ class CBosbulCollider
       if ([23, 53].includes(num)) { RX = 1.4; RY = 3; OF = 0.5; } // bigger aliens
       if ([1].includes(num)) { RX = 1.15; RY = 1.5; OF = 0; } // stone with crystals
       if ([34, 36].includes(num)) { RX = 0.4; RY = 2.3; OF = 0.5; } // drills
-      if ([35, 77].includes(num)) { RX = 0.5; RY = 3; OF = 0.5; } // magnetic lamp & copper diode
+      if ([35, 77, 85].includes(num)) { RX = 0.5; RY = 3; OF = 0.5; } // magnetic lamp & copper diodes
       if ([54].includes(num)) { RX = 1; RY = 2.2; OF = 0.5; } // bone
       if ([51].includes(num)) { RX = 1.4; RY = 2; OF = 0.5; } // metal piece
       if ([29, 69].includes(num)) { RX = 1.4; RY = 3.6; OF = 1; } // tombs
@@ -6140,7 +6140,8 @@ function FilterArgs(args,formats,include_headers=true)
               (p>=54 && p<=62 && p%2==0) ||
               (p>=64 && p<=70) ||
               (p>=73 && p<=78) ||
-              (p==80)
+              (p==80) ||
+              (p==85)
             )) return false;
             args[i] = p+"";
         }
