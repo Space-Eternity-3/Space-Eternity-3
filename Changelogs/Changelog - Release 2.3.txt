@@ -11,6 +11,7 @@ New features:
 - Added treasure base, which collects treasures generated in factory.
 - Added diamond base, which boosts factory efficiency when activated with a diamond.
 - Added supreme white diode, the rarest fob in the entire game with only 0.2% drop rate from copper facility treasures.
+- Added possibility to customize Unity quality levels in settings (graphics slider).
 
 Old feature changes:
 
@@ -58,6 +59,7 @@ Technical changes:
 - Reworked impulse shield system and added potion shield system.
 - Reworked storage material system to automatically generate item materials.
 - Treasure string format updated to handle treasure bases
+- Settings format changed to fit graphics settings
 
 Bug fixes:
 
@@ -75,10 +77,10 @@ Update to page:
 
 - New items: How To Play, Game Data
 - Copper Facilities: How To Play
+- Changed chances of treasure biomes
 - Gameplay: new variables, default metal treasure
 - Biome tags: default boss colors reduced
 - Copper asteroid texture add
 - FobGenerate fob81 special generation and function note
 - Treasure string additional rules
 - Broken summon object list :(
-- Changed chances of treasure biomes

@@ -82,7 +82,7 @@ craftings
 	}
 	<Category>10
 	{
-		title_image: copper_cog;
+		title_image: copper_chimney;
 		1: packed_copper -> copper_cog(2);
 		2: copper(3) + coal -> copper_diode;
 		3: packed_copper(2) + coal(2) -> small_copper_chimney;
