@@ -126,8 +126,8 @@ public class SC_asteroid : MonoBehaviour
 
 			float alpha=180f/size;
 			try{
-				if(type!=0 && type!=1 && type!=3) asteroidR.material=SC_fun.texture[type];
-				else if(type==0)
+				if(type!=0 && type!=1 && type!=3 && type!=14 && type!=15) asteroidR.material=SC_fun.texture[type];
+				else if(type==0 || type==14)
 				{
 					int rand2=UnityEngine.Random.Range(0,SC_fun.textureStone.Length);
 					asteroidR.material=SC_fun.textureStone[rand2];
@@ -137,7 +137,7 @@ public class SC_asteroid : MonoBehaviour
 					int rand2=UnityEngine.Random.Range(0,SC_fun.textureDark.Length);
 					asteroidR.material=SC_fun.textureDark[rand2];
 				}
-				else if(type==3)
+				else if(type==3 || type==15)
 				{
 					int rand2=UnityEngine.Random.Range(0,SC_fun.textureCopper.Length);
 					asteroidR.material=SC_fun.textureCopper[rand2];

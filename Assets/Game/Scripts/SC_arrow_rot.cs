@@ -31,7 +31,7 @@ public class SC_arrow_rot : MonoBehaviour {
 	{
 		if(this_main) if(SC_data.compass_mode=="1") ChangePosVisible();
 	}
-	void Update()
+	void LateUpdate()
 	{
 		if(this_main) B_Update();
 	}

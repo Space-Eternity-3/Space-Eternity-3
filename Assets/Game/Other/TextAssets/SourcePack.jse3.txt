@@ -510,6 +510,8 @@ game_translate <low-level settings>
 		11: metalic;
 		12: bedrock;
 		13: bone;
+		14: stone_clone;
+		15: copper_clone;
 	}
 	Items_and_objects
 	{

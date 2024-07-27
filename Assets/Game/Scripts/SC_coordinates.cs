@@ -15,7 +15,7 @@ public class SC_coordinates : MonoBehaviour {
 	public Transform infoMTP;
 	public SC_control SC_control;
 
-	void Update()
+	void LateUpdate()
 	{
 		if(!mtp_coords) B_Update();
 	}

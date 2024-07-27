@@ -25,7 +25,7 @@ public class SC_pla_list : MonoBehaviour
     public Transform resp_main;
     public SC_control SC_control;
 
-    void Update()
+    void LateUpdate()
     {
         PageChange(0);
 

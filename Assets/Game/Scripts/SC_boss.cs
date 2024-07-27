@@ -151,6 +151,7 @@ public class SC_boss : MonoBehaviour
     public SC_bars SC_bars;
     public SC_fun SC_fun;
     public SC_behaviour SC_behaviour;
+    public SC_player_follower SC_player_follower; //main player
     
     public CInfo world;
     public CDeltaPos deltapos;
@@ -204,6 +205,7 @@ public class SC_boss : MonoBehaviour
         if(arg[0]=="/RetGiveUpTeleport" && arg[1]==SC_control.connectionID+"" && arg[2]==bID+"")
         {
             SC_control.already_teleported = true;
+            SC_player_follower.teleporting = true;
             SC_control.transform.position = NextToRandomGate();
             SC_control.RemoveImpulse();
             SC_control.SC_effect.EffectClean();

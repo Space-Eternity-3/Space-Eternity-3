@@ -12,7 +12,7 @@ public class SC_seeking : MonoBehaviour
 
     public SC_control SC_control;
 
-    public void Update()
+    public void LateUpdate()
     {
 		if(enabled)
         {

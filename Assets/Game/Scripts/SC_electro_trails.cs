@@ -51,7 +51,7 @@ public class SC_electro_trails : MonoBehaviour
         for(int i=0;i<SC_control.max_players;i++)
         {
             if(i==0) {
-                this_player = SC_control.player;
+                this_player = SC_control.SC_player_follower.transform;
             }
             else {
                 this_player = SC_control.PL[i].transform;

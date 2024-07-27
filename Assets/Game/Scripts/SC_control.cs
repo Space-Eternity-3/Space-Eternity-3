@@ -151,6 +151,7 @@ public class SC_control : MonoBehaviour {
 	public SC_worldgen SC_worldgen;
 	public SC_shield SC_shield;
 	public SC_tb_manager SC_tb_manager;
+	public SC_player_follower SC_player_follower;
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -571,7 +572,7 @@ public class SC_control : MonoBehaviour {
 		}
 		
 		//cam pos
-		Camera.position=new Vector3(player.position.x,player.position.y,Camera.position.z);
+		//Camera.position=new Vector3(player.position.x,player.position.y,Camera.position.z);
 
 
 		if(!timeStop){
@@ -599,12 +600,12 @@ public class SC_control : MonoBehaviour {
 		quat_food.eulerAngles = new Vector3(90f-pom,90f,-90f);
 		player_illusion.rotation = quat_food;
 		
-		SC_artefacts.SC_seeking.Update();
-		SC_artefacts.SC_seeking2.Update();
+		SC_artefacts.SC_seeking.LateUpdate();
+		SC_artefacts.SC_seeking2.LateUpdate();
 		List<SC_seeking> scs = SC_lists.SC_seeking;
 		foreach(SC_seeking sc in scs)
 		{
-			if(sc.idWord=="inv_part") sc.Update();
+			if(sc.idWord=="inv_part") sc.LateUpdate();
 		}
 
 		//ENGINES
@@ -1992,6 +1993,7 @@ public class SC_control : MonoBehaviour {
 			float y = Parsing.FloatE(arg[2]);
 			SendMTP("/CommandTp "+connectionID+" "+arg[1]+" "+arg[2]);
 			player.position = new Vector3(x,y,player.position.z);
+			SC_player_follower.teleporting = true;
 		}
 		if(arg[0]=="/RetKeepInventory")
 		{

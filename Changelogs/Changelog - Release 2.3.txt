@@ -58,8 +58,9 @@ Technical changes:
 - Anti-aliasing increased from x4 to x8 on ultra (default) settings.
 - Reworked impulse shield system and added potion shield system.
 - Reworked storage material system to automatically generate item materials.
-- Treasure string format updated to handle treasure bases
-- Settings format changed to fit graphics settings
+- Treasure string format updated to handle treasure bases.
+- Settings format changed to fit graphics settings.
+- Asteroids with ID 14 and 15 are stone_clone and copper_clone from now.
 
 Bug fixes:
 
@@ -70,17 +71,3 @@ Bug fixes:
 - It was possible to highlight storages and even activate a boss while not alive.
 - Server could rarely enter the broken loop state when it was starting, which was causing majority of the update code to not execute.
 
-
-
-
-Update to page:
-
-- New items: How To Play, Game Data
-- Copper Facilities: How To Play
-- Changed chances of treasure biomes
-- Gameplay: new variables, default metal treasure
-- Biome tags: default boss colors reduced
-- Copper asteroid texture add
-- FobGenerate fob81 special generation and function note
-- Treasure string additional rules
-- Broken summon object list :(
