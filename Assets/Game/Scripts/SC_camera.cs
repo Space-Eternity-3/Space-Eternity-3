@@ -71,6 +71,7 @@ public class SC_camera : MonoBehaviour {
 				SC_control.living=true;
 				player.position=new Vector3(respawn.position.x,respawn.position.y,0f);
 				SC_control.SC_player_follower.teleporting = true;
+				SC_control.SC_player_follower2.teleporting = true;
 				Communtron1.position-=new Vector3(0f,0f,1f);
 				SC_control.LastPlayerMovements.Clear();
 				if(SC_control.RespawnDelay!="")

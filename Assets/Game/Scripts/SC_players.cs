@@ -38,22 +38,11 @@ public class SC_players : MonoBehaviour
 	public int ArtSource;
     public Vector3 sourcedPosition = new Vector3(0f,0f,300f);
     public float sourcedRotation = 10000f;
-    Vector3[] memSourced=new Vector3[20];
-    float[] rotSourced=new float[20];
     bool sleeping = false;
 
-    void ResetArray()
-    {
-        int i;
-        for(i=0;i<20;i++){
-            memSourced[i]=new Vector3(0f,0f,300f);
-            rotSourced[i]=10000f;
-        }
-    }
     public void B_Awake()
     {
         SC_control.SC_lists.AddTo_SC_players(this);
-        ResetArray();
 
 		Aeffs = Instantiate(atS,atS.position,atS.rotation);
 		Aeffs.parent = atZ; Aeffs.name = "atS" + IDP;
@@ -89,66 +78,6 @@ public class SC_players : MonoBehaviour
 		obj2 = Beefs.GetComponent<SC_seeking>();
         obj3 = Ceffs.GetComponent<SC_seeking>();
 	}
-    void ArrayPusher(Vector3 new_push, float new_rot)
-    {
-        int i;
-        for(i=3;i>0;i--){
-            memSourced[i]=memSourced[i-1];
-            rotSourced[i]=rotSourced[i-1];
-        }
-        memSourced[0]=new_push;
-        rotSourced[0]=new_rot;
-    }
-    Vector3 ArrayAvarge(int n)
-    {
-        int i,m=n;
-        Vector3 sum=new Vector3(0f,0f,0f);
-        for(i=0;i<n;i++){
-            if(memSourced[i].z<100f)
-                sum+=memSourced[i];
-            else
-                m--;
-        }
-        if(m!=0) return sum/m;
-        else return new Vector3(0f,0f,0f);
-    }
-    float reduceAngle(float angle)
-    {
-        while(angle<0) angle+=360f;
-        while(angle>=360) angle-=360f;
-        return angle;
-    }
-    public float rotAvg(int weight1, float angle1, float angle2)
-    {
-        float sr;
-        angle1 = reduceAngle(angle1);
-        angle2 = reduceAngle(angle2);
-
-        sr = (weight1*angle1 + angle2)/(weight1 + 1);
-        if(Mathf.Abs(angle2-angle1) <= 180f) return sr;
-
-        angle1 += 180f; angle1 = reduceAngle(angle1);
-        angle2 += 180f; angle2 = reduceAngle(angle2);
-
-        sr = (weight1*angle1 + angle2)/(weight1 + 1) - 180f;
-        return reduceAngle(sr);
-    }
-    float ArrayAvarge_rot(int n)
-    {
-        int i,m=0;
-        float currentAngle = 0f;
-
-        for(i=0;i<n;i++)
-        {
-            if(rotSourced[i]!=10000f)
-            {
-                currentAngle = rotAvg(m,currentAngle,rotSourced[i]);
-                m++;
-            }
-        }
-
-        return currentAngle;
-    }
     public void AfterFixedUpdate()
     {
         bool actual = SC_fun.SC_control.NUL[IDP_phys];
@@ -158,12 +87,8 @@ public class SC_players : MonoBehaviour
             sleeping = false;
             if(inrange)
             {
-                ArrayPusher(sourcedPosition, sourcedRotation);
-                Vector3 avar=ArrayAvarge(4);
-                float avar_rot=ArrayAvarge_rot(4);
-
-                transform.position = new Vector3(avar.x,avar.y,0f);
-                transform.eulerAngles = new Vector3(0f,0f,avar_rot);
+                transform.position = new Vector3(sourcedPosition.x,sourcedPosition.y,0f);
+                transform.eulerAngles = new Vector3(0f,0f,sourcedRotation);
             }
             else
             {
@@ -188,7 +113,6 @@ public class SC_players : MonoBehaviour
         {
             if(!sleeping)
             {
-                ResetArray();
                 transform.position = new Vector3(0f,0f,10000f+IDP*5f);
 
                 SC_fun.SC_control.ramvis[IDP]=0;

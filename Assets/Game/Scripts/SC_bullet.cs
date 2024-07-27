@@ -19,6 +19,7 @@ public class SC_bullet : MonoBehaviour
     public Transform Communtron4;
 
     public Transform Bullet3Effect;
+    public Transform BulletFollower;
 
     public int[] StartSounds = new int[16];
     public Material[] BulletMaterials = new Material[16];
@@ -50,7 +51,7 @@ public class SC_bullet : MonoBehaviour
     public bool block_graphics = false;
     public bool next_bullet_virtual = false;
     public bool virtuall = false;
-    int looper = 0;
+    public float follow_multiplier = 1f;
     int loopSndID = -1;
 
     public string projectionOwner="";
@@ -136,6 +137,12 @@ public class SC_bullet : MonoBehaviour
         gob.st_vect = vector;
         gob.ID = idd;
         gob.projectionOwner = pown;
+
+        Transform trn = Instantiate(BulletFollower,gob.transform.position,gob.transform.rotation);
+        gob.BulletFollower = trn;
+        trn.GetComponent<SC_player_follower>().SC_bullet = gob;
+        trn.GetComponent<SC_player_follower>().player = gob.transform;
+        trn.GetComponent<SC_player_follower>().teleporting = true;
 
         return gob;
     }
@@ -288,15 +295,22 @@ public class SC_bullet : MonoBehaviour
 
         if(mode=="projection")
         {
+            BulletFollower.localScale = transform.localScale;
+            BulletFollower.rotation = transform.rotation;
+
             if(StartSounds[type]!=-1) SC_sounds.PlaySound(transform.position,2,StartSounds[type]); //1 1 17
             if(BulletMaterials[type]!=null) bulletRE.material = BulletMaterials[type];
             else bulletRE.enabled = false;
             if(BulletEffects[type]!=null)
             {
                 Transform trn = Instantiate(BulletEffects[type], transform.position, transform.rotation);
-                trn.parent = transform;
+                trn.SetParent(BulletFollower,true);
             }
             if(LoopSounds[type]!=-1) loopSndID = SC_snd_loop.AddToLoop(LoopSounds[type],transform.position); // x x 2
+
+            BulletFollower.GetComponent<Renderer>().material = transform.GetComponent<Renderer>().material;
+            BulletFollower.GetComponent<Renderer>().enabled = transform.GetComponent<Renderer>().enabled;
+            transform.GetComponent<Renderer>().enabled = false;
         }
         else if(dev_bullets_show) bulletRE.material = BulletMaterials[0];
         else bulletRE.enabled = false;
@@ -308,16 +322,16 @@ public class SC_bullet : MonoBehaviour
         TechStart();
 
         //Server lag, stop bullet
-        if(seekPointer==-1 && SC_control.current_tick + 3 < start_tick + age && start_tick>=0) return;
-        if(seekPointer!=-1 && SC_seek_data.steerData[seekPointer].Length<=age) return;
+        if((seekPointer==-1 && SC_control.current_tick + 3 < start_tick + age && start_tick>=0) ||
+           (seekPointer!=-1 && SC_seek_data.steerData[seekPointer].Length<=age)) {
+            follow_multiplier = 0f;
+            return;
+        }
 
         //Auto-steering bullets can't go into future (any bullets)
         //if(seekPointer!=-1 && delta_age>0) delta_age=0;
 
         if(loopSndID!=-1) SC_snd_loop.sound_pos[loopSndID] = transform.position;
-
-        looper++;
-        if(looper>=3) looper=0; //Start: 1-2-0-1-2-0...
 
         if(mode=="present") InstantMove(1);
         if(mode=="projection")
@@ -327,17 +341,20 @@ public class SC_bullet : MonoBehaviour
                 transform.position -= float_age*(st_vect/3);
                 float_age = 0;
                 InstantMove(1);
+                follow_multiplier = 1f;
             }
             else if(delta_age > 0)
             {
                 InstantMove(2);
                 delta_age--;
+                follow_multiplier = 2f;
             }
             else if(delta_age < 0)
             {
                 transform.position += 2*(st_vect/3);
                 float_age+=2;
                 delta_age++;
+                follow_multiplier = 2f/3f;
             }
             while(float_age >= 3)
             {

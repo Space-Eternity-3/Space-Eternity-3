@@ -151,7 +151,8 @@ public class SC_control : MonoBehaviour {
 	public SC_worldgen SC_worldgen;
 	public SC_shield SC_shield;
 	public SC_tb_manager SC_tb_manager;
-	public SC_player_follower SC_player_follower;
+	public SC_player_follower SC_player_follower; // Main player
+	public SC_player_follower SC_player_follower2; // White projection
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -1789,7 +1790,7 @@ public class SC_control : MonoBehaviour {
 				foreach(SC_bullet bul in buls)
 				{
 					if(bul.ID+""==arg[7] && bul.mode=="projection")
-						bul.delta_age = -bul.age - (4/2); //Your bullets should be delayed
+						bul.delta_age = -bul.age;
 				}
 			}
 
@@ -1804,7 +1805,6 @@ public class SC_control : MonoBehaviour {
 					arg[1]
 				);
 				bul3.InstantMove(Parsing.IntE(arg[8]));
-				//Their bullets should not be delayed
 			}
 		}
 		if(arg[0]=="/RetNewBulletDestroy")
@@ -1994,6 +1994,7 @@ public class SC_control : MonoBehaviour {
 			SendMTP("/CommandTp "+connectionID+" "+arg[1]+" "+arg[2]);
 			player.position = new Vector3(x,y,player.position.z);
 			SC_player_follower.teleporting = true;
+			SC_player_follower2.teleporting = true;
 		}
 		if(arg[0]=="/RetKeepInventory")
 		{

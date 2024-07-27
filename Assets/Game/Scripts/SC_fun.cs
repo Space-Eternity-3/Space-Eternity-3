@@ -90,6 +90,27 @@ public class SC_fun : MonoBehaviour
 		if(M_auto[0]==null) return baseFob21Material;
 		else return M_auto[n];
 	}
+	float reduceAngle(float angle)
+    {
+        while(angle<0) angle+=360f;
+        while(angle>=360) angle-=360f;
+        return angle;
+    }
+    public float rotAvg(int weight1, float angle1, float angle2)
+    {
+        float sr;
+        angle1 = reduceAngle(angle1);
+        angle2 = reduceAngle(angle2);
+
+        sr = (weight1*angle1 + angle2)/(weight1 + 1);
+        if(Mathf.Abs(angle2-angle1) <= 180f) return sr;
+
+        angle1 += 180f; angle1 = reduceAngle(angle1);
+        angle2 += 180f; angle2 = reduceAngle(angle2);
+
+        sr = (weight1*angle1 + angle2)/(weight1 + 1) - 180f;
+        return reduceAngle(sr);
+    }
 
 	//Ulam <---> X,Y methods
     public int MakeUlam(int X,int Y)

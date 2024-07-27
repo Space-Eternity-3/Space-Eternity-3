@@ -14,84 +14,6 @@ public class CDeltaPos
     public float x,y;
 }
 
-public class CSmoothMemory
-{
-    private int ms;
-    private Vector3[] position;
-    private float[] rotation;
-    private SC_players SC_players;
-    public bool used;
-
-    public CSmoothMemory(int mss, SC_players plrs)
-    {
-        ms = mss;
-        position = new Vector3[ms];
-        rotation = new float[ms];
-        SC_players = plrs;
-        ResetData();
-    }
-    public void ResetData()
-    {
-        int i;
-        for(i=0;i<ms;i++)
-        {
-            position[i] = new Vector3(0f,0f,10000f);
-            rotation[i] = 10000f;
-        }
-        used = false;
-    }
-    public void PushArray(Vector3 npos, float nrot)
-    {
-        int i;
-        for(i=ms-1;i>0;i--)
-        {
-            position[i] = position[i-1];
-            rotation[i] = rotation[i-1];
-        }
-        position[0] = npos;
-        rotation[0] = nrot;
-        
-        used = true;
-    }
-    public Vector3 AveragePosition()
-    {
-        int i,m=ms;
-        Vector3 sum=new Vector3(0f,0f,0f);
-        for(i=0;i<ms;i++){
-            if(position[i].z<100f)
-                sum+=position[i];
-            else
-                m--;
-        }
-        if(m!=0) return sum/m;
-        else return new Vector3(0f,0f,2000f);
-    }
-    public float AverageRotation()
-    {
-        int i,m=0;
-        float currentAngle = 0f;
-
-        for(i=0;i<ms;i++)
-        {
-            if(rotation[i]!=10000f)
-            {
-                currentAngle = SC_players.rotAvg(m,currentAngle,rotation[i]);
-                m++;
-            }
-        }
-
-        return currentAngle;
-    }
-    public Vector3 LastPosition()
-    {
-        return position[0];
-    }
-    public float LastRotation()
-    {
-        return rotation[0];
-    }
-}
-
 public class SC_boss : MonoBehaviour
 {
     public bool disable_force_give_up;
@@ -115,7 +37,6 @@ public class SC_boss : MonoBehaviour
     public Transform bossModels;
     public Transform shooterCenter, shooterCenterOver;
     public Transform[] ShooterProjections = new Transform[32];
-    CSmoothMemory SmoothMemory;
 
     public int bX=0,bY=0,bID=1,sID=1;
 
@@ -151,7 +72,8 @@ public class SC_boss : MonoBehaviour
     public SC_bars SC_bars;
     public SC_fun SC_fun;
     public SC_behaviour SC_behaviour;
-    public SC_player_follower SC_player_follower; //main player
+    public SC_player_follower SC_player_follower; // Main player
+	public SC_player_follower SC_player_follower2; // White projection
     
     public CInfo world;
     public CDeltaPos deltapos;
@@ -206,6 +128,7 @@ public class SC_boss : MonoBehaviour
         {
             SC_control.already_teleported = true;
             SC_player_follower.teleporting = true;
+            SC_player_follower2.teleporting = true;
             SC_control.transform.position = NextToRandomGate();
             SC_control.RemoveImpulse();
             SC_control.SC_effect.EffectClean();
@@ -214,7 +137,6 @@ public class SC_boss : MonoBehaviour
     public void StartFromStructure()
     {try{
         SC_control.SC_lists.AddTo_SC_boss(this);
-        SmoothMemory = new CSmoothMemory(4,SC_control.PL[1]);
         world = new CInfo(SC_control.SC_lists,SC_control.player);
         deltapos = new CDeltaPos(transform.position.x,transform.position.y);
         identifier = -UnityEngine.Random.Range(1,1000000000);
@@ -431,35 +353,15 @@ public class SC_boss : MonoBehaviour
         if(!multiplayer) BossUpdateMechanics();
 
         //Position & rotation update
-        if(multiplayer && dataID[2]!=2 && SmoothMemory.used) SmoothMemory.ResetData();
         solidPosition = new Vector3(solidPosition.x,solidPosition.y,transform.position.z);
         transform.position = solidPosition;
-        if(multiplayer && dataID[2]==2)
-        {
-            SmoothMemory.PushArray(solidPosition + new Vector3(
-                ScrdToFloat(dataID[8]),
-                ScrdToFloat(dataID[9]),
-                0f
-            ),ScrdToFloat(dataID[10]));
-
-            if(type==3 && dataID[18]==3 && dataID[19]-dataID[17]>25) { //sharp
-                Boss.position = SmoothMemory.LastPosition();
-                Boss.eulerAngles = new Vector3(0f,0f,SmoothMemory.AverageRotation());
-            }
-            else { //smooth
-                Boss.position = SmoothMemory.AveragePosition();
-                Boss.eulerAngles = new Vector3(0f,0f,SmoothMemory.AverageRotation());
-            }
-        }
-        else
-        {
-            Boss.position = (solidPosition + new Vector3(
-                ScrdToFloat(dataID[8]),
-                ScrdToFloat(dataID[9]),
-                0f
-            ));
-            Boss.eulerAngles = new Vector3(0f,0f,ScrdToFloat(dataID[10]));
-        }
+        
+        Boss.position = (solidPosition + new Vector3(
+            ScrdToFloat(dataID[8]),
+            ScrdToFloat(dataID[9]),
+            0f
+        ));
+        Boss.eulerAngles = new Vector3(0f,0f,ScrdToFloat(dataID[10]));
 
         //Give up allow checker
         if((InArena("range") && (dataID[2]==2)) && !bosnumed) {

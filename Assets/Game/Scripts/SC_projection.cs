@@ -12,6 +12,7 @@ public class SC_projection : MonoBehaviour
     public bool devShow;
 
     public Transform player;
+    public GameObject VisiblePlane;
     public SC_control SC_control;
     public SC_fun SC_fun;
 
@@ -20,7 +21,7 @@ public class SC_projection : MonoBehaviour
         int i;
         for(i=0;i<150;i++)
         {
-            memPosition[0] = new Vector3(0f,0f,300f);
+            memPosition[0] = player.position;
             memRotation[0] = 0f;
         }
     }
@@ -37,13 +38,22 @@ public class SC_projection : MonoBehaviour
     public void AfterFixedUpdate()
     {
         ArrayPusher(player.position,player.eulerAngles.z);
+        MuchLaterUpdate();
     }
     public void MuchLaterUpdate()
     {
         int Dt = SC_control.intPing;
-        if(Dt>=0) transform.position = memPosition[Dt];
-        if(IsVisible()) transform.eulerAngles = new Vector3(memRotation[Dt]-90f,-90f,90f);
-        else transform.position = new Vector3(0f,0f,300f);
+        if(Dt<0) Dt=0;
+        transform.position = memPosition[Dt];
+        transform.eulerAngles = new Vector3(0f,0f,memRotation[Dt]);
+        VisiblePlane.SetActive(IsVisible());
+    }
+    public Vector3 SpeculateVelocity()
+    {
+        int Dt = SC_control.intPing;
+        if(Dt<0) Dt=0;
+        if(Dt==0) Dt++;
+        return memPosition[Dt-1] - memPosition[Dt];
     }
     bool IsVisible()
     {
