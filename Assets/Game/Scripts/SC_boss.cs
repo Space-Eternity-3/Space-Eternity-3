@@ -251,6 +251,14 @@ public class SC_boss : MonoBehaviour
         dataID[13] = FloatToScrd(Mathf.Sqrt(x*x + y*y));
         dataID[14] = FloatToScrd(Mathf.Atan2(y,x));
     }
+    public Vector3 GetVelocity()
+    {
+        float d = ScrdToFloat(dataID[13]);
+        float ang = ScrdToFloat(dataID[14]);
+        float x = Mathf.Cos(ang) * d;
+        float y = Mathf.Sin(ang) * d;
+        return new Vector3(x,y,0f);
+    }
     public float GetTransitionFraction(float distance)
     {
         float ret = 0f;

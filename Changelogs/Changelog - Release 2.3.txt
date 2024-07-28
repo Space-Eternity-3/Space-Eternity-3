@@ -52,6 +52,7 @@ Configurables:
   - Dark cementeries: 1.3% -> 1.5%
   - Copper facilities: 0% -> 2%
   - All treasure biomes: 4% -> 6%
+- It is now possible to customize target_packet_frequency value in server config.
 
 Technical changes:
 
@@ -63,6 +64,7 @@ Technical changes:
 - Asteroids with ID 14 and 15 are stone_clone and copper_clone from now.
 - Reworked dynamic object movement smoothing (spaceships, bosses, bullets), which resulted in much better performance.
 - Rotation during impulse is now locked using Rigidbody component and not through script, as it was before.
+- Increased target packet frequency value 25 -> 60, which results in more accurate entity position calculations (server side).
 
 Bug fixes:
 

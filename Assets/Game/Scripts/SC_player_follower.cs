@@ -12,6 +12,7 @@ public class SC_player_follower : MonoBehaviour
     public SC_bullet SC_bullet;
     public SC_projection SC_projection;
     public SC_players SC_players;
+    public SC_boss SC_boss;
 
     public Renderer[] SourceRend, TargetRend;
     public Transform[] SourceTran, TargetTran;
@@ -49,17 +50,21 @@ public class SC_player_follower : MonoBehaviour
         {
             follower.position += SC_players.SpeculateVelocity() * 50f * Time.deltaTime;
         }
+        if(velocity_source==4) //Boss
+        {
+            follower.position += SC_boss.GetVelocity() * 50f * Time.deltaTime;
+        }
 
         follower.rotation = Quaternion.Euler(0f,0f,SC_fun.CalculateAverageAngle(follower.eulerAngles.z,player.eulerAngles.z));
-        if(velocity_source==0) UnityEngine.Debug.Log(follower.eulerAngles.z+" P:"+player.eulerAngles.z);
         follower.position = Vector3.Lerp(player.position,follower.position,lerping_ratio);
         if(
             teleporting ||
             (teleporting_if_far_away && (follower.position - player.position).magnitude > 3f) ||
-            (teleporting_unsynced && teleporting_unsynced_catalizator)
+            (teleporting_unsynced && teleporting_unsynced_catalizator) ||
+            (velocity_source==4 && (SC_boss.dataID[2]!=2 || SC_boss.type*5+SC_boss.dataID[18]==3*5+3))
         ) {
             follower.position = player.position;
-            follower.rotation = player.rotation;
+            if(!(velocity_source==4 && SC_boss.dataID[2]!=2)) follower.rotation = player.rotation;
             teleporting=false;
             teleporting_unsynced = false;
             if(velocity_source==3)

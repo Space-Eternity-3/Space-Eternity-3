@@ -69,6 +69,7 @@ const default_config = {
 	"require_se3_account": false,
   "authorization_waiting_time": 15,
   "max_dict_size": 128,
+  "target_packet_frequency": 60,
   "max_active_bosses": 16,
 	"whitelist_enabled": false,
 	"whitelist": [],
@@ -3691,7 +3692,7 @@ setInterval(function () {  // <interval #2>
       sendTo(se3_ws[i],"I "+plr.immID[i]+" "+plr.livID[i]+" X X"); //medium type message
   }
 
-}, 40);
+}, Math.ceil(1000/config.target_packet_frequency));
 
 //Waiter kicker (50 times per second by default)
 setInterval(function () { //<interval #3>
@@ -4956,7 +4957,9 @@ wss.on("connection", function connection(ws,req)
         plr.pclass[arg[1]].ctrlPower -= unit * Parsing.FloatU(gameplay[22]);
       }
       plr.pclass[arg[1]].powerRegenBlocked = (hiddenFlags[0]=="T") || (hiddenFlags[1]=="T");
-      if(hiddenFlags[1]!="T") plr.pclass[arg[1]].shield_time = 0;
+      if(hiddenFlags[1]!="T") {
+          plr.pclass[arg[1]].shield_time = 0;
+      }
 
       //Impulse damage
       var j, caray = censured.split(";");
