@@ -90,7 +90,7 @@ public class SC_fun : MonoBehaviour
 		if(M_auto[0]==null) return baseFob21Material;
 		else return M_auto[n];
 	}
-	float reduceAngle(float angle)
+	public float reduceAngle(float angle)
     {
         while(angle<0) angle+=360f;
         while(angle>=360) angle-=360f;
@@ -110,6 +110,49 @@ public class SC_fun : MonoBehaviour
 
         sr = (weight1*angle1 + angle2)/(weight1 + 1) - 180f;
         return reduceAngle(sr);
+    }
+
+	public static float CalculateAverageAngle(float angle1, float angle2)
+    {
+		//Written by ChatGPT
+
+        // Konwersja kątów na radiany
+        float angle1Rad = DegreesToRadians(angle1);
+        float angle2Rad = DegreesToRadians(angle2);
+        
+        // Obliczenie współrzędnych x i y dla każdego kąta
+        float x1 = (float)Math.Cos(angle1Rad);
+        float y1 = (float)Math.Sin(angle1Rad);
+        float x2 = (float)Math.Cos(angle2Rad);
+        float y2 = (float)Math.Sin(angle2Rad);
+        
+        // Średnia współrzędnych
+        float xAvg = (x1 + x2) / 2;
+        float yAvg = (y1 + y2) / 2;
+        
+        // Obliczenie kąta wynikowego z współrzędnych średnich
+        float avgAngleRad = (float)Math.Atan2(yAvg, xAvg);
+        
+        // Konwersja kąta wynikowego z radianów na stopnie
+        float avgAngleDeg = RadiansToDegrees(avgAngleRad);
+        
+        // Upewnienie się, że wynikowy kąt jest w zakresie [0, 360) stopni
+        if (avgAngleDeg < 0)
+        {
+            avgAngleDeg += 360;
+        }
+        
+        return avgAngleDeg;
+    }
+    
+    private static float DegreesToRadians(float degrees)
+    {
+        return degrees * (float)Math.PI / 180f;
+    }
+    
+    private static float RadiansToDegrees(float radians)
+    {
+        return radians * 180f / (float)Math.PI;
     }
 
 	//Ulam <---> X,Y methods

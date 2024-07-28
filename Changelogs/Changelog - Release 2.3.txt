@@ -61,6 +61,8 @@ Technical changes:
 - Treasure string format updated to handle treasure bases.
 - Settings format changed to fit graphics settings.
 - Asteroids with ID 14 and 15 are stone_clone and copper_clone from now.
+- Reworked dynamic object movement smoothing (spaceships, bosses, bullets), which resulted in much better performance.
+- Rotation during impulse is now locked using Rigidbody component and not through script, as it was before.
 
 Bug fixes:
 
@@ -70,4 +72,5 @@ Bug fixes:
 - Respawn had a broken behaviour while holding mouse both over UI and over it.
 - It was possible to highlight storages and even activate a boss while not alive.
 - Server could rarely enter the broken loop state when it was starting, which was causing majority of the update code to not execute.
+- Other players' respawns weren't visible when player wasn't living.
 

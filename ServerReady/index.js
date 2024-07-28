@@ -4085,7 +4085,8 @@ function GetRPC(players,lngt,sendAll)
 
   for(i=0;i<lngt;i++)
   {
-    if(players[i]=="0" || players[i]=="1") splitted = [0,0,0,0,0,"0&0","0","0","1"];
+    var dsp = plr.data[i].split(";");
+    if(players[i]=="0" || players[i]=="1") splitted = [0,0,0,0,0,"0&0",dsp[6],dsp[7],"1"];
     else splitted = players[i].split(";");
 
     var rbt;
@@ -4900,7 +4901,11 @@ wss.on("connection", function connection(ws,req)
       var censured = Censure(arg[2],arg[1],arg[msl-1]);
       if(!updateHasSense(plr.players[arg[1]],censured,arg[1],arg[4])) {kick(arg[1]); return;}
 
-      if(arg[4][3]=="T") plr.pclass[arg[1]].allowed_teleport_small = false;
+      if(arg[4][3]=="T")
+      {
+          sendToAllPlayers("/RetSmoothBreakFrame "+arg[1]+" X X");
+          plr.pclass[arg[1]].allowed_teleport_small = false;
+      }
 
       if(censured=="1") arg[4]="FFF"+arg[4][3];
 
@@ -5490,6 +5495,7 @@ wss.on("connection", function connection(ws,req)
         bef[0] = Parsing.FloatU(arg[2]);
         bef[1] = Parsing.FloatU(arg[3]);
         plr.players[arg[1]] = bef.join(";");
+        sendToAllPlayers("/RetSmoothBreakFrame "+arg[1]+" X X");
         console.log("Teleported player "+plr.nicks[arg[1]]+" to coordinates: "+bef[0]+" "+bef[1]);
       }
     }

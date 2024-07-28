@@ -152,7 +152,6 @@ public class SC_control : MonoBehaviour {
 	public SC_shield SC_shield;
 	public SC_tb_manager SC_tb_manager;
 	public SC_player_follower SC_player_follower; // Main player
-	public SC_player_follower SC_player_follower2; // White projection
 
 	public List<bool> NUL = new List<bool>();
 	public List<Transform> RR = new List<Transform>();
@@ -949,9 +948,9 @@ public class SC_control : MonoBehaviour {
 	public void RemoveImpulse()
 	{
 		impulse_time = 0;
-		impulse_enabled = false;
-		playerR.velocity = new Vector3(0f,0f,0f);
 		shield_time = 0;
+		playerR.velocity = new Vector3(0f,0f,0f);
+		impulse_enabled = false;
 	}
 	void FixedUpdate()
 	{
@@ -968,6 +967,15 @@ public class SC_control : MonoBehaviour {
 		if(impulse_time==1) RemoveImpulse();
 		for(int ij=0;ij<max_players;ij++)
 			if(ramvis[ij]>0) ramvis[ij]--;
+
+		if(impulse_enabled)
+		{
+			playerR.constraints |= RigidbodyConstraints.FreezeRotationZ;
+		}
+		else
+		{
+			playerR.constraints &= ~RigidbodyConstraints.FreezeRotationZ;
+		}
 		
 		livTime++;
 
@@ -1167,8 +1175,9 @@ public class SC_control : MonoBehaviour {
 		}
 
 		//RPU converter
-		if(Communtron4.position.y==100f && RPU!="XXX")
+		if(Communtron4.position.y==100f && RPU!="XXX") {
 			TranslateRPU();
+		}
 
 		//drill fixed update
 		if(drill3B&&drill3T.localPosition.y<1.44f)
@@ -1778,6 +1787,13 @@ public class SC_control : MonoBehaviour {
 			if(livID==arg[2] && immID==arg[3])
 				damageBalance += Parsing.FloatE(arg[1]);
 		}
+		if(arg[0]=="/RetSmoothBreakFrame")
+		{
+			int pid = Parsing.IntE(arg[1]);
+			if(pid==connectionID) return;
+			if(pid==0) pid = connectionID;
+			PL[pid].GetComponent<SC_player_follower>().teleporting_unsynced = true;
+		}
 		if(arg[0]=="/RetUpgrade")
 		{
 			if(arg[1]==connectionID+"") SC_upgrades.MTP_levels[Parsing.IntE(arg[2])]++;
@@ -1994,7 +2010,6 @@ public class SC_control : MonoBehaviour {
 			SendMTP("/CommandTp "+connectionID+" "+arg[1]+" "+arg[2]);
 			player.position = new Vector3(x,y,player.position.z);
 			SC_player_follower.teleporting = true;
-			SC_player_follower2.teleporting = true;
 		}
 		if(arg[0]=="/RetKeepInventory")
 		{

@@ -73,7 +73,6 @@ public class SC_boss : MonoBehaviour
     public SC_fun SC_fun;
     public SC_behaviour SC_behaviour;
     public SC_player_follower SC_player_follower; // Main player
-	public SC_player_follower SC_player_follower2; // White projection
     
     public CInfo world;
     public CDeltaPos deltapos;
@@ -128,7 +127,6 @@ public class SC_boss : MonoBehaviour
         {
             SC_control.already_teleported = true;
             SC_player_follower.teleporting = true;
-            SC_player_follower2.teleporting = true;
             SC_control.transform.position = NextToRandomGate();
             SC_control.RemoveImpulse();
             SC_control.SC_effect.EffectClean();

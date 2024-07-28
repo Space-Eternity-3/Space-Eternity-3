@@ -11,13 +11,17 @@ public class SC_player_follower : MonoBehaviour
     public Rigidbody playerR;
     public SC_bullet SC_bullet;
     public SC_projection SC_projection;
+    public SC_players SC_players;
 
     public Renderer[] SourceRend, TargetRend;
     public Transform[] SourceTran, TargetTran;
 
     public bool teleporting = true;
     public bool teleporting_if_far_away = false;
+    public bool teleporting_unsynced = false;
+    public bool teleporting_unsynced_catalizator = false;
     public int velocity_source = 0;
+    public float lerping_ratio = 0.9f;
 
     public SC_fun SC_fun;
 
@@ -41,14 +45,31 @@ public class SC_player_follower : MonoBehaviour
         {
             follower.position += SC_projection.SpeculateVelocity() * 50f * Time.deltaTime;
         }
+        if(velocity_source==3) // Other players
+        {
+            follower.position += SC_players.SpeculateVelocity() * 50f * Time.deltaTime;
+        }
 
-        follower.rotation = Quaternion.Euler(0f,0f,SC_fun.rotAvg(1,follower.eulerAngles.z,player.eulerAngles.z));
-        follower.position = Vector3.Lerp(player.position,follower.position,0.9f);
-        if(teleporting || (teleporting_if_far_away && (follower.position - player.position).magnitude > 3f)) {
+        follower.rotation = Quaternion.Euler(0f,0f,SC_fun.CalculateAverageAngle(follower.eulerAngles.z,player.eulerAngles.z));
+        if(velocity_source==0) UnityEngine.Debug.Log(follower.eulerAngles.z+" P:"+player.eulerAngles.z);
+        follower.position = Vector3.Lerp(player.position,follower.position,lerping_ratio);
+        if(
+            teleporting ||
+            (teleporting_if_far_away && (follower.position - player.position).magnitude > 3f) ||
+            (teleporting_unsynced && teleporting_unsynced_catalizator)
+        ) {
             follower.position = player.position;
             follower.rotation = player.rotation;
             teleporting=false;
+            teleporting_unsynced = false;
+            if(velocity_source==3)
+            {
+                SC_players.positionBefore = new Vector3(0f,0f,300f);
+                SC_players.positionBeforeB = new Vector3(0f,0f,300f);
+                SC_players.positionBeforeC = new Vector3(0f,0f,300f);
+            }
         }
+        teleporting_unsynced_catalizator = false;
         follower.position = new Vector3(
             follower.position.x,
             follower.position.y,

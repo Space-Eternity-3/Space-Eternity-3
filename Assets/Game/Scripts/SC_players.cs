@@ -16,6 +16,7 @@ public class SC_players : MonoBehaviour
     public Transform drill3T;
     public SC_invisibler SC_invisibler;
     public SC_shield SC_shield;
+    public Transform FixedPlayer;
 
     //Less relative constants
     public Transform TestNick;
@@ -38,6 +39,9 @@ public class SC_players : MonoBehaviour
 	public int ArtSource;
     public Vector3 sourcedPosition = new Vector3(0f,0f,300f);
     public float sourcedRotation = 10000f;
+    public Vector3 positionBefore = new Vector3(0f,0f,300f);
+    public Vector3 positionBeforeB = new Vector3(0f,0f,300f);
+    public Vector3 positionBeforeC = new Vector3(0f,0f,300f);
     bool sleeping = false;
 
     public void B_Awake()
@@ -78,21 +82,38 @@ public class SC_players : MonoBehaviour
 		obj2 = Beefs.GetComponent<SC_seeking>();
         obj3 = Ceffs.GetComponent<SC_seeking>();
 	}
+    public Vector3 SpeculateVelocity()
+    {
+        if(FixedPlayer.position.z > 100f || positionBefore.z > 100f || positionBeforeB.z > 100f)
+            return new Vector3(0f,0f,0f);
+        else
+            return (FixedPlayer.position - positionBeforeB) / 2f;
+    }
     public void AfterFixedUpdate()
     {
         bool actual = SC_fun.SC_control.NUL[IDP_phys];
         bool inrange = true;
+        positionBeforeC = positionBeforeB;
+        positionBeforeB = positionBefore;
+        positionBefore = FixedPlayer.position;
         if(actual)
         {
+            if(positionBefore.z > 100f && sourcedPosition.z < 100f)
+                transform.GetComponent<SC_player_follower>().teleporting = true;
+
+            if(positionBefore != sourcedPosition && transform.GetComponent<SC_player_follower>().teleporting_unsynced)
+                transform.GetComponent<SC_player_follower>().teleporting_unsynced_catalizator = true;
+
             sleeping = false;
             if(inrange)
             {
-                transform.position = new Vector3(sourcedPosition.x,sourcedPosition.y,0f);
-                transform.eulerAngles = new Vector3(0f,0f,sourcedRotation);
+                FixedPlayer.position = sourcedPosition;
+                FixedPlayer.eulerAngles = new Vector3(0f,0f,sourcedRotation);
             }
             else
             {
-                transform.position = sourcedPosition;
+                FixedPlayer.position = sourcedPosition;
+
                 obj.offset = new Vector3(0f,0f,0f);
                 obj2.offset = new Vector3(0f,0f,0f);
                 obj3.offset = new Vector3(0f,0f,0f);
@@ -113,7 +134,7 @@ public class SC_players : MonoBehaviour
         {
             if(!sleeping)
             {
-                transform.position = new Vector3(0f,0f,10000f+IDP*5f);
+                FixedPlayer.position = new Vector3(0f,0f,10000f+IDP*5f);
 
                 SC_fun.SC_control.ramvis[IDP]=0;
 			    obj.offset = new Vector3(0f,0f,0f);

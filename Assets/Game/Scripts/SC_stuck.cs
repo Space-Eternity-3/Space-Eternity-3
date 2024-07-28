@@ -32,6 +32,7 @@ public class SC_stuck : MonoBehaviour
             counter_to_teleport = 150;
             SC_control.transform.position = EscapePosition();
             SC_control.RemoveImpulse();
+            SC_control.SC_player_follower.teleporting = true;
         }
 
         in_collider = false;
