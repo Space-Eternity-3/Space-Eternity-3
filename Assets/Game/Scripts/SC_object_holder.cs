@@ -84,17 +84,15 @@ public class SC_object_holder : MonoBehaviour
                     for(i=0;i<lngt1;i++) ser.HideStateSet(tags1[i],1);
                     for(i=0;i<lngt2;i++) ser.HideStateSet(tags2[i],2);
                     for(i=0;i<lngt3;i++) ser.HideStateSet(tags3[i],3);
-                    ser.hiding_time = 40;
-                    ser.hidevector = new Vector3(0f,0f,0f);
                 }
                 else
                 {
                     for(i=0;i<lngt1;i++) ser.ExtendedStateSet(tags1[i],1);
                     for(i=0;i<lngt2;i++) ser.ExtendedStateSet(tags2[i],2);
                     for(i=0;i<lngt3;i++) ser.ExtendedStateSet(tags3[i],3);
-                    ser.extending_time = 40;
                     ser.extension = obj.animation_size;
                 }
+                ser.animation_type = obj.animation_type;
             }
         }
         for(int j=0;j<Objects.Length;j++)

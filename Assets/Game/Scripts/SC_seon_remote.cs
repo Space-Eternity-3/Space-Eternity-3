@@ -12,7 +12,6 @@ public class SC_seon_remote : MonoBehaviour
     public List<int> extended_mode = new List<int>();
 
     public Vector3 extension = new Vector3(0f,0f,0f); //position where object is extended
-    public Vector3 hidevector = new Vector3(0f,0f,50f); //position where object disappears
     Vector3 hiddenvector = new Vector3(0f,0f,-500f); //position where object is hidden
 
     /*
@@ -22,29 +21,18 @@ public class SC_seon_remote : MonoBehaviour
     3 - undoing
     */
 
-    public bool jump = true;
-    public bool started_already = false;
-
-    public int current_extension = 0;
-    public int current_hide = 0;
-
-    public int hiding_time = 1;
-    public int extending_time = 1;
-
-    public string memState = "default";
+    public string memState = "non-existing state";
     public int memHide = -1;
     public int memExtended = -1;
-
-    //absolute
-    public Vector3 localDefault = new Vector3(0f,0f,0f);
-
-    //delta
-    Vector3 localExtended = new Vector3(0f,0f,0f);
-    Vector3 localHide = new Vector3(0f,0f,0f);
-    Vector3 localHidden = new Vector3(0f,0f,0f);
+    public int animation_type = 0;
     
-    //scale
-    Vector3 normalScale = new Vector3(1f,1f,1f);
+    bool started_already = false;
+    bool abort_remote_update_now = false;
+
+    //local vectors
+    public Vector3 localDefault = new Vector3(0f,0f,0f);
+    Vector3 localExtended = new Vector3(0f,0f,0f);
+    Vector3 localHidden = new Vector3(0f,0f,0f);
 
     public void HideStateSet(string str, int mode)
     {
@@ -101,72 +89,97 @@ public class SC_seon_remote : MonoBehaviour
     {
         localDefault = transform.localPosition;
         
-        transform.position += extension;
-        localExtended = transform.localPosition - localDefault;
-        transform.localPosition = localDefault;
-        
-        transform.position += hidevector;
-        localHide = transform.localPosition - localDefault;
-        transform.localPosition = localDefault;
-
-        transform.position += hiddenvector;
-        localHidden = transform.localPosition - localDefault;
-        transform.localPosition = localDefault;
-
-        normalScale = transform.localScale;
+        localExtended = localDefault + extension;
+        localHidden = localDefault + hiddenvector;
 
         FixedUpdate();
     }
     void FixedUpdate()
     {
-        FixedUpdateM(jump || SC_object_holder.scaling_blocker!=0);
-        if(SC_object_holder.actual_state!="default") jump = false;
+        if(transform.GetComponent<SC_boss>()!=null && started_already)
+            transform.GetComponent<SC_boss>().FixedUpdateT();
+
+        started_already = true;
+
+        abort_remote_update_now = true;
+        LateUpdate();
     }
-    void FixedUpdateM(bool jump_animate)
+    void LateUpdate()
     {
+        bool jump_hiding = SC_object_holder.scaling_blocker!=0;
+        
         int modeH = GetMode("hidden");
         int modeE = GetMode("extended");
 
         memState = SC_object_holder.actual_state;
         memHide = modeH; memExtended = modeE;
 
-        if(jump_animate)
+        if(SC_object_holder.SC_boss==null) return;
+        SC_boss bos = SC_object_holder.SC_boss;
+        float transition_fraction = bos.GetSeonTransitionFraction();
+
+        //Hiding animation
+        if(animation_type==1)
         {
-            if(modeE==1) modeE=2; if(modeE==3) modeE=0;
-            if(modeH==1) modeH=2; if(modeH==3) modeH=0;
+            if(jump_hiding)
+            {
+                transform.localScale = new Vector3(1f,1f,1f);
+
+                if(modeH==1 || modeH==2)
+                    transform.localPosition = localHidden;
+
+                if(modeH==0 || modeH==3)
+                    transform.localPosition = localDefault;
+            }
+            else
+            {
+                Vector3 pscale = new Vector3(0f,0f,0f);
+
+                if(modeH==0)
+                    pscale = new Vector3(1f,1f,1f);
+
+                if(modeH==1)
+                    pscale = (1f-transition_fraction) * new Vector3(1f,1f,1f);
+
+                if(modeH==2)
+                    pscale = new Vector3(0f,0f,0f);
+
+                if(modeH==3)
+                    pscale = transition_fraction * new Vector3(1f,1f,1f);
+
+                if(pscale != new Vector3(0f,0f,0f))
+                {
+                    transform.localPosition = localDefault;
+                    transform.localScale = pscale;
+                }
+                else
+                {
+                    transform.localPosition = localHidden;
+                    transform.localScale = new Vector3(1f,1f,1f);
+                }
+            }
         }
 
-        transform.localPosition = localDefault;
-        transform.localScale = normalScale;
-        
-        VariableChanging(modeH,modeE);
-        PhysicalChanging();
+        //Extending animation
+        if(animation_type==2)
+        {
+            if(modeE==0)
+                transform.localPosition = localDefault;
 
-        if(transform.GetComponent<SC_boss>()!=null && started_already)
-            transform.GetComponent<SC_boss>().FixedUpdateT();
+            if(modeE==1)
+                transform.localPosition = Vector3.Lerp(localDefault,localExtended,transition_fraction);
 
-        started_already = true;
-    }
-    void VariableChanging(int modeH, int modeE)
-    {
-        if(modeH==0) current_hide = 0;
-        if(modeH==2) current_hide = hiding_time;
-        if(modeH==1 && current_hide < hiding_time) current_hide++;
-        if(modeH==3 && current_hide > 0) current_hide--;
+            if(modeE==2)
+                transform.localPosition = localExtended;
 
-        if(modeE==0) current_extension = 0;
-        if(modeE==2) current_extension = extending_time;
-        if(modeE==1 && current_extension < extending_time) current_extension++;
-        if(modeE==3 && current_extension > 0) current_extension--;
-    }
-    void PhysicalChanging()
-    {
-        float fraction_hide = current_hide; fraction_hide /= hiding_time;
-        float fraction_extension = current_extension; fraction_extension /= extending_time;
+            if(modeE==3)
+                transform.localPosition = Vector3.Lerp(localDefault,localExtended,1f-transition_fraction);
+        }
 
-        if(fraction_hide!=1f) transform.localPosition += SC_fun.FluentFraction(fraction_hide) * localHide;
-        else transform.localPosition += localHidden;
-        transform.localPosition += SC_fun.FluentFraction(fraction_extension) * localExtended;
-        if(fraction_hide!=1f) transform.localScale = (1f-SC_fun.FluentFraction(fraction_hide)) * normalScale;
+        if(!abort_remote_update_now) {
+            if(transform.GetComponent<SC_boss>()!=null)
+                bos.SC_player_follower3.RemoteUpdate();
+        }
+        else abort_remote_update_now = false;
     }
 }

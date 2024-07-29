@@ -1164,9 +1164,11 @@ public class SC_control : MonoBehaviour {
 		}
 
 		//Cmd list activator
+		if(livTime % 20 == 0 || !SC_fun.jump_ping_simulator) {
 		Queue tsList = Queue.Synchronized(cmdList);
 		while(tsList.Count > 0)
 			cmdDo(tsList.Dequeue()+"");
+		}
 
 		if(!timeStop) {
 

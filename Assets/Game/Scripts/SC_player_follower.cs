@@ -21,12 +21,20 @@ public class SC_player_follower : MonoBehaviour
     public bool teleporting_if_far_away = false;
     public bool teleporting_unsynced = false;
     public bool teleporting_unsynced_catalizator = false;
+    
     public int velocity_source = 0;
     public float lerping_ratio = 0.9f;
+    public int rotor_int = 1;
+    public bool remote_updating = false;
 
     public SC_fun SC_fun;
 
     void Update()
+    {
+        if(!remote_updating)
+            RemoteUpdate();
+    }
+    public void RemoteUpdate()
     {
         //Position smoothing
         if(velocity_source==0) // Main player
@@ -53,15 +61,17 @@ public class SC_player_follower : MonoBehaviour
         if(velocity_source==4) //Boss
         {
             follower.position += SC_boss.GetVelocity() * 50f * Time.deltaTime;
+            follower.rotation = Quaternion.Euler(0f,0f,follower.eulerAngles.z + SC_boss.dataID[11] * 0.15f * 50f * Time.deltaTime);
         }
 
-        follower.rotation = Quaternion.Euler(0f,0f,SC_fun.CalculateAverageAngle(follower.eulerAngles.z,player.eulerAngles.z));
-        follower.position = Vector3.Lerp(player.position,follower.position,lerping_ratio);
+        follower.position = Vector3.Lerp(player.position,follower.position,LerpingMultiplier(lerping_ratio));
+        float r = LerpingMultiplier(rotor_int/(rotor_int+1f));
+        follower.rotation = Quaternion.Euler(0f,0f,SC_fun.rotAvg((int)Mathf.Ceil(r/(1-r)),follower.eulerAngles.z,player.eulerAngles.z));
         if(
             teleporting ||
             (teleporting_if_far_away && (follower.position - player.position).magnitude > 3f) ||
             (teleporting_unsynced && teleporting_unsynced_catalizator) ||
-            (velocity_source==4 && (SC_boss.dataID[2]!=2 || SC_boss.type*5+SC_boss.dataID[18]==3*5+3))
+            (velocity_source==4 && (SC_boss.dataID[2]!=2 || (SC_boss.type*5+SC_boss.dataID[18]==3*5+3 && SC_boss.dataID[17]>10 && SC_boss.dataID[19]-SC_boss.dataID[17]>=30)))
         ) {
             follower.position = player.position;
             if(!(velocity_source==4 && SC_boss.dataID[2]!=2)) follower.rotation = player.rotation;
@@ -97,5 +107,11 @@ public class SC_player_follower : MonoBehaviour
         {
             TargetTran[i].localPosition = SourceTran[i].localPosition;
         }
+    }
+    float LerpingMultiplier(float f)
+    {
+        float frames = 1f / Time.deltaTime;
+        if(frames >= 60f) frames = 60f;
+        return Mathf.Pow(f,60f/frames);
     }
 }

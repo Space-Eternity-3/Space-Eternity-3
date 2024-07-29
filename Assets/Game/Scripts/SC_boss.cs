@@ -65,6 +65,7 @@ public class SC_boss : MonoBehaviour
     public int timer_bar_max = 180;
     public int int_health = 140000;
     public int int_health_max = 220000;
+    public float animation_float = 40f;
 
     public SC_data SC_data;
     public SC_control SC_control;
@@ -73,6 +74,7 @@ public class SC_boss : MonoBehaviour
     public SC_fun SC_fun;
     public SC_behaviour SC_behaviour;
     public SC_player_follower SC_player_follower; // Main player
+    public SC_player_follower SC_player_follower3; // Boss
     
     public CInfo world;
     public CDeltaPos deltapos;
@@ -190,7 +192,17 @@ public class SC_boss : MonoBehaviour
     }
     void StateUpdate()
     {
-        SC_object_holder.actual_state = GetState(dataID[1],dataID[2]);
+        string old_state = SC_object_holder.actual_state;
+        string new_state = GetState(dataID[1],dataID[2]);
+        SC_object_holder.actual_state = new_state;
+
+        if(new_state != old_state)
+        {
+            if(old_state=="default" || new_state.Length <= 2)
+                animation_float = 40f; //animation ended
+            else
+                animation_float = 0f; //animation starts
+        }
 
         if(memory2!=dataID[2] && InArena("vision"))
         {
@@ -261,15 +273,25 @@ public class SC_boss : MonoBehaviour
     }
     public float GetTransitionFraction(float distance)
     {
-        float ret = 0f;
-        if(dataID2_client==2) ret = 1f;
-        if(dataID2_client==1) ret = Mathf.Min(dataID3_client,40)/40f;
-        if(dataID2_client==3 || dataID2_client==4) ret = Mathf.Max(40-dataID3_client,0)/40f;
+        float ret = animation_float;
+        if(animation_float < 0f) ret = 0f;
+        if(animation_float > 40f) ret = 40f;
+
+        if(dataID[2]==1 || dataID[2]==2) ret = ret / 40f;
+        else if(dataID[2]==0 || dataID[2]==3 || dataID[2]==4) ret = 1f - ret / 40f;
+        else ret = 0f;
         
         if(distance < 40f) distance = 40f;
         if(distance > 80f) distance = 80f;
         float X = 1 - (distance-40f)/40f;
         return SC_fun.FluentFraction(X*ret);
+    }
+    public float GetSeonTransitionFraction()
+    {
+        float ret = animation_float;
+        if(animation_float < 0f) ret = 0f;
+        if(animation_float > 40f) ret = 40f;
+        return SC_fun.FluentFraction(ret/40f);
     }
     public string TransitionToEffect(string s)
     {
@@ -294,6 +316,7 @@ public class SC_boss : MonoBehaviour
         bool in_arena_vision = InArena("vision");
         bool in_arena_range = InArena("range");
         float fcr = GetArenaFcr();
+        if(animation_float < 40f) animation_float += 50f * Time.deltaTime;
         if(in_arena_vision) SC_control.SC_fun.camera_add = -12.5f * GetTransitionFraction(fcr);
     }
 

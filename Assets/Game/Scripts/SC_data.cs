@@ -397,6 +397,9 @@ public class SC_data : MonoBehaviour
 		//Culture set to comma (India converter)
 		System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("pl-PL");
 
+        //Limit FPS
+        Application.targetFrameRate = 120;
+
         /*if(Application.platform==RuntimePlatform.Android || Application.platform==RuntimePlatform.IPhonePlayer)
         {
             gameDIR = Application.persistentDataPath+"/"+clientRedVersion+"/game/"; // "./";
