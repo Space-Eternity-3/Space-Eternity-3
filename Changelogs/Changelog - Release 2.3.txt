@@ -19,6 +19,7 @@ Old feature changes:
 - Copper chimneys now drop 5 small copper chimneys when broken.
 - Copper chimneys and small copper chimneys have a bigger pick up range from now.
 - Treasures have a larger mouse collider from now.
+- Packed fobs have a bit larger collision collider from now.
 
 Artistic changes:
 

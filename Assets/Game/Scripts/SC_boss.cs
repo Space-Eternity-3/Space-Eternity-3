@@ -37,6 +37,7 @@ public class SC_boss : MonoBehaviour
     public Transform bossModels;
     public Transform shooterCenter, shooterCenterOver;
     public Transform[] ShooterProjections = new Transform[32];
+    public Vector3 EscapingDynamicPosition = new Vector3(0f,0f,0f);
 
     public int bX=0,bY=0,bID=1,sID=1;
 
@@ -391,6 +392,7 @@ public class SC_boss : MonoBehaviour
             0f
         ));
         Boss.eulerAngles = new Vector3(0f,0f,ScrdToFloat(dataID[10]));
+        EscapingDynamicPosition = Boss.position;
 
         //Give up allow checker
         if((InArena("range") && (dataID[2]==2)) && !bosnumed) {

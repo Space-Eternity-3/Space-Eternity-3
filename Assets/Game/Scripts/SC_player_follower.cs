@@ -7,6 +7,7 @@ public class SC_player_follower : MonoBehaviour
     public Transform player;
     public Transform follower;
     public Transform camera;
+    public SC_seeking SC_seeking;
 
     public Rigidbody playerR;
     public SC_bullet SC_bullet;
@@ -73,7 +74,8 @@ public class SC_player_follower : MonoBehaviour
             (teleporting_unsynced && teleporting_unsynced_catalizator) ||
             (velocity_source==4 && (SC_boss.dataID[2]!=2 || (SC_boss.type*5+SC_boss.dataID[18]==3*5+3 && SC_boss.dataID[17]>10 && SC_boss.dataID[19]-SC_boss.dataID[17]>=30)))
         ) {
-            follower.position = player.position;
+            if(velocity_source!=4) follower.position = player.position;
+            else follower.position = SC_boss.EscapingDynamicPosition;
             if(!(velocity_source==4 && SC_boss.dataID[2]!=2)) follower.rotation = player.rotation;
             teleporting=false;
             teleporting_unsynced = false;
@@ -107,6 +109,9 @@ public class SC_player_follower : MonoBehaviour
         {
             TargetTran[i].localPosition = SourceTran[i].localPosition;
         }
+
+        //Seeking optional
+        if(SC_seeking!=null) SC_seeking.LateUpdate();
     }
     float LerpingMultiplier(float f)
     {

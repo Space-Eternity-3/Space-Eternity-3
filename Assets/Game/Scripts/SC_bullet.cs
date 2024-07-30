@@ -305,6 +305,7 @@ public class SC_bullet : MonoBehaviour
             {
                 Transform trn = Instantiate(BulletEffects[type], transform.position, transform.rotation);
                 trn.SetParent(BulletFollower,true);
+                trn.position = BulletFollower.position;
             }
             if(LoopSounds[type]!=-1) loopSndID = SC_snd_loop.AddToLoop(LoopSounds[type],transform.position); // x x 2
 
