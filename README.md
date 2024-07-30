@@ -1,2 +1,2 @@
 # Space-Eternity-3
- My best game ever!
+ This is my biggest game created in Unity. See my spaghetti code and try to understand it :)
