@@ -158,9 +158,9 @@ public class SC_universe : MonoBehaviour
     }
     public void V_Play()
     {
-        if(!Directory.Exists("../../saves/Universe"+WorldID+"/") ||
-        !File.Exists("../../saves/Universe"+WorldID+"/UniverseInfo.se3") ||
-        !File.Exists("../../saves/Universe"+WorldID+"/SgpData.se3")) {
+        if(!Directory.Exists(SC_data.savesDIR+"Universe"+WorldID+"/") ||
+        !File.Exists(SC_data.savesDIR+"Universe"+WorldID+"/UniverseInfo.se3") ||
+        !File.Exists(SC_data.savesDIR+"Universe"+WorldID+"/SgpData.se3")) {
             SC_universe_create.StartCreating(WorldID);
             SC_universe_create.ButtonText.text = "Update & Play";
         } else

@@ -4904,7 +4904,6 @@ wss.on("connection", function connection(ws,req)
 
       if(arg[4][3]=="T")
       {
-          sendToAllPlayers("/RetSmoothBreakFrame "+arg[1]+" X X");
           plr.pclass[arg[1]].allowed_teleport_small = false;
       }
 
@@ -5498,7 +5497,6 @@ wss.on("connection", function connection(ws,req)
         bef[0] = Parsing.FloatU(arg[2]);
         bef[1] = Parsing.FloatU(arg[3]);
         plr.players[arg[1]] = bef.join(";");
-        sendToAllPlayers("/RetSmoothBreakFrame "+arg[1]+" X X");
         console.log("Teleported player "+plr.nicks[arg[1]]+" to coordinates: "+bef[0]+" "+bef[1]);
       }
     }

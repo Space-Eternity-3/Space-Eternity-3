@@ -15,7 +15,7 @@ using System.Text;
 public class SC_data : MonoBehaviour
 {
     public string settingsDIR="./Settings/";
-    public string savesDIR="../../saves/";
+    public static string savesDIR="../../saves/";
     public string datapacksDIR="./Datapacks/";
     public string gameDIR="./";
 
@@ -305,6 +305,18 @@ public class SC_data : MonoBehaviour
         ArchiveTake(ind,16);
         SaveAsteroid(16);
     }
+    public string GetGameDirectory()
+    {
+        string dir;
+
+        if(Environment.OSVersion.Platform == PlatformID.Win32NT)
+            dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Space Eternity 3");
+        else
+            dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".se3");
+
+        DirQ(dir);
+        return dir;
+    }
     public void DirQ(string path)
     {
         if(!Directory.Exists(path)) Directory.CreateDirectory(path);
@@ -400,12 +412,8 @@ public class SC_data : MonoBehaviour
         //Limit FPS
         Application.targetFrameRate = 120;
 
-        /*if(Application.platform==RuntimePlatform.Android || Application.platform==RuntimePlatform.IPhonePlayer)
-        {
-            gameDIR = Application.persistentDataPath+"/"+clientRedVersion+"/game/"; // "./";
-            settingsDIR = Application.persistentDataPath+"/"+clientRedVersion+"/settings/"; //"./Settings/";
-            savesDIR = Application.persistentDataPath+"/saves/"; // "../../saves/";
-        }*/
+        //savesDIR set
+        savesDIR = GetGameDirectory().Replace('\\','/') + "/saves/";
 
         //Example datapack load
         example = SourcePackJse3.text.Replace('\r',' ').Replace('\n',' ');

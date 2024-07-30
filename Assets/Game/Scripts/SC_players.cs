@@ -101,9 +101,6 @@ public class SC_players : MonoBehaviour
             if(positionBefore.z > 100f && sourcedPosition.z < 100f)
                 transform.GetComponent<SC_player_follower>().teleporting = true;
 
-            if(positionBefore != sourcedPosition && transform.GetComponent<SC_player_follower>().teleporting_unsynced)
-                transform.GetComponent<SC_player_follower>().teleporting_unsynced_catalizator = true;
-
             sleeping = false;
             if(inrange)
             {

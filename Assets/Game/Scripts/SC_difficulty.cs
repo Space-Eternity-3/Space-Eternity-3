@@ -94,8 +94,8 @@ public class SC_difficulty : MonoBehaviour
     //Saving and reading sgp variables
     public void SetFileName(int n)
     {
-        filePath = "../../saves/Universe" + n + "/";
-        fileName = "../../saves/Universe" + n + "/SgpData.se3";
+        filePath = SC_data.savesDIR+"Universe" + n + "/";
+        fileName = SC_data.savesDIR+"Universe" + n + "/SgpData.se3";
     }
     public void SaveVariableSGP(string variable_name, string value)
     {

@@ -145,6 +145,16 @@ public class SC_fun : MonoBehaviour
         
         return avgAngleDeg;
     }
+
+	public static float AngleDifference(float angle1, float angle2)
+    {
+        float difference = Math.Abs(angle1 - angle2) % 360;
+        if (difference > 180)
+        {
+            difference = 360 - difference;
+        }
+        return difference;
+    }
     
     private static float DegreesToRadians(float degrees)
     {

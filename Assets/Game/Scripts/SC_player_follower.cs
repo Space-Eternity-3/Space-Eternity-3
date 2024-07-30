@@ -20,8 +20,6 @@ public class SC_player_follower : MonoBehaviour
 
     public bool teleporting = true;
     public bool teleporting_if_far_away = false;
-    public bool teleporting_unsynced = false;
-    public bool teleporting_unsynced_catalizator = false;
     
     public int velocity_source = 0;
     public float lerping_ratio = 0.9f;
@@ -71,14 +69,12 @@ public class SC_player_follower : MonoBehaviour
         if(
             teleporting ||
             (teleporting_if_far_away && (follower.position - player.position).magnitude > 3f) ||
-            (teleporting_unsynced && teleporting_unsynced_catalizator) ||
             (velocity_source==4 && (SC_boss.dataID[2]!=2 || (SC_boss.type*5+SC_boss.dataID[18]==3*5+3 && SC_boss.dataID[17]>10 && SC_boss.dataID[19]-SC_boss.dataID[17]>=30)))
         ) {
             if(velocity_source!=4) follower.position = player.position;
             else follower.position = SC_boss.EscapingDynamicPosition;
             if(!(velocity_source==4 && SC_boss.dataID[2]!=2)) follower.rotation = player.rotation;
             teleporting=false;
-            teleporting_unsynced = false;
             if(velocity_source==3)
             {
                 SC_players.positionBefore = new Vector3(0f,0f,300f);
@@ -86,7 +82,6 @@ public class SC_player_follower : MonoBehaviour
                 SC_players.positionBeforeC = new Vector3(0f,0f,300f);
             }
         }
-        teleporting_unsynced_catalizator = false;
         follower.position = new Vector3(
             follower.position.x,
             follower.position.y,

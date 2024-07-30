@@ -47,7 +47,7 @@ public class SC_universe_create : MonoBehaviour
         ChangeCreatingIndex(n);
         SC_main_buttons.SAS(3);
 
-        if(Directory.Exists("../../saves/Universe"+n+"/") && File.Exists("../../saves/Universe"+n+"/UniverseInfo.se3"))
+        if(Directory.Exists(SC_data.savesDIR+"Universe"+n+"/") && File.Exists(SC_data.savesDIR+"Universe"+n+"/UniverseInfo.se3"))
         {
             DatapackOptions.localPosition = new Vector3(10000f,0f,0f);
             DatapackStatic.localPosition = new Vector3(0f,0f,0f);

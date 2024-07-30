@@ -967,15 +967,6 @@ public class SC_control : MonoBehaviour {
 		if(impulse_time==1) RemoveImpulse();
 		for(int ij=0;ij<max_players;ij++)
 			if(ramvis[ij]>0) ramvis[ij]--;
-
-		if(impulse_enabled)
-		{
-			playerR.constraints |= RigidbodyConstraints.FreezeRotationZ;
-		}
-		else
-		{
-			playerR.constraints &= ~RigidbodyConstraints.FreezeRotationZ;
-		}
 		
 		livTime++;
 
@@ -1788,13 +1779,6 @@ public class SC_control : MonoBehaviour {
 			//RetDamageBalance 1[damage] 2[livID] 3[immID]
 			if(livID==arg[2] && immID==arg[3])
 				damageBalance += Parsing.FloatE(arg[1]);
-		}
-		if(arg[0]=="/RetSmoothBreakFrame")
-		{
-			int pid = Parsing.IntE(arg[1]);
-			if(pid==connectionID) return;
-			if(pid==0) pid = connectionID;
-			PL[pid].GetComponent<SC_player_follower>().teleporting_unsynced = true;
 		}
 		if(arg[0]=="/RetUpgrade")
 		{
