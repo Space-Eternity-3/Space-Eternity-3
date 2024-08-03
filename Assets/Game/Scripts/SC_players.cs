@@ -37,11 +37,11 @@ public class SC_players : MonoBehaviour
     //Gameplay variables
     public int OtherSource;
 	public int ArtSource;
+    public Vector3 positionBeforeC = new Vector3(0f,0f,300f);
+    public Vector3 positionBeforeB = new Vector3(0f,0f,300f);
+    public Vector3 positionBeforeA = new Vector3(0f,0f,300f);
     public Vector3 sourcedPosition = new Vector3(0f,0f,300f);
     public float sourcedRotation = 10000f;
-    public Vector3 positionBefore = new Vector3(0f,0f,300f);
-    public Vector3 positionBeforeB = new Vector3(0f,0f,300f);
-    public Vector3 positionBeforeC = new Vector3(0f,0f,300f);
     bool sleeping = false;
 
     public void B_Awake()
@@ -84,48 +84,39 @@ public class SC_players : MonoBehaviour
 	}
     public Vector3 SpeculateVelocity()
     {
-        if(FixedPlayer.position.z > 100f || positionBefore.z > 100f || positionBeforeB.z > 100f)
-            return new Vector3(0f,0f,0f);
-        else
-            return (FixedPlayer.position - positionBeforeB) / 2f;
+        int before_level = 0;
+        if(FixedPlayer.position.z <= 100f && positionBeforeA.z <= 100f)
+        {
+            before_level = 1;
+            if(positionBeforeB.z <= 100f)
+            {
+                before_level = 2;
+                if(positionBeforeC.z <= 100f)
+                {
+                    before_level = 3;
+                }   
+            }
+        }
+
+        if(FixedPlayer.position != positionBeforeB && before_level >= 2) return (FixedPlayer.position - positionBeforeB) / 2f;
+        if(FixedPlayer.position != positionBeforeC && before_level >= 3) return (FixedPlayer.position - positionBeforeC) / 3f;
+        if(FixedPlayer.position != positionBeforeA && before_level >= 1) return (FixedPlayer.position - positionBeforeA) / 1f;
+
+        return new Vector3(0f,0f,0f);
     }
     public void AfterFixedUpdate()
     {
         bool actual = SC_fun.SC_control.NUL[IDP_phys];
-        bool inrange = true;
+        
         positionBeforeC = positionBeforeB;
-        positionBeforeB = positionBefore;
-        positionBefore = FixedPlayer.position;
+        positionBeforeB = positionBeforeA;
+        positionBeforeA = FixedPlayer.position;
+
         if(actual)
         {
-            if(positionBefore.z > 100f && sourcedPosition.z < 100f)
-                transform.GetComponent<SC_player_follower>().teleporting = true;
-
             sleeping = false;
-            if(inrange)
-            {
-                FixedPlayer.position = sourcedPosition;
-                FixedPlayer.eulerAngles = new Vector3(0f,0f,sourcedRotation);
-            }
-            else
-            {
-                FixedPlayer.position = sourcedPosition;
-
-                obj.offset = new Vector3(0f,0f,0f);
-                obj2.offset = new Vector3(0f,0f,0f);
-                obj3.offset = new Vector3(0f,0f,0f);
-
-                if(ArtSource%25==1) {
-			        SC_invisibler.visible = (SC_fun.SC_control.ramvis[IDP]>0 && SC_fun.SC_control.ramvis[IDP]<=SC_fun.SC_control.timeInvisiblePulse);
-			        SC_invisibler.invisible = true;
-		        }
-		        else {
-			        SC_fun.SC_control.ramvis[IDP]=0;
-			        SC_invisibler.invisible = false;
-		        }
-                SC_invisibler.LaterUpdate();
-                return;
-            }
+            FixedPlayer.position = sourcedPosition;
+            FixedPlayer.eulerAngles = new Vector3(0f,0f,sourcedRotation);
         }
 		else
         {
@@ -144,6 +135,9 @@ public class SC_players : MonoBehaviour
             }
             return;
         }
+
+        if(positionBeforeA.z > 100f && FixedPlayer.position.z < 100f)
+            transform.GetComponent<SC_player_follower>().teleporting = true;
 
 		int guitar=ArtSource;
         int bas=OtherSource;

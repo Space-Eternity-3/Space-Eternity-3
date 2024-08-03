@@ -13,6 +13,7 @@ public class SC_wind_boss : MonoBehaviour
     void OnTriggerStay(Collider collision)
     {
         //Like FixedUpdate
+        if(!SC_boss.SC_control.impulse_enabled)
         if(collision.gameObject.name=="pseudoBody" && SC_boss.InArena("range"))
         {
             Vector3 unm = player.position - center.position;

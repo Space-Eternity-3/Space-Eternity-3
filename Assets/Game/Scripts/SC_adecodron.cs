@@ -14,7 +14,7 @@ public class SC_adecodron : MonoBehaviour
 
     void OnTriggerEnter(Collider collision)
     {
-        if(collision.gameObject.name=="pseudoBody" && (detached || SC_boss.dataID[2]==2))
+        if(!SC_control.impulse_enabled && collision.gameObject.name=="pseudoBody" && (detached || SC_boss.dataID[2]==2))
         {
             Vector3 cent = transform.position;
             Vector3 plar = player.position;

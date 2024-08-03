@@ -196,7 +196,9 @@ public class SC_control : MonoBehaviour {
 	
 	public int actualTarDisp = 0; //no F1 included
 	bool escaped = false;
-	string RPU = "XXX";
+	string RPU = "XXX", RPU_mem = "XXX";
+	int sucness = 0;
+	public bool this_frame_sucned = false;
 	public string RespawnDelay = "";
 	int MTPloadedCounter=0;
 	public int cog_global_rot = 0;
@@ -237,6 +239,7 @@ public class SC_control : MonoBehaviour {
 	}
 	public void GravitonCatch()
 	{
+		if(!impulse_enabled)
 		foreach(SC_boss bos in SC_lists.SC_boss) {
 			if(bos.InArena("range"))
 			{
@@ -292,21 +295,6 @@ public class SC_control : MonoBehaviour {
 	}
 	public void LaterUpdate()
 	{
-		//Screens visibility
-		int f1TarDisp;
-		if(!f1) f1TarDisp = actualTarDisp; else f1TarDisp = 1;
-		Screen1.targetDisplay = f1TarDisp;
-		Screen2.targetDisplay = f1TarDisp;
-
-		for(int ji=1;ji<max_players;ji++){
-			NC[ji].enabled = !f1 && (PL[ji].ArtSource % 25!=1);
-		}
-
-		List<SC_pulse_bar> spbs = SC_lists.SC_pulse_bar;
-		foreach(SC_pulse_bar spb in spbs) {
-			spb.canvas.enabled = !f1;
-		}
-
 		//Multiplayer memories control
 		if((int)Communtron4.position.y==100)
 		{
@@ -330,6 +318,8 @@ public class SC_control : MonoBehaviour {
 				}
 			}
 		}
+
+		this_frame_sucned = false;
 		
 		if(!timeStop){
 		
@@ -694,9 +684,14 @@ public class SC_control : MonoBehaviour {
 
 		if(!living)
 		{
-			//update force dumb correction
 			transform.position=solidPos;
-			playerR.velocity=new Vector3(0f,0f,0f);
+			playerR.constraints |= RigidbodyConstraints.FreezePositionX;
+            playerR.constraints |= RigidbodyConstraints.FreezePositionY;
+		}
+		else
+		{
+			playerR.constraints &= ~RigidbodyConstraints.FreezePositionX;
+            playerR.constraints &= ~RigidbodyConstraints.FreezePositionY;
 		}
 
 		SC_projection.MuchLaterUpdate();
@@ -712,6 +707,23 @@ public class SC_control : MonoBehaviour {
 			esc_press(true);
 
 		blockEscapeThisFrame = false;
+
+		//Screens visibility
+		int f1TarDisp;
+		if(!f1) f1TarDisp = actualTarDisp;
+		else f1TarDisp = 1;
+		
+		Screen1.targetDisplay = f1TarDisp;
+		Screen2.targetDisplay = f1TarDisp;
+
+		for(int ji=1;ji<max_players;ji++){
+			NC[ji].enabled = !f1 && (PL[ji].ArtSource % 25!=1);
+		}
+
+		List<SC_pulse_bar> spbs = SC_lists.SC_pulse_bar;
+		foreach(SC_pulse_bar spb in spbs) {
+			spb.canvas.enabled = !f1;
+		}
 
 		//Restart lags
 		if(truePing>2.5f)
@@ -1167,15 +1179,25 @@ public class SC_control : MonoBehaviour {
 			cmdDo(tsList.Dequeue()+"");
 		}
 
-		if(!timeStop) {
-
-		//HEREBUL
-
-		}
-
 		//RPU converter
-		if(Communtron4.position.y==100f && RPU!="XXX") {
+		if(Communtron4.position.y==100f && RPU!="XXX")
+		{
 			TranslateRPU();
+			if(RPU!=RPU_mem)
+			{
+				sucness++;
+				this_frame_sucned = true;
+			}
+			else
+			{
+				this_frame_sucned = false;
+			}
+			if(livTime % 50 == 0)
+			{
+				//UnityEngine.Debug.Log("Second "+(livTime/50)+" sucness: "+sucness+"/50");
+				sucness = 0;
+			}
+			RPU_mem = RPU;
 		}
 
 		//drill fixed update
@@ -1974,6 +1996,13 @@ public class SC_control : MonoBehaviour {
 			if(pid==connectionID) return;
 			if(pid==0) pid = connectionID;
 			PL[pid].SC_shield.mtp_active = (arg[2]=="T");
+		}
+		if(arg[0]=="/RetSmoothBreak")
+		{
+			int pid = Parsing.IntE(arg[1]);
+			if(pid==connectionID) return;
+			if(pid==0) pid = connectionID;
+			PL[pid].GetComponent<SC_player_follower>().suc_teleporting = true;
 		}
 		if(arg[0]=="/RetInfoClient")
 		{

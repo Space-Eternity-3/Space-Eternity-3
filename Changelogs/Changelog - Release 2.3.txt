@@ -82,4 +82,7 @@ Bug fixes:
 - Other players' respawns weren't visible when player wasn't living.
 - Fixed bug, which was sometimes causing unexpected player movements.
 - Background texture was generating mipmaps, which was causing it to have smaller quality on lower resolutions.
+- Some velocity modifiers could affect static impulse velocity, for example geyzers or adecodron spikes.
+- Camera could sometimes shake after player death.
+- UI wasn't disappearing instantly after entering pause menu.
 

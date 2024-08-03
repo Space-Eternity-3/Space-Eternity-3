@@ -10,6 +10,7 @@ public class SC_wind : MonoBehaviour
     void OnTriggerStay(Collider collision)
     {
         //Like FixedUpdate
+        if(!player.GetComponent<SC_control>().impulse_enabled)
         if(collision.gameObject.name=="pseudoBody")
         {
             float dX,dY,distance;
