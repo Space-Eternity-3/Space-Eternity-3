@@ -66,6 +66,7 @@ Technical changes:
 - Reworked dynamic object movement smoothing (spaceships, bosses, bullets), which resulted in much better performance.
 - Player rotation is now locked using Rigidbody component and not through script, as it was before.
 - Increased target packet frequency value 25 -> 60, which results in more accurate entity position calculations (server side).
+- Path to saves directory is now set independently from game directory, which means, that direct downloading is possible from now.
 
 Bug fixes:
 

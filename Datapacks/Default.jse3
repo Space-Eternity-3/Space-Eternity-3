@@ -90,7 +90,7 @@ craftings
 	}
 	<Category>11
 	{
-		title_image: dead_alien;
+		title_image: stone_tomb;
 		1: dead_alien -> bone(3);
 		2: packed_stone + dead_alien -> stone_tomb;
 		3: packed_dark_stone + dead_alien -> dark_tomb;
