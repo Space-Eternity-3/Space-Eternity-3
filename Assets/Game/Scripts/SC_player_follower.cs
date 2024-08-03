@@ -35,53 +35,48 @@ public class SC_player_follower : MonoBehaviour
     }
     public void RemoteUpdate()
     {
-        //Position smoothing
-        if(velocity_source==0) // Main player
-        {
+        //Movement speculating
+        if(velocity_source==0) { // MAIN PLAYER
             follower.position += playerR.velocity * Time.deltaTime;
         }
-        if(velocity_source==1) // Bullet
-        {
-            if(player==null)
-            {
-                Destroy(gameObject);
-                return;
-            }
+        if(velocity_source==1) { // BULLET
+            if(player==null) { Destroy(gameObject); return; }
             follower.position += SC_bullet.st_vect * SC_bullet.follow_multiplier * 50f * Time.deltaTime;
         }
-        if(velocity_source==2) // White projection
-        {
+        if(velocity_source==2) { // WHITE PROJECTION
             follower.position += SC_projection.SpeculateVelocity() * 50f * Time.deltaTime;
         }
-        if(velocity_source==3) // Other players
-        {
-            follower.position += SC_players.SpeculateVelocity() * 50f * Time.deltaTime;
+        if(velocity_source==3) { // OTHER PLAYERS
+            
         }
-        if(velocity_source==4) //Boss
-        {
+        if(velocity_source==4) { // BOSS
             follower.position += SC_boss.GetVelocity() * 50f * Time.deltaTime;
             follower.rotation = Quaternion.Euler(0f,0f,follower.eulerAngles.z + SC_boss.dataID[11] * 0.15f * 50f * Time.deltaTime);
         }
 
+        //Movement fluent correction
         follower.position = Vector3.Lerp(player.position,follower.position,LerpingMultiplier(lerping_ratio));
         float r = LerpingMultiplier(rotor_int/(rotor_int+1f));
         follower.rotation = Quaternion.Euler(0f,0f,SC_fun.rotAvg((int)Mathf.Ceil(r/(1-r)),follower.eulerAngles.z,player.eulerAngles.z));
+
+        //Teleport frame detect and execute
         if(
             teleporting ||
             (teleporting_if_far_away && (follower.position - player.position).magnitude > 3f) ||
             (velocity_source==4 && (SC_boss.dataID[2]!=2 || (SC_boss.type*5+SC_boss.dataID[18]==3*5+3 && SC_boss.dataID[17]>10 && SC_boss.dataID[19]-SC_boss.dataID[17]>=30)))
         ) {
+            //Position
             if(velocity_source!=4) follower.position = player.position;
             else follower.position = SC_boss.EscapingDynamicPosition;
+
+            //Rotation
             if(!(velocity_source==4 && SC_boss.dataID[2]!=2)) follower.rotation = player.rotation;
+
+            //Technical
             teleporting=false;
-            if(velocity_source==3)
-            {
-                SC_players.positionBefore = new Vector3(0f,0f,300f);
-                SC_players.positionBeforeB = new Vector3(0f,0f,300f);
-                SC_players.positionBeforeC = new Vector3(0f,0f,300f);
-            }
         }
+
+        //Z-correction
         follower.position = new Vector3(
             follower.position.x,
             follower.position.y,
@@ -96,12 +91,10 @@ public class SC_player_follower : MonoBehaviour
         );
 
         //Customize projection look
-        for(int i=0;i<TargetRend.Length;i++)
-        {
+        for(int i=0;i<TargetRend.Length;i++) {
             TargetRend[i].material = SourceRend[i].material;
         }
-        for(int i=0;i<TargetTran.Length;i++)
-        {
+        for(int i=0;i<TargetTran.Length;i++) {
             TargetTran[i].localPosition = SourceTran[i].localPosition;
         }
 

@@ -561,7 +561,8 @@ public class SC_boss : MonoBehaviour
         if(mother) return 999999f;
 
         return SC_control.Pitagoras(
-            (solidPosition-new Vector3(0f,0f,solidPosition.z))-(SC_control.transform.position-new Vector3(0f,0f,SC_control.transform.position.z))
+            (solidPosition-new Vector3(0f,0f,solidPosition.z)) -
+            (SC_control.SC_player_follower.transform.position-new Vector3(0f,0f,SC_control.SC_player_follower.transform.position.z))
         );
     }
     public void GiveUpSGP()

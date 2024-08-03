@@ -267,6 +267,29 @@ public class SC_control : MonoBehaviour {
 		raw_angle %= 360;
 		return raw_angle;
 	}
+	public void RotatePlayerAndItsComponents()
+	{
+		float pom = getMouseRotation(mY,mX);
+		Quaternion quat_food=new Quaternion(0f,0f,0f,0f);
+		quat_food.eulerAngles = new Vector3(0f,0f,pom);
+		player.rotation = quat_food;
+
+		pom = SC_player_follower.transform.eulerAngles.z;
+		quat_food.eulerAngles = new Vector3(0f,0f,pom);
+		if(ArtSource % 2 == 0) SC_artefacts.SC_seeking2.GetComponent<Transform>().rotation = quat_food;
+		else SC_artefacts.SC_seeking2.GetComponent<Transform>().rotation = new Quaternion(0f,0f,0f,0f);
+		
+		quat_food.eulerAngles = new Vector3(90f-pom,90f,-90f);
+		player_illusion.rotation = quat_food;
+		
+		SC_artefacts.SC_seeking.LateUpdate();
+		SC_artefacts.SC_seeking2.LateUpdate();
+		List<SC_seeking> scs = SC_lists.SC_seeking;
+		foreach(SC_seeking sc in scs)
+		{
+			if(sc.idWord=="inv_part") sc.LateUpdate();
+		}
+	}
 	public void LaterUpdate()
 	{
 		//Screens visibility
@@ -589,24 +612,7 @@ public class SC_control : MonoBehaviour {
 		if(mX==0) mX=1; //required
 		if(mY==0) mY=1;
 		
-		float pom = getMouseRotation(mY,mX);
-		Quaternion quat_food=new Quaternion(0f,0f,0f,0f);
-		
-		quat_food.eulerAngles = new Vector3(0f,0f,pom);
-		player.rotation = quat_food;
-		if(ArtSource % 2 == 0) SC_artefacts.SC_seeking2.GetComponent<Transform>().rotation = quat_food;
-		else SC_artefacts.SC_seeking2.GetComponent<Transform>().rotation = new Quaternion(0f,0f,0f,0f);
-		
-		quat_food.eulerAngles = new Vector3(90f-pom,90f,-90f);
-		player_illusion.rotation = quat_food;
-		
-		SC_artefacts.SC_seeking.LateUpdate();
-		SC_artefacts.SC_seeking2.LateUpdate();
-		List<SC_seeking> scs = SC_lists.SC_seeking;
-		foreach(SC_seeking sc in scs)
-		{
-			if(sc.idWord=="inv_part") sc.LateUpdate();
-		}
+		RotatePlayerAndItsComponents();
 
 		//ENGINES
 		bool want_engine = PressedNotInChat(KeyCode.Space,"hold");

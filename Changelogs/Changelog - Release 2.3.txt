@@ -11,7 +11,7 @@ New features:
 - Added treasure base, which collects treasures generated in factory.
 - Added diamond base, which boosts factory efficiency when activated with a diamond.
 - Added supreme white diode, the rarest fob in the entire game with only 0.2% drop rate from copper facility treasures.
-- Added possibility to customize Unity quality levels in settings (graphics slider).
+- Added possibility to customize Unity quality levels in settings.
 
 Old feature changes:
 
@@ -26,6 +26,7 @@ Artistic changes:
 - Rocket nose will no longer be highlighted when cursor is over fob.
 - Copper asteroid can have both rectangular and triangular texture and it's more metalic from now.
 - Copper stone and packed copper meterials have changed a bit.
+- Copper texture colors changed a bit to be more consistent with other copper objects: copper, packed copper, copper bullet
 - Artefact fob light sphere will now be positioned properly relatively to the camera.
 - Artefact base material changed to be more metalic.
 
@@ -61,12 +62,14 @@ Technical changes:
 - Reworked impulse shield system and added potion shield system.
 - Reworked storage material system to automatically generate item materials.
 - Treasure string format updated to handle treasure bases.
-- Settings format changed to fit graphics settings.
+- Settings format changed to fit quality settings.
 - Asteroids with ID 14 and 15 are stone_clone and copper_clone from now.
 - Reworked dynamic object movement smoothing (spaceships, bosses, bullets), which resulted in much better performance.
 - Player rotation is now locked using Rigidbody component and not through script, as it was before.
 - Increased target packet frequency value 25 -> 60, which results in more accurate entity position calculations (server side).
 - Path to saves directory is now set independently from game directory, which means, that direct downloading is possible from now.
+- Textures are rendered using trilinear mode instead of bilinear from now.
+- Item textures rendering improved.
 
 Bug fixes:
 
@@ -78,4 +81,5 @@ Bug fixes:
 - Server could rarely enter the broken loop state when it was starting, which was causing majority of the update code to not execute.
 - Other players' respawns weren't visible when player wasn't living.
 - Fixed bug, which was sometimes causing unexpected player movements.
+- Background texture was generating mipmaps, which was causing it to have smaller quality on lower resolutions.
 
