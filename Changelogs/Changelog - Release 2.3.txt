@@ -85,4 +85,5 @@ Bug fixes:
 - Some velocity modifiers could affect static impulse velocity, for example geyzers or adecodron spikes.
 - Camera could sometimes shake after player death.
 - UI wasn't disappearing instantly after entering pause menu.
+- Diodes on vanishing asteroids could sometimes cause some weird visual bugs.
 
