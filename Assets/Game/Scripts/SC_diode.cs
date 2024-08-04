@@ -43,7 +43,7 @@ public class SC_diode : MonoBehaviour
         }
         else
         {
-            LuneHolder.localPosition = new Vector3(0f,0f,10000f);
+            LuneHolder.position = new Vector3(0f,0f,-10000f);
             rend.material = DiodeOff;
         }
     }
