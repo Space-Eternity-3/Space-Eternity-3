@@ -84,7 +84,14 @@ const default_config = {
     "max_player_updates_per_3_seconds": 180,
     "max_messages_per_second": 1200,
     "allow_everywhere_spawn": false
-	}
+	},
+  "boss_bullets_collide_with": {
+    "terrain_asteroids": false,
+    "terrain_fobs": false,
+    "structure_asteroids": true,
+    "structure_fobs": true,
+    "other_objects": true
+  }
 };
 if(!existsF("./config.json")) {
   writeF("config.json",JSON.stringify(default_config,null,2));
@@ -1758,15 +1765,20 @@ class Bosbul
               {
                   if(obj.obj === "asteroid")
                   {
-                      if (!obj.hidden) Build.set("ast_" + obj.ulam, new CBosbulCollider(obj, -1));
-                      for (let i = 0; i < obj.size * 2; i++)
-                          Build.set("fob_" + obj.ulam + "_" + i, new CBosbulCollider(obj, i));
+                      let from_seon = obj.ulam % 2 == 0;
+                      if((from_seon && config.boss_bullets_collide_with.structure_asteroids) || (!from_seon && config.boss_bullets_collide_with.terrain_asteroids))
+                          if (!obj.hidden)
+                              Build.set("ast_" + obj.ulam, new CBosbulCollider(obj, -1));
+                      if((from_seon && config.boss_bullets_collide_with.structure_fobs) || (!from_seon && config.boss_bullets_collide_with.terrain_fobs))
+                          for (let i = 0; i < obj.size * 2; i++)
+                              Build.set("fob_" + obj.ulam + "_" + i, new CBosbulCollider(obj, i));
                       this.UpdateFobCollidersInDictionary(Build, obj.ulam);
                   }
                   else if (["sphere", "star", "monster", "wall", "piston"].includes(obj.obj))
                   {
                       const random_key = Math.floor(Math.random() * 1000000000);
-                      Build.set(random_key, new CBosbulCollider(obj, -1));
+                      if(config.boss_bullets_collide_with.other_objects)
+                          Build.set(random_key, new CBosbulCollider(obj, -1));
                   }
               }
 
@@ -7406,7 +7418,7 @@ class Commands
             if(!Parsing.IntC(arg[2]) || !Parsing.IntC(arg[3])) {
                 console.log("Item and count should be integers.");
             }
-            if(item<=0 || count<=0 || item>127) {
+            else if(item<=0 || item>127 || count<=0 || count>9999999) {
                 console.log("Wrong numbers were used.");
             }
             else {

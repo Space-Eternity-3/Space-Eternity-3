@@ -119,6 +119,8 @@ drill_loot
 	diamond: small_diamond(2%);
 	metalic: stone(50%);
 	bone: bone(92%) + blank_element(8%);
+	stone_clone: stone(100%);
+	copper_clone: copper(100%);
 }
 modified_drops
 {
