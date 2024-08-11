@@ -1223,31 +1223,34 @@ public class SC_worldgen : MonoBehaviour
         bool just_refresh = (started && last_x==cx && last_y==cy);
         started = true; last_x = cx; last_y = cy;
 
-        int x,y;
+        int x,y,t,t_lngt=(2*GenerationRange+1)*(2*GenerationRange+1);
         if(!(Mathf.Abs(cx) > 20100 || Mathf.Abs(cy) > 20100))
-        for(x=cx-GenerationRange;x<=cx+GenerationRange;x++)
-        for(y=cy-GenerationRange;y<=cy+GenerationRange;y++)
-        if((x+y)%2==0)
+        for(t=1;t<=t_lngt;t++)
         {
-            string holder_name = "ast_"+x+"_"+y;
-            if(!Holders.ContainsKey(holder_name))
+            int[] xy = SC_fun.UlamToXY(t);
+            x = cx + xy[0]; y = cy + xy[1];
+            if((x+y)%2==0)
             {
-                if(frame_creations < FrameMaxCreations || !high_started) frame_creations++;
-                else
+                string holder_name = "ast_"+x+"_"+y;
+                if(!Holders.ContainsKey(holder_name))
                 {
-                    started=false;
-                    continue;
-                }
+                    if(frame_creations < FrameMaxCreations || !high_started) frame_creations++;
+                    else
+                    {
+                        started=false;
+                        continue;
+                    }
 
-                SC_object_holder holder = Instantiate(SC_object_holder,10*new Vector3(x,y,0f),Quaternion.identity);
-                CObjectInfo obj = Universe.GetObject(SC_fun.MakeUlam(x,y));
-                holder.Objects = new CObjectInfo[]{obj};
-                holder.name = holder_name;
-                holder.holder_name = holder_name;
-                holder.Unlock();
-                Holders.Add(holder_name,holder);
+                    SC_object_holder holder = Instantiate(SC_object_holder,10*new Vector3(x,y,0f),Quaternion.identity);
+                    CObjectInfo obj = Universe.GetObject(SC_fun.MakeUlam(x,y));
+                    holder.Objects = new CObjectInfo[]{obj};
+                    holder.name = holder_name;
+                    holder.holder_name = holder_name;
+                    holder.Unlock();
+                    Holders.Add(holder_name,holder);
+                }
+                else if(!Holders[holder_name].aborted_worldgen) Holders[holder_name].terminate_in = 300;
             }
-            else if(!Holders[holder_name].aborted_worldgen) Holders[holder_name].terminate_in = 300;
         }
         high_started = true;
     }

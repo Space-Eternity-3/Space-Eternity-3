@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Diagnostics;
 using SFB;
 using System.Text;
+using System.Threading.Tasks;
 
 public class SC_data : MonoBehaviour
 {
@@ -45,7 +46,7 @@ public class SC_data : MonoBehaviour
     FileStream fr,fw;
     StreamReader sr;
     StreamWriter sw;
-    string writingStorage="";
+    StringBuilder writingStorage = new StringBuilder();
 
     //Awake Universal
     public string[] MultiplayerInput = new string[4];
@@ -325,15 +326,16 @@ public class SC_data : MonoBehaviour
     {
         fw = new FileStream(file, FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough);
         sw = new StreamWriter(fw);
-        writingStorage = "";
+        writingStorage = new StringBuilder();
     }
     void SaveLineCrLf(string str)
     {
-        writingStorage += str+"\r\n";
+        writingStorage.Append(str);
+        writingStorage.Append("\r\n");
     }
-    void CloseWrite()
+    void CloseWriteSync()
     {
-        sw.Write(writingStorage);
+        sw.Write(writingStorage.ToString());
         sw.Close();
         fw.Close();
     }
@@ -719,7 +721,7 @@ public class SC_data : MonoBehaviour
 			SaveLineCrLf(compass_mode);
             SaveLineCrLf(has_played);
             SaveLineCrLf(graphics);
-            CloseWrite();
+            CloseWriteSync();
         }
         if(E=="temp")
         {
@@ -728,7 +730,7 @@ public class SC_data : MonoBehaviour
             OpenWrite(file);
             SaveLineCrLf(TempFile);
             for(i=0;i<11;i++) SaveLineCrLf(TempFileConID[i]);
-            CloseWrite();
+            CloseWriteSync();
         }
         if(E=="universeX")
         {
@@ -746,7 +748,7 @@ public class SC_data : MonoBehaviour
                     SaveLineCrLf(UniverseX[i-1,0]);
                     SaveLineCrLf(UniverseX[i-1,1]);
                     SaveLineCrLf(UniverseX[i-1,2]);
-                    CloseWrite();
+                    CloseWriteSync();
                 }
             }
         }
@@ -756,7 +758,7 @@ public class SC_data : MonoBehaviour
 
             OpenWrite(file);
             SaveLineCrLf(seed);
-            CloseWrite();
+            CloseWriteSync();
         }
         if(E=="biomes")
         {
@@ -768,7 +770,7 @@ public class SC_data : MonoBehaviour
 
                     OpenWrite(file);
                     SaveLineCrLf(biome_memories[i]);
-                    CloseWrite();
+                    CloseWriteSync();
 
                     biome_memories_state[i] = 2;
                 }
@@ -791,7 +793,7 @@ public class SC_data : MonoBehaviour
 
             OpenWrite(file);
             for(i=0;i<4;i++) SaveLineCrLf(effectTab[i]);
-            CloseWrite();
+            CloseWriteSync();
         }
     }
     public string GetAsteroid(int X,int Y)
@@ -813,9 +815,6 @@ public class SC_data : MonoBehaviour
         for(i=0;i<16;i++){
             if(WorldSector[i]==gX+";"+gY) return i+";"+rSS+";F";
         }
-
-        //StoreAsteroid(asteroidCounter);
-        //SC_control.MainSaveData();
 
         if(WorldSector[asteroidCounter]!="")
         ArchiveAdd(asteroidCounter);
@@ -925,7 +924,7 @@ public class SC_data : MonoBehaviour
             SaveLineCrLf(ReduceAst(locef));
         }
 
-        CloseWrite();
+        CloseWriteSync();
     }
     public void OpenDataDir()
     {

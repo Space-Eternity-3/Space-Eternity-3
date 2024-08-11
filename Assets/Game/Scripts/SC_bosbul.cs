@@ -229,10 +229,12 @@ public static class Bosbul
             List<CObjectInfo> Surroundings = new List<CObjectInfo>();
 
             Surroundings.AddRange( Universe.GetSector("S_"+X+"_"+Y) );
-            Surroundings.AddRange( Universe.GetSector("B_"+X+"_"+Y) );
-            Surroundings.AddRange( Universe.GetSector("B_"+(X-1)+"_"+Y) );
-            Surroundings.AddRange( Universe.GetSector("B_"+X+"_"+(Y-1)) );
-            Surroundings.AddRange( Universe.GetSector("B_"+(X-1)+"_"+(Y-1)) );
+            if(SC_fun.include_terrain_to_bosbul) {
+                Surroundings.AddRange( Universe.GetSector("B_"+X+"_"+Y) );
+                Surroundings.AddRange( Universe.GetSector("B_"+(X-1)+"_"+Y) );
+                Surroundings.AddRange( Universe.GetSector("B_"+X+"_"+(Y-1)) );
+                Surroundings.AddRange( Universe.GetSector("B_"+(X-1)+"_"+(Y-1)) );
+            }
 
             Dictionary<string, CBosbulCollider> Build = new Dictionary<string, CBosbulCollider>();
             foreach(CObjectInfo obj in Surroundings)

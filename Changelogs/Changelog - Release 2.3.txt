@@ -56,7 +56,6 @@ Configurables:
   - All treasure biomes: 4% -> 6%
 - It is now possible to customize target_packet_frequency value in server config.
 - It is now possible to customize in config, with which objects will boss bullets on multiplayer collide.
-  - Disabled collision with terrain asteroids and fobs by default, as there is none on the arena.
 
 Technical changes:
 
@@ -74,6 +73,8 @@ Technical changes:
 - Item textures rendering improved.
 - Inventory moves more smoothly from now.
 - Give command code slightly improved to handle impossible give counts.
+- Boss bullet collision system ignores non-structural asteroids from now to increase performance.
+- Asteroids generate spiraly from now, which prioritizes asteroids near player.
 
 Bug fixes:
 
