@@ -35,6 +35,7 @@ UI changes:
 - Text "Version: " was removed from the universe selection menu. The version name will be displayed alone from now.
 - Text "Recharge artefact using star" changed to "Recharge artefact near star".
 - Music and Volume settings can now be set to all whole values from 0% to 100%.
+- In main menu information about game creator and music source will be visible.
 
 Configurables:
 
@@ -75,6 +76,9 @@ Technical changes:
 - Give command code slightly improved to handle impossible give counts.
 - Boss bullet collision system ignores non-structural asteroids from now to increase performance.
 - Asteroids generate spiraly from now, which prioritizes asteroids near player.
+- 5 generated asteroids per frame reduced to 2 to increase performance.
+- Structures will generate in parts from now, which (at least in theory) reduces spike lag during loading.
+- Universe data saves asynchroneously on singleplayer from now, which reduces spike lag during saving.
 
 Bug fixes:
 

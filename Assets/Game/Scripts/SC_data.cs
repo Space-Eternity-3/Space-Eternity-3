@@ -301,11 +301,11 @@ public class SC_data : MonoBehaviour
                 return i;
         return -1;
     }
-    public void ArchiveSave(int ind)
+    /*public void ArchiveSave(int ind)
     {
         ArchiveTake(ind,16);
         SaveAsteroid(16);
-    }
+    }*/
     public string GetGameDirectory()
     {
         string dir;
@@ -434,6 +434,7 @@ public class SC_data : MonoBehaviour
             Deterministics.long3 = SC_control.SC_fun.SC_long_strings.AsteroidSizeBase;
             Bosbul.SC_fun = SC_control.SC_fun;
             Bosbul.BosbulSectors.Clear();
+            AsyncData.SC_data = this;
         }
 		
         //Reset data
@@ -464,7 +465,7 @@ public class SC_data : MonoBehaviour
 			SceneManager.LoadScene("MainMenu");
         }
     }
-    string GetPath(string D)
+    public string GetPath(string D)
     {
         switch(D)
         {
@@ -479,7 +480,7 @@ public class SC_data : MonoBehaviour
             default: return "./ERROR/";
         }
     }
-    string GetFile(string D)
+    public string GetFile(string D)
     {
         string P=GetPath(D);
         if(D=="generated") return P+"Generated";
@@ -738,6 +739,8 @@ public class SC_data : MonoBehaviour
 
             for(i=1;i<=8;i++)
             {
+
+                if(!menu) if((int)Communtron4.position.y != i) continue;
                 path=pathPre+i+"/";
                 file=path+"UniverseInfo.se3";
                 if(UniverseX[i-1,1]!="DEFAULT~unknown" && UniverseX[i-1,0]!="")
@@ -759,25 +762,6 @@ public class SC_data : MonoBehaviour
             OpenWrite(file);
             SaveLineCrLf(seed);
             CloseWriteSync();
-        }
-        if(E=="biomes")
-        {
-            for(i=0;i<16000;i++)
-            {
-                if(biome_memories_state[i]==3 && biome_memories[i]!="")
-                {
-                    file = GetPath("Biomes2") + "Memory_"+i+".se3";
-
-                    OpenWrite(file);
-                    SaveLineCrLf(biome_memories[i]);
-                    CloseWriteSync();
-
-                    biome_memories_state[i] = 2;
-                }
-            }
-
-            file = GetFile("Biomes");
-            if(File.Exists(file)) File.Delete(file);
         }
         if(E=="player_data")
         {
@@ -827,7 +811,6 @@ public class SC_data : MonoBehaviour
         }
         else {
 
-        //Search files for a world sector
         string path,file,filePre;
         path=GetPath("generated");
         filePre=GetFile("generated");
@@ -838,9 +821,13 @@ public class SC_data : MonoBehaviour
         
 		if(Directory.Exists(path))
         {
+            while(AsyncData.thread_count!=0) {}
+
             if(File.Exists(file))
             {
                 string[] lines = new string[101];
+
+                lock(AsyncData._saving) {
 
                 try{
 
@@ -870,8 +857,10 @@ public class SC_data : MonoBehaviour
 					AsteroidReset(asteroidCounter);
 
                     if(File.Exists(file)) File.Delete(file);
-                    
+
                     return GetAsteroid(X,Y);
+                }
+
                 }
             }
             else AsteroidReset(asteroidCounter);
@@ -897,7 +886,7 @@ public class SC_data : MonoBehaviour
         for(j=0;j<=i;j++) eff.Append(str[j]);
         return eff.ToString();
     }
-    public void SaveAsteroid(int A)
+    /*public void SaveAsteroid(int A)
     {
         if(Globals.emergency_save_terminate) return;
         if(WorldSector[A]=="") return;
@@ -925,7 +914,7 @@ public class SC_data : MonoBehaviour
         }
 
         CloseWriteSync();
-    }
+    }*/
     public void OpenDataDir()
     {
         warning_text4.text="";
@@ -1688,6 +1677,111 @@ public static class Globals
 {
     public static bool emergency_save_terminate = false;
     public static int reference_time = 0; //Only updates on FixedUpdate!
+}
+
+public class StructMD
+{
+    //Biomes
+    public List<string> biome_names = new List<string>();
+    public List<string> biome_contents = new List<string>();
+
+    //PlayerData
+    public string[] player_data;
+
+    //AsteroidData archive
+    public List<string> archived_world_sector;
+    public List<string[,]> archived_world;
+    public string seed;
+}
+
+public static class AsyncData
+{
+    public static object _saving = new object();
+    public static object _thrcount = new object();
+    public static int thread_count = 0; // Only atomic operations allowed!
+    public static SC_data SC_data;
+
+    public static async Task MainDataSaveAsync(StructMD smd)
+    {
+        if(SC_data==null)
+        {
+            UnityEngine.Debug.LogWarning("Trying to access MainDataSaveAsync() from main menu.");
+            return;
+        }
+
+        //Warning: Task assumes that all directories exist!
+        Interlocked.Increment(ref thread_count);
+        await Task.Run(() =>
+        {
+            lock(_saving)
+            {
+                int i,j,k;
+                int ingt,jngt,kngt;
+                try {
+
+                //[Biomes]
+                ingt = smd.biome_names.Count;
+                for(i=0;i<ingt;i++)
+                {
+                    using(FileStream fw = new FileStream(SC_data.worldDIR+"Biomes/Memory_"+smd.biome_names[i]+".se3", FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough))
+                    using(StreamWriter sw = new StreamWriter(fw))
+                    {
+                        sw.Write(smd.biome_contents[i]);
+                        sw.Write("\r\n");
+                    }
+                }
+
+                //[PlayerData]
+                using(FileStream fw = new FileStream(SC_data.worldDIR+"PlayerData.se3", FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough))
+                using(StreamWriter sw = new StreamWriter(fw))
+                {
+                    foreach(string line in smd.player_data)
+                    {
+                        sw.Write(line);
+                        sw.Write("\r\n");
+                    }
+                }
+
+                //[Asteroids]
+                ingt = smd.archived_world.Count;
+                for(i=0;i<ingt;i++)
+                {
+                    using(FileStream fw = new FileStream(SC_data.worldDIR+"Asteroids/Generated_"+smd.archived_world_sector[i].Replace(';','_')+".se3", FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough))
+                    using(StreamWriter sw = new StreamWriter(fw))
+                    {
+                        sw.Write(smd.seed);
+                        sw.Write("\r\n");
+                        for(j=0;j<100;j++)
+                        {
+                            StringBuilder line_build = new StringBuilder();
+                            for(k=0;k<61;k++)
+                            {
+                                line_build.Append(smd.archived_world[i][j,k]);
+                                line_build.Append(";");
+                            }
+                            for(k=line_build.Length-1;k>=0;k--)
+                            {
+                                if(line_build[k]==';') line_build.Remove(k,1);
+                                else break;
+                            }
+                            sw.Write(line_build.ToString());
+                            sw.Write("\r\n");
+                        }
+                    }
+                }
+
+                } catch(Exception)
+                {
+                    UnityEngine.Debug.LogWarning("Caution! Saving procedure aborted! Ignoring it in hope for better time...");
+                    throw;
+                }
+
+                string file = SC_data.GetFile("Biomes");
+                if(File.Exists(file)) File.Delete(file);
+            }
+            Interlocked.Decrement(ref thread_count);
+        });
+    }
 }
 
 public static class Parsing

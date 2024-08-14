@@ -33,6 +33,7 @@ public class SC_fun : MonoBehaviour
 	public bool dev_bosbul = false;
 	public bool jump_ping_simulator = false;
 	public bool include_terrain_to_bosbul = false;
+	public int structure_frame_generations = 1;
 
 	public float[] boss_damages = new float[16];
 	public float[] boss_damages_cyclic = new float[16];

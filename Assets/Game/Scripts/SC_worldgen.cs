@@ -1199,7 +1199,7 @@ public class SC_worldgen : MonoBehaviour
     }
     void Update()
     {
-        BothGenerationsTry();
+        if(AsyncData.thread_count==0) BothGenerationsTry();
         if(AllowDebugInfo) DebugInfo();
     }
 

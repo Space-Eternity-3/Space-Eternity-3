@@ -7,6 +7,7 @@ using WebSocketSharp;
 using UnityEngine.SceneManagement;
 using System;
 using System.Text;
+using System.Diagnostics;
 
 public class SC_control : MonoBehaviour {
 
@@ -75,7 +76,7 @@ public class SC_control : MonoBehaviour {
 	int cooldown=0;
 	public int imp_cooldown=0;
 	int collision_cooldown=0;
-	int saveCo=0;
+	int saveCo=750;
 	public int max_players = 10;
 	public bool blockEscapeThisFrame = false;
 
@@ -728,7 +729,7 @@ public class SC_control : MonoBehaviour {
 		//Restart lags
 		if(truePing>2.5f)
 		{
-			Debug.LogWarning("Ping over 2.50s");
+			UnityEngine.Debug.LogWarning("Ping over 2.50s");
 			MenuReturn();
 		}
 
@@ -788,7 +789,7 @@ public class SC_control : MonoBehaviour {
 			livID=(Parsing.IntE(livID)+1)+"";
 			damageBalance = 0;
 		}
-		Debug.Log("Player died");
+		UnityEngine.Debug.Log("Player died");
 		actualTarDisp = 1;
 				
 		SC_invisibler.invisible = false;
@@ -841,7 +842,7 @@ public class SC_control : MonoBehaviour {
 			damageBalance = 0;
 		}
 		Instantiate(ImmortalParticles,transform.position,transform.rotation);
-		Debug.Log("Player avoided death");
+		UnityEngine.Debug.Log("Player avoided death");
 	}
 	public void esc_press(bool bo)
 	{
@@ -861,53 +862,89 @@ public class SC_control : MonoBehaviour {
 	}
 	public void MainSaveData()
 	{
-		int z;
-		for(z=0;z<5;z++)
-		{
-			SC_data.upgrades[z]=SC_upgrades.MTP_levels[z]+"";
-		}
-		for(z=0;z<21;z++)
-		{
-			SC_data.backpack[z,0]=SC_slots.BackpackX[z]+"";
-			SC_data.backpack[z,1]=SC_slots.BackpackY[z]+"";
-		}
-		for(z=0;z<9;z++)
-		{
-			SC_data.inventory[z,0]=SC_slots.SlotX[z]+"";
-			SC_data.inventory[z,1]=SC_slots.SlotY[z]+"";
-		}
-
-		if(health_V>0f)
-		{
-			SC_data.data[0]=(Mathf.Round(transform.position.x*10000f)/10000f)+"";
-			SC_data.data[1]=(Mathf.Round(transform.position.y*10000f)/10000f)+"";
-			SC_data.data[2]=(Mathf.Round(health_V*10000f)/10000f)+"";
-			SC_data.data[3]=(Mathf.Round(turbo_V*10000f)/10000f)+"";
-			SC_data.data[4]=(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"";
-			SC_data.data[5]=(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"";
-			SC_data.data[6]=timerH+"";
-			SC_data.data[7]=(Mathf.Round(power_V*10000f)/10000f)+"";
-		}
-		else
-		{
-			SC_data.data[0]=(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"";
-			SC_data.data[1]=(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"";
-			SC_data.data[2]="1";
-			SC_data.data[3]="0";
-			SC_data.data[4]=(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"";
-			SC_data.data[5]=(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"";
-			SC_data.data[6]="0";
-			SC_data.data[7]="0";
-		}
-		SC_data.Save("player_data");
-
+		if(Globals.emergency_save_terminate) return;
+        
 		SC_data.UniverseX[worldID-1,0]=SC_camera.TotalTime+"";
 		SC_data.Save("universeX");
 
-		SC_data.Save("biomes");
+		SC_data.DirQ(SC_data.worldDIR);
+		SC_data.DirQ(SC_data.asteroidDIR);
+		SC_data.DirQ(SC_data.worldDIR+"Biomes/");
+		
+		int z;
+		StructMD Smd = new StructMD();
 
-		while(SC_data.ArchivedWorld.Count>0) SC_data.ArchiveSave(0);
-		for(z=0;z<16;z++) SC_data.SaveAsteroid(z);
+		//[Biomes]
+
+		for(z=0;z<16000;z++)
+        {
+            if(SC_data.biome_memories_state[z]==3 && SC_data.biome_memories[z]!="")
+            {
+                Smd.biome_names.Add(z+"");
+				Smd.biome_contents.Add(SC_data.biome_memories[z]);
+                SC_data.biome_memories_state[z] = 2;
+            }
+        }
+
+		//[PlayerData]
+		
+		int[] i1 = SC_slots.SlotX, i2 = SC_slots.SlotY; string[] i3 = new string[9];
+		int[] b1 = SC_slots.BackpackX, b2 = SC_slots.BackpackY; string[] b3 = new string[21];
+		for(z=0;z<9;z++) i3[z] = i1[z] + ";" + i2[z];
+		for(z=0;z<21;z++) b3[z] = b1[z] + ";" + b2[z];
+
+		string[] dat3;
+		if(health_V>0f)
+		{
+			dat3 = new string[] {
+				(Mathf.Round(transform.position.x*10000f)/10000f)+"",
+				(Mathf.Round(transform.position.y*10000f)/10000f)+"",
+				(Mathf.Round(health_V*10000f)/10000f)+"",
+				(Mathf.Round(turbo_V*10000f)/10000f)+"",
+				(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"",
+				(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"",
+				timerH+"",
+				(Mathf.Round(power_V*10000f)/10000f)+""
+			};
+		}
+		else
+		{
+			dat3 = new string[] {
+				(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"",
+				(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"",
+				"1",
+				"0",
+				(Mathf.Round(respawn_point.position.x*10000f)/10000f)+"",
+				(Mathf.Round(respawn_point.position.y*10000f)/10000f)+"",
+				"0",
+				"0"
+			};
+		}
+		Smd.player_data = new string[]
+		{
+			string.Join(";",dat3) + ";",
+			string.Join(";",i3) + ";",
+			string.Join(";",b3) + ";",
+			string.Join(";",SC_upgrades.MTP_levels) + ";"
+		};
+
+		//[Asteroids]
+
+		/*while(SC_data.ArchivedWorld.Count>0) SC_data.ArchiveSave(0);
+		for(z=0;z<16;z++) SC_data.SaveAsteroid(z);*/
+
+		for(z=0;z<16;z++)
+		{
+			if(SC_data.WorldSector[z]!="")
+				SC_data.ArchiveAdd(z);
+		}
+		Smd.archived_world_sector = SC_data.ArchivedWorldSector;
+		Smd.archived_world = SC_data.ArchivedWorld;
+		SC_data.ArchivedWorldSector = new List<string>();
+		SC_data.ArchivedWorld = new List<string[,]>();
+		Smd.seed = SC_data.seed;
+
+		AsyncData.MainDataSaveAsync(Smd);
 	}
 	void OnApplicationQuit()
 	{
@@ -936,7 +973,7 @@ public class SC_control : MonoBehaviour {
 
 		//Quit
 		if(!dont) {
-			Debug.Log("Quit");
+			UnityEngine.Debug.Log("Quit");
 			SceneManager.LoadScene("MainMenu");
 		}
 	}
@@ -992,7 +1029,7 @@ public class SC_control : MonoBehaviour {
 		if((int)Communtron4.position.y!=100)
 		if(saveCo==0)
 		{
-			saveCo=750; //15 seconds
+			saveCo=750; //15 seconds (in initalization too)
 			MainSaveData();
 		}
 
@@ -1397,7 +1434,7 @@ public class SC_control : MonoBehaviour {
 			try {
 				ws.Send(msg);
 			} catch {
-				Debug.LogWarning("Failed sending message: "+msg);
+				UnityEngine.Debug.LogWarning("Failed sending message: "+msg);
 				MenuReturn();
 			}
 		}
@@ -1620,7 +1657,7 @@ public class SC_control : MonoBehaviour {
 	{
 		if(cmdThis==null || cmdThis=="")
 		{
-			Debug.LogWarning("Null command detected: "+(cmdThis==null));
+			UnityEngine.Debug.LogWarning("Null command detected: "+(cmdThis==null));
 			return;
 		}
 		string[] arg = cmdThis.Split(' ');
@@ -1634,7 +1671,7 @@ public class SC_control : MonoBehaviour {
 			int i,lngt=pgg.Length;
 			for(i=1;i<lngt;i++) pggn+=pgg[i];
 			int new_returnedPing = Parsing.IntE(pggn);
-			if(new_returnedPing < returnedPing && new_returnedPing!=0) Debug.LogError("Error: Wrong message order confirmed: "+(new_returnedPing-returnedPing)+" : "+new_returnedPing+" : "+returnedPing);
+			if(new_returnedPing < returnedPing && new_returnedPing!=0) UnityEngine.Debug.LogError("Error: Wrong message order confirmed: "+(new_returnedPing-returnedPing)+" : "+new_returnedPing+" : "+returnedPing);
 			returnedPing = new_returnedPing;
 			
 			return;
@@ -1951,7 +1988,7 @@ public class SC_control : MonoBehaviour {
 			}
 
 			}catch(Exception) {
-				Debug.LogWarning("Player with ID "+arg[1]+" sends wrong particle packets. It might be a cheater, but also an error...");
+				UnityEngine.Debug.LogWarning("Player with ID "+arg[1]+" sends wrong particle packets. It might be a cheater, but also an error...");
 			}
 		}
 		if(arg[0]=="/RetInventory")
@@ -2127,11 +2164,11 @@ public class SC_control : MonoBehaviour {
     }
 	void Ws_OnClose(object sender, System.EventArgs e)
     {
-		Debug.Log("Connection E-close");
+		UnityEngine.Debug.Log("Connection E-close");
 	}
 	void Ws_OnError(object sender, System.EventArgs e)
     {
-		Debug.Log("Connection E-error");
+		UnityEngine.Debug.Log("Connection E-error");
 	}
 	void MTP_InventoryLoad()
 	{
@@ -2221,7 +2258,7 @@ public class SC_control : MonoBehaviour {
 			}
 			catch(Exception)
 			{
-				Debug.LogWarning("Can't join to server (Can't set Websocket)");
+				UnityEngine.Debug.LogWarning("Can't join to server (Can't set Websocket)");
 				MenuReturn();
 				return;
 			}
@@ -2301,7 +2338,7 @@ public class SC_control : MonoBehaviour {
 		SC_bars.power_ui_bar.value=power_V;
 
 		SC_slots.ResetYAB();
-		Debug.Log("Joined");
+		UnityEngine.Debug.Log("Joined");
 	}
 	void Start()
 	{
