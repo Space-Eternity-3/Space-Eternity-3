@@ -301,11 +301,6 @@ public class SC_data : MonoBehaviour
                 return i;
         return -1;
     }
-    /*public void ArchiveSave(int ind)
-    {
-        ArchiveTake(ind,16);
-        SaveAsteroid(16);
-    }*/
     public string GetGameDirectory()
     {
         string dir;
@@ -434,7 +429,6 @@ public class SC_data : MonoBehaviour
             Deterministics.long3 = SC_control.SC_fun.SC_long_strings.AsteroidSizeBase;
             Bosbul.SC_fun = SC_control.SC_fun;
             Bosbul.BosbulSectors.Clear();
-            AsyncData.SC_data = this;
         }
 		
         //Reset data
@@ -821,13 +815,10 @@ public class SC_data : MonoBehaviour
         
 		if(Directory.Exists(path))
         {
-            while(AsyncData.thread_count!=0) {}
-
             if(File.Exists(file))
             {
                 string[] lines = new string[101];
-
-                lock(AsyncData._saving) {
+                while(AsyncData.thread_count!=0) {}
 
                 try{
 
@@ -860,8 +851,6 @@ public class SC_data : MonoBehaviour
 
                     return GetAsteroid(X,Y);
                 }
-
-                }
             }
             else AsteroidReset(asteroidCounter);
         }
@@ -886,35 +875,6 @@ public class SC_data : MonoBehaviour
         for(j=0;j<=i;j++) eff.Append(str[j]);
         return eff.ToString();
     }
-    /*public void SaveAsteroid(int A)
-    {
-        if(Globals.emergency_save_terminate) return;
-        if(WorldSector[A]=="") return;
-
-        int i,j;
-        string file,filePre;
-        DirQ(asteroidDIR);
-
-        filePre=GetFile("generated");
-        string[] gPos = WorldSector[A].Split(';');
-        int gX=Parsing.IntE(gPos[0]),gY=Parsing.IntE(gPos[1]);
-        file=filePre+"_"+gX+"_"+gY+".se3";
-
-        OpenWrite(file);
-        
-        string locef;
-        SaveLineCrLf(seed);
-        for(i=0;i<100;i++)
-        {
-            locef=World[i,0,A];
-            StringBuilder sbd = new StringBuilder();
-            for(j=1;j<61;j++) sbd.Append(';').Append(World[i,j,A]);
-            locef += sbd.ToString();
-            SaveLineCrLf(ReduceAst(locef));
-        }
-
-        CloseWriteSync();
-    }*/
     public void OpenDataDir()
     {
         warning_text4.text="";
@@ -1691,7 +1651,10 @@ public class StructMD
     //AsteroidData archive
     public List<string> archived_world_sector;
     public List<string[,]> archived_world;
+    
+    //Others
     public string seed;
+    public string world_dir;
 }
 
 public static class AsyncData
@@ -1699,16 +1662,9 @@ public static class AsyncData
     public static object _saving = new object();
     public static object _thrcount = new object();
     public static int thread_count = 0; // Only atomic operations allowed!
-    public static SC_data SC_data;
 
     public static async Task MainDataSaveAsync(StructMD smd)
     {
-        if(SC_data==null)
-        {
-            UnityEngine.Debug.LogWarning("Trying to access MainDataSaveAsync() from main menu.");
-            return;
-        }
-
         //Warning: Task assumes that all directories exist!
         Interlocked.Increment(ref thread_count);
         await Task.Run(() =>
@@ -1723,7 +1679,7 @@ public static class AsyncData
                 ingt = smd.biome_names.Count;
                 for(i=0;i<ingt;i++)
                 {
-                    using(FileStream fw = new FileStream(SC_data.worldDIR+"Biomes/Memory_"+smd.biome_names[i]+".se3", FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough))
+                    using(FileStream fw = new FileStream(smd.world_dir+"Biomes/Memory_"+smd.biome_names[i]+".se3", FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough))
                     using(StreamWriter sw = new StreamWriter(fw))
                     {
                         sw.Write(smd.biome_contents[i]);
@@ -1732,7 +1688,7 @@ public static class AsyncData
                 }
 
                 //[PlayerData]
-                using(FileStream fw = new FileStream(SC_data.worldDIR+"PlayerData.se3", FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough))
+                using(FileStream fw = new FileStream(smd.world_dir+"PlayerData.se3", FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough))
                 using(StreamWriter sw = new StreamWriter(fw))
                 {
                     foreach(string line in smd.player_data)
@@ -1746,7 +1702,7 @@ public static class AsyncData
                 ingt = smd.archived_world.Count;
                 for(i=0;i<ingt;i++)
                 {
-                    using(FileStream fw = new FileStream(SC_data.worldDIR+"Asteroids/Generated_"+smd.archived_world_sector[i].Replace(';','_')+".se3", FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough))
+                    using(FileStream fw = new FileStream(smd.world_dir+"Asteroids/Generated_"+smd.archived_world_sector[i].Replace(';','_')+".se3", FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough))
                     using(StreamWriter sw = new StreamWriter(fw))
                     {
                         sw.Write(smd.seed);
@@ -1776,7 +1732,7 @@ public static class AsyncData
                     throw;
                 }
 
-                string file = SC_data.GetFile("Biomes");
+                string file = smd.world_dir + "Biomes.se3";
                 if(File.Exists(file)) File.Delete(file);
             }
             Interlocked.Decrement(ref thread_count);

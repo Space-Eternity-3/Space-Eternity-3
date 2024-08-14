@@ -930,9 +930,6 @@ public class SC_control : MonoBehaviour {
 
 		//[Asteroids]
 
-		/*while(SC_data.ArchivedWorld.Count>0) SC_data.ArchiveSave(0);
-		for(z=0;z<16;z++) SC_data.SaveAsteroid(z);*/
-
 		for(z=0;z<16;z++)
 		{
 			if(SC_data.WorldSector[z]!="")
@@ -942,7 +939,9 @@ public class SC_control : MonoBehaviour {
 		Smd.archived_world = SC_data.ArchivedWorld;
 		SC_data.ArchivedWorldSector = new List<string>();
 		SC_data.ArchivedWorld = new List<string[,]>();
+		
 		Smd.seed = SC_data.seed;
+		Smd.world_dir = SC_data.worldDIR;
 
 		AsyncData.MainDataSaveAsync(Smd);
 	}
@@ -954,6 +953,8 @@ public class SC_control : MonoBehaviour {
 	public void MenuReturn()
 	{
 		repetedAF=true;
+
+		while(AsyncData.thread_count!=0) {}
 
 		//Save temp
 		if(!dont)
