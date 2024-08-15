@@ -85,13 +85,14 @@ public class SC_seon_remote : MonoBehaviour
         return 0;
     }
 
-    void Start()
+    public void PreStart()
     {
         localDefault = transform.localPosition;
-        
         localExtended = localDefault + extension;
         localHidden = localDefault + hiddenvector;
-
+    }
+    void Start()
+    {
         FixedUpdate();
     }
     void FixedUpdate()

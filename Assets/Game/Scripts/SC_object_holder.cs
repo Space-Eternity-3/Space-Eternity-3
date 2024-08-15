@@ -96,6 +96,7 @@ public class SC_object_holder : MonoBehaviour
                     ser.extension = obj.animation_size;
                 }
                 ser.animation_type = obj.animation_type;
+                ser.PreStart();
             }
         }
 

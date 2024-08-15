@@ -818,6 +818,7 @@ public class SC_data : MonoBehaviour
             if(File.Exists(file))
             {
                 string[] lines = new string[101];
+                if(AsyncData.thread_count!=0) UnityEngine.Debug.Log("Controlled lag: Waiting for main data saving...");
                 while(AsyncData.thread_count!=0) {}
 
                 try{

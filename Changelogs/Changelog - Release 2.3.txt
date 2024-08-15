@@ -79,6 +79,8 @@ Technical changes:
 - 5 generated asteroids per frame reduced to 2 to increase performance.
 - Structures will generate in parts from now, which (at least in theory) reduces spike lag during loading.
 - Universe data saves asynchroneously on singleplayer from now, which reduces spike lag during saving.
+- Server no longer saves all data to files when new player joins.
+- Added possibility to disable saving synchronization in config to reduce server lags on disconnecting players.
 
 Bug fixes:
 
@@ -95,4 +97,5 @@ Bug fixes:
 - Camera could sometimes shake after player death.
 - UI wasn't disappearing instantly after entering pause menu.
 - Diodes on vanishing asteroids could sometimes cause some weird visual bugs.
+- Fobs could be affected by player during boss animations.
 

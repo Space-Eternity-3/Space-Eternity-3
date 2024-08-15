@@ -66,6 +66,7 @@ const default_config = {
   "keep_inventory": false,
 	"show_positions": true,
   "display_full_date": false,
+  "save_all_on_every_disconnect": true,
 	"require_se3_account": false,
   "authorization_waiting_time": 15,
   "max_dict_size": 128,
@@ -3729,7 +3730,9 @@ function kick(i)
   if(power_spec < 0) power_spec = 0; if(power_spec > 1) power_spec = 1;
   if([2,3].includes(artid)) pats[11] = (power_spec+"").replaceAll(".",",");
   plr.data[i] = pats.join(";");
-  SaveAllNow();
+  
+  if(config.save_all_on_every_disconnect) SaveAllNow();
+  else if (checkPlayerCn(i, plr.conID[i])) savePlayer(i);
 
   //Player cleaning
   console.log(hourHeader + plr.nicks[i] + " disconnected");
@@ -4819,7 +4822,6 @@ wss.on("connection", function connection(ws,req)
           plr.sHealth[i] = Parsing.FloatU(plr.data[i].split(";")[8]);
           plr.sRegTimer[i] = Parsing.FloatU(plr.data[i].split(";")[10]);
           plr.pclass[i].DataImport(plr.data[i].split(";")[6],plr.data[i].split(";")[7],Parsing.FloatU(plr.data[i].split(";")[11]));
-          SaveAllNow();
 
           plr.conID[i] = arg[3];
           sendTo(ws,

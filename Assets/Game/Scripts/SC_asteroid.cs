@@ -190,7 +190,7 @@ public class SC_asteroid : MonoBehaviour
 				if(dio!=null) dio.randomize_start = true;
 
 				SC_seon_remote ser = transform.parent.GetComponent<SC_seon_remote>();
-				if(ser!=null) //assuming that SC_object_holder has scale 1:1:1
+				if(ser!=null)
 				{
 					Vector3 catch_up = ser.transform.localPosition - ser.localDefault;
 					gobT.transform.position += catch_up;
@@ -200,6 +200,11 @@ public class SC_asteroid : MonoBehaviour
 		SC_object_holder.scaling_blocker--;
 
 		transform.GetComponent<SC_factory_move>().CreateFactoryIfPossible();
+	}
+	void Update()
+	{
+		if(!mother)
+			temporary_blocker = !((transform.parent.localScale == new Vector3(1f,1f,1f)) && (transform.position.z > -100f));
 	}
 	public int SetLoot(int typp)
 	{
