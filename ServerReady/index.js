@@ -3170,13 +3170,15 @@ setInterval(function () { // <interval #2>
             {
               if(bullet_air_consistence[bulletsT[i].type]==0) {
                 if( DamageFLOAT(j, getBulletDamage(j, bulletsT[i]) ) != "K")
-                  sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" "+bul_vp+" X "+plr.livID[j]);
+                  if(!bulletsT[i].immune.includes(j))
+                    sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" "+bul_vp+" X "+plr.livID[j]);
                 destroyBullet(i, ["", bulletsT[i].owner, bulletsT[i].ID, bulletsT[i].age], false);
                 break;
               }
               else if(!bulletsT[i].damaged.includes(j)) {
                 if( DamageFLOAT(j, getBulletDamage(j, bulletsT[i]) ) != "K")
-                  sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" "+bul_vp+" X "+plr.livID[j]);
+                  if(!bulletsT[i].immune.includes(j))
+                    sendTo(se3_ws[j],"/RetDamageUsing "+bulletsT[i].type+" "+bul_vp+" X "+plr.livID[j]);
                 bulletsT[i].damaged.push(j);
               }
             }

@@ -11,7 +11,7 @@ name: 'DEFAULT'; <Rename it>
 craftings
 {
 	<Category>1
-	{wdd
+	{
 		title_image: packed_stone;
 		1: stone(5) -> packed_stone;
 		2: copper(5) -> packed_copper;
@@ -441,7 +441,7 @@ generator_settings
 		chance: 1,5%;
 		settings: [
 			bgcolor-255-245-140,
-			structural, struct=3,
+			structural, struct=3, spawn,
 			radius = 40, even,
 			density = 100%,
 		];

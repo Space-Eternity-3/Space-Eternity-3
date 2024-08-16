@@ -29,6 +29,8 @@ Artistic changes:
 - Copper texture colors changed a bit to be more consistent with other copper objects: copper, packed copper, copper bullet
 - Artefact fob light sphere will now be positioned properly relatively to the camera.
 - Artefact base material changed to be more metalic.
+- Damage sound volume has changed: 0.25 -> 0.18 (it was too loud compared to other sounds)
+- Star and Starandus generate a bit louder geyzer sounds from now to compensate recent changes in their volume.
 
 UI changes:
 
@@ -77,10 +79,11 @@ Technical changes:
 - Boss bullet collision system ignores non-structural asteroids from now to increase performance.
 - Asteroids generate spiraly from now, which prioritizes asteroids near player.
 - 5 generated asteroids per frame reduced to 2 to increase performance.
-- Structures will generate in parts from now, which (at least in theory) reduces spike lag during loading.
+- Structures will generate in parts from now, which should reduce spike lag during loading.
 - Universe data saves asynchroneously on singleplayer from now, which reduces spike lag during saving.
 - Server no longer saves all data to files when new player joins.
 - Added possibility to disable saving synchronization in config to reduce server lags on disconnecting players.
+  - Warning: It can result in some item duplication glitches if server crashes right after disconnecting a player.
 
 Bug fixes:
 
@@ -94,8 +97,9 @@ Bug fixes:
 - Fixed bug, which was sometimes causing unexpected player movements.
 - Background texture was generating mipmaps, which was causing it to have worse quality on lower resolutions.
 - Some velocity modifiers could affect static impulse velocity, for example geyzers or adecodron spikes.
-- Camera could sometimes shake after player death.
+- Camera could sometimes shake after player's death.
 - UI wasn't disappearing instantly after entering pause menu.
 - Diodes on vanishing asteroids could sometimes cause some weird visual bugs.
 - Fobs could be affected by player during boss animations.
+- Server side bullets invisible to player were still affecting him in other ways (effect or velocity changing).
 
