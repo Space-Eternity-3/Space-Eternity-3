@@ -193,6 +193,8 @@ public class SC_boss : MonoBehaviour
     }
     void StateUpdate()
     {
+        SC_player_follower3.delete_father = true;
+
         string old_state = SC_object_holder.actual_state;
         string new_state = GetState(dataID[1],dataID[2]);
         SC_object_holder.actual_state = new_state;
@@ -380,7 +382,10 @@ public class SC_boss : MonoBehaviour
             SC_control.SendMTP("/ScrRefresh "+SC_control.connectionID+" "+bID+" "+iar);
         
         //Singleplayer boss mechanics update
-        if(!multiplayer) BossUpdateMechanics();
+        if(!multiplayer)
+        {
+            BossUpdateMechanics();
+        }
 
         //Position & rotation update
         solidPosition = new Vector3(solidPosition.x,solidPosition.y,transform.position.z);

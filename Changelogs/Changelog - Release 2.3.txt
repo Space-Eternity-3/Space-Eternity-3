@@ -31,6 +31,7 @@ Artistic changes:
 - Artefact base material changed to be more metalic.
 - Damage sound volume has changed: 0.25 -> 0.18 (it was too loud compared to other sounds)
 - Star and Starandus generate a bit louder geyzer sounds from now to compensate recent changes in their volume.
+- Octogone bullet start sound volume reduced: 0.35 -> 0.25
 
 UI changes:
 
@@ -102,4 +103,5 @@ Bug fixes:
 - Diodes on vanishing asteroids could sometimes cause some weird visual bugs.
 - Fobs could be affected by player during boss animations.
 - Server side bullets invisible to player were still affecting him in other ways (effect or velocity changing).
+- crash.log file wasn't openning on Linux when game crashed.
 

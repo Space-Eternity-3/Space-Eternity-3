@@ -26,6 +26,8 @@ public class SC_player_follower : MonoBehaviour
     public float lerping_ratio = 0.9f;
     public int rotor_int = 1;
     public bool remote_updating = false;
+    public bool father = false;
+    public bool delete_father = false;
 
     public SC_fun SC_fun;
 
@@ -36,6 +38,13 @@ public class SC_player_follower : MonoBehaviour
     }
     public void RemoteUpdate()
     {
+        if(delete_father)
+        {
+            delete_father = false;
+            father = false;
+        }
+        if(father) return;
+
         //Movement speculating
         if(velocity_source==0) { // MAIN PLAYER
             follower.position += playerR.velocity * Time.deltaTime;

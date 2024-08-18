@@ -14,6 +14,10 @@ public class SC_adecodron : MonoBehaviour
 
     void OnTriggerEnter(Collider collision)
     {
+        if(!detached)
+        {
+            if(SC_boss.SC_player_follower3.father) return;
+        }
         if(!SC_control.impulse_enabled && collision.gameObject.name=="pseudoBody" && (detached || SC_boss.dataID[2]==2))
         {
             Vector3 cent = transform.position;

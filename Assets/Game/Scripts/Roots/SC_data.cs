@@ -1610,7 +1610,8 @@ public class SC_data : MonoBehaviour
             }
             #if !UNITY_EDITOR
             if(!Globals.emergency_save_terminate)
-                Process.Start("notepad.exe", logFileName);
+                ProcessStart.OpenTextEditor(logFileName);
+                //Process.Start("notepad.exe", logFileName);
             #endif
         }
         catch (Exception) {}
@@ -1669,6 +1670,8 @@ public static class AsyncData
 
     public static async Task MainDataSaveAsync(StructMD smd)
     {
+        if(Globals.emergency_save_terminate) return;
+
         //Warning: Task assumes that all directories exist!
         Interlocked.Increment(ref thread_count);
         await Task.Run(() =>
@@ -1730,14 +1733,14 @@ public static class AsyncData
                     }
                 }
 
-                } catch(Exception)
-                {
-                    UnityEngine.Debug.LogWarning("Caution! Saving procedure aborted! Ignoring it in hope for better time...");
-                    throw;
-                }
-
                 string file = smd.world_dir + "Biomes.se3";
                 if(File.Exists(file)) File.Delete(file);
+
+                } catch(Exception)
+                {
+                    UnityEngine.Debug.LogError("Couldn't finish saving data procedure. Your universe may have only been saved partially... Beware of potential corruption.");
+                    throw;
+                }
             }
             Interlocked.Decrement(ref thread_count);
         });
