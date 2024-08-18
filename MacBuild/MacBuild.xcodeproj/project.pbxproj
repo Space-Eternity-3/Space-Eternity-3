@@ -7,44 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3CB641EC997831BD4C822550 /* libMonoPosixHelper.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8604A92BC46E120792D02BE /* libMonoPosixHelper.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		087F412B93DF9EBB62AD1C89 /* libMonoPosixHelper.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 979241899785D7207360F690 /* libMonoPosixHelper.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		631E4965A5FADCCA745B3E70 /* libmono-native.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F8B648DCA2AE137638F93EE5 /* libmono-native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		750575B4214B38CE004B1B34 /* UnityPlayer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 750575B3214B38CE004B1B34 /* UnityPlayer.dylib */; };
 		750575B5214B3DF2004B1B34 /* UnityPlayer.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 750575B3214B38CE004B1B34 /* UnityPlayer.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		752CA83E2149E6C400295EFC /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 752CA83D2149E6C400295EFC /* Main.cpp */; };
 		75E7179121715210002B2479 /* DefaultPreferences.plist in Resources */ = {isa = PBXBuildFile; fileRef = 75E7178E21715210002B2479 /* DefaultPreferences.plist */; };
 		75E7179221715210002B2479 /* Data in Resources */ = {isa = PBXBuildFile; fileRef = 75E7178F21715210002B2479 /* Data */; };
 		75E7179321715210002B2479 /* PlayerIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 75E7179021715210002B2479 /* PlayerIcon.icns */; };
-		7BA241DDAECA898920090BC3 /* MonoBleedingEdge in CopyFiles */ = {isa = PBXBuildFile; fileRef = C7A549BC8C2E2B67E2BAEDDC /* MonoBleedingEdge */; };
-		AEB947FC8CC7DAF89CA0216A /* libmono-native.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B517426584C6AAD9F6523633 /* libmono-native.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BC314CD2AB2598BF133FB1FC /* MonoBleedingEdge in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6B404E669A00B35D874E3BD8 /* MonoBleedingEdge */; };
 		CDD5792C240E027400DEA632 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = CDD5792B240E027400DEA632 /* MainMenu.nib */; };
-		E3DF4BCD900B3FA5F9CF8389 /* libmonobdwgc-2.0.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 33CB4E83BFB373C566005D35 /* libmonobdwgc-2.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D1484900B2AF2F6ECA37195F /* StandaloneFileBrowser.bundle in CopyPlugIns */ = {isa = PBXBuildFile; fileRef = F2B94477A691045095580DB6 /* StandaloneFileBrowser.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E68445469471FA31C334EAC1 /* libmonobdwgc-2.0.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F4684967B0AEE21A2847DB7A /* libmonobdwgc-2.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1E604364822F064B31FE11C3 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = Contents;
-			dstSubfolderSpec = 1;
-			files = (
-				7BA241DDAECA898920090BC3 /* MonoBleedingEdge in CopyFiles */,
-			);
-			name = CopyFiles;
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		32FF422BBD137A1CEDC51565 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				E3DF4BCD900B3FA5F9CF8389 /* libmonobdwgc-2.0.dylib in Embed Frameworks */,
-				3CB641EC997831BD4C822550 /* libMonoPosixHelper.dylib in Embed Frameworks */,
-				AEB947FC8CC7DAF89CA0216A /* libmono-native.dylib in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		750575B6214B3DF2004B1B34 /* Embed Libraries */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -56,10 +33,45 @@
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BA2E43B2ADF112CAF1497C15 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E68445469471FA31C334EAC1 /* libmonobdwgc-2.0.dylib in Embed Frameworks */,
+				087F412B93DF9EBB62AD1C89 /* libMonoPosixHelper.dylib in Embed Frameworks */,
+				631E4965A5FADCCA745B3E70 /* libmono-native.dylib in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BE2D46DA942CD458B607C82B /* CopyPlugIns */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D1484900B2AF2F6ECA37195F /* StandaloneFileBrowser.bundle in CopyPlugIns */,
+			);
+			name = CopyPlugIns;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CA2B4EBE89AD52B20A1AF07D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents;
+			dstSubfolderSpec = 1;
+			files = (
+				BC314CD2AB2598BF133FB1FC /* MonoBleedingEdge in CopyFiles */,
+			);
+			name = CopyFiles;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		33CB4E83BFB373C566005D35 /* libmonobdwgc-2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libmonobdwgc-2.0.dylib"; path = "Space Eternity 3/Frameworks/libmonobdwgc-2.0.dylib"; sourceTree = SOURCE_ROOT; };
+		6B404E669A00B35D874E3BD8 /* MonoBleedingEdge */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MonoBleedingEdge; path = "Space Eternity 3/MonoBleedingEdge"; sourceTree = SOURCE_ROOT; };
 		750575B3214B38CE004B1B34 /* UnityPlayer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = UnityPlayer.dylib; path = "Space Eternity 3/Frameworks/UnityPlayer.dylib"; sourceTree = "<group>"; };
 		752CA8282149E6C100295EFC /* Space Eternity 3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Space Eternity 3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		752CA83C2149E6C400295EFC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -67,10 +79,11 @@
 		75E7178E21715210002B2479 /* DefaultPreferences.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = DefaultPreferences.plist; path = "Space Eternity 3/Resources/DefaultPreferences.plist"; sourceTree = "<group>"; };
 		75E7178F21715210002B2479 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Data; path = "Space Eternity 3/Resources/Data"; sourceTree = "<group>"; };
 		75E7179021715210002B2479 /* PlayerIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = PlayerIcon.icns; path = "Space Eternity 3/Resources/PlayerIcon.icns"; sourceTree = "<group>"; };
-		B517426584C6AAD9F6523633 /* libmono-native.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libmono-native.dylib"; path = "Space Eternity 3/Frameworks/libmono-native.dylib"; sourceTree = SOURCE_ROOT; };
-		C7A549BC8C2E2B67E2BAEDDC /* MonoBleedingEdge */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MonoBleedingEdge; path = "Space Eternity 3/MonoBleedingEdge"; sourceTree = SOURCE_ROOT; };
+		979241899785D7207360F690 /* libMonoPosixHelper.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMonoPosixHelper.dylib; path = "Space Eternity 3/Frameworks/libMonoPosixHelper.dylib"; sourceTree = SOURCE_ROOT; };
 		CDD5792B240E027400DEA632 /* MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = MainMenu.nib; path = "Space Eternity 3/Resources/MainMenu.nib"; sourceTree = "<group>"; };
-		F8604A92BC46E120792D02BE /* libMonoPosixHelper.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMonoPosixHelper.dylib; path = "Space Eternity 3/Frameworks/libMonoPosixHelper.dylib"; sourceTree = SOURCE_ROOT; };
+		F2B94477A691045095580DB6 /* StandaloneFileBrowser.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = StandaloneFileBrowser.bundle; path = "Space Eternity 3/Plugins/StandaloneFileBrowser.bundle"; sourceTree = SOURCE_ROOT; };
+		F4684967B0AEE21A2847DB7A /* libmonobdwgc-2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libmonobdwgc-2.0.dylib"; path = "Space Eternity 3/Frameworks/libmonobdwgc-2.0.dylib"; sourceTree = SOURCE_ROOT; };
+		F8B648DCA2AE137638F93EE5 /* libmono-native.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libmono-native.dylib"; path = "Space Eternity 3/Frameworks/libmono-native.dylib"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,16 +98,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0C674963907A1C1848DBF71D /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				33CB4E83BFB373C566005D35 /* libmonobdwgc-2.0.dylib */,
-				F8604A92BC46E120792D02BE /* libMonoPosixHelper.dylib */,
-				B517426584C6AAD9F6523633 /* libmono-native.dylib */,
-			);
-			path = Frameworks;
-			sourceTree = "<group>";
-		};
 		750575B2214B38CE004B1B34 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -126,8 +129,9 @@
 			children = (
 				752CA83C2149E6C400295EFC /* Info.plist */,
 				752CA83D2149E6C400295EFC /* Main.cpp */,
-				0C674963907A1C1848DBF71D /* Frameworks */,
-				C7A549BC8C2E2B67E2BAEDDC /* MonoBleedingEdge */,
+				FED14BCBA77CCBC91DCD41E9 /* Plugins */,
+				D5144FA9B3CA5506998CE48C /* Frameworks */,
+				6B404E669A00B35D874E3BD8 /* MonoBleedingEdge */,
 			);
 			path = "Space Eternity 3";
 			sourceTree = "<group>";
@@ -143,6 +147,24 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+		D5144FA9B3CA5506998CE48C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F4684967B0AEE21A2847DB7A /* libmonobdwgc-2.0.dylib */,
+				979241899785D7207360F690 /* libMonoPosixHelper.dylib */,
+				F8B648DCA2AE137638F93EE5 /* libmono-native.dylib */,
+			);
+			path = Frameworks;
+			sourceTree = "<group>";
+		};
+		FED14BCBA77CCBC91DCD41E9 /* Plugins */ = {
+			isa = PBXGroup;
+			children = (
+				F2B94477A691045095580DB6 /* StandaloneFileBrowser.bundle */,
+			);
+			path = Plugins;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -154,8 +176,9 @@
 				752CA8252149E6C100295EFC /* Frameworks */,
 				752CA8262149E6C100295EFC /* Resources */,
 				750575B6214B3DF2004B1B34 /* Embed Libraries */,
-				32FF422BBD137A1CEDC51565 /* Embed Frameworks */,
-				1E604364822F064B31FE11C3 /* CopyFiles */,
+				BE2D46DA942CD458B607C82B /* CopyPlugIns */,
+				BA2E43B2ADF112CAF1497C15 /* Embed Frameworks */,
+				CA2B4EBE89AD52B20A1AF07D /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -344,7 +367,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				UNITY_RUNTIME_VERSION = 2023.2.20f1;
 				UNITY_SCRIPTING_IL2CPP = 0;
-				VALID_ARCHS = "arm64 x86_64";
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -360,7 +383,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				UNITY_RUNTIME_VERSION = 2023.2.20f1;
 				UNITY_SCRIPTING_IL2CPP = 0;
-				VALID_ARCHS = "arm64 x86_64";
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
