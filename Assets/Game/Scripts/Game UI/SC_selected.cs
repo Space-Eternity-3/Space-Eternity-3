@@ -11,7 +11,6 @@ public class SC_selected : MonoBehaviour {
 	public SC_push SC_push;
 	public Image sel;
 	public int selected = 1;
-	bool cont;
 	bool living=true;
 
 	public Color32 col_sel,col_desel;
@@ -32,14 +31,16 @@ public class SC_selected : MonoBehaviour {
 		{
 			if(Input.GetAxisRaw("Mouse ScrollWheel")<0&&!Input.GetKey(KeyCode.LeftControl)&&!SC_control.SC_chat.typing&&!SC_control.pause)
  			{
-				cont=true;
-     			if(cont) selected++;
+				selected++;
  			}
 			if(Input.GetAxisRaw("Mouse ScrollWheel")>0&&!Input.GetKey(KeyCode.LeftControl)&&!SC_control.SC_chat.typing&&!SC_control.pause)
  			{
-				cont=true;
-     			if(cont) selected--;
+				selected--;
  			}
+
+			for(int i=1;i<=9;i++)
+				if(SC_control.PressedNotInChat((KeyCode)System.Enum.Parse(typeof(KeyCode), "Alpha" + i),"down"))
+					selected = i;
 		}
 
 		if(selected>9) selected=1;
