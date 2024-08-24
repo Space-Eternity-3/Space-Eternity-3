@@ -197,9 +197,7 @@ public class SC_control : MonoBehaviour {
 	
 	public int actualTarDisp = 0; //no F1 included
 	bool escaped = false;
-	string RPU = "XXX", RPU_mem = "XXX";
-	int sucness = 0;
-	public bool this_frame_sucned = false;
+	string RPU = "XXX";
 	public string RespawnDelay = "";
 	int MTPloadedCounter=0;
 	public int cog_global_rot = 0;
@@ -319,8 +317,6 @@ public class SC_control : MonoBehaviour {
 				}
 			}
 		}
-
-		this_frame_sucned = false;
 		
 		if(!timeStop){
 		
@@ -1219,21 +1215,6 @@ public class SC_control : MonoBehaviour {
 		if(Communtron4.position.y==100f && RPU!="XXX")
 		{
 			TranslateRPU();
-			if(RPU!=RPU_mem)
-			{
-				sucness++;
-				this_frame_sucned = true;
-			}
-			else
-			{
-				this_frame_sucned = false;
-			}
-			if(livTime % 50 == 0)
-			{
-				//UnityEngine.Debug.Log("Second "+(livTime/50)+" sucness: "+sucness+"/50");
-				sucness = 0;
-			}
-			RPU_mem = RPU;
 		}
 
 		//drill fixed update
@@ -1715,6 +1696,13 @@ public class SC_control : MonoBehaviour {
 		{
 			//RPU big variable
 			RPU=cmdThis;
+			foreach(SC_players plr in PL)
+			if(plr!=null)
+			{
+				SC_player_follower plf = plr.GetComponent<SC_player_follower>();
+				if(plf.suc_teleporting)
+					plf.suc_teleporting_activator = true;
+			}
 			if(arg[0][0]=='/') show_positions = true;
 			else show_positions = false;
 			return;

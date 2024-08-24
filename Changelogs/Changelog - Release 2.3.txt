@@ -20,6 +20,7 @@ Old feature changes:
 - Copper chimneys and small copper chimneys have a bigger pick up range from now.
 - Treasures have a larger mouse collider from now.
 - Packed fobs have a bit larger collision collider from now.
+- Multiplayer compass under TAB, indicating you, will now be always disabled instead of pointing to your respawn point. It is more intuitive.
 
 Artistic changes:
 

@@ -60,7 +60,7 @@ public class SC_pla_list : MonoBehaviour
                 SC_coordinates[i].player = SC_control.GetComponent<Transform>();
                 SC_coordinates[i].SC_invisibler = SC_control.GetComponent<SC_invisibler>();
                 SC_coordinates[i].nik = TextConstYou;
-                SC_arrow_rot[i].respawn_point = resp_main;
+                SC_arrow_rot[i].respawn_point = /*resp_main*/ SC_control.transform;
                 SC_arrow_rot[i].silentior = true;
                 bgSpace[i].color = color_you;
                 bgCompass[i].color = color_C_resp;
