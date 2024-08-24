@@ -33,6 +33,7 @@ Artistic changes:
 - Damage sound volume has changed: 0.25 -> 0.18 (it was too loud compared to other sounds)
 - Star and Starandus generate a bit louder geyzer sounds from now to compensate recent changes in their volume.
 - Octogone bullet start sound volume reduced: 0.35 -> 0.25
+- Main menu music changed, credits in main menu, music volume changed: 0.4 -> 0.8
 
 UI changes:
 
