@@ -54447,7 +54447,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'Made by Kamiloso in Unity
 
-    Open source project, MIT license'
+    Open source project, GPL license'
 --- !u!222 &1553150723
 CanvasRenderer:
   m_ObjectHideFlags: 0

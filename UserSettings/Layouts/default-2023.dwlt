@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 989
   m_ShowMode: 4
-  m_Title: Project
+  m_Title: Scene
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 122
+  controlID: 60
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -421,7 +421,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: ba81eeffb88ceeff04d2f6ff0ad2f6ff7cd6f6ffe431fcffccfaffffca3a0700a4360a00544d0a00f85a0a00
+      m_ExpandedIDs: b450fafffc84fcff78e7ffff4aecffff88faffff8caf00001cb600008abe00001ac500001035020018370200a6380200ae3b020070460200f24b0200f2510200ae620200f864020038ef0300ac050400
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: PlayerMT1
@@ -432,7 +432,7 @@ MonoBehaviour:
           y: 0
           width: 0
           height: 0
-        m_UserData: 680114
+        m_UserData: 268462
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
         m_OriginalEventType: 0
@@ -970,9 +970,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: -0.020266263, y: 1.0398704, z: 10005.885}
+    m_Target: {x: 34.96597, y: 7.6276083, z: 410.49298}
     speed: 2
-    m_Value: {x: -0.020266263, y: 1.0398704, z: 10005.885}
+    m_Value: {x: 34.96597, y: 7.6276083, z: 410.49298}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1018,13 +1018,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.13660279, y: -0.16904993, z: 0.022924084, w: -0.9761702}
+    m_Target: {x: -0.16766097, y: -0.08178615, z: 0.013056385, w: -0.98271054}
     speed: 2
-    m_Value: {x: -0.13655691, y: -0.16899316, z: 0.022916386, w: -0.97584236}
+    m_Value: {x: -0.16758342, y: -0.08323143, z: 0.013303275, w: -0.9822481}
   m_Size:
-    m_Target: 1.9033941
+    m_Target: 25.03648
     speed: 2
-    m_Value: 1.9033941
+    m_Value: 25.03648
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1103,7 +1103,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Game/Scripts/Boss
+    - Assets/Game
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1113,16 +1113,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Game/Scripts/Boss
+  - Assets/Game
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\lenovo\Documents\GitHub\Space-Eternity-3
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 108}
-    m_SelectedIDs: 8ca90000
-    m_LastClickedID: 43404
-    m_ExpandedIDs: 0000000026a9000028a900002aa9000000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 79}
+    m_SelectedIDs: 30a90000
+    m_LastClickedID: 43312
+    m_ExpandedIDs: 000000002ea9000030a9000032a9000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1151,7 +1151,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000026a9000028a900002aa90000
+    m_ExpandedIDs: 000000002ea9000030a9000032a90000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
