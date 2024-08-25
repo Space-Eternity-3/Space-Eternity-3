@@ -83,7 +83,6 @@ const default_config = {
     "max_interaction_range": 150,
     "max_worldgen_range": 250,
     "max_player_updates_per_3_seconds": 180,
-    "max_messages_per_second": 1200,
     "allow_everywhere_spawn": false
 	},
   "boss_bullets_collide_with": {
@@ -266,7 +265,6 @@ var se3_wsS = new Array(max_players);
 se3_ws.fill(""); Object.seal(se3_ws);
 se3_wsS.fill(""); Object.seal(se3_wsS);
 
-const MsgMap = new Map();
 let TreasureFrame = 0;
 
 var memTemplate = {
@@ -3046,8 +3044,6 @@ setInterval(function () { // <interval #2>
         if (AlienDatabase[vrb][1] == 0)
           delete AlienDatabase[vrb];
       }
-
-      MsgMap.clear();
     }
 
     //LAG PREVENTING
@@ -4772,11 +4768,6 @@ wss.on("connection", function connection(ws,req)
       if(client_ip.endsWith(ip)) { ws.close(); retbol = true; }
     });
     if(retbol) return;
-
-    //messages for connection counter
-    if(!MsgMap.has(ws)) MsgMap.set(ws,1);
-    else MsgMap.set(ws,MsgMap.get(ws)+1);
-    if(MsgMap.get(ws) > config.anti_cheat.max_messages_per_second) { ws.close(); return; }
 
     if (arg[0] == "/AllowConnection") // 1[nick] 2[RedVersion] 3[ConID]
     {

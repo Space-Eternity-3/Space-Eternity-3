@@ -87,6 +87,7 @@ Technical changes:
 - Server no longer saves all data to files when new player joins.
 - Added possibility to disable saving synchronization in config to reduce server lags on disconnecting players.
   - Warning: It can result in some item duplication glitches if server crashes right after disconnecting a player.
+- Removed max_messages_per_second system in hope, that WebSocket will handle this.
 
 Bug fixes:
 
