@@ -54,11 +54,11 @@ public class SC_inv_number : MonoBehaviour {
 	}
 	void FixedUpdate()
 	{
-		if(!only_jump) if(SC_fun.pushed_markers[SlotID-1])
-		{
-			smallerIN=0;
-			SC_fun.pushed_markers[SlotID-1]=false;
-		}
+		//if(!only_jump) if(SC_fun.pushed_markers[SlotID-1])
+		//{
+		//	smallerIN=0;
+		//	SC_fun.pushed_markers[SlotID-1]=false;
+		//}
 		//------------------------------
 		if(smallerIN>0&&smallerIN<=3)
 		{

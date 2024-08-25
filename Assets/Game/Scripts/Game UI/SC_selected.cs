@@ -26,18 +26,21 @@ public class SC_selected : MonoBehaviour {
 			else return;
 		}
 		transform.localPosition=new Vector3(50f*(selected-5),0f,0f);
-		
+
 		if(SC_push.clicked_on==0 && !SC_control.SC_chat.typing && !SC_control.pause)
 		{
 			//Scroll selection
 			if(Input.GetAxisRaw("Mouse ScrollWheel")<0 && !Input.GetKey(KeyCode.LeftControl))
+			{
 				selected++;
-				
-			if(Input.GetAxisRaw("Mouse ScrollWheel")>0 && !Input.GetKey(KeyCode.LeftControl))
+			}
+			else if(Input.GetAxisRaw("Mouse ScrollWheel")>0 && !Input.GetKey(KeyCode.LeftControl))
+			{
 				selected--;
+			}
 
 			//Number selection
-			for(int i=1;i<=9;i++)
+			else for(int i=1;i<=9;i++)
 				if(SC_control.PressedNotInChat((KeyCode)System.Enum.Parse(typeof(KeyCode), "Alpha" + i),"down"))
 					selected = i;
 		}

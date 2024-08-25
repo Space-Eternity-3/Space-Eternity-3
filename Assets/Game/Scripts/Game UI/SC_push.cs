@@ -45,6 +45,12 @@ public class SC_push : MonoBehaviour
     }
     void Push(int push_id, bool right)
     {
+        int sgn_mod = 1;
+        if(!right) sgn_mod *= -1;
+
+        SC_slots.PopInv(push_id-1,-1*sgn_mod);
+        SC_slots.PopInv(push_id,1*sgn_mod);
+
         int pomX = SC_slots.SlotX[push_id-1];
         int pomY = SC_slots.SlotY[push_id-1];
         int pomZ = pushMemory[push_id-1];
@@ -66,8 +72,8 @@ public class SC_push : MonoBehaviour
         SC_slots.SlotYB[push_id-1] = SC_slots.SlotYB[push_id];
         SC_slots.SlotYB[push_id] = pomYB;
 
-        SC_fun.pushed_markers[push_id-1] = true;
-        SC_fun.pushed_markers[push_id] = true;
+        //SC_fun.pushed_markers[push_id-1] = true;
+        //SC_fun.pushed_markers[push_id] = true;
         
         if(right) SC_selected.selected++;
         else SC_selected.selected--;

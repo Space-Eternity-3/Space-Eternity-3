@@ -34,6 +34,7 @@ Artistic changes:
 - Star and Starandus generate a bit louder geyzer sounds from now to compensate recent changes in their volume.
 - Octogone bullet start sound volume reduced: 0.35 -> 0.25
 - Main menu music changed, credits in main menu, music volume changed: 0.4 -> 0.8
+- Added push inventory animation. Developer was inspired by the older version, where it was present.
 
 UI changes:
 

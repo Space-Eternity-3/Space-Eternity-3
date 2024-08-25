@@ -42,7 +42,7 @@ public class SC_fun : MonoBehaviour
 	public bool[] bullet_air_consistence = new bool[16];
 	public int[] bullet_effector = new int[16];
 
-    public bool[] pushed_markers = new bool[9];
+    //public bool[] pushed_markers = new bool[9];
 	
     public Transform[] structures;
 	public Transform biomeCAN;
