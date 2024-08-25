@@ -90,7 +90,7 @@ craftings
 	}
 	<Category>11
 	{
-		title_image: dead_alien;
+		title_image: stone_tomb;
 		1: dead_alien -> bone(3);
 		2: packed_stone + dead_alien -> stone_tomb;
 		3: packed_dark_stone + dead_alien -> dark_tomb;
@@ -119,6 +119,8 @@ drill_loot
 	diamond: small_diamond(2%);
 	metalic: stone(50%);
 	bone: bone(92%) + blank_element(8%);
+	stone_clone: stone(100%);
+	copper_clone: copper(100%);
 }
 modified_drops
 {
@@ -678,7 +680,13 @@ custom_structures <advanced settings>
 		catch # 55-56 setanimator 204 catch # 204 animate extending when default,B1,B2,B3 3,6 0
 		catch # 57-58 setanimator 205 catch # 205 animate extending when default,B1,B2,B3 -3,6 0
 
-		catch # 0 summon boss 2 catch # 29 summon asteroid 6 12 43,49,50,0,0,0,0,0,0,0,50,49
+		setrand 5
+		ifrand 0 catch # 0 summon boss 1 catch # 29 summon asteroid 6 12 42,49,50,0,0,0,0,0,0,0,50,49
+		ifrand 1 catch # 0 summon boss 2 catch # 29 summon asteroid 6 12 43,49,50,0,0,0,0,0,0,0,50,49
+		ifrand 2 catch # 0 summon boss 3 catch # 29 summon asteroid 6 12 44,49,50,0,0,0,0,0,0,0,50,49
+		ifrand 3 catch # 0 summon boss 4 catch # 29 summon asteroid 6 12 45,49,50,0,0,0,0,0,0,0,50,49
+		ifrand 4 catch # 0 summon boss 6 catch # 29 summon asteroid 6 12 47,49,50,0,0,0,0,0,0,0,50,49
+		ifrand break
 		catch # 30 summon asteroid 6 12 52,53,50,0,0,0,0,0,0,0,50,53
 		catch # 29-30 move 0 -2
 
