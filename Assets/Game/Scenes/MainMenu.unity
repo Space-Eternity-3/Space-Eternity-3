@@ -33113,7 +33113,7 @@ MonoBehaviour:
   visibleNamte: Music
   a: 0.1
   b: 0
-  music_natural_volume: 0.8
+  music_natural_volume: 0.7
   settings_5: 0
   settings_100: 1
   music: {fileID: 35467492}

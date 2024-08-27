@@ -66,6 +66,7 @@ const default_config = {
   "keep_inventory": false,
 	"show_positions": true,
   "display_full_date": false,
+  "disable_chat": false,
   "save_all_on_every_disconnect": true,
 	"require_se3_account": false,
   "authorization_waiting_time": 15,
@@ -5016,6 +5017,7 @@ wss.on("connection", function connection(ws,req)
     {
       if(!plr.pclass[arg[1]].PeriodicInsert("chat")) return;
       if(!FilterArgs(arg,["PlaID","Msg256"])) return;
+      if(config.disable_chat) return;
       
       console.log("<" + plr.nicks[Parsing.FloatU(arg[1])] + "> " + arg[2].replaceAll("\t"," "));
       sendToAllPlayers("/RetChatMessage <" + plr.nicks[Parsing.FloatU(arg[1])] + "> " + arg[2] + " X X");
