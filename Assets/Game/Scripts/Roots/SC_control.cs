@@ -379,6 +379,7 @@ public class SC_control : MonoBehaviour {
 			SC_invisibler.invisible = false;
 		}
 
+		if(SC_effect.effect==8) SC_artefacts.unstabling = false;
 		if(SC_artefacts.unstabling && cooldown==0 && livTime>=50)
 		{
 			cooldown = (int)Parsing.FloatE(SC_data.Gameplay[97+4]);
@@ -1292,6 +1293,9 @@ public class SC_control : MonoBehaviour {
 		SC_projection.AfterFixedUpdate();
 		for(int ij=1;ij<max_players;ij++)
 			PL[ij].AfterFixedUpdate();
+		
+		foreach(SC_boss bos in SC_lists.SC_boss)
+			bos.AfterFixedUpdate();
 		
 		if(!Input.GetMouseButton(1)) public_placed = false;
 		gtm1 = false;

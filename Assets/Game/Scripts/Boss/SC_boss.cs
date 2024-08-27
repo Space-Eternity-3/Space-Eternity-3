@@ -26,6 +26,9 @@ public class SC_boss : MonoBehaviour
     public int type;
     public int smallest_boss_health;
 
+    string old_boss_nick = "";
+    string old_6_7 = "";
+
     public string[] BossNames = new string[7];
     public Color32[] arenaColors = new Color32[7];
     const int scrID = 1024;
@@ -252,7 +255,7 @@ public class SC_boss : MonoBehaviour
         if(gob.GetComponent<SC_shooter>()!=null)
             gob.GetComponent<SC_shooter>().DeclareAssignment(this,shooter.actives,shooter.one_time_id);
     }
-    void FixedUpdate()
+    public void AfterFixedUpdate()
     {
         if(transform.GetComponent<SC_seon_remote>()==null)
             FixedUpdateT();
@@ -421,10 +424,22 @@ public class SC_boss : MonoBehaviour
         }
         SC_bars.LateUpdate();
 
-        //Boss name and health bar controller
-        if(dataID[2]!=4) CanvNick.GetComponent<Text>().text = BossNames[type] + " " + romeNumber(dataID[1]+1);
-        else CanvNick.GetComponent<Text>().text = BossNames[type] + " " + romeNumber(dataID[1]);
-        SetBarLength(dataID[6],dataID[7]);
+        //Boss name and health bar controller (hoping, that it never updates when not necessary)
+        string temp_boss_nick;
+        if(dataID[2]!=4) temp_boss_nick = BossNames[type] + " " + romeNumber(dataID[1]+1);
+        else temp_boss_nick = BossNames[type] + " " + romeNumber(dataID[1]);
+        if(old_boss_nick != temp_boss_nick)
+        {
+            old_boss_nick = temp_boss_nick;
+            CanvNick.GetComponent<Text>().text = temp_boss_nick;
+        }
+        string temp_6_7;
+        temp_6_7 = dataID[6] + "_" + dataID[7];
+        if(old_6_7 != temp_6_7)
+        {
+            old_6_7 = temp_6_7;
+            SetBarLength(dataID[6],dataID[7]);
+        }
     }
     void BossUpdateMechanics()
     {

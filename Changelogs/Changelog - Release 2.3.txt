@@ -89,6 +89,8 @@ Technical changes:
 - Added possibility to disable saving synchronization in config to reduce server lags on disconnecting players.
   - Warning: It can result in some item duplication glitches if server crashes right after disconnecting a player.
 - Removed max_messages_per_second system in hope, that WebSocket will handle this.
+- Boss nick/bar canvas will refresh only when it's necessary (at least I hope so).
+- SC_boss.FixedUpdate will always execute directly after server commands from now.
 
 Bug fixes:
 
@@ -108,4 +110,5 @@ Bug fixes:
 - Fobs could be affected by player during boss animations.
 - Server side bullets invisible to player were still affecting him in other ways (effect or velocity changing).
 - crash.log file wasn't openning on Linux when game crashed.
+- Unstabling could be used when having stickybulb effect.
 
