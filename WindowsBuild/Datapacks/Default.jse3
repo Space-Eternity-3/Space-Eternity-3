@@ -204,7 +204,7 @@ gameplay
 	at_impulse_power_regenerate_multiplier: 1;
 	at_impulse_time: 0,4;
 	at_impulse_speed: 70;
-	at_impulse_damage: 10;
+	at_impulse_damage: 8;
 	at_illusion_power_regenerate_multiplier: 1;
 	at_illusion_power_use_multiplier: 2;
 	at_illusion_speed_multiplier: 1,2;
@@ -408,7 +408,7 @@ generator_settings
 	}
 	<Cementery> 6
 	{
-		chance: 2,5%;
+		chance: 2%;
 		settings: [
 			bgcolor-255-252-220,
 			structural, struct=1,
@@ -423,7 +423,7 @@ generator_settings
 	}
 	<Dark cementery> 7
 	{
-		chance: 1,5%;
+		chance: 1%;
 		settings: [
 			bgcolor-255-174-181,
 			structural, struct=2,
@@ -450,7 +450,7 @@ generator_settings
 	}
 	<Copper facilities> 9
 	{
-		chance: 2%;
+		chance: 1,5%;
 		settings: [
 			bgcolor-255-151-81,
 			min = 50, max = 70,
@@ -475,7 +475,7 @@ objects_generate
 	stoneB: stone(15%) + bone(20%) + stone_tomb(24%) + treasure(6%) + dead_alien(1%) + pumpkin(1%);
 	dark: dark_stone(15%) + bone(12%) + dark_tomb(24%) + dark_treasure(6%) + lava_geyzer(8%) + gold(3%);
 	copper: copper(35%);
-	copperA: copper(15%) + packed_copper(5%) + copper_diode(20%) + copper_cog(25%) + small_copper_chimney(15%) + metal_treasure(4%);
+	copperA: copper(15%) + packed_copper(5%) + copper_diode(20%) + copper_cog(25%) + small_copper_chimney(15%) + metal_treasure(3%);
 	copperB: copper(10%) + copper_cog(15%) + bedrock_cog(15%) + micro_bedrock_chimney(10%) + bedrock_alien(5%) + treasure_base(13%) + diamond_base(13%);
 	gold: gold(25%);
 	grass: bush(35%) + big_bush(7,5%) + stone(7,5%) + alien(15%);

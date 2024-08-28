@@ -21,6 +21,7 @@ Old feature changes:
 - Treasures have a larger mouse collider from now.
 - Packed fobs have a bit larger collision collider from now.
 - Multiplayer compass under TAB, indicating you, will now be always disabled instead of pointing to your respawn point. It is more intuitive.
+- Impulse artefact nerfed, it deals 8 instead of 10 damage from now.
 
 Artistic changes:
 
@@ -56,11 +57,11 @@ Configurables:
   - Unstable matter no longer generates on dark cementeries.
   - Diamonds can now be found everywhere with the highest chance on dark cementeries.
 - Metal treasure has an assigned loottable for copper facilities from now.
-- Chances for cementeries, dark cementeries and coppper facilities (treasure biomes) changed:
-  - Cementeries: 2.7% -> 2.5%
-  - Dark cementeries: 1.3% -> 1.5%
-  - Copper facilities: 0% -> 2%
-  - All treasure biomes: 4% -> 6%
+- Chances for biomes and structures changed:
+  - Cementeries: 2.7% -> 2%
+  - Dark cementeries: 1.3% -> 1%
+  - Copper facilities: 0% -> 1,5%
+  - All treasure biomes: 4% -> 4,5%
 - It is now possible to customize target_packet_frequency value in server config.
 - It is now possible to customize in config, with which objects will boss bullets on multiplayer collide.
 - Added possibility to disable chat messages through config. Players will still be able to send them, but server will ignore it.
