@@ -22,6 +22,7 @@ public class SC_player_follower : MonoBehaviour
     public bool teleporting_if_far_away = false;
     public bool suc_teleporting = false;
     public bool suc_teleporting_activator = false;
+    public bool teleport_until = false;
     
     public int velocity_source = 0;
     public float lerping_ratio = 0.9f;
@@ -73,6 +74,7 @@ public class SC_player_follower : MonoBehaviour
         //Teleport frame detect and execute
         if(
             (teleporting) ||
+            (teleport_until) ||
             (teleporting_if_far_away && (follower.position - player.position).magnitude > 3f) ||
             (velocity_source==4 && (SC_boss.dataID[2]!=2 || (SC_boss.type*5+SC_boss.dataID[18]==3*5+3 && SC_boss.dataID[17]>10 && SC_boss.dataID[19]-SC_boss.dataID[17]>=30))) ||
             (suc_teleporting && suc_teleporting_activator)
@@ -88,9 +90,7 @@ public class SC_player_follower : MonoBehaviour
             teleporting=false;
             if(suc_teleporting && suc_teleporting_activator)
             {
-                SC_players.positionBeforeA = new Vector3(0f,0f,300f);
-                SC_players.positionBeforeB = new Vector3(0f,0f,300f);
-                SC_players.positionBeforeC = new Vector3(0f,0f,300f);
+                teleport_until = true;
                 suc_teleporting = false;
                 suc_teleporting_activator = false;
             }

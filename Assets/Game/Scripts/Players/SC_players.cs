@@ -37,10 +37,8 @@ public class SC_players : MonoBehaviour
     //Gameplay variables
     public int OtherSource;
 	public int ArtSource;
-    public Vector3 positionBeforeC = new Vector3(0f,0f,300f);
-    public Vector3 positionBeforeB = new Vector3(0f,0f,300f);
-    public Vector3 positionBeforeA = new Vector3(0f,0f,300f);
     public Vector3 sourcedPosition = new Vector3(0f,0f,300f);
+    public Vector3 SpeculatedVelocity = new Vector3(0f,0f,0f);
     public float sourcedRotation = 10000f;
     bool sleeping = false;
 
@@ -84,33 +82,13 @@ public class SC_players : MonoBehaviour
 	}
     public Vector3 SpeculateVelocity()
     {
-        int before_level = 0;
-        if(FixedPlayer.position.z <= 100f && positionBeforeA.z <= 100f)
-        {
-            before_level = 1;
-            if(positionBeforeB.z <= 100f)
-            {
-                before_level = 2;
-                if(positionBeforeC.z <= 100f)
-                {
-                    before_level = 3;
-                }   
-            }
-        }
-
-        if(FixedPlayer.position != positionBeforeB && before_level >= 2) return (FixedPlayer.position - positionBeforeB) / 2f;
-        if(FixedPlayer.position != positionBeforeC && before_level >= 3) return (FixedPlayer.position - positionBeforeC) / 3f;
-        if(FixedPlayer.position != positionBeforeA && before_level >= 1) return (FixedPlayer.position - positionBeforeA) / 1f;
-
-        return new Vector3(0f,0f,0f);
+        return SpeculatedVelocity;
     }
     public void AfterFixedUpdate()
     {
         bool actual = SC_fun.SC_control.NUL[IDP_phys];
         
-        positionBeforeC = positionBeforeB;
-        positionBeforeB = positionBeforeA;
-        positionBeforeA = FixedPlayer.position;
+        Vector3 positionBefore = FixedPlayer.position;
 
         if(actual)
         {
@@ -136,7 +114,7 @@ public class SC_players : MonoBehaviour
             return;
         }
 
-        if(positionBeforeA.z > 100f && FixedPlayer.position.z < 100f)
+        if(positionBefore.z > 100f && FixedPlayer.position.z < 100f)
             transform.GetComponent<SC_player_follower>().teleporting = true;
 
 		int guitar=ArtSource;

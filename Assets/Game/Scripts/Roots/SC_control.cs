@@ -1329,6 +1329,7 @@ public class SC_control : MonoBehaviour {
 		int i,lngt = Parsing.IntE(arg[1]);
 		string[] arh = splitChars(arg[2],lngt);
 		current_tick = Parsing.IntE(arg[3]);
+		string[] arv = splitChars2(arg[4],lngt);
 
 		for(i=1;i<lngt;i++)
 		{
@@ -1338,9 +1339,12 @@ public class SC_control : MonoBehaviour {
 			int k=i; if(i==connectionID) k=0;
 			int atf=0;
 			string ari = arh[k];
+			string ariv = arv[k];
 
 			if(true)
 			{
+				Vector3 oldSourced = PL[i].sourcedPosition;
+
 				if(arh[k]=="0")
 				{
 					//Player is not joined
@@ -1389,6 +1393,20 @@ public class SC_control : MonoBehaviour {
 					PL[i].ArtSource = atf;
 					PL[i].OtherSource = others1_RPC[i];
 				}
+
+				//Velocity speculation get
+				if(arv[k]=="2")
+					PL[i].SpeculatedVelocity = new Vector3(0f,0f,0f);
+				else
+					PL[i].SpeculatedVelocity = new Vector3(
+						Char2ToFloat(ariv,0),
+						Char2ToFloat(ariv,2),
+						0f
+					);
+
+				//Teleport until removing
+				if(oldSourced != PL[i].sourcedPosition)
+					PL[i].GetComponent<SC_player_follower>().teleport_until = false;
 					
 				//Based on <atf> value
 				NC[i].enabled = !f1 && (atf%25!=1);
@@ -1438,6 +1456,21 @@ public class SC_control : MonoBehaviour {
 			n++;
 		}
 		return effect;
+	}
+	string[] splitChars2(string str, int amount)
+	{
+    	string[] effect = new string[amount];
+    	int i, n = 0, lngt = str.Length;
+    	for (i = 0; i < lngt; i++)
+    	{
+        	if (str[i] == '!' || str[i] == '\"') effect[n] = "2";
+	        else {
+	            effect[n] = str[i] + "" + str[i + 1] + "" + str[i + 2] + "" + str[i + 3];
+            	i+=3;
+        	}
+        	n++;
+    	}
+    	return effect;
 	}
 	string retping(float pig)
 	{
@@ -2440,6 +2473,28 @@ public class SC_control : MonoBehaviour {
 		}
 
 		float ret = (get[0]*bs[0] + get[1]*bs[1] + get[2]*bs[2] + get[3]*bs[3]) / 124f;
+		if(minus) ret = -ret;
+		return ret;
+	}
+	float Char2ToFloat(string dat, int st)
+	{
+		bool minus = false;
+
+		int[] bs = new int[2];
+		bs[0] = 124;
+		bs[1] = 1;
+
+		int[] get = new int[4];
+		get[0] = RASCII_toInt(dat[st+0]);
+		get[1] = RASCII_toInt(dat[st+1]);
+
+		if(get[0]>=62)
+		{
+			minus = true;
+			get[0]-=62;
+		}
+
+		float ret = (get[0]*bs[0] + get[1]*bs[1]) / 124f / 25f;
 		if(minus) ret = -ret;
 		return ret;
 	}

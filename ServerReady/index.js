@@ -1855,6 +1855,8 @@ class CPlayer {
     this.periodic = {};
     this.shield_time = 0;
     this.green_time = 0;
+    this.previous_position = null;
+    this.velocity_speculation = [0,0];
     sendToAllPlayers("/RetShieldVisual "+this.gpid+" F X X");
   }
   DataImport(rsp_x,rsp_y,ctrl_power) {
@@ -3669,7 +3671,8 @@ setInterval(function () {  // <interval #2>
   if(config.show_positions) eff = "/RPU " + max_players + " ";
   else eff = ".RPU " + max_players + " ";
   eff += GetRPU(plr.players,lngt) + " ";
-  eff += current_tick;
+  eff += current_tick + " ";
+  eff += GetRPV(plr.players,lngt);
   eff += " X X"
   sendToAllPlayers(eff);
 
@@ -3900,7 +3903,7 @@ function intToRASCII(int)
   if(int>=31 && int<=123) return String.fromCharCode(int+4);
   return String.fromCharCode(1);
 }
-function insertFloatToChar4(str,delta,float)
+function insertFloatToChar4(str,delta,float) // Cyclic overflow
 {
   var i,lngt=str.length;
 
@@ -3920,6 +3923,33 @@ function insertFloatToChar4(str,delta,float)
     if(i==0)
     {
       num = num%62;
+      if(minus) num+=62;
+    }
+    str = str.replaceAt(ii,intToRASCII(num));
+  }
+
+  return str;
+}
+function insertFloatToChar2(str,delta,float) // Border overflow
+{
+  var i,lngt=str.length;
+
+  var minus = (float<0);
+  if(minus) float = -float;
+  
+  float *= 124 * 25;
+  float = Math.round(float);
+
+  var bs = [124,1];
+  for(i=0;i<2;i++)
+  {
+    var ii = lngt+delta+i;
+    var num = Math.floor(float/bs[i]);
+    float = float % bs[i];
+
+    if(i==0)
+    {
+      if(num>=62) num=61;
       if(minus) num+=62;
     }
     str = str.replaceAt(ii,intToRASCII(num));
@@ -4003,6 +4033,24 @@ function GetRPU(players,lngt)
       eff = insertFloatToChar4(eff,-9,Parsing.FloatU(splitted[0]));
       eff = insertFloatToChar4(eff,-5,Parsing.FloatU(splitted[1]));
       eff = insertRotToChar1(eff,-1,Parsing.FloatU(splitted[4]));
+    }
+  }
+
+  return eff;
+}
+
+function GetRPV(players,lngt)
+{
+  var i,eff="";
+  for(i=0;i<lngt;i++)
+  {
+    if(players[i]=="0") eff+="!";
+    else if(players[i]=="1") eff+="\"";
+    else
+    {
+      eff+="XXXX";
+      eff = insertFloatToChar2(eff,-4,plr.pclass[i].velocity_speculation[0]);
+      eff = insertFloatToChar2(eff,-2,plr.pclass[i].velocity_speculation[1]);
     }
   }
 
@@ -4967,6 +5015,32 @@ wss.on("connection", function connection(ws,req)
       plr.pclass[arg[1]].powerRegenBlocked = (hiddenFlags[0]=="T") || (hiddenFlags[1]=="T");
       if(hiddenFlags[1]!="T") {
           plr.pclass[arg[1]].shield_time = 0;
+      }
+
+      //Velocity speculation
+      var pap = plr.pclass[arg[1]];
+      if(arg[2]!="1")
+      {
+          var current_position = [
+            Parsing.FloatU(plr.players[arg[1]].split(";")[0]),
+            Parsing.FloatU(plr.players[arg[1]].split(";")[1])
+          ];
+
+          if(pap.previous_position != null)
+          {
+              pap.velocity_speculation = [
+                current_position[0] - pap.previous_position[0],
+                current_position[1] - pap.previous_position[1]
+              ];
+          }
+          else pap.velocity_speculation = [0,0];
+
+          pap.previous_position = current_position;
+      }
+      else
+      {
+          pap.previous_position = null;
+          pap.velocity_speculation = [0,0];
       }
 
       //Impulse damage
