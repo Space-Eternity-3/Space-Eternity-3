@@ -7,7 +7,7 @@ Edit file and select it in your SE3 selector.
 >
 
 version: 'Release 2.3'; <Don't change>
-name: 'DEFAULT'; <Rename it>
+name: 'DEDICATED PVP PACK'; <Rename it>
 craftings
 {
 	<Category>1
@@ -33,7 +33,6 @@ craftings
 		title_image: storage;
 		1: stone(4) + magnetic_stone(2) -> storage;
 		2: stone_with_crystals(3) + stone_drill -> driller;
-		3: gold(3) + copper(2) -> respawn;
 	}
 	<Category>4
 	{
@@ -201,7 +200,7 @@ gameplay
 	<ARTEFACTS>
 	at_protection_health_level_add: 2,272;
 	at_protection_health_regenerate_multiplier: 1,5;	<relative variable>	
-	at_impulse_power_regenerate_multiplier: 0,75;
+	at_impulse_power_regenerate_multiplier: 1;
 	at_impulse_time: 0,4;
 	at_impulse_speed: 70;
 	at_impulse_damage: 8;
@@ -327,8 +326,33 @@ generator_settings
 {
 	<Default generation> 0
 	{
-		settings: [];
+		settings: [
+			bgcolor-152-152-152,
+		];
 		
+		all_sizes: bedrockB(100%);
+	}
+	<Lobby> 1
+	{
+		chance: 0%;
+		settings: [
+			bgcolor-152-152-152,
+			structural, struct=1,
+			spawn, centred,
+			radius=0,
+		];
+	
+		all_sizes: bedrockB(100%);
+	}
+	<Battle Arena> 2
+	{
+		chance: 50%;
+		settings: [
+			structural, struct=2,
+			centred,
+			radius=80,
+		];
+
 		<Size>4: stone(50%) + copper(47%) + gold(3%);
 		<Size>5: stone(50%) + copper(47%) + gold(3%);
 		<Size>6: stone(50%) + copper(20%) + coal(25,5%) + gold(3%) + amethyst(1,5%);
@@ -336,135 +360,6 @@ generator_settings
 		<Size>8: stone(50%) + copper(30%) + coal(20%);
 		<Size>9: stone(50%) + coal(20%) + grass(15%) + magnetic(15%);
 		<Size>10: stone(35%) + coal(15%) + grass(25%) + magnetic(25%);
-	}
-	<Hell biome> 1
-	{
-		chance: 8%;
-		settings: [
-			bgcolor-255-174-181,
-		];
-	
-		<Size>4: coal(100%);
-		<Size>5: coal(100%);
-		<Size>6: coal(98%) + diamond(2%);
-		<Size>7: coal(65%) + red(35%);
-		<Size>8: coal(65%) + red(35%);
-		<Size>9: coal(45%) + red(55%);
-		<Size>10: coal(45%) + red(55%);
-	}
-	<Geyzer biome> 2
-	{
-		chance: 8%;
-		settings: [
-			bgcolor-255-252-220,
-		];
-	
-		all_sizes: stoneA(100%);
-		<Size>5: stoneA(70%) + magneticA(30%);
-		<Size>6: stoneA(70%) + magneticA(30%);
-		<Size>7: stoneA(70%) + magneticA(30%);
-	}
-	<Alien biome> 3
-	{
-		chance: 8%;
-		settings: [
-			bgcolor-100-255-208,
-		];
-	
-		all_sizes: grass(60%) + magnetic(40%);
-		<Size>4: grass(60%) + magnetic(34%) + gold(6%);
-		<Size>5: grass(60%) + magnetic(34%) + gold(6%);
-	}
-	<Arena> 4
-	{
-		chance: 4%;
-		settings: [
-			bgcolor-212-218-224,
-			structural, struct=4,
-			radius = 80, even,
-			density = 100%,
-
-			<works for every structure globally>
-			boss.1.color-74-255-182,	<Protector>
-			boss.2.color-255-145-69,	<Adecodron>
-			boss.3.color-255-112-237,	<Octogone>
-			boss.4.color-255-216-62,	<Starandus>
-			boss.6.color-255-136-146,	<Degenerator>
-		];
-		
-		all_sizes: metalic(100%);
-	}
-	<Catastrophic arena> 5
-	{
-		chance: 0,4%;
-		settings: [
-			bgcolor-212-218-224,
-			structural, struct=5,
-			radius = 80, even,
-			density = 100%,
-		];
-		
-		all_sizes: metalicA(100%);
-	}
-	<Cementery> 6
-	{
-		chance: 2%;
-		settings: [
-			bgcolor-255-252-220,
-			structural, struct=1,
-			radius = 50, even,
-			density = 100%,
-		];
-		
-		all_sizes: stoneB(100%);
-		<Size>5: bone(60%) + stoneB(40%);
-		<Size>6: bone(60%) + stoneB(40%);
-		<Size>7: bone(60%) + stoneB(40%);
-	}
-	<Dark cementery> 7
-	{
-		chance: 1%;
-		settings: [
-			bgcolor-255-174-181,
-			structural, struct=2,
-			radius = 50, even,
-			density = 100%,
-		];
-		
-		all_sizes: dark(100%);
-		<Size>5: bone(60%) + dark(40%);
-		<Size>6: bone(60%) + dark(40%);
-		<Size>7: bone(60%) + dark(40%);
-	}
-	<Star> 8
-	{
-		chance: 1,5%;
-		settings: [
-			bgcolor-255-245-140,
-			structural, struct=3,
-			radius = 40, even,
-			density = 100%,
-		];
-		
-		all_sizes: coalA(100%);
-	}
-	<Copper facilities> 9
-	{
-		chance: 1,5%;
-		settings: [
-			bgcolor-255-151-81,
-			min = 50, max = 70,
-			density = 85%,
-			priority = 24,
-		];
-		
-		<Size>10: copperA(100%);
-		<Size>9: copperB(100%);
-		<Size>8: copperA(100%);
-		<Size>7: copperA(40%) + redA(40%) + metalic(20%);
-		<Size>6: copperA(30%) + redA(30%) + metalic(40%);
-		<Size>5: copperA(20%) + redA(20%) + metalic(60%);
-		<Size>4: copperA(60%) + metalic(40%);
 	}
 	<max 31 biomes + default>
 }
@@ -491,6 +386,7 @@ objects_generate
 	metalicA: stone(35%) + metal_piece(25%) + unstable_matter(8%);
 	bedrock: bedrock_stone(30%) + packed_bedrock(15%);
 	bedrockA: bedrock_stone(30%) + packed_bedrock(15%) + unstable_matter(20%);
+	bedrockB: total_vacuum(100%);
 	bone: bone(45%);
 	other: unstable_matter(20%);
 }
@@ -606,142 +502,28 @@ game_translate <low-level settings>
 }
 custom_structures <advanced settings>
 {
-	<normal cementery> 1: '[
+	<lobby> 1: '[
 
-		catch # 200 summon hole 20
-		catch # 1-2 summon asteroid 10 32 x hide
-		catch $ 0-19 move$ 0 5
-		catch # 2 rotate 9
-		catch # 3 summon sphere 20 0
-	
-	]';
-	<dark cementery> 2: '[
-	
-		catch # 200 summon hole 20
-		catch # 1-2 summon asteroid 10 1 x hide
-		catch $ 0-19 move$ 0 5
-		catch # 2 rotate 9
-		catch # 3 summon sphere 20 1
-	
-	]';
-	<star> 3: '[
-	
-		catch # 200 summon hole 20
-		catch # 1 summon star
-	
-	]';
-	<arena> 4: '[
-	
-		catch # 200 summon hole 50
-		catch # 201 summon respblock 41,5284
+		catch # 200 summon hole 30
 
-		catch # 1-8 summon asteroid 8 12 72,,,,,,,,72,72,,,,,,72
-		catch # 1 move 2 2 rotate 11,25
-		catch # 2 move -2 2 rotate 101,25
-		catch # 3 move -2 -2 rotate 191,25
-		catch # 4 move 2 -2 rotate 281,25
-		catch # 5 move 2 -2 rotate -11,25
-		catch # 6 move -2 -2 rotate -101,25
-		catch # 7 move -2 2 rotate -191,25
-		catch # 8 move 2 2 rotate -281,25
-		catch # 1-4 move 35 -0,5
-		catch # 5-8 move 35 0,5
-
-		catch # 9-16 summon asteroid 7 12 72,,,,,,,72,72,,,,,72
-		catch # 9-10 move 2 2 rotate 33,75 mod 22,5
-		catch # 11-12 move -2 2 rotate 123,75 mod 22,5
-		catch # 13-14 move -2 -2 rotate 213,75 mod 22,5
-		catch # 15-16 move 2 -2 rotate 303,75 mod 22,5
-		catch # 9-16 move 35 0
-
-		catch # 59-70 summon wall 1 1 12
-		catch # 59-61 move 2 2 rotate 22,5 mod 22,5
-		catch # 62-64 move -2 2 rotate 112,5 mod 22,5
-		catch # 65-67 move -2 -2 rotate 202,5 mod 22,5
-		catch # 68-70 move 2 -2 rotate 292,5 mod 22,5
-		catch # 59-70 move 34,25 0
-
-		catch # 17-28 summon asteroid 4 12 0,0,0,0,0,0,0,0
-		catch # 59-70 steal fromdelta -42
-
-		catch # 51-58 summon piston 1 1 12
-		catch # 51 move 36,4 6,4
-		catch # 52 move -36,4 6,4
-		catch # 53 move 36,4 -6,4 rotate 180
-		catch # 54 move -36,4 -6,4 rotate 180
-		catch # 55 rotate 90 move 36,4 6,4
-		catch # 56 rotate 90 move -36,4 6,4
-		catch # 57 rotate 90 move 36,4 -6,4 rotate 180
-		catch # 58 rotate 90 move -36,4 -6,4 rotate 180
-
-		catch # 202-205 summon animator
-		catch # 51-52 setanimator 202 catch # 202 animate extending when default,B1,B2,B3 0 -3,6
-		catch # 53-54 setanimator 203 catch # 203 animate extending when default,B1,B2,B3 0 3,6
-		catch # 55-56 setanimator 204 catch # 204 animate extending when default,B1,B2,B3 3,6 0
-		catch # 57-58 setanimator 205 catch # 205 animate extending when default,B1,B2,B3 -3,6 0
-
-		setrand 5
-		ifrand 0 catch # 0 summon boss 1 catch # 29 summon asteroid 6 12 42,49,50,0,0,0,0,0,0,0,50,49
-		ifrand 1 catch # 0 summon boss 2 catch # 29 summon asteroid 6 12 43,49,50,0,0,0,0,0,0,0,50,49
-		ifrand 2 catch # 0 summon boss 3 catch # 29 summon asteroid 6 12 44,49,50,0,0,0,0,0,0,0,50,49
-		ifrand 3 catch # 0 summon boss 4 catch # 29 summon asteroid 6 12 45,49,50,0,0,0,0,0,0,0,50,49
-		ifrand 4 catch # 0 summon boss 6 catch # 29 summon asteroid 6 12 47,49,50,0,0,0,0,0,0,0,50,49
-		ifrand break
-		catch # 30 summon asteroid 6 12 52,53,50,0,0,0,0,0,0,0,50,53
-		catch # 29-30 move 0 -2
-
-		catch # 71-72 summon animator
-		catch # 29 setanimator 71 catch # 71 animate hiding when default,A1,A2,A3,B1,B2,B3
-		catch # 30 setanimator 72 catch # 72 animate hiding when default,B1,B2,B3,R
+		catch # 201-208 summon sphere 7 12
+		rotate 0 mod 45 move 20 0
+		catch # 209-216 summon wall 1 1 12
+		rotate 22,5 mod 45 move 18,75 0
 		
-	]';
-	<catastrophic arena> 5: '[
+		catch # 0-999 instant
 	
-		catch # 200 summon hole 50
-		catch # 201 summon respblock 41,5284
+	]';
 
-		catch # 1-8 summon asteroid 8 28 72,,,,,,,,72,72,,,,,,72
-		catch # 1 move 2 2 rotate 11,25
-		catch # 2 move -2 2 rotate 101,25
-		catch # 3 move -2 -2 rotate 191,25
-		catch # 4 move 2 -2 rotate 281,25
-		catch # 5 move 2 -2 rotate -11,25
-		catch # 6 move -2 -2 rotate -101,25
-		catch # 7 move -2 2 rotate -191,25
-		catch # 8 move 2 2 rotate -281,25
-		catch # 1-4 move 35 -0,5
-		catch # 5-8 move 35 0,5
+	<battle arena> 2: '[
 
-		catch # 9-16 summon asteroid 7 28 72,,,,,,,72,72,,,,,72
-		catch # 9-10 move 2 2 rotate 33,75 mod 22,5
-		catch # 11-12 move -2 2 rotate 123,75 mod 22,5
-		catch # 13-14 move -2 -2 rotate 213,75 mod 22,5
-		catch # 15-16 move 2 -2 rotate 303,75 mod 22,5
-		catch # 9-16 move 35 0
+		catch # 301-420 summon piston 1 1 12
+		rotate 90 mod 3 move 75 0
 
-		catch # 59-70 summon wall 1 1 12
-		catch # 59-61 move 2 2 rotate 22,5 mod 22,5
-		catch # 62-64 move -2 2 rotate 112,5 mod 22,5
-		catch # 65-67 move -2 -2 rotate 202,5 mod 22,5
-		catch # 68-70 move 2 -2 rotate 292,5 mod 22,5
-		catch # 59-70 move 34,25 0
-
-		catch # 17-28 summon asteroid 4 2 x
-		catch # 59-70 steal fromdelta -42
-
-		catch # 51-58 summon piston 1 1 12
-		catch # 51 move 36,4 6,4
-		catch # 52 move -36,4 6,4
-		catch # 53 move 36,4 -6,4 rotate 180
-		catch # 54 move -36,4 -6,4 rotate 180
-		catch # 55 rotate 90 move 36,4 6,4
-		catch # 56 rotate 90 move -36,4 6,4
-		catch # 57 rotate 90 move 36,4 -6,4 rotate 180
-		catch # 58 rotate 90 move -36,4 -6,4 rotate 180
-
-		catch # 29 summon asteroid 6 2 ,49,50,,,,,,,,50,49 hide
-		catch # 30 summon sphere 6 12
-		catch # 29-30 move 0 -2
+		catch # 501-620 summon hole 5
+		rotate 90 mod 3 move 75 0
+		
+		catch # 0-999 instant
 	
 	]';
 }

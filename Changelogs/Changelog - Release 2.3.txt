@@ -22,6 +22,7 @@ Old feature changes:
 - Packed fobs have a bit larger collision collider from now.
 - Multiplayer compass under TAB, indicating you, will now be always disabled instead of pointing to your respawn point. It is more intuitive.
 - Impulse artefact nerfed, it deals 8 instead of 10 damage from now.
+- Impulse artefact nerfed, power regeneration speed reduced: 1 -> 0.75
 
 Artistic changes:
 

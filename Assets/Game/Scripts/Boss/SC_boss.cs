@@ -155,7 +155,7 @@ public class SC_boss : MonoBehaviour
 
         CanvP = Instantiate(CanvPS,new Vector3(0f,0f,0f),Quaternion.identity);
         CanvP.SetParent(TestBossNick,false); CanvP.name = "CanvBS";
-        CanvP.localScale = new Vector3(1f,1f,1f) * 0.007f;
+        CanvP.localScale = new Vector3(1f,1f,1f);
 
         foreach(Transform nck in CanvP)
         {

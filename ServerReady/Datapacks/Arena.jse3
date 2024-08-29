@@ -7,7 +7,7 @@ Edit file and select it in your SE3 selector.
 >
 
 version: 'Release 2.3'; <Don't change>
-name: 'Arena modified'; <Rename it>
+name: 'Arena'; <Rename it>
 craftings
 {
 	<Category>1
@@ -693,8 +693,6 @@ custom_structures <advanced settings>
 		catch # 71-72 summon animator
 		catch # 29 setanimator 71 catch # 71 animate hiding when default,A1,A2,A3,B1,B2,B3
 		catch # 30 setanimator 72 catch # 72 animate hiding when default,B1,B2,B3,R
-
-		catch # 0-999 instant
 		
 	]';
 	<catastrophic arena> 5: '[
