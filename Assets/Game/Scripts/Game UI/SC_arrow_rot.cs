@@ -29,7 +29,7 @@ public class SC_arrow_rot : MonoBehaviour {
 	}
 	void Start()
 	{
-		if(this_main) if(SC_data.compass_mode=="1") ChangePosVisible();
+		if(this_main) if(SC_data.compass_mode=="0") ChangePosVisible();
 	}
 	void LateUpdate()
 	{
@@ -60,14 +60,14 @@ public class SC_arrow_rot : MonoBehaviour {
 			{
 				coords.localPosition=sPosR;
 				compass.localPosition=sPosM+new Vector3(0f,deltaPos,0f);
-				if(this_main) SC_data.compass_mode="1";
+				if(this_main) SC_data.compass_mode="0";
 				E=true;
 			}
 			else
 			{
 				compass.localPosition=sPosM;
 				coords.localPosition=sPosR+new Vector3(0f,deltaPos,0f);
-				if(this_main) SC_data.compass_mode="0";
+				if(this_main) SC_data.compass_mode="1";
 				E=false;
 			}
 			if(this_main) SC_data.Save("settings");

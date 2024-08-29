@@ -106,6 +106,17 @@ public class SC_object_holder : MonoBehaviour
             }
         }
 
+        //Generate instant objects
+        for(int j=0;j<Objects.Length;j++)
+        if(Objects[j]!=null)
+        {
+            Transform trn = GenerateObject(j,true);
+            if(trn!=null)
+            {
+                summoned++;
+            }
+        }
+
         //Disable lazy generation
         Vector3 reduced_player_pos = SC_fun.SC_control.transform.position;
         reduced_player_pos -= new Vector3(0f,0f,reduced_player_pos.z);
@@ -124,7 +135,7 @@ public class SC_object_holder : MonoBehaviour
         for(; (j_current < Objects.Length && summoned < max_summoned) ; j_current++)
         if(Objects[j_current]!=null)
         {
-            Transform trn = GenerateObject(j_current);
+            Transform trn = GenerateObject(j_current,false);
             if(trn!=null)
             {
                 summoned++;
@@ -140,8 +151,11 @@ public class SC_object_holder : MonoBehaviour
         if(j_current==Objects.Length)
             generation_done = true;
     }
-    Transform GenerateObject(int j)
+    Transform GenerateObject(int j, bool instant)
     {
+        if(Objects[j].instant != instant)
+            return null;
+
         int i;
         Transform trn = null;
         if(Objects[j].obj=="asteroid")
@@ -212,8 +226,6 @@ public class SC_object_holder : MonoBehaviour
             trn.SetParent(transform,true);
             trn.GetComponent<SC_resp_blocker>().radius = Objects[j].range;
         }
-
-        if(!Transforms.ContainsKey(j)) Transforms.Add(j,trn);
 
         if(trn!=null && Objects[j].animator!=-1)
             trn.SetParent(Transforms[Objects[j].animator],true);

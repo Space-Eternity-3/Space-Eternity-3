@@ -43,6 +43,7 @@ UI changes:
 - Text "Recharge artefact using star" changed to "Recharge artefact near star".
 - Music and Volume settings can now be set to all whole values from 0% to 100%.
 - In main menu information about game creator and music source will be visible.
+- Coordinate mode is default from now instead of compass mode.
 
 Configurables:
 

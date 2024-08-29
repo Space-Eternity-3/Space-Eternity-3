@@ -655,6 +655,7 @@ class CObjectInfo
         this.size1 = 0;
         this.size2 = 0;
         this.hidden = false;
+        this.instant = true;
         this.fobcode = "";
 
         //Animations
@@ -1123,7 +1124,7 @@ class Universe
         let key_words = [
             "summon",
             "move","rotate","reset",
-            "setbiome","hide","steal",
+            "setbiome","hide","instant","steal",
             "setanimator","animate",
             "move$","rotate$","reset$"
         ];
@@ -1226,6 +1227,10 @@ class Universe
                 {
                     if(Build[H].obj!="asteroid") continue;
                     Build[H].hidden = true;
+                }
+                if(arg[4]=="instant")
+                {
+                    Build[H].instant = true;
                 }
                 if(arg[4]=="steal")
                 {

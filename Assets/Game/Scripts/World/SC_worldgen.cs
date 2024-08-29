@@ -258,6 +258,7 @@ public class CObjectInfo
     public float size1 = 0f;
     public float size2 = 0f;
     public bool hidden = false;
+    public bool instant = false;
     public string fobcode = "";
     public string GetGencode()
     {
@@ -748,7 +749,7 @@ public static class Universe
         string[] key_words = new string[]{
             "summon",
             "move","rotate","reset",
-            "setbiome","hide","steal",
+            "setbiome","hide","instant","steal",
             "setanimator","animate",
             "move$","rotate$","reset$"
         };
@@ -849,6 +850,10 @@ public static class Universe
                 {
                     if(Build[H].obj!="asteroid") continue;
                     Build[H].hidden = true;
+                }
+                if(arg[4]=="instant")
+                {
+                    Build[H].instant = true;
                 }
                 if(arg[4]=="steal")
                 {
