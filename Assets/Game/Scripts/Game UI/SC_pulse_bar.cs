@@ -13,7 +13,10 @@ public class SC_pulse_bar : MonoBehaviour
     public int max_lerp=25;
     public int actual_lerp=0;
 
+    public GameObject detached_nick;
+
     float memory=1;
+    bool mother_minus = true;
 
     public SC_control SC_control;
 
@@ -27,9 +30,12 @@ public class SC_pulse_bar : MonoBehaviour
         if(actual_lerp > 0) actual_lerp--;
     }
     void Start() {
-        SC_control.SC_lists.AddTo_SC_pulse_bar(this);
+        mother_minus = canvas.GetComponent<Transform>().position.z < -1400f;
+        if(!mother_minus)
+            SC_control.SC_lists.AddTo_SC_pulse_bar(this);
     }
     void OnDestroy() {
-        SC_control.SC_lists.RemoveFrom_SC_pulse_bar(this);
+        if(!mother_minus)
+            SC_control.SC_lists.RemoveFrom_SC_pulse_bar(this);
     }
 }

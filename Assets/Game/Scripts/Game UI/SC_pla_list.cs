@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SC_pla_list : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class SC_pla_list : MonoBehaviour
     public int max_page = 1;
 
     public Text NamePages;
-    public Text TextConst0, TextConstYou;
+    public TextMeshPro TextConst0, TextConstYou;
 
     public Color32 color_default, color_you;
     public Color32 color_C_default, color_C_resp;

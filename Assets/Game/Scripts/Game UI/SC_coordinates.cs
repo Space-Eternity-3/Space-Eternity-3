@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SC_coordinates : MonoBehaviour {
 
 	public Transform player; //dynamic variable
 	public SC_invisibler SC_invisibler; //dynamic variable
-	public Text nik; //dynamic variable
+	public TextMeshPro nik; //dynamic variable
 
 	public Text coordinates;
 	public bool mtp_coords;

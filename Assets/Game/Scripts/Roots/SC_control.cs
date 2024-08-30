@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using System;
 using System.Text;
 using System.Diagnostics;
+using TMPro;
 
 public class SC_control : MonoBehaviour {
 
@@ -45,7 +46,7 @@ public class SC_control : MonoBehaviour {
 	public Transform drill3T;
 	public Transform respawn_point;
 	public Text servername,pingname;
-	public Text TextConstYou;
+	public TextMeshPro TextConstYou;
 
 	float mX,mY,X,Y,F=0.3f;
 
@@ -160,7 +161,7 @@ public class SC_control : MonoBehaviour {
 	public List<Transform> RU = new List<Transform>();
 	public List<TextMesh> N = new List<TextMesh>();
 	public List<Canvas> NC = new List<Canvas>();
-	public List<Text> NCT = new List<Text>();
+	public List<TextMeshPro> NCT = new List<TextMeshPro>();
 	public List<Slider> NCH = new List<Slider>();
 	public List<Image> NCHOF = new List<Image>();
 	public List<int> ramvis = new List<int>();
@@ -715,12 +716,15 @@ public class SC_control : MonoBehaviour {
 		Screen2.targetDisplay = f1TarDisp;
 
 		for(int ji=1;ji<max_players;ji++){
-			NC[ji].enabled = !f1 && (PL[ji].ArtSource % 25!=1);
+			bool will_active = !f1 && (PL[ji].ArtSource % 25!=1);
+			NC[ji].enabled = will_active;
+			NCT[ji].gameObject.SetActive(will_active);
 		}
 
 		List<SC_pulse_bar> spbs = SC_lists.SC_pulse_bar;
 		foreach(SC_pulse_bar spb in spbs) {
 			spb.canvas.enabled = !f1;
+			spb.detached_nick.SetActive(!f1);
 		}
 
 		//Restart lags
@@ -2422,11 +2426,13 @@ public class SC_control : MonoBehaviour {
 			foreach(Transform child in NC[i].GetComponent<Transform>())
 			{
 				if(child.name == "Nickname")
-					NCT[i] = child.GetComponent<Text>();
+					NCT[i] = child.GetComponent<TextMeshPro>();
 
 				if(child.name == "HPBar")
 					NCH[i] = child.GetComponent<Slider>();
 			}
+			NCT[i].GetComponent<Transform>().SetParent(NCT[i].GetComponent<Transform>().parent.parent,false);
+
 			foreach(Transform child in NCH[i].GetComponent<Transform>())
 			{
 				if(child.name == "OverFill")

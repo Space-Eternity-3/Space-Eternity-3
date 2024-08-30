@@ -37,6 +37,7 @@ Artistic changes:
 - Octogone bullet start sound volume reduced: 0.35 -> 0.25
 - Main menu music changed, credits in main menu, music volume changed: 0.4 -> 0.7
 - Added push inventory animation. Developer was inspired by the older version, where it was present.
+- Boss and player nicks are TextMeshPro instead of regular Text from now.
 
 UI changes:
 
@@ -67,6 +68,7 @@ Configurables:
 - It is now possible to customize target_packet_frequency value in server config.
 - It is now possible to customize in config, with which objects will boss bullets on multiplayer collide.
 - Added possibility to disable chat messages through config. Players will still be able to send them, but server will ignore it.
+- Added new seon command: `instant` (forces objects in the structure to spawn instantly)
 
 Technical changes:
 

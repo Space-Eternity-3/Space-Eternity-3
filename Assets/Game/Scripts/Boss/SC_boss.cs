@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class CDeltaPos
 {
@@ -165,6 +166,8 @@ public class SC_boss : MonoBehaviour
             if(nck.name=="HPBar")
                 CanvBar = nck;
         }
+
+        CanvNick.SetParent(CanvNick.parent.parent,false);
 
         if(!multiplayer) //If singleplayer
         {
@@ -431,7 +434,7 @@ public class SC_boss : MonoBehaviour
         if(old_boss_nick != temp_boss_nick)
         {
             old_boss_nick = temp_boss_nick;
-            CanvNick.GetComponent<Text>().text = temp_boss_nick;
+            CanvNick.GetComponent<TextMeshPro>().text = temp_boss_nick;
         }
         string temp_6_7;
         temp_6_7 = dataID[6] + "_" + dataID[7];
