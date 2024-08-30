@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ConsoleWindow
+  m_Name: ProjectBrowser
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -242,14 +242,14 @@ MonoBehaviour:
     y: 653
     width: 1426
     height: 286
-  m_MinSize: {x: 51, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
-  m_ActualView: {fileID: 16}
+  m_MinSize: {x: 231, y: 271}
+  m_MaxSize: {x: 10001, y: 10021}
+  m_ActualView: {fileID: 15}
   m_Panes:
   - {fileID: 15}
   - {fileID: 16}
-  m_Selected: 1
-  m_LastSelected: 0
+  m_Selected: 0
+  m_LastSelected: 1
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -402,7 +402,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 19
+    y: 73
     width: 394
     height: 632
   m_SerializedDataModeController:
@@ -421,21 +421,21 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 1e14e6ff6872f9ff9672f9ff4c87f9ffccfaffff96ed0b00
+      m_ExpandedIDs: 449fecff5810f7ff6010f7ff6610f7ff942ef7ffee5cfafff65cfafffc5cfaffb67bfaffccfaffff8875000000780000727d00004c8b00004c9100001692000012a2000006550400ee6b040090790400
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: TestBossNick
+        m_OriginalName: TestBossNick
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: -585640
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
         m_TrimLeadingAndTrailingWhitespace: 0
         m_ClientGUIView: {fileID: 8}
@@ -468,8 +468,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Scene\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 396
-    y: 19
+    x: 395
+    y: 73
     width: 1029
     height: 632
   m_SerializedDataModeController:
@@ -970,9 +970,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 256.10098, y: -9.024204, z: 2.144478}
+    m_Target: {x: 0, y: 8.96, z: 258.85}
     speed: 2
-    m_Value: {x: 256.10098, y: -9.024204, z: 2.144478}
+    m_Value: {x: 0, y: 8.96, z: 258.85}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1018,13 +1018,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.0018093127, y: 0.0020974611, z: -0.0000043261925, w: -1.0000046}
+    m_Target: {x: -0.14892124, y: -0.1720126, z: 0.02631385, w: -0.9734262}
     speed: 2
-    m_Value: {x: -0.0018093128, y: 0.0020974611, z: -0.000004326193, w: -1.0000046}
+    m_Value: {x: -0.14891997, y: -0.17201114, z: 0.026313627, w: -0.973418}
   m_Size:
-    m_Target: 62.164036
+    m_Target: 0.004949737
     speed: 2
-    m_Value: 62.164036
+    m_Value: 0.004949737
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1103,7 +1103,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Game/Scripts/World
+    - Assets/Game/Scripts/Boss
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1113,16 +1113,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Game/Scripts/World
+  - Assets/Game/Scripts/Boss
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\lenovo\Documents\GitHub\Space-Eternity-3
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 203}
-    m_SelectedIDs: e0a90000
-    m_LastClickedID: 43488
-    m_ExpandedIDs: 000000002aa900002ca90000
+    scrollPos: {x: 0, y: 191}
+    m_SelectedIDs: a4920500
+    m_LastClickedID: 365220
+    m_ExpandedIDs: 000000002aa900002ca900007a92050000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1177,8 +1177,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 02580000
-    m_LastClickedInstanceID: 22530
+    m_SelectedInstanceIDs: 
+    m_LastClickedInstanceID: 0
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000f281000000000000
     m_RenameOverlay:
@@ -1232,7 +1232,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 672
+    y: 726
     width: 1425
     height: 265
   m_SerializedDataModeController:
@@ -1268,8 +1268,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Inspector\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1427
-    y: 19
+    x: 1426
+    y: 73
     width: 493
     height: 918
   m_SerializedDataModeController:
