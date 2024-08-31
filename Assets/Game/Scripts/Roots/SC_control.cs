@@ -944,8 +944,6 @@ public class SC_control : MonoBehaviour {
 		};
 
 		//[Asteroids]
-		Timer.Restart();
-
 		for(z=0;z<16;z++)
 		{
 			if(SC_data.WorldSector[z]!="")
@@ -955,8 +953,6 @@ public class SC_control : MonoBehaviour {
 		Smd.archived_world = SC_data.ArchivedWorld;
 		SC_data.ArchivedWorldSector = new List<string>();
 		SC_data.ArchivedWorld = new List<string[,]>();
-
-		InfoUp("Asteroids ArchiveAdd: " + Timer.GetMs() + "ms",400);
 		
 		Smd.seed = SC_data.seed;
 		Smd.world_dir = SC_data.worldDIR;
