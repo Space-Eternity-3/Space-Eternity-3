@@ -10,6 +10,23 @@ using System.Text;
 using System.Diagnostics;
 using TMPro;
 
+public static class Timer
+{
+    private static Stopwatch stopwatch = new Stopwatch();
+
+    // Metoda restartująca i uruchamiająca stoper od nowa
+    public static void Restart()
+    {
+        stopwatch.Restart(); // Restartuje i uruchamia stoper od zera
+    }
+
+    // Metoda zwracająca czas w milisekundach, który upłynął od ostatniego restartu
+    public static long GetMs()
+    {
+        return stopwatch.ElapsedMilliseconds; // Zwraca czas w milisekundach
+    }
+}
+
 public class SC_control : MonoBehaviour {
 
 	public Canvas Screen1;
@@ -864,9 +881,6 @@ public class SC_control : MonoBehaviour {
 	public void MainSaveData()
 	{
 		if(Globals.emergency_save_terminate) return;
-        
-		SC_data.UniverseX[worldID-1,0]=SC_camera.TotalTime+"";
-		SC_data.Save("universeX");
 
 		SC_data.DirQ(SC_data.worldDIR);
 		SC_data.DirQ(SC_data.asteroidDIR);
@@ -930,6 +944,7 @@ public class SC_control : MonoBehaviour {
 		};
 
 		//[Asteroids]
+		Timer.Restart();
 
 		for(z=0;z<16;z++)
 		{
@@ -940,10 +955,19 @@ public class SC_control : MonoBehaviour {
 		Smd.archived_world = SC_data.ArchivedWorld;
 		SC_data.ArchivedWorldSector = new List<string>();
 		SC_data.ArchivedWorld = new List<string[,]>();
+
+		InfoUp("Asteroids ArchiveAdd: " + Timer.GetMs() + "ms",400);
 		
 		Smd.seed = SC_data.seed;
 		Smd.world_dir = SC_data.worldDIR;
 
+		//[UniverseX]
+		SC_data.UniverseX[worldID-1,0]=SC_camera.TotalTime+"";
+		Smd.universe_0 = SC_data.UniverseX[worldID-1,0];
+		Smd.universe_1 = SC_data.UniverseX[worldID-1,1];
+		Smd.universe_2 = SC_data.UniverseX[worldID-1,2];
+
+		//[AsyncData]
 		AsyncData.MainDataSaveAsync(Smd);
 	}
 	void OnApplicationQuit()

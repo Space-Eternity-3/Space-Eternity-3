@@ -271,7 +271,7 @@ public class SC_data : MonoBehaviour
             return Parsing.FloatE(Gameplay[VarNumber(str,gpl_number)]);
         }
 
-    public void ArchiveAdd(int from)
+    /*public void ArchiveAdd(int from)
     {
         //Use directly before fragment overwritting
         int i,j,to=ArchivedWorldSector.Count;
@@ -281,7 +281,22 @@ public class SC_data : MonoBehaviour
             for(j=0;j<61;j++) {
                 ArchivedWorld[to][i,j] = World[i,j,from];
             }
+    }*/
+    public void ArchiveAdd(int from)
+    {
+        //Doesn't remove data, only copies it
+        int to = ArchivedWorldSector.Count;
+        ArchivedWorldSector.Add(WorldSector[from]);
+        string[,] newArchive = new string[100, 61];
+        ArchivedWorld.Add(newArchive);
+
+        Parallel.For(0, 100, i => {
+            for (int j = 0; j < 61; j++)
+                if(World[i, j, from] != "")
+                    newArchive[i, j] = World[i, j, from];
+        });
     }
+
     public void ArchiveTake(int from, int to)
     {
         int i,j;
@@ -409,8 +424,8 @@ public class SC_data : MonoBehaviour
         //Limit FPS
         Application.targetFrameRate = 120;
 
-        //Wait for all previous asynchroneus data savings (only if needed)
-        if(!menu) while(AsyncData.thread_count!=0) {}
+        //Wait for all previous asynchroneus data savings (I know this is a complete garbage, but it works, so don't touch it)
+        while(AsyncData.thread_count!=0) {}
 
         //savesDIR set
         savesDIR = GetGameDirectory().Replace('\\','/') + "/saves/";
@@ -736,7 +751,6 @@ public class SC_data : MonoBehaviour
 
             for(i=1;i<=8;i++)
             {
-
                 if(!menu) if((int)Communtron4.position.y != i) continue;
                 path=pathPre+i+"/";
                 file=path+"UniverseInfo.se3";
@@ -1656,6 +1670,11 @@ public class StructMD
     //AsteroidData archive
     public List<string> archived_world_sector;
     public List<string[,]> archived_world;
+
+    //UniverseX
+    public string universe_0;
+    public string universe_1;
+    public string universe_2;
     
     //Others
     public string seed;
@@ -1731,6 +1750,16 @@ public static class AsyncData
                             sw.Write("\r\n");
                         }
                     }
+                }
+
+                //[UniverseX]
+                if(smd.universe_1!="DEFAULT~unknown" && smd.universe_0!="")
+                using(FileStream fw = new FileStream(smd.world_dir+"UniverseInfo.se3", FileMode.Create, FileAccess.Write, 0, 4096, FileOptions.WriteThrough))
+                using(StreamWriter sw = new StreamWriter(fw))
+                {
+                    sw.Write(smd.universe_0); sw.Write("\r\n");
+                    sw.Write(smd.universe_1); sw.Write("\r\n");
+                    sw.Write(smd.universe_2); sw.Write("\r\n");
                 }
 
                 string file = smd.world_dir + "Biomes.se3";
