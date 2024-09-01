@@ -98,6 +98,7 @@ Technical changes:
 - Removed max_messages_per_second system in hope, that WebSocket will handle this.
 - Boss nick/bar canvas will refresh only when it's necessary (at least I hope so).
 - SC_boss.FixedUpdate will always execute directly after server commands from now.
+- crash_size has a limit from now, which means, thats crash damage can't be dangerously high.
 
 Bug fixes:
 

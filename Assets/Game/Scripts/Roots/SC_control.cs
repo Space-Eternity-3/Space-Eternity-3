@@ -1620,6 +1620,7 @@ public class SC_control : MonoBehaviour {
 		){
 			collision_cooldown = 20;
 			float crash_size = collision.impulse.magnitude - minimal + 3f;
+			if(crash_size > 30f) crash_size = 30f;
 			float crash_damage = 1.2f * multiplier * crash_size * Mathf.Pow(SC_fun.difficulty,0.5f);
 			
 			if(crash_damage > 0 && AllowCollisionDamage())

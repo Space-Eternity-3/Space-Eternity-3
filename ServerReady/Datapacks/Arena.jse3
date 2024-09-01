@@ -377,7 +377,7 @@ generator_settings
 	}
 	<Arena> 4
 	{
-		chance: 4%;
+		chance: 30%;
 		settings: [
 			bgcolor-212-218-224,
 			structural, struct=4, spawn,
