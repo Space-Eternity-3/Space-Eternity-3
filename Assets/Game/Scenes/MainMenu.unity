@@ -1743,7 +1743,7 @@ MonoBehaviour:
   - 
   - 
   TempFile: 0
-  camera_zoom: -27,5
+  camera_zoom: -40
   volume: 0,5
   music: 0,5
   compass_mode: 0

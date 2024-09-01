@@ -51,7 +51,7 @@ public class SC_data : MonoBehaviour
     //Awake Universal
     public string[] MultiplayerInput = new string[4];
     public string TempFile="0";
-    public string camera_zoom="-27,5";
+    public string camera_zoom="-40";
     public string volume="0,5";
 	public string music="0,5";
 	public string compass_mode="0";
@@ -362,7 +362,7 @@ public class SC_data : MonoBehaviour
     void ResetAwakeUniversal()
     {
         int i,j;
-        TempFile="0"; volume="0,5"; camera_zoom="-27,5";
+        TempFile="0"; volume="0,5"; camera_zoom="-40";
 		music="0,5"; compass_mode="0"; graphics="5";
         seed="";
         for(i=0;i<11;i++) TempFileConID[i]="";

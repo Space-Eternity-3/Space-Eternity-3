@@ -1,2 +1,0 @@
-mein.server
-ws://komp.se3.page:

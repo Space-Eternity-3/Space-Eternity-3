@@ -69,6 +69,7 @@ Configurables:
 - It is now possible to customize in config, with which objects will boss bullets on multiplayer collide.
 - Added possibility to disable chat messages through config. Players will still be able to send them, but server will ignore it.
 - Added new seon command: `instant` (forces objects in the structure to spawn instantly)
+- The default zoom is 0% instead of 50% from now to increase vision range of new players. You can still change it to bigger values.
 
 Technical changes:
 
