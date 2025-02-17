@@ -14,11 +14,11 @@
 
 ### Steps
 - Open project from Unity Hub using the specific Unity Editor version.
-- Open `ServerReady` folder (contains node.js multiplayer server project)
+- Open `ServerReady` folder (contains node.js multiplayer server project).
 
 ### How to run
-- To build the client, open Unity Editor and follow: File -> Build Settings... (and choose the platform) -> Build And Run
-- To run the server, run the following commands in directory with the multiplayer server:
+- To build the client, open Unity Editor and follow: File -> Build Settings... -> Build And Run.
+- To run the server, run the following commands in the directory with multiplayer server:
   ```
   npm i
   node index.js
@@ -26,5 +26,5 @@
 
 ## Download the game
 Download SE3 from a dedicated website: [se3.page](se3.page)  
-And seriously, read "How to play" tutorial. No one does it and then they regret this.
+And please, read "How to play" tutorial. No one does it and then they regret this.
 
