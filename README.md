@@ -18,7 +18,7 @@
 
 ### How to run
 - To build the client, open Unity Editor and follow: File -> Build Settings... -> Build And Run.
-- To run the server, run the following commands in the directory with multiplayer server:
+- To start the server, run the following commands in the directory with multiplayer server:
   ```
   npm i
   node index.js
