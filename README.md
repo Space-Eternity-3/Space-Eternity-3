@@ -27,4 +27,4 @@
   ```
 
 ## Download the game
-Download SE3 from a dedicated website: [se3.page](se3.page)
+Download SE3 from a dedicated website: [se3.page](https://se3.page)
