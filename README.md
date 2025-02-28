@@ -23,8 +23,10 @@
 - To start the server, run the following commands in the directory with multiplayer server:
   ```bash
   npm i
-  node index.js
+  npm start
   ```
+
+- If `npm start` doesn't work, try `node index.js`.
 
 ## Download the game
 Download SE3 from a dedicated website: [se3.page](https://se3.page)
