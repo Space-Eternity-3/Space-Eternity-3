@@ -1,3 +1,3 @@
 @echo off
-node index.js
+call npm start
 pause

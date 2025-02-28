@@ -1,16 +1,14 @@
 {
-  "name": "SE3-Server",
+  "name": "se3-server",
   "version": "2.3.0",
-  "description": "A server for SE3 multiplayer.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "node test.js"
   },
-  "keywords": [],
-  "author": "Kamiloso",
-  "license": "ISC",
+  "author": "Kamiloso <kamiloso.skoposo@gmail.com>",
   "dependencies": {
     "readline-sync": "^1.4.10",
-    "ws": "^8.4.0"
+    "ws": "^8.18.0"
   }
 }

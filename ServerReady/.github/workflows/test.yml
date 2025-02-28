@@ -1,0 +1,27 @@
+name: "Test"
+
+on:
+    push:
+    pull_request:
+jobs:
+    test:
+        name: Test server
+
+        permissions:
+            actions: read
+            contents: read
+            security-events: write
+
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [windows-latest, ubuntu-latest, macos-latest]
+        runs-on: ${{ matrix.os }}
+
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+            - name: Install dependencies and test
+              run: |
+                  npm ci
+                  npm run test
