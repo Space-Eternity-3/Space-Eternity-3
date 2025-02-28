@@ -4,6 +4,10 @@
  | ![Maze-Game-Preview](https://raw.githubusercontent.com/Kamiloso/Kamiloso/main/se3.png) |
  | -------------------------------------------------------------------------------------- |
 
+## Also includes:
+ - Game server inside `ServerReady` folder (node.js project)
+ - Authorization server inside `AuthorizationServer` folder (node.js project)
+
 ## Opening project
 
 ### Prerequisites
@@ -20,13 +24,14 @@
 - To build the client, open Unity Editor and follow:  
   **File -> Build Settings... -> Build And Run.**
   
-- To start the server, run the following commands in the directory with multiplayer server:
+- To start the game server, run the following commands in the directory with multiplayer server:
   ```bash
   npm i
   npm start
   ```
-
 - If `npm start` doesn't work, try `node index.js`.
+
+- Authorization server runs constantly on `wss://comp.se3.page:27684`, so you don't need to run it.
 
 ## Download the game
 Download SE3 from a dedicated website: [se3.page](https://se3.page)
