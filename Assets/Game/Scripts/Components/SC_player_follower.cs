@@ -112,7 +112,7 @@ public class SC_player_follower : MonoBehaviour
 
         //Customize projection look
         for(int i=0;i<TargetRend.Length;i++) {
-            TargetRend[i].material = SourceRend[i].material;
+            TargetRend[i].sharedMaterial = SourceRend[i].sharedMaterial;
         }
         for(int i=0;i<TargetTran.Length;i++) {
             TargetTran[i].localPosition = SourceTran[i].localPosition;

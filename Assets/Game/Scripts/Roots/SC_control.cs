@@ -663,10 +663,10 @@ public class SC_control : MonoBehaviour {
 		if(impulse_enabled) enMode = 2;
 
 		//SET MATERIAL
-		if(turbo || impulse_enabled) engine.material = E3;
-		else if(engineON) engine.material = E2;
-		else if(brake) engine.material = E4;
-		else engine.material = E1;
+		if(turbo || impulse_enabled) engine.sharedMaterial = E3;
+		else if(engineON) engine.sharedMaterial = E2;
+		else if(brake) engine.sharedMaterial = E4;
+		else engine.sharedMaterial = E1;
 		
 		//DRILL
 		if(!SC_invisibler.invisible && living)

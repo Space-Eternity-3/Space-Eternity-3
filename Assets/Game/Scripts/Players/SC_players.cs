@@ -162,16 +162,16 @@ public class SC_players : MonoBehaviour
         switch(M)
         {
             case 0:
-                engine.material=normal;
+                engine.sharedMaterial=normal;
                 break;
             case 1: 
-                engine.material=active;
+                engine.sharedMaterial=active;
                 break;
             case 2:
-                engine.material=turbo;
+                engine.sharedMaterial=turbo;
                 break;
             case 3:
-                engine.material=brake;
+                engine.sharedMaterial=brake;
                 break;
         }
         int P=(bas%16)/4;
@@ -179,20 +179,20 @@ public class SC_players : MonoBehaviour
         switch(P)
         {
             case 0:
-                nose.material=M1;
-                drillRen.material=M1;
+                nose.sharedMaterial=M1;
+                drillRen.sharedMaterial=M1;
                 break;
             case 1:
-                nose.material=M2;
-                drillRen.material=M2;
+                nose.sharedMaterial=M2;
+                drillRen.sharedMaterial=M2;
                 break;
             case 2:
-                nose.material=M3;
-                drillRen.material=M3;
+                nose.sharedMaterial=M3;
+                drillRen.sharedMaterial=M3;
                 break;
             case 3:
-                nose.material=M4;
-                drillRen.material=M4;
+                nose.sharedMaterial=M4;
+                drillRen.sharedMaterial=M4;
                 break;
         }
         if(bas%2==0) drillPar.localPosition=new Vector3(0f,1.9f,-1000f);

@@ -50,7 +50,7 @@ public class SC_tbase : MonoBehaviour
 
         for(int i=0;i<4;i++)
         {
-            Diodes[i].material = Materials[Parsing.IntU(DiodeColors[i]+"")];
+            Diodes[i].sharedMaterial = Materials[Parsing.IntU(DiodeColors[i]+"")];
         }
 
         active_before = is_active;

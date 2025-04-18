@@ -40,13 +40,13 @@ public class SC_driller : MonoBehaviour
 
         if(in_asteroid)
         {
-            noseR.material = activeDrill;
-            drillR.material = activeDrill;
+            noseR.sharedMaterial = activeDrill;
+            drillR.sharedMaterial = activeDrill;
         }
         else
         {
-            noseR.material = passiveDrill;
-            drillR.material = passiveDrill;
+            noseR.sharedMaterial = passiveDrill;
+            drillR.sharedMaterial = passiveDrill;
         }
         if(drilling)
         {

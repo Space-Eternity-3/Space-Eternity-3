@@ -57,14 +57,14 @@ public class SC_Fob21 : MonoBehaviour {
 	void CountTranslate()
 	{
 		try{
-			Ention.material=SC_fun.Fob21Material(item);
-		}catch{Ention.material=SC_fun.Fob21Material(72);}
-		if(item==0 && isDriller) Ention.material = Material5E;
+			Ention.sharedMaterial=SC_fun.Fob21Material(item);
+		}catch{Ention.sharedMaterial=SC_fun.Fob21Material(72);}
+		if(item==0 && isDriller) Ention.sharedMaterial = Material5E;
 		int i;
 
 		for(i=0;i<max_count;i++){
-			if(count>i) oSim[i].material=On;
-			else oSim[i].material=Off;
+			if(count>i) oSim[i].sharedMaterial=On;
+			else oSim[i].sharedMaterial=Off;
 		}
 
 		if(has_screen)

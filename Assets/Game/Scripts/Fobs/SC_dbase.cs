@@ -29,9 +29,9 @@ public class SC_dbase : MonoBehaviour
         EmptyGroup.SetActive(nbt1==0);
 
         if(nbt1==1 && SC_particle_transition.active)
-            OneDiode.material = DiodeMaterials[1];
+            OneDiode.sharedMaterial = DiodeMaterials[1];
         else
-            OneDiode.material = DiodeMaterials[0];
+            OneDiode.sharedMaterial = DiodeMaterials[0];
 
         nbt1_before = nbt1;
     }

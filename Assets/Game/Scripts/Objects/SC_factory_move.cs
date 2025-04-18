@@ -23,7 +23,7 @@ public class SC_factory_move : MonoBehaviour
             Transform factory = Instantiate(Factory,transform.position,transform.rotation);
             factory.localScale = transform.localScale / 2f;
             factory.localScale = new Vector3(factory.localScale.x,factory.localScale.y,factory.localScale.z*0.8f);
-            factory.GetComponent<Renderer>().material = transform.GetComponent<Renderer>().material;
+            factory.GetComponent<Renderer>().sharedMaterial = transform.GetComponent<Renderer>().sharedMaterial;
             factory.rotation = Quaternion.Euler(0f,0f,factory.eulerAngles.z + UnityEngine.Random.Range(0,6)*60f);
             factory.SetParent(transform,true);
 

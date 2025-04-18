@@ -453,7 +453,7 @@ generator_settings
 		chance: 1,5%;
 		settings: [
 			bgcolor-255-151-81,
-			min = 50, max = 70,
+			min = 50, max = 70, spawn,
 			density = 85%,
 			priority = 24,
 		];

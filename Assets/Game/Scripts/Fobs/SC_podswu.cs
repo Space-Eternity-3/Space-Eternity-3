@@ -39,20 +39,20 @@ public class SC_podswu : MonoBehaviour
         };
 
         if(!bright) {
-            for(i=0;i<lngt[1];i++) parts[i].material=norm;
-            for(i=0;i<lngt[2];i++) parts2[i].material=norm2;
-            for(i=0;i<lngt[3];i++) parts3[i].material=norm3;
-            for(i=0;i<lngt[4];i++) parts4[i].material=norm4;
-            for(i=0;i<lngt[5];i++) parts5[i].material=norm5;
-            for(i=0;i<lngt[6];i++) parts6[i].material=norm6;
+            for(i=0;i<lngt[1];i++) parts[i].sharedMaterial=norm;
+            for(i=0;i<lngt[2];i++) parts2[i].sharedMaterial=norm2;
+            for(i=0;i<lngt[3];i++) parts3[i].sharedMaterial=norm3;
+            for(i=0;i<lngt[4];i++) parts4[i].sharedMaterial=norm4;
+            for(i=0;i<lngt[5];i++) parts5[i].sharedMaterial=norm5;
+            for(i=0;i<lngt[6];i++) parts6[i].sharedMaterial=norm6;
         }
         else {
-            for(i=0;i<lngt[1];i++) parts[i].material=high;
-            for(i=0;i<lngt[2];i++) parts2[i].material=high2;
-            for(i=0;i<lngt[3];i++) parts3[i].material=high3;
-            for(i=0;i<lngt[4];i++) parts4[i].material=high4;
-            for(i=0;i<lngt[5];i++) parts5[i].material=high5;
-            for(i=0;i<lngt[6];i++) parts6[i].material=high6;
+            for(i=0;i<lngt[1];i++) parts[i].sharedMaterial=high;
+            for(i=0;i<lngt[2];i++) parts2[i].sharedMaterial=high2;
+            for(i=0;i<lngt[3];i++) parts3[i].sharedMaterial=high3;
+            for(i=0;i<lngt[4];i++) parts4[i].sharedMaterial=high4;
+            for(i=0;i<lngt[5];i++) parts5[i].sharedMaterial=high5;
+            for(i=0;i<lngt[6];i++) parts6[i].sharedMaterial=high6;
         }
     }
     bool InDistance(float dist)

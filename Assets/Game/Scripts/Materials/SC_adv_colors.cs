@@ -20,10 +20,10 @@ public class SC_adv_colors : MonoBehaviour
 
     public void ApplyMaterials(int type)
     {
-        foreach(Renderer rnd in Rend1) rnd.material = M1[type];
-        foreach(Renderer rnd in Rend2) rnd.material = M2[type];
-        foreach(Renderer rnd in Rend3) rnd.material = M3[type];
-        foreach(Renderer rnd in Rend4) rnd.material = M4[type];
+        foreach(Renderer rnd in Rend1) rnd.sharedMaterial = M1[type];
+        foreach(Renderer rnd in Rend2) rnd.sharedMaterial = M2[type];
+        foreach(Renderer rnd in Rend3) rnd.sharedMaterial = M3[type];
+        foreach(Renderer rnd in Rend4) rnd.sharedMaterial = M4[type];
 
         if(piston_assistant)
         {

@@ -299,7 +299,7 @@ public class SC_bullet : MonoBehaviour
             BulletFollower.rotation = transform.rotation;
 
             if(StartSounds[type]!=-1) SC_sounds.PlaySound(transform.position,2,StartSounds[type]); //1 1 17
-            if(BulletMaterials[type]!=null) bulletRE.material = BulletMaterials[type];
+            if(BulletMaterials[type]!=null) bulletRE.sharedMaterial = BulletMaterials[type];
             else bulletRE.enabled = false;
             if(BulletEffects[type]!=null)
             {
@@ -309,11 +309,11 @@ public class SC_bullet : MonoBehaviour
             }
             if(LoopSounds[type]!=-1) loopSndID = SC_snd_loop.AddToLoop(LoopSounds[type],transform.position); // x x 2
 
-            BulletFollower.GetComponent<Renderer>().material = transform.GetComponent<Renderer>().material;
+            BulletFollower.GetComponent<Renderer>().sharedMaterial = transform.GetComponent<Renderer>().sharedMaterial;
             BulletFollower.GetComponent<Renderer>().enabled = transform.GetComponent<Renderer>().enabled;
             transform.GetComponent<Renderer>().enabled = false;
         }
-        else if(dev_bullets_show) bulletRE.material = BulletMaterials[0];
+        else if(dev_bullets_show) bulletRE.sharedMaterial = BulletMaterials[0];
         else bulletRE.enabled = false;
     }
     public void AfterFixedUpdate()

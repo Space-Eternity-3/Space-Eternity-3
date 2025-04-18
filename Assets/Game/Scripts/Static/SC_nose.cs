@@ -46,23 +46,23 @@ public class SC_nose : MonoBehaviour {
 		switch(mat)
 		{
 			case 1: {
-				Drill.material=D1;
-				Drill3.material=D1;
+				Drill.sharedMaterial=D1;
+				Drill3.sharedMaterial=D1;
 				break;
 			}
 			case 2: {
-				Drill.material=D2;
-				Drill3.material=D2;
+				Drill.sharedMaterial=D2;
+				Drill3.sharedMaterial=D2;
 				break;
 			}
 			case 3: {
-				Drill.material=D3;
-				Drill3.material=D3;
+				Drill.sharedMaterial=D3;
+				Drill3.sharedMaterial=D3;
 				break;
 			}
 			case 4: {
-				Drill.material=D4;
-				Drill3.material=D4;
+				Drill.sharedMaterial=D4;
+				Drill3.sharedMaterial=D4;
 				break;
 			}
 		}
